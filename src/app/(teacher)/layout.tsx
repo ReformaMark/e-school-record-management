@@ -28,9 +28,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`bg-gray-100`}
+        className={`bg-gray-100 relative`}
       >
-        <div className="fixed right-0 w-[80%] ml-auto">
+        <div className="fixed top-0 right-0 w-[80%] ml-auto">
             <Navbar/>
         </div>
         <Sidenav/>

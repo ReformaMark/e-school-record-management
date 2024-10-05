@@ -22,7 +22,7 @@ function Navbar() {
                 </Avatar>
                 <div className="text-center">
                     <h3 className='text-sm'>Surname, Firstname MI.</h3>
-                    <h6 className='text-xs text-left text-primary-foreground'>ADMIN</h6>
+                    <h6 className='text-xs text-left text-primary-foreground'>Teacher</h6>
                 </div>
            
             </div>
