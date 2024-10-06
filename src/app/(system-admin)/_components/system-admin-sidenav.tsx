@@ -24,19 +24,19 @@ export const SystemAdminSidenav = () => {
                     <MdOutlineDashboard className='size-5 w-10' />
                     <h1 className='tracking-wider'>Dashboard</h1>
                 </Link>
-                <Link href={'/sys-admin-students'} className={`${pathname === '/sys-admin-students' ? "bg-[#0087ba]" : "bg-transparent"}  flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}>
+                <Link href={'/sysadmin-students'} className={`${pathname === '/sysadmin-students' ? "bg-[#0087ba]" : "bg-transparent"}  flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}>
                     <PiStudent className='size-5 w-10' />
                     <h1 className='tracking-wider'>Students</h1>
                 </Link>
-                <Link href={'/sys-admin-teachers'} className={`${pathname === '/sys-admin-teachers' ? "bg-[#0087ba]" : "bg-transparent"}  flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}>
+                <Link href={'/sysadmin-teachers'} className={`${pathname === '/sysadmin-teachers' ? "bg-[#0087ba]" : "bg-transparent"}  flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}>
                     <FaChalkboardTeacher className='size-4 w-10' />
                     <h1 className='tracking-wider'>Teachers</h1>
                 </Link>
-                <Link href={'/sys-admin-registrar'} className={`${pathname === '/sys-admin-registrar' ? "bg-[#0087ba]" : "bg-transparent"}  flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}>
+                <Link href={'/sysadmin-registrar'} className={`${pathname === '/sysadmin-registrar' ? "bg-[#0087ba]" : "bg-transparent"}  flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}>
                     <MdOutlineSupportAgent className='size-5 w-10' />
                     <h1 className='tracking-wider'>Registrar</h1>
                 </Link>
-                <Link href={'/sys-admin-principal'} className={`${pathname === '/sys-admin-principal' ? "bg-[#0087ba]" : "bg-transparent"}  flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}>
+                <Link href={'/sysadmin-principal'} className={`${pathname === '/sysadmin-principal' ? "bg-[#0087ba]" : "bg-transparent"}  flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}>
                     <FaUserTie className='size-5 w-10' />
                     <h1 className='tracking-wider'>Principal</h1>
                 </Link>
