@@ -4,6 +4,7 @@ import { Calendar } from '@/components/ui/calendar'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { cn } from '@/lib/utils'
 import { add, format } from "date-fns"
@@ -49,8 +50,11 @@ const initialShipppinginfo: StudentProfile = {
 }
 
 function Form() {
-    const [studentProfile, setStudentProfile] = useState<StudentProfile>(initialShipppinginfo)
+    const [studentProfile, setStudentProfile] = useState<StudentProfile>(initialShipppinginfo);
     const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+    const [formStep, setFormStep] = useState(0);
+
+
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target
 
@@ -68,16 +72,20 @@ function Form() {
     }
   return (
     <div className='bg-white p-5 rounded-lg'>
-        <h1 className='font-semibold tracking-widest text-xl text-center'>Student Profile Form</h1>
+        <h1 className='font-semibold tracking-widest text-xl text-center'>Student Enrollment Form</h1>
         <form
             id="create-shipping-form"
            
             >
-            <h1 className='font-semibold text-lg'>Personal Information</h1>
-            <div className="grid grid-cols-3 gap-x-5 mb-5">
-                <div className="space-y-2">
+
+            {/* {Step One} */}
+            <div className={`${formStep !== 0 ? 'hidden': 'block'} grid grid-cols-2 gap-x-10 mt-10`}>
+                <div className="">
+                    
+             
+                <div className="space-y-2 ">
                     <Label htmlFor="firstName" className="text-sm font-medium text-text">
-                        First Name <span className='text-red-700'>*</span>
+                        School Year <span className='text-red-700'>*</span>
                     </Label>
                     <div className="relative">
                         <Input
@@ -87,222 +95,472 @@ function Form() {
                             onChange={handleInputChange}
                             required
                             className=""
-                            placeholder="First Name"
+                            placeholder="2025-2026"
                         
                         />
                     </div>
                 </div>
-               
-                <div className="space-y-2">
-                    <Label htmlFor="lastName" className="text-sm font-medium text-text">
-                        Last Name <span className='text-red-700'>*</span>
+                <div className="space-y-2 ">
+                    <Label htmlFor="firstName" className="text-sm font-medium text-text">
+                        Grade level to enroll <span className='text-red-700'>*</span>
                     </Label>
                     <div className="relative">
                         <Input
-                            id="lastName"
-                            name="lastName"
-                            value={studentProfile.lastName}
+                            id="firstName"
+                            name="firstName"
+                            value={studentProfile.firstName}
                             onChange={handleInputChange}
                             required
                             className=""
-                            placeholder="Last Name"
+                            placeholder="Grade 7"
                         
                         />
                     </div>
                 </div>
-                <div className="space-y-2">
-                    <Label htmlFor="extentionName" className="text-sm font-medium text-text">
-                        Ext. <span className='text-red-700'>*</span>
-                    </Label>
-                    <div className="relative">
-                        <Input
-                            id="extentionName"
-                            name="extentionName"
-                            value={studentProfile.extentionName}
-                            onChange={handleInputChange}
-                            required
-                            className=""
-                            placeholder="ex: Sr./ Jr. / II "
-                        
-                        />
+                </div>
+                <div className="border border-black p-5">
+                    <h1 className=' text-text text-lg font-medium'>Check the appropriate box only</h1>
+                    <div className="flex justify-start gap-x-10">
+                        <div className="">
+                            <h1 className='mt-3 text-text text-sm'>With LRN?</h1>
+                            <RadioGroup defaultValue="Yes" className='pl-5 flex gap-x-5'>
+                                <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="Yes" id="yes" className='rounded-none' />
+                                    <Label htmlFor="Yes">Yes</Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="no" id="no" className='rounded-none' />
+                                    <Label htmlFor="no">No</Label>
+                                </div>
+                            </RadioGroup>
+                        </div>
+                        <div className="">
+                            <h1  className='mt-3 text-text text-sm'>Returning (Balik Aral)</h1>
+                            <RadioGroup defaultValue="no" className='pl-5 flex gap-x-5'>
+                                <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="Yes" id="yes" className='rounded-none'/>
+                                    <Label htmlFor="Yes">Yes</Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="no" id="no" className='rounded-none'/>
+                                    <Label htmlFor="no">No</Label>
+                                </div>
+                            </RadioGroup>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div className="grid grid-cols-4 gap-x-5 mb-5">
-                <div className="space-y-2">
-                    <Label htmlFor="extentionName" className="text-sm font-medium text-text">
-                    Birth Date <span className='text-red-700'>*</span>
-                    </Label>
-                    <div className="">
-                        <Popover>
-                        <PopoverTrigger asChild>
-                            <Button
-                                variant={"outline"}
-                                className={cn(
-                                "pl-3 w-full text-left font-normal",
-                                !studentProfile.birthday && "text-muted-foreground"
-                                )}
-                            >
-                                {studentProfile.birthday ? (
-                                format(studentProfile.birthday, "PPP")
-                                ) : (
-                                <span>Birth Date </span>
-                                )}
-                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                            </Button>
-                    
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                            mode="single"
-                            selected={selectedDate}
-                            onSelect={(date) => {
-                                setSelectedDate(date);
-                                setStudentProfile((prevData) => ({
-                                ...prevData,
-                                birthday: date,
-                                }));
-                            }}
-                            disabled={(date) =>
-                                date < new Date() || date > add(new Date(), { days: 7 })
-                            }
-                            initialFocus
-                            /> 
-                        </PopoverContent>
-                        </Popover>
+            <div className={` border border-gray-500 mt-5`}>
+                <h1 className='uppercase py-1 text-center w-full text-sm font-semibold bg-gray-100 mb-5'>Learner Information</h1>
+                <div className="grid grid-cols-2 gap-x-10 px-5 mb-5">
+                    <div className="space-y-1">
+                        <Label htmlFor="bcn" className="text-xs font-thin text-text">
+                            PSA Birth Certificate No. (if available upon registration) <span className='text-red-700'>*</span>
+                        </Label>
+                        <div className="relative">
+                            <Input
+                                id="bcn"
+                                name="bcn"
+                                value={studentProfile.lastName}
+                                onChange={handleInputChange}
+                                required
+                                className=""
+                                placeholder=""
+                            
+                            />
+                        </div>
+                    </div>
+                    <div className="space-y-1">
+                        <Label htmlFor="lrn" className="text-xs font-thin text-text">
+                            Learning Reference Number 
+                        </Label>
+                        <div className="relative">
+                            <Input
+                                id="lrn"
+                                name="lrn"
+                                value={studentProfile.lastName}
+                                onChange={handleInputChange}
+                                required
+                                className=""
+                                placeholder=""
+                            
+                            />
+                        </div>
+                    </div>
+                </div>
+                <div className="grid grid-cols-2">
+                    <div className=" mb-5 px-5">
+                        <div className="space-y-1 mb-2">
+                            <Label htmlFor="lastName" className="text-sm font-medium text-text">
+                                Last Name <span className='text-red-700'>*</span>
+                            </Label>
+                            <div className="relative">
+                                <Input
+                                    id="lastName"
+                                    name="lastName"
+                                    value={studentProfile.lastName}
+                                    onChange={handleInputChange}
+                                    required
+                                    className=""
+                                    placeholder="Last Name"
+                                
+                                />
+                            </div>
+                        </div>
+                        <div className="space-y-1 mb-2">
+                            <Label htmlFor="firstName" className="text-sm font-medium text-text">
+                                First Name <span className='text-red-700'>*</span>
+                            </Label>
+                            <div className="relative">
+                                <Input
+                                    id="firstName"
+                                    name="firstName"
+                                    value={studentProfile.firstName}
+                                    onChange={handleInputChange}
+                                    required
+                                    className=""
+                                    placeholder="First Name"
+                                
+                                />
+                            </div>
+                        </div>
+                        <div className="space-y-1 mb-2">
+                            <Label htmlFor="middleName" className="text-sm font-medium text-text">
+                                Middle Name <span className='text-red-700'>*</span>
+                            </Label>
+                            <div className="relative">
+                                <Input
+                                    id="middleName"
+                                    name="middleName"
+                                    value={studentProfile.middleName}
+                                    onChange={handleInputChange}
+                                    required
+                                    className=""
+                                    placeholder="Middle Name"
+                                
+                                />
+                            </div>
+                        </div>
+                        <div className="space-y-1 mb-2">
+                            <Label htmlFor="extentionName" className="text-sm font-medium text-text">
+                                Extension Name
+                            </Label>
+                            <div className="relative">
+                                <Input
+                                    id="extentionName"
+                                    name="extentionName"
+                                    value={studentProfile.extentionName}
+                                    onChange={handleInputChange}
+                                    required
+                                    className=""
+                                    placeholder="ex: Sr./ Jr. / II "
+                                
+                                />
+                            </div>
+                        </div>
+                    </div>
+                    <div className="grid grid-cols-4 gap-x-5 px-5">
+                        <div className="space-y-1 col-span-2">
+                            <Label htmlFor="extentionName" className="text-sm font-medium text-text">
+                            Birth Date <span className='text-red-700'>*</span>
+                            </Label>
+                            <div className="">
+                                <Popover>
+                                <PopoverTrigger asChild>
+                                    <Button
+                                        variant={"outline"}
+                                        className={cn(
+                                        "pl-3 w-full text-left font-normal",
+                                        !studentProfile.birthday && "text-muted-foreground"
+                                        )}
+                                    >
+                                        {studentProfile.birthday ? (
+                                        format(studentProfile.birthday, "PPP")
+                                        ) : (
+                                        <span>Birth Date </span>
+                                        )}
+                                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                    </Button>
+                            
+                                </PopoverTrigger>
+                                <PopoverContent className="w-auto p-0" align="start">
+                                <Calendar
+                                    mode="single"
+                                    selected={selectedDate}
+                                    onSelect={(date) => {
+                                        setSelectedDate(date);
+                                        setStudentProfile((prevData) => ({
+                                        ...prevData,
+                                        birthday: date,
+                                        }));
+                                    }}
+                                    disabled={(date) =>
+                                        date < new Date() || date > add(new Date(), { days: 7 })
+                                    }
+                                    initialFocus
+                                    /> 
+                                </PopoverContent>
+                                </Popover>
+                            </div>
+                        
+                        </div>
+                        <div className="space-y-1 col-span-2">
+                            <Label htmlFor="birthPlace" className="text-sm font-medium text-text">
+                                Birth Place <span className='text-red-700'>*</span>
+                            </Label>
+                            <div className="relative">
+                                <Input
+                                    id="birthPlace"
+                                    name="birthPlace"
+                                    value={studentProfile.birthPlace}
+                                    onChange={handleInputChange}
+                                    required
+                                    className=""
+                                    placeholder="Birth Place"
+                                />
+                            </div>
+                        </div>
+                        <div className="space-y-1 col-span-1">
+                        <Label htmlFor="category" className="text-sm font-medium text-text">
+                            Sex
+                        </Label>
+                        <Select
+                            onValueChange={handleSexChange}
+                            value={studentProfile.sex}
+                        
+                        >
+                            <SelectTrigger className="">
+                                <SelectValue placeholder="Sex" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {sex.map((sex) => (
+                                    <SelectItem key={sex} value={sex}>
+                                        {sex}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                        </div>
+                        <div className="space-y-1 col-span-1">
+                            <Label htmlFor="age" className="text-sm font-medium text-text">
+                                Age<span className='text-red-700'>*</span>
+                            </Label>
+                            <div className="relative">
+                                <Input
+                                    id="age"
+                                    name="age"
+                                    value={studentProfile.age}
+                                    onChange={handleInputChange}
+                                    required
+                                    className=""
+                                    placeholder="ex: Sr./ Jr. / II "
+                                    type='number'
+                                />
+                            </div>
+                        </div>
+                        <div className="space-y-1 col-span-2">
+                            <Label htmlFor="motherTongue" className="text-sm font-medium text-text">
+                                Mother Tongue 
+                            </Label>
+                            <div className="relative">
+                                <Input
+                                    id="motherTongue"
+                                    name="motherTongue"
+                                    value={studentProfile.birthPlace}
+                                    onChange={handleInputChange}
+                                    required
+                                    className=""
+                                    placeholder=""
+                                />
+                            </div>
+                        </div>
+                        <div className="col-span-4 ">                  
+                            <h4 className=' text-xs font-semibold '> Belonging to any Indigenous Peoples (IP) Community/Indigenous Cultural Community?</h4>
+                            <div className="grid grid-cols-4 gap-x-2">
+                                <RadioGroup defaultValue="Yes" className=' flex gap-x-2 col-span-1'>
+                                    <div className="flex items-center space-x-2">
+                                        <RadioGroupItem value="Yes" id="yes" className='rounded-none' />
+                                        <Label className='text-xs' htmlFor="Yes">Yes</Label>
+                                    </div>
+                                    <div className="flex items-center space-x-2">
+                                        <RadioGroupItem value="no" id="no" className='rounded-none' />
+                                        <Label className='text-xs' htmlFor="no">No</Label>
+                                    </div>
+                                </RadioGroup>
+                                <div className="space-y-1 flex items-center col-span-3">
+                                    <Label htmlFor="motherTongue" className="text-xs font-semibold text-text">
+                                       If yes, Please specify :
+                                    </Label>
+                                    <div className="relative">
+                                        <Input
+                                            id="motherTongue"
+                                            name="motherTongue"
+                                            value={studentProfile.birthPlace}
+                                            onChange={handleInputChange}
+                                            required
+                                            className=""
+                                            placeholder=""
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="col-span-4 "> 
+                            <div className="grid grid-cols-2">
+                                <h4 className=' text-xs font-semibold '> Is your family a beneficiary of 4Ps?</h4>
+                                <RadioGroup defaultValue="Yes" className=' flex gap-x-2 col-span-1'>
+                                    <div className="flex items-center space-x-2">
+                                        <RadioGroupItem value="Yes" id="yes" className='rounded-none' />
+                                        <Label className='text-xs' htmlFor="Yes">Yes</Label>
+                                    </div>
+                                    <div className="flex items-center space-x-2">
+                                        <RadioGroupItem value="no" id="no" className='rounded-none' />
+                                        <Label className='text-xs' htmlFor="no">No</Label>
+                                    </div>
+                                </RadioGroup>
+                            </div>                 
+                           
+                            <div className="grid grid-cols-4 gap-x-2">
+    
+                                <div className="space-y-1  col-span-4 mt-3">
+                                    <Label htmlFor="motherTongue" className="text-xs font-semibold text-text">
+                                    If Yes, write the 4Ps Household ID Number below
+                                    </Label>
+                                    <div className="relative">
+                                        <Input
+                                            id="motherTongue"
+                                            name="motherTongue"
+                                            value={studentProfile.birthPlace}
+                                            onChange={handleInputChange}
+                                            required
+                                            className=""
+                                            placeholder=""
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                      
+                    </div>
+                </div>
+                <div className="w-full mt-10">
+                    <Button variant={'default'} onClick={()=> setFormStep(0)} className='text-white ml-auto'>Back</Button>
+                    <Button variant={'default'} onClick={()=> setFormStep(2)} className='text-white ml-auto'>Next</Button>
+                </div>
+            </div>
+
+            {/* {Third Step} */}
+            <div className={`${formStep !== 2 ? "hidden": "block"}`}>
+                <h1 className='font-semibold text-lg'>Permanent Address</h1>
+                <div className="grid grid-cols-5 gap-x-5 mb-5">
+                    <div className="space-y-2">
+                        <Label htmlFor="province" className="text-sm font-medium text-text">
+                            Province
+                        </Label>
+                        <Select
+                            onValueChange={handleSexChange}
+                            value={studentProfile.province}
+                        
+                        >
+                            <SelectTrigger className="">
+                                <SelectValue placeholder="Negros Oriental" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {sex.map((sex) => (
+                                    <SelectItem key={sex} value={sex}>
+                                        {sex}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
                     </div>
                 
-                </div>
-                <div className="space-y-2">
-                    <Label htmlFor="birthPlace" className="text-sm font-medium text-text">
-                        Birth Place <span className='text-red-700'>*</span>
-                    </Label>
-                    <div className="relative">
-                        <Input
-                            id="birthPlace"
-                            name="birthPlace"
-                            value={studentProfile.birthPlace}
-                            onChange={handleInputChange}
-                            required
-                            className=""
-                            placeholder="Birth Place"
-                        />
+                    <div className="space-y-2">
+                        <Label htmlFor="category" className="text-sm font-medium text-text">
+                            Municipality/City
+                        </Label>
+                        <Select
+                            onValueChange={handleSexChange}
+                            value={studentProfile.municipality}
+                        
+                        >
+                            <SelectTrigger className="">
+                                <SelectValue placeholder="Opao Tanjay" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {sex.map((sex) => (
+                                    <SelectItem key={sex} value={sex}>
+                                        {sex}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="category" className="text-sm font-medium text-text">
+                            Barangay
+                        </Label>
+                        <Select
+                            onValueChange={handleSexChange}
+                            value={studentProfile.barangay}
+                        
+                        >
+                            <SelectTrigger className="">
+                                <SelectValue placeholder="Barangay 9" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {sex.map((sex) => (
+                                    <SelectItem key={sex} value={sex}>
+                                        {sex}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="street" className="text-sm font-medium text-text">
+                            Street/Subd. <span className='text-red-700'>*</span>
+                        </Label>
+                        <div className="relative">
+                            <Input
+                                id="street"
+                                name="street"
+                                value={studentProfile.street}
+                                onChange={handleInputChange}
+                                required
+                                className=""
+                                placeholder=""
+                            
+                            />
+                        </div>
+                    </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="houseNum" className="text-sm font-medium text-text">
+                            House No. <span className='text-red-700'>*</span>
+                        </Label>
+                        <div className="relative">
+                            <Input
+                                id="houseNum"
+                                name="houseNum"
+                                value={studentProfile.houseNum}
+                                onChange={handleInputChange}
+                                required
+                                className=""
+                                placeholder=""
+                            
+                            />
+                        </div>
                     </div>
                 </div>
                 <div className="space-y-2">
-                    <Label htmlFor="age" className="text-sm font-medium text-text">
-                        Age<span className='text-red-700'>*</span>
+                    <Label htmlFor="fullAddress" className="text-sm font-medium text-text">
+                    Complete Address <span className='text-red-700'>*</span>
                     </Label>
                     <div className="relative">
                         <Input
-                            id="age"
-                            name="age"
-                            value={studentProfile.age}
-                            onChange={handleInputChange}
-                            required
-                            className=""
-                            placeholder="ex: Sr./ Jr. / II "
-                            type='number'
-                        />
-                    </div>
-                </div>
-                <div className="space-y-2">
-                <Label htmlFor="category" className="text-sm font-medium text-text">
-                    Sex
-                </Label>
-                <Select
-                    onValueChange={handleSexChange}
-                    value={studentProfile.sex}
-                  
-                >
-                    <SelectTrigger className="">
-                        <SelectValue placeholder="Sex" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        {sex.map((sex) => (
-                            <SelectItem key={sex} value={sex}>
-                                {sex}
-                            </SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
-            </div>
-            </div>
-            <h1 className='font-semibold text-lg'>Permanent Address</h1>
-            <div className="grid grid-cols-5 gap-x-5 mb-5">
-                <div className="space-y-2">
-                    <Label htmlFor="province" className="text-sm font-medium text-text">
-                        Province
-                    </Label>
-                    <Select
-                        onValueChange={handleSexChange}
-                        value={studentProfile.province}
-                    
-                    >
-                        <SelectTrigger className="">
-                            <SelectValue placeholder="Negros Oriental" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {sex.map((sex) => (
-                                <SelectItem key={sex} value={sex}>
-                                    {sex}
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                </div>
-               
-                <div className="space-y-2">
-                    <Label htmlFor="category" className="text-sm font-medium text-text">
-                        Municipality/City
-                    </Label>
-                    <Select
-                        onValueChange={handleSexChange}
-                        value={studentProfile.municipality}
-                    
-                    >
-                        <SelectTrigger className="">
-                            <SelectValue placeholder="Opao Tanjay" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {sex.map((sex) => (
-                                <SelectItem key={sex} value={sex}>
-                                    {sex}
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                </div>
-                <div className="space-y-2">
-                    <Label htmlFor="category" className="text-sm font-medium text-text">
-                        Barangay
-                    </Label>
-                    <Select
-                        onValueChange={handleSexChange}
-                        value={studentProfile.barangay}
-                    
-                    >
-                        <SelectTrigger className="">
-                            <SelectValue placeholder="Barangay 9" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {sex.map((sex) => (
-                                <SelectItem key={sex} value={sex}>
-                                    {sex}
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                </div>
-                <div className="space-y-2">
-                    <Label htmlFor="street" className="text-sm font-medium text-text">
-                        Street/Subd. <span className='text-red-700'>*</span>
-                    </Label>
-                    <div className="relative">
-                        <Input
-                            id="street"
-                            name="street"
-                            value={studentProfile.street}
+                            id="fullAddress"
+                            name="fullAddress"
+                            value={studentProfile.fullAddress}
                             onChange={handleInputChange}
                             required
                             className=""
@@ -311,46 +569,13 @@ function Form() {
                         />
                     </div>
                 </div>
-                <div className="space-y-2">
-                    <Label htmlFor="houseNum" className="text-sm font-medium text-text">
-                        House No. <span className='text-red-700'>*</span>
-                    </Label>
-                    <div className="relative">
-                        <Input
-                            id="houseNum"
-                            name="houseNum"
-                            value={studentProfile.houseNum}
-                            onChange={handleInputChange}
-                            required
-                            className=""
-                            placeholder=""
-                        
-                        />
-                    </div>
-                </div>
-            </div>
-            <div className="space-y-2">
-                <Label htmlFor="fullAddress" className="text-sm font-medium text-text">
-                   Complete Address <span className='text-red-700'>*</span>
-                </Label>
-                <div className="relative">
-                    <Input
-                        id="fullAddress"
-                        name="fullAddress"
-                        value={studentProfile.fullAddress}
-                        onChange={handleInputChange}
-                        required
-                        className=""
-                        placeholder=""
-                    
-                    />
-                </div>
+                <Button variant={'default'} onClick={()=> setFormStep(1)} className='text-white'>Back</Button>
+                <Button variant={'default'} onClick={()=> setFormStep(2)} className='text-white'>Next</Button>
             </div>
            
+           
         </form>
-        <div className="text-right mt-5">
-            <Button variant={'default'} className='text-white'>Save</Button>
-        </div>
+      
     </div>
   )
 }
