@@ -7,7 +7,6 @@ import {
     BreadcrumbPage,
     BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
 import { Award, Book, Calendar, Mail, MapPin, Phone, Users } from "lucide-react";
@@ -118,9 +117,9 @@ const SystemAdminPrincipalPage = () => {
                         satisfaction, and community involvement. Dr. {schoolHeadData.lastName} open-door policy and commitment to transparent
                         communication have fostered a collaborative and supportive environment for students, parents, and staff alike.
                     </p>
-                    <Button className="bg-[#099443] hover:bg-[#077a36] text-white">
+                    {/* <Button className="bg-[#099443] hover:bg-[#077a36] text-white">
                         Read Full Bio
-                    </Button>
+                    </Button> */}
                 </Card>
             </div>
         </div>

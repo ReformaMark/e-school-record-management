@@ -6,6 +6,8 @@ import {
     BreadcrumbPage,
     BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
     DropdownMenu,
     DropdownMenuCheckboxItem,
@@ -14,16 +16,12 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
-import Link from "next/link";
-import { File, ListFilterIcon, PlusCircleIcon } from "lucide-react";
 import { DataTable } from "@/components/data-table";
+import { File, ListFilterIcon, PlusCircleIcon } from "lucide-react";
+import Link from "next/link";
 import { studentColumns, studentsData } from "../../../../data/students-data";
-
-// Column definitions for the DataTable
-
+import { cn } from "@/lib/utils";
 
 const SystemAdminStudentsPage = () => {
     return (
@@ -71,12 +69,18 @@ const SystemAdminStudentsPage = () => {
                                 Export
                             </span>
                         </Button>
-                        <Button size="sm" className="h-7 gap-1 text-white">
+                        <Link
+                            href="/sysadmin-students/sysadmin-add-student"
+                            className={cn("", buttonVariants({
+                                variant: "default",
+                                size: "sm",
+                                className: "text-white h-7 gap-1 w-full p-2"
+                            }))}>
                             <PlusCircleIcon className="h-3.5 w-3.5" />
                             <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                                Add Student
+                                Add a student
                             </span>
-                        </Button>
+                        </Link>
                     </div>
                 </div>
 
