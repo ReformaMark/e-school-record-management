@@ -24,6 +24,10 @@ export const SystemAdminSidenav = () => {
                     <MdOutlineDashboard className='size-5 w-10' />
                     <h1 className='tracking-wider'>Dashboard</h1>
                 </Link>
+                <Link href={'/sysadmin-admins'} className={`${pathname === '/sysadmin-admins' ? "bg-[#0087ba]" : "bg-transparent"}  flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}>
+                    <PiStudent className='size-5 w-10' />
+                    <h1 className='tracking-wider'>System Administrators</h1>
+                </Link>
                 <Link href={'/sysadmin-students'} className={`${pathname === '/sysadmin-students' ? "bg-[#0087ba]" : "bg-transparent"}  flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}>
                     <PiStudent className='size-5 w-10' />
                     <h1 className='tracking-wider'>Students</h1>
@@ -40,18 +44,6 @@ export const SystemAdminSidenav = () => {
                     <FaUserTie className='size-5 w-10' />
                     <h1 className='tracking-wider'>Principal</h1>
                 </Link>
-                {/* <Link href={'/dashboard'} className={`${pathname === '/' ? "bg-[#0087ba]" : "bg-transparent"}  flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}>
-                    <MdOutlineSettings className='size-5 w-10' />
-                    <h1 className='tracking-wider'>Settings</h1>
-                </Link>
-                <Link href={'/dashboard'} className={`${pathname === '/' ? "bg-[#0087ba]" : "bg-transparent"}  flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}>
-                    <BiHelpCircle className='size-5 w-10' />
-                    <h1 className='tracking-wider'>Help & Support</h1>
-                </Link>
-                <Link href={'/dashboard'} className={`${pathname === '/' ? "bg-[#0087ba]" : "bg-transparent"}  flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}>
-                    <FaRegUser className='size-5 w-10' />
-                    <h1 className='tracking-wider'>User Profile</h1>
-                </Link> */}
             </div>
         </main>
     )

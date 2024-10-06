@@ -6,7 +6,7 @@ import {
     BreadcrumbPage,
     BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
     DropdownMenu,
@@ -18,11 +18,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { DataTable } from "@/components/data-table";
-import { File, ListFilterIcon } from "lucide-react";
+import { File, ListFilterIcon, PlusCircleIcon } from "lucide-react";
 import Link from "next/link";
 import { studentColumns, studentsData } from "../../../../data/students-data";
+import { cn } from "@/lib/utils";
 
-const SystemAdminStudentsPage = () => {
+const SystemAdminListPage = () => {
     return (
         <div className="container mx-auto p-4">
             <Breadcrumb className="hidden md:flex">
@@ -34,7 +35,7 @@ const SystemAdminStudentsPage = () => {
                     </BreadcrumbItem>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
-                        <BreadcrumbPage>Students</BreadcrumbPage>
+                        <BreadcrumbPage>System Administrators</BreadcrumbPage>
                     </BreadcrumbItem>
                 </BreadcrumbList>
             </Breadcrumb>
@@ -68,8 +69,8 @@ const SystemAdminStudentsPage = () => {
                                 Export
                             </span>
                         </Button>
-                        {/* <Link
-                            href="/sysadmin-students/sysadmin-add-student"
+                        <Link
+                            href="/sysadmin-admins/sysadmin-add-admin"
                             className={cn("", buttonVariants({
                                 variant: "default",
                                 size: "sm",
@@ -77,23 +78,23 @@ const SystemAdminStudentsPage = () => {
                             }))}>
                             <PlusCircleIcon className="h-3.5 w-3.5" />
                             <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                                Add a student
+                                Add an admin
                             </span>
-                        </Link> */}
+                        </Link>
                     </div>
                 </div>
 
                 <Card x-chunk="dashboard-06-chunk-0">
                     <CardHeader>
-                        <CardTitle>Students</CardTitle>
-                        <CardDescription>Manage the list of students.</CardDescription>
+                        <CardTitle>System Administrators</CardTitle>
+                        <CardDescription>Manage the list of system administrators.</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <DataTable
                             columns={studentColumns}
                             data={studentsData}
                             filter="firstName"
-                            placeholder="students by first name"
+                            placeholder="administrators by first name"
                         />
                     </CardContent>
                 </Card>
@@ -102,4 +103,4 @@ const SystemAdminStudentsPage = () => {
     )
 }
 
-export default SystemAdminStudentsPage;
+export default SystemAdminListPage;
