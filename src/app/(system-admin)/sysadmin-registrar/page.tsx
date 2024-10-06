@@ -14,13 +14,14 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
 import Link from "next/link";
 import { File, ListFilterIcon, PlusCircleIcon } from "lucide-react";
 import { DataTable } from "@/components/data-table";
 import { staffColumns, staffData } from "../../../../data/staff-data";
+import { cn } from "@/lib/utils";
 
 // Column definitions for the DataTable
 const SystemAdminRegistrarPage = () => {
@@ -69,12 +70,19 @@ const SystemAdminRegistrarPage = () => {
                                 Export
                             </span>
                         </Button>
-                        <Button size="sm" className="h-7 gap-1 text-white">
+
+                        <Link
+                            href="/sysadmin-registrar/sysadmin-add-registrar"
+                            className={cn("", buttonVariants({
+                                variant: "default",
+                                size: "sm",
+                                className: "text-white h-7 gap-1 w-full p-2"
+                            }))}>
                             <PlusCircleIcon className="h-3.5 w-3.5" />
                             <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                                Add Registrar
+                                Add registrar
                             </span>
-                        </Button>
+                        </Link>
                     </div>
                 </div>
 
