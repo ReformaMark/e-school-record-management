@@ -12,6 +12,20 @@ import { CalendarIcon } from 'lucide-react'
 import React, { useState } from 'react'
 
 type StudentProfile = {
+
+//Enrollment info
+    schoolYear: string,
+    gradeLevel: string, 
+    withLrn: string,
+    returning: string,
+
+//Studnet Pesonal Info
+    PSABirthCert: string,
+    lrn: string,
+    indigenous:string,
+    indigenousCummunity: string,
+    fourpsBenef: string,
+    fourpsIdNum:string,
     firstName: string,
     lastName: string,
     middleName: string,
@@ -19,13 +33,52 @@ type StudentProfile = {
     birthday: Date | undefined,
     birthPlace: string,
     age: number,
+    sex: SexType,
+
+//Current address info
     province: string,
     municipality: string,
     barangay: string,
     street: string,
     houseNum: string,
     fullAddress: string,
-    sex: SexType,
+
+//Permanent address Info
+    sameAsCurrent: string,
+    permanentProvince: string,
+    permanentMunicipality: string,
+    permanentBarangay: string,
+    permanentStreet: string,
+    permanentHouseNum: string,
+    permanentFullAddress: string,
+
+//Parent information 
+    fatherFirstName: string,
+    fatherLastName: string,
+    fatherMiddleName: string,
+    fatherContact: string,
+
+    motherFirstName: string,
+    motherLastName: string,
+    motherMiddleName: string,
+    motherContact: string,
+
+    guardianFirstName: string,
+    guardianLastName: string,
+    guardianMiddleName: string,
+    guardianContact: string,
+
+
+//Returning enrollee
+    lastGradeLevel: string,
+    lastSYAttended: string,
+    lastSchoolAttended: string
+    schoolId: string,
+
+//Senior high enrollee
+    semister: string,
+    strand: string,
+    track: string,
 }
 
 type SexType = 'Male' |'Female' |'Others'
@@ -33,6 +86,20 @@ type SexType = 'Male' |'Female' |'Others'
 const sex = ['Male', 'Female', "Others"]
 
 const initialShipppinginfo: StudentProfile = {
+
+    //Enrollment info
+    schoolYear: '',
+    gradeLevel: '', 
+    withLrn:'',
+    returning: '',
+
+//Studnet Pesonal Info
+    PSABirthCert: '',
+    lrn: '',
+    indigenous:'',
+    indigenousCummunity: '',
+    fourpsBenef: '',
+    fourpsIdNum:'',
     firstName: '',
     lastName: '',
     middleName: '',
@@ -40,13 +107,52 @@ const initialShipppinginfo: StudentProfile = {
     birthday: undefined,
     birthPlace: '',
     age: 0,
+    sex: sex[0] as SexType,
+
+//Current address info
     province: '',
     municipality: '',
     barangay: '',
     street: '',
     houseNum: '',
     fullAddress: '',
-    sex: sex[0] as SexType,
+
+//Permanent address Info
+    sameAsCurrent: '',
+    permanentProvince: '',
+    permanentMunicipality: '',
+    permanentBarangay: '',
+    permanentStreet: '',
+    permanentHouseNum: '',
+    permanentFullAddress: '',
+
+//Parent information 
+    fatherFirstName: '',
+    fatherLastName: '',
+    fatherMiddleName: '',
+    fatherContact: '',
+
+    motherFirstName: '',
+    motherLastName: '',
+    motherMiddleName: '',
+    motherContact: '',
+
+    guardianFirstName: '',
+    guardianLastName: '',
+    guardianMiddleName: '',
+    guardianContact: '',
+
+
+//Returning enrollee
+    lastGradeLevel: '',
+    lastSYAttended: '',
+    lastSchoolAttended: '',
+    schoolId: '',
+
+//Senior high enrollee
+    semister: '',
+    strand: '',
+    track: '',
 }
 
 function Form() {

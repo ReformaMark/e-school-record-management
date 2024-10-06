@@ -47,9 +47,9 @@ function Sidenav() {
                     </AccordionTrigger>
                     <AccordionContent className='pl-10'>
                         <div className="flex flex-col">
-                            <Link href={'/dashboard'} className={`${pathname === '/' ? "bg-[#0087ba]": "bg-transparent"} hover:underline flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}>
+                            <Link href={'/my-advisees'} className={`${pathname === '/' ? "bg-[#0087ba]": "bg-transparent"} hover:underline flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}>
                                
-                              Student&apos;s Profile
+                            Advisees
                             </Link>
                             <Link href={'/dashboard'} className={`${pathname === '/' ? "bg-[#0087ba]": "bg-transparent"} hover:underline  flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}>
                                

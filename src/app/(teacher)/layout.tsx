@@ -30,13 +30,12 @@ export default function RootLayout({
       <body
         className={`bg-gray-100 relative`}
       >
-        <div className="fixed top-0 right-0 w-[80%] ml-auto">
+        <div className="fixed z-50 top-0 right-0 w-[80%] ml-auto">
             <Navbar/>
         </div>
         <Sidenav/>
-        <div className='ml-[23%] mr-10 mt-28 w-auto h-fit'>
+        <div className="absolute z-30 right-0 top-[80px] w-[80%] ">
             {children}
-
         </div>
       </body>
     </html>
