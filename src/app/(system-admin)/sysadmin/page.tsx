@@ -1,5 +1,14 @@
+import {
+    Breadcrumb,
+    BreadcrumbItem,
+    BreadcrumbList,
+    BreadcrumbPage,
+    BreadcrumbSeparator
+} from "@/components/ui/breadcrumb"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+
 import { GraduationCap, School, UserCheck, Users } from "lucide-react"
+import { schoolHeadData } from "../../../../data/school-head-data"
 import { FormGenerationCard } from "../_components/form-generation-card"
 import { InterventionEffectiveness } from "../_components/intervention-effectiveness"
 import { StudentDistribution } from "../_components/student-distribution"
@@ -8,7 +17,7 @@ import { StudentPerformance } from "../_components/student-performance"
 const SystemAdminPage = () => {
 
     const schoolStats = {
-        principal: "Dr. Jane Smith",
+        principal: `Dr. ${schoolHeadData.firstName} ${schoolHeadData.lastName}`,
         totalRegistrars: 5,
         totalTeachers: 50,
         totalStudents: 1000
@@ -17,6 +26,17 @@ const SystemAdminPage = () => {
     return (
         <div className="container mx-auto p-4">
             {/* <h1 className="text-2xl font-bold mb-6">School Dashboard</h1> */}
+            <Breadcrumb className="hidden md:flex mb-6">
+                <BreadcrumbList>
+                    <BreadcrumbItem>
+                        <BreadcrumbPage className="text-muted-foreground">Dashboard</BreadcrumbPage>
+                    </BreadcrumbItem>
+                    <BreadcrumbSeparator />
+                    <BreadcrumbItem>
+                        <BreadcrumbPage>Overview</BreadcrumbPage>
+                    </BreadcrumbItem>
+                </BreadcrumbList>
+            </Breadcrumb>
 
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">
                 <Card>
