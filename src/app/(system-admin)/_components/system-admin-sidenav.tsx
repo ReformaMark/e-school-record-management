@@ -28,10 +28,6 @@ export const SystemAdminSidenav = () => {
                     <PiStudent className='size-5 w-10' />
                     <h1 className='tracking-wider'>System Administrators</h1>
                 </Link>
-                <Link href={'/sysadmin-students'} className={`${pathname === '/sysadmin-students' ? "bg-[#0087ba]" : "bg-transparent"}  flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}>
-                    <PiStudent className='size-5 w-10' />
-                    <h1 className='tracking-wider'>Students</h1>
-                </Link>
                 <Link href={'/sysadmin-teachers'} className={`${pathname === '/sysadmin-teachers' ? "bg-[#0087ba]" : "bg-transparent"}  flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}>
                     <FaChalkboardTeacher className='size-4 w-10' />
                     <h1 className='tracking-wider'>Teachers</h1>
@@ -43,6 +39,10 @@ export const SystemAdminSidenav = () => {
                 <Link href={'/sysadmin-principal'} className={`${pathname === '/sysadmin-principal' ? "bg-[#0087ba]" : "bg-transparent"}  flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}>
                     <FaUserTie className='size-5 w-10' />
                     <h1 className='tracking-wider'>Principal</h1>
+                </Link>
+                <Link href={'/sysadmin-students'} className={`${pathname === '/sysadmin-students' ? "bg-[#0087ba]" : "bg-transparent"}  flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}>
+                    <PiStudent className='size-5 w-10' />
+                    <h1 className='tracking-wider'>Students</h1>
                 </Link>
             </div>
         </main>

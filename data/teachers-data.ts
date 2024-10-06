@@ -68,3 +68,28 @@ export const teacherColumns = [
     { accessorKey: "yearsOfExperience", header: "Years of Experience" },
     { accessorKey: "email", header: "Email" }
 ]
+
+export type SchoolSubjects = Record<"value" | "label", string>;
+
+export const schoolSubjects = [
+    {
+        value: "math",
+        label: "Mathematics",
+    },
+    {
+        value: "science",
+        label: "Science",
+    },
+    {
+        value: "english",
+        label: "English",
+    },
+    {
+        value: "history",
+        label: "History",
+    },
+    {
+        value: "physical-education",
+        label: "Physical Education",
+    },
+] satisfies SchoolSubjects[];
