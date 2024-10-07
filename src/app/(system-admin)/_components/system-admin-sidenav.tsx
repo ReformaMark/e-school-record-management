@@ -7,6 +7,7 @@ import { FaChalkboardTeacher } from "react-icons/fa"
 import { FaUserTie } from 'react-icons/fa6'
 import { MdOutlineDashboard, MdOutlineSupportAgent } from 'react-icons/md'
 import { PiStudent } from 'react-icons/pi'
+import { SidebarSection } from './sidebar-section'
 
 export const SystemAdminSidenav = () => {
     const pathname = usePathname()
@@ -36,10 +37,29 @@ export const SystemAdminSidenav = () => {
                     <MdOutlineSupportAgent className='size-5 w-10' />
                     <h1 className='tracking-wider'>Registrar</h1>
                 </Link>
-                <Link href={'/sysadmin-principal'} className={`${pathname === '/sysadmin-principal' ? "bg-[#0087ba]" : "bg-transparent"}  flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}>
+                {/* <Link href={'/sysadmin-principal'} className={`${pathname === '/sysadmin-principal' ? "bg-[#0087ba]" : "bg-transparent"}  flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}>
                     <FaUserTie className='size-5 w-10' />
                     <h1 className='tracking-wider'>Principal</h1>
-                </Link>
+                </Link> */}
+                <SidebarSection
+                    label="Principal"
+                    icon={FaUserTie}
+                >
+                    <Link
+                        href="/sysadmin-principal"
+                        className={`${pathname === '/sysadmin-principal' ? "bg-[#0087ba]" : "bg-transparent"}  flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}
+                    >
+                        Current Principal
+                    </Link>
+
+                    <Link
+                        href="/sysadmin-principal/list"
+                        className={`${pathname === '/sysadmin-principal/list' ? "bg-[#0087ba]" : "bg-transparent"}  flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}
+                    >
+                        List of All Principal
+                    </Link>
+
+                </SidebarSection>
                 <Link href={'/sysadmin-students'} className={`${pathname === '/sysadmin-students' ? "bg-[#0087ba]" : "bg-transparent"}  flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}>
                     <PiStudent className='size-5 w-10' />
                     <h1 className='tracking-wider'>Students</h1>

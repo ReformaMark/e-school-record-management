@@ -30,7 +30,7 @@ const SystemAdminPrincipalPage = () => {
                     </BreadcrumbItem>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
-                        <BreadcrumbPage>School Head</BreadcrumbPage>
+                        <BreadcrumbPage>Current School Head Principal</BreadcrumbPage>
                     </BreadcrumbItem>
                 </BreadcrumbList>
             </Breadcrumb>

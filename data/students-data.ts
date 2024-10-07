@@ -3,7 +3,7 @@
 export const studentsData = [
     {
         id: "1",
-        studentId: "2023-001",
+        lrn: "LRN10001",
         firstName: "John",
         middleName: "Michael",
         lastName: "Doe",
@@ -16,7 +16,7 @@ export const studentsData = [
     },
     {
         id: "2",
-        studentId: "2023-002",
+        lrn: "LRN10002",
         firstName: "Emma",
         middleName: "",
         lastName: "Smith",
@@ -29,7 +29,7 @@ export const studentsData = [
     },
     {
         id: "3",
-        studentId: "2023-003",
+        lrn: "LRN10003",
         firstName: "Michael",
         middleName: "James",
         lastName: "Johnson",
@@ -42,7 +42,7 @@ export const studentsData = [
     },
     {
         id: "4",
-        studentId: "2023-004",
+        lrn: "LRN10004",
         firstName: "Sophia",
         middleName: "Rose",
         lastName: "Williams",
@@ -55,7 +55,7 @@ export const studentsData = [
     },
     {
         id: "5",
-        studentId: "2023-005",
+        lrn: "LRN10005",
         firstName: "Daniel",
         middleName: "",
         lastName: "Brown",
@@ -68,7 +68,7 @@ export const studentsData = [
     },
     {
         id: "6",
-        studentId: "2023-006",
+        lrn: "LRN10006",
         firstName: "Olivia",
         middleName: "Kate",
         lastName: "Davis",
@@ -81,7 +81,7 @@ export const studentsData = [
     },
     {
         id: "7",
-        studentId: "2023-007",
+        lrn: "LRN10007",
         firstName: "Benjamin",
         middleName: "",
         lastName: "Miller",
@@ -94,7 +94,7 @@ export const studentsData = [
     },
     {
         id: "8",
-        studentId: "2023-008",
+        lrn: "LRN10008",
         firstName: "Ava",
         middleName: "May",
         lastName: "Wilson",
@@ -107,7 +107,7 @@ export const studentsData = [
     },
     {
         id: "9",
-        studentId: "2023-009",
+        lrn: "LRN10009",
         firstName: "Ethan",
         middleName: "Alexander",
         lastName: "Moore",
@@ -120,7 +120,7 @@ export const studentsData = [
     },
     {
         id: "10",
-        studentId: "2023-010",
+        lrn: "LRN10010",
         firstName: "Isabella",
         middleName: "Rose",
         lastName: "Hall",
@@ -133,7 +133,7 @@ export const studentsData = [
     },
     {
         id: "11",
-        studentId: "2023-011",
+        lrn: "LRN10011",
         firstName: "Logan",
         middleName: "",
         lastName: "White",
@@ -146,7 +146,7 @@ export const studentsData = [
     },
     {
         id: "12",
-        studentId: "2023-012",
+        lrn: "LRN10012",
         firstName: "Liam",
         middleName: "Christopher",
         lastName: "Martin",
@@ -159,7 +159,7 @@ export const studentsData = [
     },
     {
         id: "13",
-        studentId: "2023-013",
+        lrn: "LRN10013",
         firstName: "Gabriella",
         middleName: "Marie",
         lastName: "Harris",
@@ -172,7 +172,7 @@ export const studentsData = [
     },
     {
         id: "14",
-        studentId: "2023-014",
+        lrn: "LRN10014",
         firstName: "Alexander",
         middleName: "James",
         lastName: "Taylor",
@@ -185,7 +185,7 @@ export const studentsData = [
     },
     {
         id: "15",
-        studentId: "2023-015",
+        lrn: "LRN10015",
         firstName: "Charlotte",
         middleName: "Elizabeth",
         lastName: "Lewis",
@@ -198,7 +198,7 @@ export const studentsData = [
     },
     {
         id: "16",
-        studentId: "2023-016",
+        lrn: "LRN10016",
         firstName: "Julian",
         middleName: "Thomas",
         lastName: "Walker",
@@ -211,10 +211,11 @@ export const studentsData = [
     },
 ]
 
+
 export const studentColumns = [
     {
-        accessorKey: "studentId",
-        header: "Student ID"
+        accessorKey: "lrn",
+        header: "LRN"
     },
     {
         accessorKey: "firstName",
