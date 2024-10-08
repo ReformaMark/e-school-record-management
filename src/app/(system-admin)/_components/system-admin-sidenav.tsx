@@ -1,5 +1,6 @@
 'use client'
 import Logo from '@/../public/images/black-logo.svg'
+import { School2Icon } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
@@ -29,18 +30,7 @@ export const SystemAdminSidenav = () => {
                     <PiStudent className='size-5 w-10' />
                     <h1 className='tracking-wider'>System Administrators</h1>
                 </Link>
-                <Link href={'/sysadmin-teachers'} className={`${pathname === '/sysadmin-teachers' ? "bg-[#0087ba]" : "bg-transparent"}  flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}>
-                    <FaChalkboardTeacher className='size-4 w-10' />
-                    <h1 className='tracking-wider'>Teachers</h1>
-                </Link>
-                <Link href={'/sysadmin-registrar'} className={`${pathname === '/sysadmin-registrar' ? "bg-[#0087ba]" : "bg-transparent"}  flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}>
-                    <MdOutlineSupportAgent className='size-5 w-10' />
-                    <h1 className='tracking-wider'>Registrar</h1>
-                </Link>
-                {/* <Link href={'/sysadmin-principal'} className={`${pathname === '/sysadmin-principal' ? "bg-[#0087ba]" : "bg-transparent"}  flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}>
-                    <FaUserTie className='size-5 w-10' />
-                    <h1 className='tracking-wider'>Principal</h1>
-                </Link> */}
+
                 <SidebarSection
                     label="Principal"
                     icon={FaUserTie}
@@ -60,10 +50,79 @@ export const SystemAdminSidenav = () => {
                     </Link>
 
                 </SidebarSection>
+
+                <Link href={'/sysadmin-teachers'} className={`${pathname === '/sysadmin-teachers' ? "bg-[#0087ba]" : "bg-transparent"}  flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}>
+                    <FaChalkboardTeacher className='size-4 w-10' />
+                    <h1 className='tracking-wider'>Teachers</h1>
+                </Link>
+                <Link href={'/sysadmin-registrar'} className={`${pathname === '/sysadmin-registrar' ? "bg-[#0087ba]" : "bg-transparent"}  flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}>
+                    <MdOutlineSupportAgent className='size-5 w-10' />
+                    <h1 className='tracking-wider'>Registrar</h1>
+                </Link>
+                {/* <Link href={'/sysadmin-principal'} className={`${pathname === '/sysadmin-principal' ? "bg-[#0087ba]" : "bg-transparent"}  flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}>
+                    <FaUserTie className='size-5 w-10' />
+                    <h1 className='tracking-wider'>Principal</h1>
+                </Link> */}
+
                 <Link href={'/sysadmin-students'} className={`${pathname === '/sysadmin-students' ? "bg-[#0087ba]" : "bg-transparent"}  flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}>
                     <PiStudent className='size-5 w-10' />
                     <h1 className='tracking-wider'>Students</h1>
                 </Link>
+
+                <SidebarSection
+                    label="School"
+                    icon={School2Icon}
+                >
+                    <Link
+                        href="/sysadmin-school-year"
+                        className={`${pathname === '/sysadmin-school-year' ? "bg-[#0087ba]" : "bg-transparent"}  flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}
+                    >
+                        School Years
+                    </Link>
+
+                    <Link
+                        href="/sysadmin-school-period"
+                        className={`${pathname === '/sysadmin-school-period' ? "bg-[#0087ba]" : "bg-transparent"}  flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}
+                    >
+                        School Periods
+                    </Link>
+
+                    <Link
+                        href="/sysadmin-classroom"
+                        className={`${pathname === '/sysadmin-classroom' ? "bg-[#0087ba]" : "bg-transparent"}  flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}
+                    >
+                        Classrooms
+                    </Link>
+
+                    <Link
+                        href="/sysadmin-sections"
+                        className={`${pathname === '/sysadmin-sections' ? "bg-[#0087ba]" : "bg-transparent"}  flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}
+                    >
+                        Sections
+                    </Link>
+
+                    <Link
+                        href="/sysadmin-grade-levels"
+                        className={`${pathname === '/sysadmin-grade-levels' ? "bg-[#0087ba]" : "bg-transparent"}  flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}
+                    >
+                        Grade Levels
+                    </Link>
+
+                    <Link
+                        href="/sysadmin-time-period"
+                        className={`${pathname === '/sysadmin-time-period' ? "bg-[#0087ba]" : "bg-transparent"}  flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}
+                    >
+                        Time Periods
+                    </Link>
+
+                    <Link
+                        href="/sysadmin-subjects"
+                        className={`${pathname === '/sysadmin-subjects' ? "bg-[#0087ba]" : "bg-transparent"}  flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}
+                    >
+                        Subjects
+                    </Link>
+
+                </SidebarSection>
             </div>
         </main>
     )
