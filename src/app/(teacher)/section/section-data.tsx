@@ -12,14 +12,13 @@ import { ColumnDef } from "@tanstack/react-table";
 import { MoreHorizontal } from "lucide-react";
 import React from 'react';
 
-type Days = "M" | "T" | "W" | "Th" | "F";
 
-interface Section {
+export interface Section {
   section: string;          // Section name (e.g., "10-A")
   gradeLevel: string;       // Grade level (e.g., "Grade 10")
   subject: string;          // Subject being taught (e.g., "MAPEH")
   schedule: string;         // Schedule time (e.g., "10:00 AM - 11:30 AM")
-  days: Days[];             // Array of days (e.g., ["T", "Th"])
+  days: string[];             // Array of days (e.g., ["T", "Th"])
   totalStudents: number;    // Total number of students in the section (e.g., 37)
   roomNumber: string;       // Room number (e.g., "401")
   averageGrade: number;     // Average grade for the section (e.g., 90.2)

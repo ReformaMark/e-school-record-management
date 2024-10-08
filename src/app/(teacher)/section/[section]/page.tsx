@@ -50,10 +50,10 @@ function Section({params}:{params: {section: string}}) {
         <Tabs defaultValue="attendance" className="w-full mt-5 shadow-md bg-gray-50">
           {/* <h1 className='text-xs text-foreground font-semibold'>Select tab to show: </h1> */}
           <TabsList className='bg-gray-100 border border-gray-600  w-full'>
-            <TabsTrigger value="attendace" className='w-full data-[state=active]:bg-primary data-[state=active]:text-white' >Attendance</TabsTrigger>
+            <TabsTrigger value="attendance" className='w-full data-[state=active]:bg-primary data-[state=active]:text-white' >Attendance</TabsTrigger>
             <TabsTrigger value="grades" className='w-full data-[state=active]:bg-primary data-[state=active]:text-white'>Grades</TabsTrigger>
           </TabsList>
-          <TabsContent value="attendace" className='min-h-screen border-2 border-gray-300'>
+          <TabsContent value="attendance" className='min-h-screen border-2 border-gray-300'>
             
           </TabsContent>
           <TabsContent value="grades" className='min-h-screen border-2 border-gray-300'>

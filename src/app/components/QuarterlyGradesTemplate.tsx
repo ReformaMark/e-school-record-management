@@ -44,19 +44,19 @@ function QuarterlyGradesTemplate({
                     </div>
                     <div className="w-full flex col-span-2">
                         <div className='text-xs  text-center w-2/12  border-collapse border border-black'>
-                            <h1 className=''>MATH</h1> 
+                            <h1 className=''>{subject}</h1> 
                            <h1>1st Quarter</h1> 
                         </div>
                         <div className='text-xs text-center w-2/12  border-collapse border border-black'>
-                            <h1 className=''>MATH</h1> 
+                            <h1 className=''>{subject}</h1> 
                            <h1>2nd Quarter</h1> 
                         </div>
                         <div className='text-xs text-center w-2/12  border-collapse border border-black'>
-                            <h1 className=''>MATH</h1> 
+                            <h1 className=''>{subject}</h1> 
                            <h1>3rd Quarter</h1> 
                         </div>
                         <div className='text-xs text-center w-2/12  border-collapse border border-black'>
-                            <h1 className=''>MATH</h1> 
+                            <h1 className=''>{subject}</h1> 
                            <h1>4th Quarter</h1> 
                         </div>
                         <div className='text-xs text-center w-2/12  border-collapse border border-black'>
@@ -159,7 +159,7 @@ function QuarterlyGradesTemplate({
                
             </div>
              {females.map((female, index)=>(
-                <div key={female.id} className="flex border-collapse font-semibold ">
+                <div key={female.id} className="flex border-collapse font-semibold  hover:bg-gray-200">
                    <div className="w-[3%] text-center text-sm border-collapse h-auto border border-black">{index + 1}</div>
                 
                    <h1 className="w-[32%] border-collapse h-auto flex justify-start px-3 text-sm items-center border border-black">

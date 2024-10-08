@@ -48,18 +48,17 @@ function Sidenav() {
                     <AccordionContent className='pl-10'>
                         <div className="flex flex-col">
                             <Link href={'/my-advisees'} className={`${pathname === '/' ? "bg-[#0087ba]": "bg-transparent"} hover:underline flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}>
-                               
                             Advisees
                             </Link>
                             <Link href={'/enrollment-records'} className={`${pathname === '/' ? "bg-[#0087ba]": "bg-transparent"} hover:underline  flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}>
                                
                                Enrollment Records
                             </Link>
-                            <Link href={'/dashboard'} className={`${pathname === '/' ? "bg-[#0087ba]": "bg-transparent"} hover:underline  flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}>
+                            <Link href={'/class-records'} className={`${pathname === '/class-records' ? "bg-[#0087ba]": "bg-transparent"} hover:underline  flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}>
                                Class Records
                             </Link>
-                            <Link href={'/section'} className={`${pathname === '/' ? "bg-[#0087ba]": "bg-transparent"} hover:underline  flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}>
-                               Section / block
+                            <Link href={'/section'} className={`${pathname === '/section' ? "bg-[#0087ba]": "bg-transparent"} hover:underline  flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}>
+                               Sections
                             </Link>
                         </div>
                    

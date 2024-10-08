@@ -19,7 +19,7 @@ function SectionPage() {
             </CardHeader>
             <CardContent>
                 <DataTable
-                   //@ts-expect-error
+                   
                     columns={sectionColumns}
                     data={sections}
                     filter="section"
