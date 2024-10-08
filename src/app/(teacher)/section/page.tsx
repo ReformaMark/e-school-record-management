@@ -1,8 +1,11 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 
-import { DataTable } from '@/components/data-table'
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import React from 'react'
-import { sectionColumns, sections } from '../../../../data/section-data'
+import { SectionAverageChart } from './_components/SectionAverageChart'
+import { DataTable } from './_components/data-table'
+import { sectionColumns, sections } from './section-data'
 
 
 function SectionPage() {
@@ -16,6 +19,7 @@ function SectionPage() {
             </CardHeader>
             <CardContent>
                 <DataTable
+                   //@ts-expect-error
                     columns={sectionColumns}
                     data={sections}
                     filter="section"
@@ -24,7 +28,9 @@ function SectionPage() {
                 />
             </CardContent>
         </Card>
-        
+        <div className="grid gap-6 md:grid-cols-2">
+            <SectionAverageChart />
+        </div>
     </div>
   )
 }
