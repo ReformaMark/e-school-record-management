@@ -1,3 +1,84 @@
+export type EnrollmentInfo = {
+  schoolYear: string;
+  gradeLevel: string;
+  withLrn: "Yes" | "No";
+  returning: "Yes" | "No";
+};
+
+export type PersonalInfo = {
+  PSABirthCert: string;
+  lrn: string;
+  indigenous: "Yes" | "No";
+  indigenousCommunity?: string; // Optional because it might be empty
+  fourpsBenef: "Yes" | "No";
+  fourpsIdNum?: string; // Optional because it might be empty
+  firstName: string;
+  lastName: string;
+  middleName: string;
+  extentionName?: string; // Optional because it might be empty
+  birthday: Date;
+  birthPlace: string;
+  age: number;
+  sex: "Male" | "Female" | "Other";
+};
+
+export type AddressInfo = {
+  province: string;
+  municipality: string;
+  barangay: string;
+  street?: string; // Optional because not all addresses might have a street
+  houseNum?: string; // Optional because not all addresses might have a house number
+  fullAddress: string;
+};
+
+export type PermanentAddressInfo = {
+  sameAsCurrent: "Yes" | "No";
+  permanentProvince: string;
+  permanentMunicipality: string;
+  permanentBarangay: string;
+  permanentStreet?: string; // Optional
+  permanentHouseNum?: string; // Optional
+  permanentFullAddress: string;
+};
+
+export type ParentInfo = {
+  fatherFirstName: string;
+  fatherLastName: string;
+  fatherMiddleName: string;
+  fatherContact: string;
+  motherFirstName: string;
+  motherLastName: string;
+  motherMiddleName: string;
+  motherContact: string;
+  guardianFirstName?: string; // Optional because it might be empty
+  guardianLastName?: string; // Optional
+  guardianMiddleName?: string; // Optional
+  guardianContact?: string; // Optional
+};
+
+export type ReturningEnrolleeInfo = {
+  lastGradeLevel?: string; // Optional because it might be empty
+  lastSYAttended?: string; // Optional
+  lastSchoolAttended?: string; // Optional
+  schoolId?: string; // Optional
+};
+
+export type SeniorHighEnrolleeInfo = {
+  semister?: string; // Optional
+  strand?: string; // Optional
+  track?: string; // Optional
+};
+
+export type StudentInfo = {
+  enrollmentInfo: EnrollmentInfo;
+  personalInfo: PersonalInfo;
+  currentAddressInfo: AddressInfo;
+  permanentAddressInfo: PermanentAddressInfo;
+  parentInfo: ParentInfo;
+  returningEnrolleeInfo?: ReturningEnrolleeInfo; // Optional if the student is not a returning enrollee
+  seniorHighEnrolleeInfo?: SeniorHighEnrolleeInfo; // Optional if the student is not a senior high enrollee
+};
+
 export const endrollmentData = [
     {
       // Enrollment info
@@ -341,12 +422,3 @@ export const endrollmentData = [
   ];
   
 
-  export const studentColumns = [
-    { accessorKey: "lrn", header: "LRN" },
-    { accessorKey: "lastName", header: "Last Name" },
-    { accessorKey: "firstName", header: "First Name" },
-    { accessorKey: "middleName", header: "MIddle Name" },
-    { accessorKey: "gradeLevel", header: "Grade level" },
-    
-
-]

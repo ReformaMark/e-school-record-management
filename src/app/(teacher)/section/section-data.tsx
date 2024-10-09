@@ -86,9 +86,9 @@ export const sections = [
     averageGrade: 86.9 // Average grade for the section
   },
   {
-    section: "10-A",
-    gradeLevel: "Grade 10",
-    subject: "MAPEH",
+    section: "11-A",
+    gradeLevel: "Grade 11",
+    subject: "Pre Calculus",
     schedule: "10:00 AM - 11:30 AM",
     days: ["T", "Th"],
     totalStudents: 37,

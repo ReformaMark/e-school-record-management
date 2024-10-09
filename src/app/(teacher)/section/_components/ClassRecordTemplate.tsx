@@ -4,15 +4,17 @@ import { studentsData } from '../../../../../data/students-data';
 
 function ClassRecordTemplate({
 
-    subject
+    subject,
+    gradeLevel,
 }:{
-   
     subject:string
+    gradeLevel: string,
 }) {
     let performanceTaskPercentage;
     let writtenTaskPercentage;
-    const quarterlyAssesmentPercentage = 20;
+    let quarterlyAssesmentPercentage = 20;
 
+   
     //Performance tash percentage
     switch (subject) {
         case 'TLE (Technology & Livelihood Education)':
@@ -57,6 +59,12 @@ function ClassRecordTemplate({
             writtenTaskPercentage = 0;
     }
 
+    if(gradeLevel === "Grade 11" || gradeLevel === "Grade 12"){
+        quarterlyAssesmentPercentage = 25;
+        performanceTaskPercentage = 50;
+        writtenTaskPercentage = 25
+    }
+
     const males = studentsData
         .filter((student) => student.gender === 'male')
         .sort((a, b) => a.lastName.localeCompare(b.lastName));
@@ -79,9 +87,9 @@ function ClassRecordTemplate({
             <h1 className="w-[22%] uppercase border border-black border-collapse text-sm flex justify-center items-center font-semibold text-center">Learner&apos; Names</h1>
             <h1 className="w-[27%] uppercase border border-black border-collapse text-sm flex justify-center items-center font-semibold text-center">Written Works ({writtenTaskPercentage}%)</h1>
             <h1 className="w-[28%] uppercase border border-black border-collapse text-sm flex justify-center items-center font-semibold text-center">Performance Task ({performanceTaskPercentage}%)</h1>
-            <h1 className="w-[8%] uppercase border border-black border-collapse text-[0.7rem] leading-relaxed flex justify-center items-center font-semibold text-center">Quarterly Assessment ({quarterlyAssesmentPercentage}%)</h1>
+            <h1 className="w-[8%] uppercase border border-black border-collapse text-[0.6rem] leading-relaxed flex justify-center items-center font-semibold text-center">Quarterly Assessment ({quarterlyAssesmentPercentage}%)</h1>
             <h1 className="w-[6%] uppercase border border-black border-b-0 border-collapse text-[0.6rem] flex justify-center items-center  font-semibold text-center">Initial</h1>
-            <h1 className="w-[6%] uppercase border border-black border-b-0  border-collapse text-[0.6rem] flex justify-center items-center font-semibold text-center">Quarterly</h1>
+            <h1 className="w-[6%] uppercase border border-black border-b-0  border-collapse text-[0.55rem] flex justify-center items-center font-semibold text-center">Quarterly</h1>
         </div>
         <div className="flex max-w-full">
             <h1 className="w-[3%] uppercase border border-black border-collapse text-sm font-semibold text-center"></h1>

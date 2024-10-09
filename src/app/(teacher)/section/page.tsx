@@ -1,11 +1,9 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
 
-
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+'use client'
 import React from 'react'
 import { SectionAverageChart } from './_components/SectionAverageChart'
-import { DataTable } from './_components/data-table'
-import { sectionColumns, sections } from './section-data'
+
+import {  sections } from './section-data'
 import {
     Breadcrumb,
     BreadcrumbItem,
@@ -13,6 +11,7 @@ import {
     BreadcrumbPage,
     BreadcrumbSeparator
 } from "@/components/ui/breadcrumb"
+import SectionsCard from './_components/SectionsCard'
 
 
 function SectionPage() {
@@ -29,22 +28,11 @@ function SectionPage() {
                 </BreadcrumbItem>
             </BreadcrumbList>
         </Breadcrumb>
-        <Card x-chunk="dashboard-06-chunk-0">
-            <CardHeader>
-                <CardTitle>Sections</CardTitle>
-                <CardDescription>Manage the list of sections.</CardDescription>
-            </CardHeader>
-            <CardContent>
-                <DataTable
-                   
-                    columns={sectionColumns}
-                    data={sections}
-                    filter="section"
-                    placeholder="section by section name"
-                    
-                />
-            </CardContent>
-        </Card>
+        <div className=' m-5 grid grid-cols-3 gap-10'>
+            {sections.map((section) =>(
+                <SectionsCard key={section.section} section={section}/>
+            ))}
+        </div>
         <div className="grid gap-6 md:grid-cols-2">
             <SectionAverageChart />
         </div>

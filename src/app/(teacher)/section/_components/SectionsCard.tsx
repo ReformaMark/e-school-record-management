@@ -1,5 +1,5 @@
 import React from 'react'
-import { Section } from '../../section/section-data'
+import { Section } from '../section-data'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { FaAngleDoubleRight } from 'react-icons/fa'
@@ -25,8 +25,8 @@ function SectionsCard({
         </div>
         <div className='flex justify-end'>
             <Button variant={'ghost'}>
-                <Link href={`/class-records/${section.section}`} className='flex items-center gap-3 text-gray-400'>
-                View Class Record <FaAngleDoubleRight className='size-6'/>
+                <Link href={`/section/${section.section}`} className='flex items-center gap-3 text-gray-400'>
+                View section <FaAngleDoubleRight className='size-6'/>
                 </Link>
             </Button>
         </div>

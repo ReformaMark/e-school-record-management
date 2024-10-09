@@ -7,7 +7,8 @@ import { File, ListFilterIcon, PlusCircleIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { DataTable } from '@/components/data-table'
-import { endrollmentData, studentColumns } from '../../../../data/enrollment-data'
+import { endrollmentData } from '../../../../data/enrollment-data'
+import { studentColumns } from '../../../../data/students-data'
 
 function Studentpage() {
   return (
