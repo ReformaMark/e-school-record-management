@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import "@/lib/globals.css";
 import { SystemAdminSidenav } from "./_components/system-admin-sidenav";
 import { SystemAdminNavbar } from "./_components/system-admin-navbar";
+import { Toaster } from "@/components/ui/sonner";
 
 export const metadata: Metadata = {
     title: "System Admin",
@@ -16,6 +17,7 @@ const SystemAdminLayout = ({
     return (
         <html className="h-full" lang="en">
             <body className="bg-[#f0f8f3] relative">
+                <Toaster />
                 <div className="fixed top-0 right-0 w-[80%] ml-auto z-50">
                     <SystemAdminNavbar />
                 </div>

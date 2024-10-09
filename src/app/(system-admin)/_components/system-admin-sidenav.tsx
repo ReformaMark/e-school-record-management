@@ -108,12 +108,12 @@ export const SystemAdminSidenav = () => {
                         Grade Levels
                     </Link>
 
-                    <Link
+                    {/* <Link
                         href="/sysadmin-time-period"
                         className={`${pathname === '/sysadmin-time-period' ? "bg-[#0087ba]" : "bg-transparent"}  flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}
                     >
                         Time Periods
-                    </Link>
+                    </Link> */}
 
                     <Link
                         href="/sysadmin-subjects"
