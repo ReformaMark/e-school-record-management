@@ -17,12 +17,12 @@ function Studentpage() {
             <BreadcrumbList>
                 <BreadcrumbItem>
                     <BreadcrumbLink asChild>
-                        <Link href="/dashboard">Dashboard</Link>
+                        <Link href="/dashboard">Students</Link>
                     </BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                    <BreadcrumbPage>Students</BreadcrumbPage>
+                    <BreadcrumbPage>Advisees</BreadcrumbPage>
                 </BreadcrumbItem>
             </BreadcrumbList>
         </Breadcrumb>

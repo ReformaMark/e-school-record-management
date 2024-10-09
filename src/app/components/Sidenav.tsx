@@ -7,8 +7,7 @@ import { MdOutlineDashboard, MdOutlineSettings } from 'react-icons/md'
 import { usePathname } from 'next/navigation'
 import { PiStudent } from 'react-icons/pi'
 import { FaRegHandPaper } from 'react-icons/fa'
-import { FaMagnifyingGlass, FaRegUser } from 'react-icons/fa6'
-import { TbReportAnalytics } from 'react-icons/tb'
+import { FaRegUser } from 'react-icons/fa6'
 import { BiHelpCircle } from 'react-icons/bi'
 import {
     Accordion,
@@ -26,7 +25,7 @@ function Sidenav() {
             <div className="w-12 h-10 mx-auto bg-white rounded-full p-1">
                 <Image src={Logo} alt='' className='size-full object-contain '/>
             </div>
-            <h1 className='text-white text-center text-sm uppercase font-medium leading-relaxed'>Tanjay National High School</h1>
+
         </div>
 
         {/* for teachers navigation */}
@@ -47,13 +46,10 @@ function Sidenav() {
                     </AccordionTrigger>
                     <AccordionContent className='pl-10'>
                         <div className="flex flex-col">
-                            <Link href={'/my-advisees'} className={`${pathname === '/' ? "bg-[#0087ba]": "bg-transparent"} hover:underline flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}>
+                            <Link href={'/my-advisees'} className={`${pathname === '/my-advisees' ? "bg-[#0087ba]": "bg-transparent"} hover:underline flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}>
                             Advisees
                             </Link>
-                            <Link href={'/enrollment-records'} className={`${pathname === '/' ? "bg-[#0087ba]": "bg-transparent"} hover:underline  flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}>
-                               
-                               Enrollment Records
-                            </Link>
+
                             <Link href={'/class-records'} className={`${pathname === '/class-records' ? "bg-[#0087ba]": "bg-transparent"} hover:underline  flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}>
                                Class Records
                             </Link>
@@ -68,14 +64,6 @@ function Sidenav() {
             <Link href={'/dashboard'} className={`${pathname === '/' ? "bg-[#0087ba]": "bg-transparent"}  flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}>
                 <FaRegHandPaper className='size-4 w-10' />
                 <h1 className='tracking-wider'>Interventions</h1>
-            </Link>
-            <Link href={'/dashboard'} className={`${pathname === '/' ? "bg-[#0087ba]": "bg-transparent"}  flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}>
-            <   FaMagnifyingGlass className='size-4 w-10'/>
-                <h1 className='tracking-wider'>Tracker Module</h1>
-            </Link>
-            <Link href={'/dashboard'} className={`${pathname === '/' ? "bg-[#0087ba]": "bg-transparent"}  flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}>
-                <TbReportAnalytics className='size-5 w-10' />
-                <h1 className='tracking-wider'>Reports</h1>
             </Link>
             <Link href={'/dashboard'} className={`${pathname === '/' ? "bg-[#0087ba]": "bg-transparent"}  flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}>
                 <MdOutlineSettings className='size-5 w-10' />

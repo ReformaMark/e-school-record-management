@@ -9,14 +9,15 @@ function SectionsCard({
 }:{
     section: Section,
 }) {
+   
   return (
     <div className='bg-white rounded-md shadow-md flex flex-col justify-between'>
-        <div className="flex justify-between px-5 py-1 bg-gray-200 text-lg font-semibold">
+        <div className={`flex justify-between text-white shadow-md px-5 py-1 bg-[#09A599] text-lg font-semibold`}>
             <h1>{section.section}</h1>
             <h1>{section.gradeLevel}</h1>
         </div>
-        <div className="p-5">
-            <h3>Subject: <span className='font-semibold text-lg'>{section.subject}</span></h3>
+        <div className="p-5 text-sm ">
+            <h3>Subject: <span className='font-medium text-sm'>{section.subject}</span></h3>
             <h3>Time: {section.schedule}</h3>
             <h3>Days: {section.days.join(',')}</h3>
             <h3>Room: {section.roomNumber}</h3>
