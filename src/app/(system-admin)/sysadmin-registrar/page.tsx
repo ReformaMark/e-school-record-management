@@ -6,6 +6,8 @@ import {
     BreadcrumbPage,
     BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
     DropdownMenu,
     DropdownMenuCheckboxItem,
@@ -14,14 +16,12 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
-import { Button, buttonVariants } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
-import Link from "next/link";
-import { File, ListFilterIcon, PlusCircleIcon } from "lucide-react";
 import { DataTable } from "@/components/data-table";
-import { staffColumns, staffData } from "../../../../data/staff-data";
 import { cn } from "@/lib/utils";
+import { File, ListFilterIcon, PlusCircleIcon } from "lucide-react";
+import Link from "next/link";
+import { staffColumns, staffData } from "../../../../data/staff-data";
 
 // Column definitions for the DataTable
 const SystemAdminRegistrarPage = () => {

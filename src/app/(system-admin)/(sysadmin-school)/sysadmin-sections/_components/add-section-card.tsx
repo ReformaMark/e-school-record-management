@@ -208,24 +208,6 @@ export const AddSectionCard = () => {
                                 </div>
                             </>
                         ))}
-
-                        {/* <div className="grid gap-2">
-                            <Label htmlFor="select" className="font-semibold">Subject</Label>
-                            <Select>
-                                <SelectTrigger className="w-full">
-                                    <SelectValue placeholder="Select Subject" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectGroup>
-                                        <SelectLabel>Subjects</SelectLabel>
-                                        <SelectItem value="English">English</SelectItem>
-                                        <SelectItem value="Math">Math</SelectItem>
-                                        <SelectItem value="Science">Science</SelectItem>
-                                        <SelectItem value="History">History</SelectItem>
-                                    </SelectGroup>
-                                </SelectContent>
-                            </Select>
-                        </div> */}
                     </div>
                 </>}
             </CardContent>
