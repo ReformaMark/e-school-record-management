@@ -3,13 +3,17 @@ import React from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { sections } from '../../section/section-data'
 import ClassRecordTemplate from './ClassRecordTemplate'
+import ClassRecordDialog from './ClassRecordDialog'
 
 function ClassRecord({sec}:{sec:string}) {
     const section = sections.find((section)=> section.section === sec)
     const currentQuarter = 1;
   return (
     <div>
-         <h1 className='text-left px-5 w-full text-sm text-gray-400'>Current Quarter: {currentQuarter=== 1 ?"1st": currentQuarter === 2 ? "2nd" : currentQuarter === 3 ? "3rd" : "4th" } </h1>
+      <div className="flex justify-between px-5">
+         <h1 className='text-left  w-full text-sm text-gray-400'>Current Quarter: {currentQuarter=== 1 ?"1st": currentQuarter === 2 ? "2nd" : currentQuarter === 3 ? "3rd" : "4th" } </h1>
+         <ClassRecordDialog subject={section ? section.subject : ''} gradeLevel={section ? section.gradeLevel : ''}/>
+      </div>
             <Tabs defaultValue={currentQuarter=== 1 ?"1st": currentQuarter === 2 ? "2nd" : currentQuarter === 3 ? "3rd" : "4th" } className="w-full mt-5 shadow-md ">
             {/* <h1 className='text-xs text-foreground font-semibold'>Select tab to show: </h1> */}
           

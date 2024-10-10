@@ -26,6 +26,7 @@ import { ChevronLeft } from 'lucide-react'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
 import FinalGradeSHSTemplate from '@/app/components/FinalGradeSHSTemplate'
+import ListOfStudents from '../_components/ListOfStudents'
 
 function Section({params}:{params: {section: string}}) {
 
@@ -60,7 +61,7 @@ function Section({params}:{params: {section: string}}) {
           <span className="sr-only">Back</span>
         </Link>
         <Dialog>
-            <DialogTrigger className='border shadow-md flex justify-center items-center gap-x-3 bg-blue-600 text-white border-gray-100 rounded-md px-2 py-1'>
+            <DialogTrigger disabled className='border shadow-md flex justify-center items-center gap-x-3 disabled:bg-blue-200 bg-blue-600 text-white border-gray-100 rounded-md px-2 py-1'>
             <FaRegSave />Submit Grades</DialogTrigger>
             <DialogContent>
               <DialogHeader>
@@ -88,13 +89,20 @@ function Section({params}:{params: {section: string}}) {
           <h1>School Year: 2025-2026</h1>
         </div>
        
-        <Tabs defaultValue={"attendance"} className="w-full relative space-y-5 mt-5 shadow-md ">
+        <Tabs defaultValue={"students"} className="w-full relative space-y-5 mt-5 shadow-md ">
           {/* <h1 className='text-xs text-foreground font-semibold'>Select tab to show: </h1> */}
           <TabsList className=''> 
+            <TabsTrigger value="students" className='font-medium shadow-md border-b-2 data-[state=active]:border-b-primary' >Master List</TabsTrigger>
             <TabsTrigger value="attendance" className='font-medium shadow-md border-b-2 data-[state=active]:border-b-primary' >Attendance</TabsTrigger>
             <TabsTrigger value="class-record" className='font-medium shadow-md border-b-2 data-[state=active]:border-b-primary' >Class Record</TabsTrigger>
             <TabsTrigger value="grades-summary" className='font-medium shadow-md border-b-2 data-[state=active]:border-b-primary'>Grades Summary</TabsTrigger>
           </TabsList>
+
+          {/* Attendance */}
+          <TabsContent value="students" className='min-h-screen border-2 '>
+           
+            <ListOfStudents/>
+          </TabsContent>
 
           {/* Attendance */}
           <TabsContent value="attendance" className='min-h-screen border-2 border-gray-300'>

@@ -1,8 +1,10 @@
 'use client'
 import React from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { File } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { ChevronLeft, File } from 'lucide-react'
+import { Button, buttonVariants } from '@/components/ui/button'
+import Link from 'next/link'
+import { cn } from '@/lib/utils'
 
 function Student({
     params
@@ -14,8 +16,17 @@ function Student({
   return (
     <div className='p-10'>
         <div className="bg-white w-full-full min-h-screen h-fit p-5 shadow-md">
-            <div className="w-full flex item-center justify-between mb-5">
-                <h1 className=' text-xl font-semibold '>Student Profile</h1>
+            <div className="w-full flex item-center justify-between mb-5 gap-x-2">
+                <Link
+                    href="/my-advisees"
+                    className={cn("h-7 w-7", buttonVariants({
+                        variant: "outline",
+                        size: "icon",
+                    }))}>
+                    <ChevronLeft className="h-4 w-4" />
+                    <span className="sr-only">Back</span>
+                </Link>
+                <h1 className=' text-xl font-semibold flex items-center'>Student Profile</h1>
                 <Button size="default" variant="outline" className="h-7 gap-1 bg-gray-100 py-2 ml-auto">
                     <File className="h-3.5 w-3.5" />
                     <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">

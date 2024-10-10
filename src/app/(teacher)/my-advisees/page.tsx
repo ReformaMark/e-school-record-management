@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import React from 'react'
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb'
 import Link from 'next/link'
@@ -7,8 +8,8 @@ import { File, ListFilterIcon, PlusCircleIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { DataTable } from '@/components/data-table'
-import { endrollmentData } from '../../../../data/enrollment-data'
-import { studentColumns } from '../../../../data/students-data'
+import { studentsData } from '../../../../data/students-data'
+import { studentColumn } from './_components/studentsColumn'
 
 function Studentpage() {
   return (
@@ -75,12 +76,36 @@ function Studentpage() {
             <Card x-chunk="dashboard-06-chunk-0">
                 <CardHeader>
                     <CardTitle>Students</CardTitle>
-                    <CardDescription>Manage the list of students.</CardDescription>
+                    <CardDescription>
+                        <div className="flex justify-between">
+                            <h1>Manage the list of students.</h1>
+                            <div className="text-xs">
+                                <div className="flex items-center gap-x-2">
+                                    <div className="bg-blue-600 p-1 rounded-full size-2"></div>
+                                    <h1 className=''>Ready for promotion</h1>
+                                </div>
+                                <div className="flex items-center gap-x-2">
+                                    <div className="bg-orange-600 p-1 rounded-full size-2"></div>
+                                    <h1 className=''>Needs Intervention</h1>
+                                </div>
+                                <div className="flex items-center gap-x-2">
+                                    <div className="bg-red-600 p-1 rounded-full size-2"></div>
+                                    <h1 className=''>Failed</h1>
+                                </div>
+                                <div className="flex items-center gap-x-2">
+                                    <div className="bg-text p-1 rounded-full size-2"></div>
+                                    <h1 className=''>Pending</h1>
+                                </div>
+        
+                            </div>
+                        </div>
+                    </CardDescription>
                 </CardHeader>
                 <CardContent>
                     <DataTable
-                        columns={studentColumns}
-                        data={endrollmentData}
+                        //@ts-expect-error
+                        columns={studentColumn}
+                        data={studentsData}
                         filter="lastName"
                         placeholder="students by Last Name"
                         
