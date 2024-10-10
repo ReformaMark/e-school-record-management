@@ -223,7 +223,7 @@ const SystemAdminAddSectionPage = () => {
                             {/* Other details */}
                             <Card>
                                 <CardHeader>
-                                    <CardTitle>Other details</CardTitle>
+                                    <CardTitle>Subject Teachers</CardTitle>
                                     <CardDescription>
                                         Lipsum dolor sit amet, consectetur adipiscing elit
                                     </CardDescription>

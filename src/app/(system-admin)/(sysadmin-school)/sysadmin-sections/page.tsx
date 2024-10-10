@@ -105,8 +105,8 @@ const SystemAdminSectionsPage = () => {
 
                 <Card>
                     <CardHeader>
-                        <CardTitle>Registrars</CardTitle>
-                        <CardDescription>Manage the list of registrars.</CardDescription>
+                        <CardTitle>Sections</CardTitle>
+                        <CardDescription>Manage the list of sections.</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <DataTable
