@@ -8,7 +8,7 @@ function Navbar() {
  
   return (
     <nav className='w-full z-50 shadow-md py-5 flex justify-between items-center px-5  sm:px-12  md:px-16 lg:px-10 bg-white'>
-        <h1 className='font-serif font-medium tracking-wide text-lg'>Tanjay National High School</h1>
+        <h1 className='font-serif font-medium tracking-wide text-lg'></h1>
 
         <div className="flex items-center gap-x-5">
             <FaRegMessage className='size-4'/>

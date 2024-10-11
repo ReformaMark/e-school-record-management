@@ -1,7 +1,6 @@
 
 'use client'
 import React from 'react'
-import { SectionAverageChart } from './_components/SectionAverageChart'
 
 import {  sections } from './section-data'
 import {
@@ -24,7 +23,7 @@ function SectionPage() {
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                    <BreadcrumbPage  >Sections</BreadcrumbPage>
+                    <BreadcrumbPage  >Classes</BreadcrumbPage>
                 </BreadcrumbItem>
             </BreadcrumbList>
         </Breadcrumb>
@@ -33,9 +32,7 @@ function SectionPage() {
                 <SectionsCard key={section.section} section={section}/>
             ))}
         </div>
-        <div className="grid gap-6 md:grid-cols-2">
-            <SectionAverageChart />
-        </div>
+        
     </div>
   )
 }

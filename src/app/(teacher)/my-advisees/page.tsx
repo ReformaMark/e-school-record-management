@@ -3,13 +3,13 @@ import React from 'react'
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb'
 import Link from 'next/link'
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
-import { Button, buttonVariants } from '@/components/ui/button'
-import { File, ListFilterIcon, PlusCircleIcon } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { Button } from '@/components/ui/button'
+import { File, ListFilterIcon } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { DataTable } from '@/components/data-table'
 import { studentsData } from '../../../../data/students-data'
 import { studentColumn } from './_components/studentsColumn'
+import EnrollmentDialog from './_components/EnrollmentDialog'
 
 function Studentpage() {
   return (
@@ -45,10 +45,13 @@ function Studentpage() {
                             <DropdownMenuLabel>Filter by</DropdownMenuLabel>
                             <DropdownMenuSeparator />
                             <DropdownMenuCheckboxItem checked>
-                                Adviser
+                                none
                             </DropdownMenuCheckboxItem>
                             <DropdownMenuCheckboxItem>
-                                Subject Teacher
+                                At risks/Needs Intervention
+                            </DropdownMenuCheckboxItem>
+                            <DropdownMenuCheckboxItem>
+                                Failed
                             </DropdownMenuCheckboxItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
@@ -58,18 +61,7 @@ function Studentpage() {
                             Export
                         </span>
                     </Button>
-                    <Link
-                        href="/sysadmin-teachers/sysadmin-add-teacher"
-                        className={cn("", buttonVariants({
-                            variant: "default",
-                            size: "sm",
-                            className: "text-white h-7 gap-1 w-full p-2"
-                        }))}>
-                        <PlusCircleIcon className="h-3.5 w-3.5" />
-                        <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                           enroll student
-                        </span>
-                    </Link>
+                    <EnrollmentDialog/>
                 </div>
             </div>
 

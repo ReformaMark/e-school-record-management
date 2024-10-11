@@ -1,3 +1,31 @@
+'use client'
+import { Button } from "@/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { ColumnDef } from "@tanstack/react-table";
+import { MoreHorizontal } from "lucide-react";
+import React from 'react';
+
+type Student = {
+  id: number;
+  lrn: string;
+  firstName: string;
+  middleName: string;
+  lastName: string;
+  dateEnrolled: string; // Use Date type if you prefer working with actual Date objects
+  attendancePercentage: number;
+  quarterAverage: number;
+  recommendedInterventions: string;
+  interventionRemarks: string;
+  gender: "Male" | "Female" | "Non-binary"; // Add other gender options if necessary
+};
+
 export const studentsData = [
     // Below 80% attendance and quarter average
     { id: 1, lrn: "123456789012", firstName: "John", middleName: "Michael", lastName: "Doe", dateEnrolled: "2024-08-15", attendancePercentage: 75, quarterAverage: 70, recommendedInterventions: "Attendance Monitoring", interventionRemarks: "Consistent tardiness.", gender: "Male" },
@@ -35,3 +63,46 @@ export const studentsData = [
     { id: 30, lrn: "210987654321", firstName: "Lucas", middleName: "Ryan", lastName: "Carter", dateEnrolled: "2024-10-08", attendancePercentage: 77, quarterAverage: 74, recommendedInterventions: "Extra Help", interventionRemarks: "Struggles with math and reading.", gender: "Male" },
   ];
   
+
+  
+export const students: ColumnDef<Student>[] = [
+  {
+    id: "number",
+    header: "",
+    cell: ({  }) => {
+    
+ 
+      return (
+        <></>
+      )
+    },
+  },
+  { accessorKey: "lrn", header: "LRN" },
+  { accessorKey: "lastName", header: "Last Name" },
+  { accessorKey: "firstName", header: "First Name" },
+  { accessorKey: "middleName", header: "Middle name" },
+  { accessorKey: "dateEnrolled", header: "Enrollment Date" },
+  {
+    id: "actions",
+    cell: ({  }) => {
+      
+ 
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="h-8 w-8 p-0">
+              <span className="sr-only">Open menu</span>
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem>View reports</DropdownMenuItem>
+            <DropdownMenuItem>View Interventions</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      )
+    },
+  },
+];

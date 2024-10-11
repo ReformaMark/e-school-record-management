@@ -21,15 +21,15 @@ function ListOfStudents() {
   return (
     <div className='w-full'>
         <table className='w-full '>
-            <thead className='bg-gray-300 px-2 py-1 w-full'>
-                <tr className='px-2 border border-black'>
-                    <td className='px-2 py-1 text-sm font-semibold border-r border-black'></td>
-                    <td className='px-2 py-1 text-sm font-semibold border-r border-black'>LRN</td>
-                    <td className='px-2 text-sm font-semibold border-r border-black'>Last Name</td>
-                    <td className='px-2 text-sm font-semibold border-r border-black'>First Name </td>
-                    <td className='px-2 text-sm font-semibold border-r border-black'>Middle Name </td>
-                    <td className='px-2 text-sm font-semibold border-r border-black'>Date Enrolled</td>
-                    <td className='px-2 text-sm font-semibold border-r border-black'>Actions</td>
+            <thead className='px-2 py-1 w-full bg-green-50'>
+                <tr className='px-2  text-green-700'>
+                    <td className='px-2 py-1 text-sm '></td>
+                    <td className='px-2 py-1 text-sm '>LRN</td>
+                    <td className='px-2 text-sm  '>Last Name</td>
+                    <td className='px-2 text-sm '>First Name </td>
+                    <td className='px-2 text-sm '>Middle Name </td>
+                    <td className='px-2 text-sm '>Date Enrolled</td>
+                    <td className='px-2 text-sm '>Actions</td>
                 </tr>
             </thead>
             <tbody>
@@ -45,8 +45,8 @@ function ListOfStudents() {
                             <div className="flex justify-center text-gray-400 gap-x-2">
                                
                                 <Dialog>
-                                    <DialogTrigger className='border shadow-md flex justify-center items-center gap-x-3 bg-gray-400 text-white border-gray-100 rounded-md px-2 py-1'>
-                                        <FaCircleInfo className='size-4 hover:text-blue-600 cursor-pointer'/>
+                                    <DialogTrigger className='border shadow-md flex justify-center items-center gap-x-3 hover:text-blue-600 cursor-pointer bg-gray-400 text-white border-gray-100 rounded-md px-2 py-1'>
+                                        <FaCircleInfo className='size-4 '/>
                                     </DialogTrigger>
                                     <DialogContent className=''>
                                     <DialogHeader>

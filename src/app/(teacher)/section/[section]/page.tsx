@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 'use client'
 import React from 'react'
 import { sections } from '../section-data'
@@ -26,7 +27,8 @@ import { ChevronLeft } from 'lucide-react'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
 import FinalGradeSHSTemplate from '@/app/components/FinalGradeSHSTemplate'
-import ListOfStudents from '../_components/ListOfStudents'
+import { DataTable } from '@/components/data-table'
+import { students, studentsData } from '../_components/studentData'
 
 function Section({params}:{params: {section: string}}) {
 
@@ -79,7 +81,7 @@ function Section({params}:{params: {section: string}}) {
       </div>
 
        
-        <div className="grid grid-cols-2 font-semibold text-sm">
+        <div className="grid grid-cols-2 font-medium text-sm">
           
           <h1>Section: {params.section}</h1>
           <h1>Grade Level: {section?.gradeLevel}</h1>
@@ -99,9 +101,15 @@ function Section({params}:{params: {section: string}}) {
           </TabsList>
 
           {/* Attendance */}
-          <TabsContent value="students" className='min-h-screen border-2 '>
+          <TabsContent value="students" className='min-h-screen border-2 p-5'>
            
-            <ListOfStudents/>
+           <DataTable 
+           //@ts-expect-error
+            columns={students}
+            data={studentsData}
+            filter='lrn'
+            placeholder="students by LRN"
+           />
           </TabsContent>
 
           {/* Attendance */}
