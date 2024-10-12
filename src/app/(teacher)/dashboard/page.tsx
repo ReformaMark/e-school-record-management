@@ -12,10 +12,12 @@ import {
   CardTitle
 } from "@/components/ui/card"
 import { GraduationCapIcon, UserCheckIcon, Users2Icon } from "lucide-react"
+import EraInterventionCard from "./_components/era-intervention-card"
+import EraPostInterventionCard from "./_components/era-post-intervention-card"
 import { EraSparCard } from "./_components/era-spar-card"
 function DashboardPage() {
   return (
-    <div className='containter mx-auto p-4'>
+    <div className='containter mx-auto p-4 space-y-3'>
       <Breadcrumb className="hidden md:flex mb-6">
         <BreadcrumbList>
           <BreadcrumbItem>
@@ -62,6 +64,10 @@ function DashboardPage() {
       </div>
 
       <EraSparCard />
+
+      <EraInterventionCard />
+
+      <EraPostInterventionCard />
     </div>
   )
 }
