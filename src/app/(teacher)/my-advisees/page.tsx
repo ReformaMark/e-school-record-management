@@ -67,7 +67,7 @@ function Studentpage() {
 
             <Card x-chunk="dashboard-06-chunk-0">
                 <CardHeader>
-                    <CardTitle>Students</CardTitle>
+                    <CardTitle>Advisory Class</CardTitle>
                     <CardDescription>
                         <div className="flex justify-between">
                             <h1>Manage the list of students.</h1>
@@ -93,7 +93,7 @@ function Studentpage() {
                         </div>
                     </CardDescription>
                 </CardHeader>
-                <CardContent>
+                <CardContent className='mt-[-50px]'>
                     <DataTable
                         //@ts-expect-error
                         columns={studentColumn}

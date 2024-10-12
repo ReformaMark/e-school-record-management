@@ -44,7 +44,7 @@ function Section({params}:{params: {section: string}}) {
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                    <BreadcrumbPage  className="text-muted-foreground">Sections</BreadcrumbPage>
+                    <BreadcrumbPage  className="text-muted-foreground">Classes</BreadcrumbPage>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
