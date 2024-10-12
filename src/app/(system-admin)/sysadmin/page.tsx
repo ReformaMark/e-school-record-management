@@ -80,7 +80,6 @@ const SystemAdminPage = () => {
                 <InterventionEffectiveness />
 
                 <FormGenerationCard />
-                {/* <StudentEnrollmentTrends /> */}
 
                 <StudentDistribution />
             </div>

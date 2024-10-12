@@ -9,6 +9,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
 import { GraduationCap, UserCheck, Users } from "lucide-react"
 import { schoolStats } from "../../../../data/school-data"
+import { StudentEnrollmentTrends } from "@/app/(system-admin)/_components/student-enrollment-trends"
+import { TeacherPerformanceChart } from "@/components/teacher-performance-chart"
+import { StudentPerformance } from "@/app/(system-admin)/_components/student-performance"
+import { InterventionEffectiveness } from "@/app/(system-admin)/_components/intervention-effectiveness"
+import { FormGenerationCard } from "@/app/(system-admin)/_components/form-generation-card"
+import { StudentDistribution } from "@/app/(system-admin)/_components/student-distribution"
 
 const SchoolHeadPage = () => {
     return (
@@ -59,7 +65,17 @@ const SchoolHeadPage = () => {
             </div>
 
             <div className="grid gap-6 md:grid-cols-2">
-                
+                <StudentEnrollmentTrends />
+
+                <TeacherPerformanceChart />
+
+                <StudentPerformance />
+
+                <InterventionEffectiveness />
+
+                <FormGenerationCard />
+
+                <StudentDistribution />
             </div>
         </div>
     )

@@ -6,7 +6,7 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
 } from "@/components/ui/breadcrumb"
-import { MyCalendar } from './_components/MyCalendar'
+// import { MyCalendar } from './_components/MyCalendar'
 
 function DashboardPage() {
   return (
@@ -19,7 +19,7 @@ function DashboardPage() {
             </BreadcrumbList>
         </Breadcrumb>
         <StatsOverview/>
-        <MyCalendar/>
+        {/* <MyCalendar/> */}
     </div>
   )
 }

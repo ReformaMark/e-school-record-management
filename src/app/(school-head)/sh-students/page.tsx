@@ -1,4 +1,14 @@
 import {
+    Breadcrumb,
+    BreadcrumbItem,
+    BreadcrumbLink,
+    BreadcrumbList,
+    BreadcrumbPage,
+    BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
     DropdownMenu,
     DropdownMenuCheckboxItem,
     DropdownMenuContent,
@@ -7,48 +17,28 @@ import {
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 
-import { SchoolSectionCardTable } from "@/components/school-section-card-table";
-import { Button, buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { FileIcon, ListFilterIcon, PlusCircleIcon } from "lucide-react";
+import { DataTable } from "@/components/data-table";
+import { File, ListFilterIcon } from "lucide-react";
 import Link from "next/link";
-const SystemAdminSectionsPage = () => {
-    return (
-        // <div className="flex min-h-screen w-full flex-col">
-        //     <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
-        //         <div className="grid gap-4 md:gap-8 lg:grid-cols-2 xl:grid-cols-3">
-        //             <Card
-        //                 className="xl:col-span-2"
-        //             >
-        //                 <CardHeader className="flex flex-row items-center">
-        //                     <div className="grid gap-2">
-        //                         <CardTitle>Sections</CardTitle>
-        //                         <CardDescription>
-        //                             View and manage sections
-        //                         </CardDescription>
-        //                     </div>
-        //                     {/* <Button asChild size="sm" className="ml-auto gap-1">
-        //                         <Link href="#">
-        //                             View All
-        //                             <ArrowUpRightIcon className="h-4 w-4" />
-        //                         </Link>
-        //                     </Button> */}
-        //                 </CardHeader>
-        //                 <CardContent>
-        //                     <DataTable
-        //                         columns={sectionColumns}
-        //                         data={sectionData}
-        //                         filter="sectionName"
-        //                         placeholder="by section name"
-        //                     />
-        //                 </CardContent>
-        //             </Card>
+import { studentColumns, studentsData } from "../../../../data/students-data";
 
-        //             <AddSectionCard />
-        //         </div>
-        //     </main>
-        // </div>
+const SchoolHeadStudentsPage = () => {
+    return (
         <div className="container mx-auto p-4">
+            <Breadcrumb className="hidden md:flex">
+                <BreadcrumbList>
+                    <BreadcrumbItem>
+                        <BreadcrumbLink asChild>
+                            <Link href="/sh-students">Dashboard</Link>
+                        </BreadcrumbLink>
+                    </BreadcrumbItem>
+                    <BreadcrumbSeparator />
+                    <BreadcrumbItem>
+                        <BreadcrumbPage>Students</BreadcrumbPage>
+                    </BreadcrumbItem>
+                </BreadcrumbList>
+            </Breadcrumb>
+
             <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
                 <div className="flex items-center">
                     <div className="ml-auto flex items-center gap-2">
@@ -65,23 +55,21 @@ const SystemAdminSectionsPage = () => {
                                 <DropdownMenuLabel>Filter by</DropdownMenuLabel>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuCheckboxItem checked>
-                                    Current
+                                    Active
                                 </DropdownMenuCheckboxItem>
                                 <DropdownMenuCheckboxItem>
-                                    Old
+                                    Graduated
                                 </DropdownMenuCheckboxItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
-
                         <Button size="sm" variant="outline" className="h-7 gap-1">
-                            <FileIcon className="h-3.5 w-3.5" />
+                            <File className="h-3.5 w-3.5" />
                             <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
                                 Export
                             </span>
                         </Button>
-
-                        <Link
-                            href="/sysadmin-sections/sysadmin-add-section"
+                        {/* <Link
+                            href="/sysadmin-students/sysadmin-add-student"
                             className={cn("", buttonVariants({
                                 variant: "default",
                                 size: "sm",
@@ -89,16 +77,29 @@ const SystemAdminSectionsPage = () => {
                             }))}>
                             <PlusCircleIcon className="h-3.5 w-3.5" />
                             <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                                Add section
+                                Add a student
                             </span>
-                        </Link>
+                        </Link> */}
                     </div>
                 </div>
 
-                <SchoolSectionCardTable />
+                <Card x-chunk="dashboard-06-chunk-0">
+                    <CardHeader>
+                        <CardTitle>Students</CardTitle>
+                        <CardDescription>Manage the list of students.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <DataTable
+                            columns={studentColumns}
+                            data={studentsData}
+                            filter="firstName"
+                            placeholder="students by first name"
+                        />
+                    </CardContent>
+                </Card>
             </main>
         </div>
     )
 }
 
-export default SystemAdminSectionsPage;
+export default SchoolHeadStudentsPage;
