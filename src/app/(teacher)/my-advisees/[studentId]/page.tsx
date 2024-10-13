@@ -1,11 +1,11 @@
 'use client'
-import React from 'react'
+import React, { useState } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ChevronLeft, File } from 'lucide-react'
 import { Button, buttonVariants } from '@/components/ui/button'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
-
+import { FaLevelUpAlt } from 'react-icons/fa'
 function Student({
     params
 }:{
@@ -13,6 +13,9 @@ function Student({
         studentId: string
     }
 }) {
+    const [isOpen, setIsOpen] = useState<boolean>(false)
+
+
   return (
     <div className='p-10'>
         <div className="bg-white w-full-full min-h-screen h-fit p-5 shadow-md">
@@ -27,12 +30,29 @@ function Student({
                     <span className="sr-only">Back</span>
                 </Link>
                 <h1 className=' text-xl font-semibold flex items-center'>Student Report Card</h1>
-                <Button size="default" variant="outline" className="h-7 gap-1 bg-gray-100 py-2 ml-auto">
-                    <File className="h-3.5 w-3.5" />
-                    <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                        Generate Report Card
-                    </span>
-                </Button>
+                <div className="space-y-3">
+                    <Button size="default" onClick={()=> setIsOpen(!isOpen)} className="h-7 gap-1 bg-blue-600 text-white py-2 ml-auto">
+                        <FaLevelUpAlt className="h-3.5 w-3.5" />
+                        <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                            Promote
+                        </span>
+                    </Button>
+                    <div className="text-xs ">
+                        <div className="flex items-center gap-x-2">
+                            <div className="bg-blue-600 p-1 rounded-full size-2"></div>
+                            <h1 className=''>Ready for promotion</h1>
+                        </div>
+                        <div className="flex items-center gap-x-2">
+                            <div className="bg-red-600 p-1 rounded-full size-2"></div>
+                            <h1 className=''>Failed</h1>
+                        </div>
+                        <div className="flex items-center gap-x-2">
+                            <div className="bg-text p-1 rounded-full size-2"></div>
+                            <h1 className=''>Pending</h1>
+                        </div>
+
+                    </div>
+                </div>
             </div>
             <div className="grid grid-cols-4 mb-5">
                 <h1 className='col-span-2 text-sm text-text'>Student Number: <span className='text-lg font-semibold'> {params.studentId} </span></h1>
@@ -41,6 +61,15 @@ function Student({
                 <h1 className='col-span-2 text-sm text-text'>Grade Level: <span className='text-lg font-semibold'> 8 </span></h1>           
                 <h1 className='col-span-2 text-sm text-text'>Adviser: <span className='text-lg font-semibold'> Micheal Smith </span></h1>           
                 <h1 className='col-span-2 text-sm text-text'>Section: <span className='text-lg font-semibold'> Matikas </span></h1>        
+            </div>
+            <div className="flex justify-end w-full">
+                <Button size="default" variant="outline" className="h-7 gap-1 bg-gray-100 py-2 ml-auto">
+                    <File className="h-3.5 w-3.5" />
+                    <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                        Generate Report Card
+                    </span>
+                </Button>
+
             </div>
             <Tabs defaultValue="grades" className="w-full">
                 <TabsList>
@@ -55,11 +84,11 @@ function Student({
                     <div className="grid grid-cols-12 w-full bg-gray-200 items-center text-center font-semibold text-sm border border-black">
                         <h1 className='col-span-4 h-full border border-black flex items-center justify-center'>Learning Areas</h1>
                         <div className="col-span-4 grid grid-cols-4 border border-black text-center items-center">
-                            <h1 className='col-span-4 border border-black'>Quarter</h1>
-                            <h1 className='col-span-1 border-l border-r border-black'>1st</h1>
+                            <h1 className='col-span-4 border-b border-b-black '>Quarter</h1>
+                            <h1 className='col-span-1 border-r border-black'>1st</h1>
                             <h1 className='col-span-1 border-l border-r border-black'>2nd</h1>
                             <h1 className='col-span-1 border-l border-r border-black'>3rd</h1>
-                            <h1 className='col-span-1 border-l border-r border-black'>4th</h1>
+                            <h1 className='col-span-1 border-l  border-black'>4th</h1>
                         </div>
                         <h1 className='col-span-2 flex items-center justify-center h-full border border-black'>Final Rating</h1>
                         <h1 className='col-span-2 flex items-center justify-center h-full border border-black'>Remarks</h1>

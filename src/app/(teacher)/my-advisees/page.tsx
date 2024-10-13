@@ -54,29 +54,11 @@ function Studentpage() {
                     <CardDescription>
                         <div className="flex justify-between">
                             <h1>Manage the list of students.</h1>
-                            <div className="text-xs">
-                                <div className="flex items-center gap-x-2">
-                                    <div className="bg-blue-600 p-1 rounded-full size-2"></div>
-                                    <h1 className=''>Ready for promotion</h1>
-                                </div>
-                                <div className="flex items-center gap-x-2">
-                                    <div className="bg-orange-600 p-1 rounded-full size-2"></div>
-                                    <h1 className=''>Needs Intervention</h1>
-                                </div>
-                                <div className="flex items-center gap-x-2">
-                                    <div className="bg-red-600 p-1 rounded-full size-2"></div>
-                                    <h1 className=''>Failed</h1>
-                                </div>
-                                <div className="flex items-center gap-x-2">
-                                    <div className="bg-text p-1 rounded-full size-2"></div>
-                                    <h1 className=''>Pending</h1>
-                                </div>
-        
-                            </div>
+                            
                         </div>
                     </CardDescription>
                 </CardHeader>
-                <CardContent className='mt-[-50px]'>
+                <CardContent className=''>
                     <DataTable
                         //@ts-expect-error
                         columns={studentColumn}
