@@ -21,14 +21,15 @@ import Link from 'next/link'
 import { cn } from '@/lib/utils'
 import FinalGradeSHSTemplate from '@/app/components/FinalGradeSHSTemplate'
 import { DataTable } from '@/components/data-table'
-import { students, studentsData } from '../_components/studentData'
+import { studentMasterList, studentsData } from '../_components/studentData'
 import NeedsImprovement from '../_components/NeedsImprovement'
 import InputGrades from '../_components/InputGrades'
 
 function Section({params}:{params: {section: string}}) {
 
   const section = sections.find((section) => section.section === params.section);
-
+  const students = studentsData
+  .sort((a, b) => a.lastName.localeCompare(b.lastName));
 
   return (
     <div className='bg-white m-5 min-h-screen max-w-full shadow-md p-5 space-y-5'>
@@ -75,7 +76,7 @@ function Section({params}:{params: {section: string}}) {
           {/* <h1 className='text-xs text-foreground font-semibold'>Select tab to show: </h1> */}
           <TabsList className=''> 
             <TabsTrigger value="students" className='font-medium shadow-md border-b-2 data-[state=active]:border-b-primary' >Master List</TabsTrigger>
-            <TabsTrigger value="attendance" className='font-medium shadow-md border-b-2 data-[state=active]:border-b-primary' >Attendance</TabsTrigger>
+            {/* <TabsTrigger value="attendance" className='font-medium shadow-md border-b-2 data-[state=active]:border-b-primary' >Attendance</TabsTrigger> */}
             <TabsTrigger value="class-record" className='font-medium shadow-md border-b-2 data-[state=active]:border-b-primary' >Class Record</TabsTrigger>
             <TabsTrigger value="grades-summary" className='font-medium shadow-md border-b-2 data-[state=active]:border-b-primary'>Grades Summary</TabsTrigger>
             <TabsTrigger value="needs-improvement" className='font-medium shadow-md border-b-2 data-[state=active]:border-b-primary'>Needs Improvement</TabsTrigger>
@@ -86,17 +87,17 @@ function Section({params}:{params: {section: string}}) {
            
            <DataTable 
      
-            columns={students}
-            data={studentsData}
+            columns={studentMasterList}
+            data={students}
             filter='lrn'
             placeholder="students by LRN"
            />
           </TabsContent>
 
           {/* Attendance */}
-          <TabsContent value="attendance" className='min-h-screen border-2 border-gray-300'>
+          {/* <TabsContent value="attendance" className='min-h-screen border-2 border-gray-300'>
             
-          </TabsContent>
+          </TabsContent> */}
 
           {/* Class Record*/}
           <TabsContent value="class-record" className=''>

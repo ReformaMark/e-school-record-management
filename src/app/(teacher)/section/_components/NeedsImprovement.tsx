@@ -7,7 +7,7 @@ function NeedsImprovement() {
   return (
     <div>
         <Tabs>
-            <TabsList defaultValue='1st' className='space-x-3   w-full'>
+            <TabsList defaultValue='1st' className='space-x-3'>
                 <TabsTrigger value='1st'>1st</TabsTrigger>
                 <TabsTrigger value='2nd'>2nd</TabsTrigger>
                 <TabsTrigger value='3rd'>3rd</TabsTrigger>

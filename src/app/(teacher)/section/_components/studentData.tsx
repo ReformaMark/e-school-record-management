@@ -19,7 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { FaCheck, FaInfoCircle, FaUserEdit } from "react-icons/fa";
+import {  FaInfoCircle, FaUserEdit } from "react-icons/fa";
 import {
   Dialog,
   DialogContent,
@@ -402,8 +402,8 @@ export const studentDatas = [
 
 export const studentDatasColumn: ColumnDef<StudentType>[] = [
   {
-    id: "fullname",
-    header: "",
+    id: "fullName",
+    header: "Info",
     cell: ({  }) => {
     
  
@@ -416,7 +416,7 @@ export const studentDatasColumn: ColumnDef<StudentType>[] = [
  
 export const students: ColumnDef<Student>[] = [
   {
-    id: "id",
+    id: "lastName",
     header: "Info",
     cell: ({ row }) => {
 
@@ -467,6 +467,26 @@ export const students: ColumnDef<Student>[] = [
     },
   },
 ];
+
+export const studentMasterList: ColumnDef<Student>[] = [
+   {
+    id: "number",
+    header: "",
+    cell: ({ row }) => {
+      const student = row.index
+
+      return (
+        <>{student + 1}</>
+      )
+    },
+  },
+  { accessorKey: "lrn", header: "LRN" },
+  { accessorKey: "lastName", header: "Last Name" },
+  { accessorKey: "firstName", header: "First Name" },
+  { accessorKey: "middleName", header: "Middle name" },
+  { accessorKey: "dateEnrolled", header: "Enrollment Date" },
+
+]
 
 
 
@@ -796,9 +816,18 @@ export const forImprovementsColumns: ColumnDef<forImprovementsTypes>[] = [
                 ))}
               </SelectContent>
             </Select>
-            <FaCheck className="cursor-pointer"/>
+            {/* <FaCheck className="cursor-pointer"/> */}
         </div>
       )
     }
   },
+  {
+    id: "remarks",
+    header: "Remarks",
+    cell: ({  }) => {
+      return (
+        <></>
+      )
+    }
+  }
 ]
