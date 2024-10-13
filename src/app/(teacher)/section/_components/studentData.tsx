@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { ColumnDef } from "@tanstack/react-table";
-import { MoreHorizontal } from "lucide-react";
+import { MoreHorizontal, User } from "lucide-react";
 import React, { useState } from 'react';
 import {
   Select,
@@ -19,7 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { FaCheck } from "react-icons/fa";
+import { FaCheck, FaInfoCircle, FaUserEdit } from "react-icons/fa";
 import {
   Dialog,
   DialogContent,
@@ -31,6 +31,7 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input";
 import { CgDanger } from "react-icons/cg";
+import Link from "next/link";
 
 
 type Student = {
@@ -172,12 +173,236 @@ export const studentsData = [
   }
 ];
 
+type Gender = "male" | "female" | "non-binary" | "other";
 
-
-  
-export const students: ColumnDef<Student>[] = [
+interface StudentType {
+    id: string; // Unique identifier for the student
+    lrn: string; // Learner Reference Number
+    firstName: string; // Student's first name
+    middleName: string; // Student's middle name
+    lastName: string; // Student's last name
+    birthDate: string; // Date of birth in YYYY-MM-DD format
+    gender: Gender; // Gender of the student
+    address: string; // Residential address of the student
+    yearLevel: string; // Year level the student is in (e.g., "1st Year")
+    parentGuardianName: string; // Name of the parent or guardian
+    parentGuardianContact: string; // Contact number of the parent or guardian
+}
+export const studentDatas = [
   {
-    id: "number",
+      id: "1",
+      lrn: "LRN10001",
+      firstName: "John",
+      middleName: "Michael",
+      lastName: "Doe",
+      birthDate: "2005-05-15",
+      gender: "male",
+      address: "123 Main St, City, Country",
+      yearLevel: "1st Year",
+      parentGuardianName: "Jane Doe",
+      parentGuardianContact: "+1234567890"
+  },
+  {
+      id: "2",
+      lrn: "LRN10002",
+      firstName: "Emma",
+      middleName: "",
+      lastName: "Smith",
+      birthDate: "2006-02-20",
+      gender: "female",
+      address: "456 Elm St, Town, Country",
+      yearLevel: "2nd Year",
+      parentGuardianName: "Robert Smith",
+      parentGuardianContact: "+1987654321"
+  },
+  {
+      id: "3",
+      lrn: "LRN10003",
+      firstName: "Michael",
+      middleName: "James",
+      lastName: "Johnson",
+      birthDate: "2005-11-10",
+      gender: "male",
+      address: "789 Oak Ave, Village, Country",
+      yearLevel: "3rd Year",
+      parentGuardianName: "Sarah Johnson",
+      parentGuardianContact: "+1122334455"
+  },
+  {
+      id: "4",
+      lrn: "LRN10004",
+      firstName: "Sophia",
+      middleName: "Rose",
+      lastName: "Williams",
+      birthDate: "2006-08-05",
+      gender: "female",
+      address: "101 Pine Rd, Suburb, Country",
+      yearLevel: "4th Year",
+      parentGuardianName: "David Williams",
+      parentGuardianContact: "+1555666777"
+  },
+  {
+      id: "5",
+      lrn: "LRN10005",
+      firstName: "Daniel",
+      middleName: "",
+      lastName: "Brown",
+      birthDate: "2005-04-30",
+      gender: "male",
+      address: "202 Cedar Ln, District, Country",
+      yearLevel: "1st Year",
+      parentGuardianName: "Jennifer Brown",
+      parentGuardianContact: "+1999888777"
+  },
+  {
+      id: "6",
+      lrn: "LRN10006",
+      firstName: "Olivia",
+      middleName: "Kate",
+      lastName: "Davis",
+      birthDate: "2006-01-12",
+      gender: "female",
+      address: "303 Maple St, City, Country",
+      yearLevel: "2nd Year",
+      parentGuardianName: "Kevin Davis",
+      parentGuardianContact: "+1666666666"
+  },
+  {
+      id: "7",
+      lrn: "LRN10007",
+      firstName: "Benjamin",
+      middleName: "",
+      lastName: "Miller",
+      birthDate: "2005-09-25",
+      gender: "male",
+      address: "404 Walnut St, Town, Country",
+      yearLevel: "3rd Year",
+      parentGuardianName: "Lisa Miller",
+      parentGuardianContact: "+1777777777"
+  },
+  {
+      id: "8",
+      lrn: "LRN10008",
+      firstName: "Ava",
+      middleName: "May",
+      lastName: "Wilson",
+      birthDate: "2006-05-18",
+      gender: "female",
+      address: "505 River Rd, Village, Country",
+      yearLevel: "4th Year",
+      parentGuardianName: "Brian Wilson",
+      parentGuardianContact: "+1888888888"
+  },
+  {
+      id: "9",
+      lrn: "LRN10009",
+      firstName: "Ethan",
+      middleName: "Alexander",
+      lastName: "Moore",
+      birthDate: "2005-07-22",
+      gender: "male",
+      address: "606 Park Ave, Suburb, Country",
+      yearLevel: "1st Year",
+      parentGuardianName: "Karen Moore",
+      parentGuardianContact: "+1999999999"
+  },
+  {
+      id: "10",
+      lrn: "LRN10010",
+      firstName: "Isabella",
+      middleName: "Rose",
+      lastName: "Hall",
+      birthDate: "2006-03-15",
+      gender: "female",
+      address: "707 Lake Dr, District, Country",
+      yearLevel: "2nd Year",
+      parentGuardianName: "Richard Hall",
+      parentGuardianContact: "+1222222222"
+  },
+  {
+      id: "11",
+      lrn: "LRN10011",
+      firstName: "Logan",
+      middleName: "",
+      lastName: "White",
+      birthDate: "2005-06-17",
+      gender: "male",
+      address: "808 Hillside Dr, City, Country",
+      yearLevel: "3rd Year",
+      parentGuardianName: "Carol White",
+      parentGuardianContact: "+1333333333"
+  },
+  {
+      id: "12",
+      lrn: "LRN10012",
+      firstName: "Liam",
+      middleName: "Christopher",
+      lastName: "Martin",
+      birthDate: "2006-04-02",
+      gender: "male",
+      address: "909 Valley Rd, Town, Country",
+      yearLevel: "4th Year",
+      parentGuardianName: "Susan Martin",
+      parentGuardianContact: "+1444444444"
+  },
+  {
+      id: "13",
+      lrn: "LRN10013",
+      firstName: "Gabriella",
+      middleName: "Marie",
+      lastName: "Harris",
+      birthDate: "2005-10-28",
+      gender: "female",
+      address: "1010 Oak St, Village, Country",
+      yearLevel: "1st Year",
+      parentGuardianName: "James Harris",
+      parentGuardianContact: "+1555555555"
+  },
+  {
+      id: "14",
+      lrn: "LRN10014",
+      firstName: "Alexander",
+      middleName: "James",
+      lastName: "Taylor",
+      birthDate: "2006-01-05",
+      gender: "male",
+      address: "1111 Park Pl, Suburb, Country",
+      yearLevel: "2nd Year",
+      parentGuardianName: "Laura Taylor",
+      parentGuardianContact: "+1666666666"
+  },
+  {
+      id: "15",
+      lrn: "LRN10015",
+      firstName: "Charlotte",
+      middleName: "Elizabeth",
+      lastName: "Lewis",
+      birthDate: "2005-09-01",
+      gender: "female",
+      address: "1212 Maple Ave, District, Country",
+      yearLevel: "3rd Year",
+      parentGuardianName: "Michael Lewis",
+      parentGuardianContact: "+1777777777"
+  },
+  {
+      id: "16",
+      lrn: "LRN10016",
+      firstName: "Julian",
+      middleName: "Thomas",
+      lastName: "Walker",
+      birthDate: "2006-06-01",
+      gender: "male",
+      address: "1313 River Rd, City, Country",
+      yearLevel: "4th Year",
+      parentGuardianName: "Rebecca Walker",
+      parentGuardianContact: "+1888888888"
+  },
+]
+
+
+export const studentDatasColumn: ColumnDef<StudentType>[] = [
+  {
+    id: "fullname",
     header: "",
     cell: ({  }) => {
     
@@ -187,35 +412,64 @@ export const students: ColumnDef<Student>[] = [
       )
     },
   },
-  { accessorKey: "lrn", header: "LRN" },
-  { accessorKey: "lastName", header: "Last Name" },
-  { accessorKey: "firstName", header: "First Name" },
-  { accessorKey: "middleName", header: "Middle name" },
-  { accessorKey: "dateEnrolled", header: "Enrollment Date" },
+]
+ 
+export const students: ColumnDef<Student>[] = [
   {
-    id: "actions",
-    cell: ({  }) => {
-      
+    id: "id",
+    header: "Info",
+    cell: ({ row }) => {
+
+      const firstName = row.original.firstName
+      const lastName = row.original.lastName
+      const middleNameInitial = row.original.middleName ? row.original.middleName.charAt(0) : '';
  
       return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>View reports</DropdownMenuItem>
-            <DropdownMenuItem>View Interventions</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <div className="flex items-start gap-x-2 ">
+            <User className="size-10 bg-gray-200 p-1 rounded-full"/>
+            <div className="">
+              <h1 className="text-xs">{lastName}, {firstName} {middleNameInitial}.</h1>
+              <h1 className="text-xs">{}</h1>
+
+            </div>
+        </div>
+      )
+    },
+  },
+
+{
+    accessorKey: "yearLevel",
+    header: "Year Level"
+},
+{
+    accessorKey: "parentGuardianName",
+    header: "Parent/Guardian"
+},
+{
+    accessorKey: "parentGuardianContact",
+    header: "Contact"
+},
+{
+    id: "actions",
+    header: "Actions",
+    cell: ({ row }) => {
+        const student = row.original
+      return (
+        <div className="flex items-center gap-x-2 ">
+          <Link href={`/my-advisees/${student.id}`} className="">
+              <FaUserEdit className="size-6 text-gray-400 hover:text-orange-500"/>
+          </Link>
+          <Link href={`/my-advisees/${student.id}`} className="">
+              <FaInfoCircle className="size-6 text-gray-400 hover:text-blue-500"/>
+          </Link>
+        </div>
       )
     },
   },
 ];
+
+
+
 export const InputGradesCol: ColumnDef<Student>[] = [
   {
     id: "number",

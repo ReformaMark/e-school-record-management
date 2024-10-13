@@ -1,47 +1,40 @@
-export type EnrollmentInfo = {
+'use client'
+import { Button } from "@/components/ui/button";
+import { ColumnDef } from "@tanstack/react-table";
+import { User } from "lucide-react";
+
+interface StudentData {
   schoolYear: string;
   gradeLevel: string;
   withLrn: "Yes" | "No";
   returning: "Yes" | "No";
-};
-
-export type PersonalInfo = {
   PSABirthCert: string;
   lrn: string;
   indigenous: "Yes" | "No";
-  indigenousCommunity?: string; // Optional because it might be empty
+  indigenousCommunity: string;
   fourpsBenef: "Yes" | "No";
-  fourpsIdNum?: string; // Optional because it might be empty
+  fourpsIdNum: string;
   firstName: string;
   lastName: string;
   middleName: string;
-  extentionName?: string; // Optional because it might be empty
+  extensionName: string;
   birthday: Date;
   birthPlace: string;
   age: number;
-  sex: "Male" | "Female" | "Other";
-};
-
-export type AddressInfo = {
+  sex: "Male" | "Female" | "Other"; // Adjust as needed for inclusivity
   province: string;
   municipality: string;
   barangay: string;
-  street?: string; // Optional because not all addresses might have a street
-  houseNum?: string; // Optional because not all addresses might have a house number
+  street: string;
+  houseNum: string;
   fullAddress: string;
-};
-
-export type PermanentAddressInfo = {
   sameAsCurrent: "Yes" | "No";
   permanentProvince: string;
   permanentMunicipality: string;
   permanentBarangay: string;
-  permanentStreet?: string; // Optional
-  permanentHouseNum?: string; // Optional
+  permanentStreet: string;
+  permanentHouseNum: string;
   permanentFullAddress: string;
-};
-
-export type ParentInfo = {
   fatherFirstName: string;
   fatherLastName: string;
   fatherMiddleName: string;
@@ -50,34 +43,19 @@ export type ParentInfo = {
   motherLastName: string;
   motherMiddleName: string;
   motherContact: string;
-  guardianFirstName?: string; // Optional because it might be empty
-  guardianLastName?: string; // Optional
-  guardianMiddleName?: string; // Optional
-  guardianContact?: string; // Optional
-};
+  guardianFirstName: string;
+  guardianLastName: string;
+  guardianMiddleName: string;
+  guardianContact: string;
+  lastGradeLevel: string;
+  lastSYAttended: string;
+  lastSchoolAttended: string;
+  schoolId: string;
+  semester: string;
+  strand: string;
+  track: string;
+}
 
-export type ReturningEnrolleeInfo = {
-  lastGradeLevel?: string; // Optional because it might be empty
-  lastSYAttended?: string; // Optional
-  lastSchoolAttended?: string; // Optional
-  schoolId?: string; // Optional
-};
-
-export type SeniorHighEnrolleeInfo = {
-  semister?: string; // Optional
-  strand?: string; // Optional
-  track?: string; // Optional
-};
-
-export type StudentInfo = {
-  enrollmentInfo: EnrollmentInfo;
-  personalInfo: PersonalInfo;
-  currentAddressInfo: AddressInfo;
-  permanentAddressInfo: PermanentAddressInfo;
-  parentInfo: ParentInfo;
-  returningEnrolleeInfo?: ReturningEnrolleeInfo; // Optional if the student is not a returning enrollee
-  seniorHighEnrolleeInfo?: SeniorHighEnrolleeInfo; // Optional if the student is not a senior high enrollee
-};
 
 export const endrollmentData = [
     {
@@ -149,13 +127,10 @@ export const endrollmentData = [
     },
   
     {
-      // Enrollment info
       schoolYear: "2023-2024",
       gradeLevel: "8",
       withLrn: "Yes",
       returning: "No",
-      
-      // Student Personal Info
       PSABirthCert: "0987654321",
       lrn: "LRN67890",
       indigenous: "Yes",
@@ -170,16 +145,12 @@ export const endrollmentData = [
       birthPlace: "Cebu City",
       age: 14,
       sex: "Female",
-  
-      // Current address info
       province: "Cebu",
       municipality: "Cebu City",
       barangay: "Lahug",
       street: "Gorordo Ave",
       houseNum: "12",
       fullAddress: "12 Gorordo Ave, Lahug, Cebu City, Cebu",
-  
-      // Permanent address info
       sameAsCurrent: "No",
       permanentProvince: "Cebu",
       permanentMunicipality: "Lapu-Lapu City",
@@ -187,30 +158,22 @@ export const endrollmentData = [
       permanentStreet: "Mactan St",
       permanentHouseNum: "78",
       permanentFullAddress: "78 Mactan St, Mactan, Lapu-Lapu City, Cebu",
-  
-      // Parent information
       fatherFirstName: "Juan",
       fatherLastName: "Cruz",
       fatherMiddleName: "Santos",
       fatherContact: "09334567890",
-      
       motherFirstName: "Luisa",
       motherLastName: "Cruz",
       motherMiddleName: "Diaz",
       motherContact: "09211234567",
-  
       guardianFirstName: "",
       guardianLastName: "",
       guardianMiddleName: "",
       guardianContact: "",
-  
-      // Returning enrollee
       lastGradeLevel: "",
       lastSYAttended: "",
       lastSchoolAttended: "",
       schoolId: "",
-  
-      // Senior high enrollee
       semister: "",
       strand: "",
       track: "",
@@ -421,4 +384,87 @@ export const endrollmentData = [
     },
   ];
   
+
+  export const enrollmentColumn: ColumnDef<StudentData>[] = [
+    {
+      id: "fullName",
+      header: "Info",
+      cell: ({ row }) => {
+  
+        const firstName = row.original.firstName
+        const lastName = row.original.lastName
+        const middleNameInitial = row.original.middleName ? row.original.middleName.charAt(0) : '';
+   
+        return (
+          <div className="flex items-start gap-x-2 ">
+              <User className="size-10 bg-gray-200 p-1 rounded-full"/>
+              <div className="">
+                <h1 className="text-xs">{lastName}, {firstName} {middleNameInitial}.</h1>
+                <h1 className="text-xs">{}</h1>
+  
+              </div>
+          </div>
+        )
+      },
+    },
+    
+    {
+      id: "gradeLevel",
+      header: "Grade level",
+      cell: ({ row }) => {
+  
+       const gradeLevel = row.original.gradeLevel
+   
+        return (
+          <div className=" ">
+              {gradeLevel}
+          </div>
+        )
+      },
+    },
+    {
+      id: "parent",
+      header: "Parent/Guardian",
+      cell: ({ row }) => {
+  
+       const gradeLevel = row.original
+   
+        return (
+          <div className="fle flex-col">
+              <h1>{gradeLevel.fatherFirstName} {gradeLevel.fatherLastName}</h1>
+              <h1>{gradeLevel.motherFirstName} {gradeLevel.motherLastName}</h1>
+              <h1>{gradeLevel.guardianFirstName} {gradeLevel.guardianLastName}</h1>
+          </div>
+        )
+      },
+    },
+    {
+      id: "contact",
+      header: "Parent/Guardian Contact",
+      cell: ({ row }) => {
+  
+       const gradeLevel = row.original
+   
+        return (
+          <div className="flex flex-col">
+              <h1>{gradeLevel.fatherContact} </h1>
+              <h1>{gradeLevel.motherContact} </h1>
+              <h1>{gradeLevel.guardianContact}</h1>
+          </div>
+        )
+      },
+    },
+{
+  id: "actions",
+  header: "Actions",
+  cell: ({  }) => {
+    
+    return (
+      <div className="flex items-center gap-x-2 ">
+          <Button variant={'default'} className="text-white">Enroll</Button> 
+      </div>
+    )
+  },
+},
+  ] 
 

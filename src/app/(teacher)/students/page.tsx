@@ -1,19 +1,21 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
+'use client'
 import React from 'react'
-
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Button } from '@/components/ui/button'
 import { File, ListFilterIcon } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { DataTable } from '@/components/data-table'
-import { studentsData } from '../../../../data/students-data'
-import { studentColumn } from './_components/studentsColumn'
 
-function Studentpage() {
+import EnrollmentDialog from '../my-advisees/_components/EnrollmentDialog'
+import { endrollmentData, enrollmentColumn } from './enrollment-data'
+
+
+
+function StudentsPage() {
   return (
-    <div>
-      <div className="container mx-auto p-4">
-        <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
+    <div className='container mx-auto p-4'>
+          <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
             <div className="flex items-center">
                 <div className="ml-auto flex items-center gap-2">
                     <DropdownMenu>
@@ -45,42 +47,25 @@ function Studentpage() {
                             Export
                         </span>
                     </Button>
+                    <EnrollmentDialog/>
                 </div>
             </div>
 
             <Card x-chunk="dashboard-06-chunk-0">
                 <CardHeader>
-                    <CardTitle>Advisory Class</CardTitle>
+                    <CardTitle>List of Students</CardTitle>
                     <CardDescription>
                         <div className="flex justify-between">
                             <h1>Manage the list of students.</h1>
-                            <div className="text-xs">
-                                <div className="flex items-center gap-x-2">
-                                    <div className="bg-blue-600 p-1 rounded-full size-2"></div>
-                                    <h1 className=''>Ready for promotion</h1>
-                                </div>
-                                <div className="flex items-center gap-x-2">
-                                    <div className="bg-orange-600 p-1 rounded-full size-2"></div>
-                                    <h1 className=''>Needs Intervention</h1>
-                                </div>
-                                <div className="flex items-center gap-x-2">
-                                    <div className="bg-red-600 p-1 rounded-full size-2"></div>
-                                    <h1 className=''>Failed</h1>
-                                </div>
-                                <div className="flex items-center gap-x-2">
-                                    <div className="bg-text p-1 rounded-full size-2"></div>
-                                    <h1 className=''>Pending</h1>
-                                </div>
-        
-                            </div>
+                          
                         </div>
                     </CardDescription>
                 </CardHeader>
-                <CardContent className='mt-[-50px]'>
+                <CardContent className=''>
                     <DataTable
-                        //@ts-expect-error
-                        columns={studentColumn}
-                        data={studentsData}
+                        columns={enrollmentColumn}
+                        // @ts-ignore
+                        data={endrollmentData}
                         filter="lastName"
                         placeholder="students by Last Name"
                         
@@ -88,9 +73,8 @@ function Studentpage() {
                 </CardContent>
             </Card>
         </main>
-      </div>
     </div>
   )
 }
 
-export default Studentpage
+export default StudentsPage

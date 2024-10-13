@@ -3,19 +3,13 @@ import Image from 'next/image'
 import React from 'react'
 import Logo from '@/../public/images/black-logo.svg'
 import Link from 'next/link'
-import { MdOutlineDashboard, MdOutlineSettings } from 'react-icons/md'
+import { MdOutlineClass, MdOutlineDashboard, MdOutlineSettings } from 'react-icons/md'
 import { usePathname } from 'next/navigation'
 import { PiStudent } from 'react-icons/pi'
 import { TbListNumbers } from "react-icons/tb";
 import { FaRegUser } from 'react-icons/fa6'
 import { BiHelpCircle } from 'react-icons/bi'
-import {
-    Accordion,
-    AccordionContent,
-    AccordionItem,
-    AccordionTrigger,
-  } from "@/components/ui/accordion"
-import { RxCaretDown } from 'react-icons/rx'
+import { GiTeacher } from "react-icons/gi";
 
 function Sidenav() {
     const pathname = usePathname()
@@ -32,29 +26,21 @@ function Sidenav() {
                 <MdOutlineDashboard className='size-5 w-10' />
                 <h1 className='tracking-wider'>Dashboard</h1>
             </Link>
-            <Accordion type="single" collapsible>
-                <AccordionItem value="item-1">
-                    <AccordionTrigger className={`${pathname === '/' ? "bg-[#0087ba]": "bg-transparent"}  flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium `}>
-                        <div className="flex items-center ">
-                            <PiStudent className='size-5 w-10' />
-                            <h1 className='tracking-wider ml-3'>Students</h1>
-                        </div>
-                       
-                        <RxCaretDown className='size-7' />
-                    </AccordionTrigger>
-                    <AccordionContent className='pl-10'>
-                        <div className="flex flex-col">
-                            <Link href={'/my-advisees'} className={`${pathname === '/my-advisees' ? "bg-[#0087ba]": "bg-transparent"} hover:underline flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}>
-                                My students
-                            </Link>
-                            <Link href={'/section'} className={`${pathname === '/section' ? "bg-[#0087ba]": "bg-transparent"} hover:underline  flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}>
-                               Classes
-                            </Link>
-                        </div>
-                   
-                    </AccordionContent>
-                </AccordionItem>
-            </Accordion>
+
+            <Link href={'/students'} className={`${pathname === '/students' ? "bg-[#0087ba]": "bg-transparent"} hover:underline flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}>
+                <PiStudent  className='size-5 w-10'/> 
+                <h1 className='tracking-wider'>Students</h1>
+            </Link>
+            <Link href={'/my-advisees'} className={`${pathname === '/my-advisees' ? "bg-[#0087ba]": "bg-transparent"} hover:underline flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}>
+                <GiTeacher  className='size-5 w-10'/>  
+                
+                <h1 className='tracking-wider'>Advisees</h1>
+            </Link>
+           
+            <Link href={'/section'} className={`${pathname === '/section' ? "bg-[#0087ba]": "bg-transparent"} hover:underline  flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}>
+                <MdOutlineClass className='size-5 w-10'/>
+                <h1 className='tracking-wider'>Classes</h1>
+            </Link>
             <Link href={'/assessments'} className={`${pathname === '/assessments' ? "bg-[#0087ba]": "bg-transparent"}  flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}>
                 <TbListNumbers className='size-4 w-10' />
                 <h1 className='tracking-wider'>Assessments</h1>

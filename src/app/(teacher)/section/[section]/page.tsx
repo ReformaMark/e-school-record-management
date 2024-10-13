@@ -15,13 +15,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { FaRegSave } from 'react-icons/fa'
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator
-} from "@/components/ui/breadcrumb"
+
 import { ChevronLeft } from 'lucide-react'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
@@ -38,21 +32,6 @@ function Section({params}:{params: {section: string}}) {
 
   return (
     <div className='bg-white m-5 min-h-screen max-w-full shadow-md p-5 space-y-5'>
-       <Breadcrumb className="hidden md:flex mb-6">
-            <BreadcrumbList>
-                <BreadcrumbItem>
-                    <BreadcrumbPage className="text-muted-foreground">Students</BreadcrumbPage>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator />
-                <BreadcrumbItem>
-                    <BreadcrumbPage  className="text-muted-foreground">Classes</BreadcrumbPage>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator />
-                <BreadcrumbItem>
-                    <BreadcrumbPage  >{section?.section}</BreadcrumbPage>
-                </BreadcrumbItem>
-            </BreadcrumbList>
-        </Breadcrumb>
       <div className="w-full flex items-center justify-between">
         <Link
           href="/section"

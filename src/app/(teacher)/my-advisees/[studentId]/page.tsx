@@ -26,7 +26,7 @@ function Student({
                     <ChevronLeft className="h-4 w-4" />
                     <span className="sr-only">Back</span>
                 </Link>
-                <h1 className=' text-xl font-semibold flex items-center'>Student Profile</h1>
+                <h1 className=' text-xl font-semibold flex items-center'>Student Report Card</h1>
                 <Button size="default" variant="outline" className="h-7 gap-1 bg-gray-100 py-2 ml-auto">
                     <File className="h-3.5 w-3.5" />
                     <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
