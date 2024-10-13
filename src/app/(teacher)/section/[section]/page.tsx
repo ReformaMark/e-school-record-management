@@ -22,13 +22,14 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator
 } from "@/components/ui/breadcrumb"
-import ClassRecord from '../_components/ClassRecord'
 import { ChevronLeft } from 'lucide-react'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
 import FinalGradeSHSTemplate from '@/app/components/FinalGradeSHSTemplate'
 import { DataTable } from '@/components/data-table'
 import { students, studentsData } from '../_components/studentData'
+import NeedsImprovement from '../_components/NeedsImprovement'
+import InputGrades from '../_components/InputGrades'
 
 function Section({params}:{params: {section: string}}) {
 
@@ -98,13 +99,14 @@ function Section({params}:{params: {section: string}}) {
             <TabsTrigger value="attendance" className='font-medium shadow-md border-b-2 data-[state=active]:border-b-primary' >Attendance</TabsTrigger>
             <TabsTrigger value="class-record" className='font-medium shadow-md border-b-2 data-[state=active]:border-b-primary' >Class Record</TabsTrigger>
             <TabsTrigger value="grades-summary" className='font-medium shadow-md border-b-2 data-[state=active]:border-b-primary'>Grades Summary</TabsTrigger>
+            <TabsTrigger value="needs-improvement" className='font-medium shadow-md border-b-2 data-[state=active]:border-b-primary'>Needs Improvement</TabsTrigger>
           </TabsList>
 
-          {/* Attendance */}
+          {/* Master List */}
           <TabsContent value="students" className='min-h-screen border-2 p-5'>
            
            <DataTable 
-           //@ts-expect-error
+     
             columns={students}
             data={studentsData}
             filter='lrn'
@@ -119,7 +121,8 @@ function Section({params}:{params: {section: string}}) {
 
           {/* Class Record*/}
           <TabsContent value="class-record" className=''>
-             <ClassRecord sec={section ? section.section : ""}/>
+            <InputGrades sec={section?.section ? section.section : ""}/>
+             {/* <ClassRecord sec={section ? section.section : ""}/> */}
           </TabsContent>
 
           {/* Grade summary */}
@@ -136,6 +139,10 @@ function Section({params}:{params: {section: string}}) {
               />
 
             )}
+          </TabsContent>
+
+          <TabsContent value="needs-improvement" className="">
+            <NeedsImprovement/>
           </TabsContent>
         </Tabs>
     </div>

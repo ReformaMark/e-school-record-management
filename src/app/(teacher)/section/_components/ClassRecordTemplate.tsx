@@ -136,10 +136,10 @@ function ClassRecordTemplate({
             <h1 className="w-[3%] uppercase border border-black border-collapse text-sm font-semibold text-center"></h1>
             <h1 className="w-[22%] uppercase border border-black border-collapse text-[0.6rem] flex justify-end items-center font-semibold text-right">Highest possible score</h1>
             <div className="w-[27%] uppercase border border-x-0 border-black border-collapse text-sm flex justify-center items-center font-semibold text-center">
-                <h1 className="w-[7%] h-full uppercase border border-b-0 border-black border-collapse text-[0.6rem] flex justify-center items-center font-semibold text-center"></h1>
-                <h1 className="w-[7%] h-full uppercase border border-b-0 border-black border-collapse text-[0.6rem] flex justify-center items-center font-semibold text-center"></h1>
-                <h1 className="w-[7%] h-full uppercase border border-b-0 border-black border-collapse text-[0.6rem] flex justify-center items-center font-semibold text-center"></h1>
-                <h1 className="w-[7%] h-full uppercase border border-b-0 border-black border-collapse text-[0.6rem] flex justify-center items-center font-semibold text-center"></h1>
+                <h1 className="w-[7%] h-full uppercase border border-b-0 border-black border-collapse text-[0.6rem] flex justify-center items-center font-semibold text-center">50</h1>
+                <h1 className="w-[7%] h-full uppercase border border-b-0 border-black border-collapse text-[0.6rem] flex justify-center items-center font-semibold text-center">50</h1>
+                <h1 className="w-[7%] h-full uppercase border border-b-0 border-black border-collapse text-[0.6rem] flex justify-center items-center font-semibold text-center">50</h1>
+                <h1 className="w-[7%] h-full uppercase border border-b-0 border-black border-collapse text-[0.6rem] flex justify-center items-center font-semibold text-center">50</h1>
                 <h1 className="w-[7%] h-full uppercase border border-b-0 border-black border-collapse text-[0.6rem] flex justify-center items-center font-semibold text-center"></h1>
                 <h1 className="w-[7%] h-full uppercase border border-b-0 border-black border-collapse text-[0.6rem] flex justify-center items-center font-semibold text-center"></h1>
                 <h1 className="w-[7%] h-full uppercase border border-b-0 border-black border-collapse text-[0.6rem] flex justify-center items-center font-semibold text-center"></h1>
@@ -151,10 +151,10 @@ function ClassRecordTemplate({
                 <h1 className="w-[10%] h-full uppercase border border-b-0 border-black border-collapse text-[0.6rem] flex justify-center items-center font-semibold text-center">20%</h1>
             </div>
             <div className="w-[28%] uppercase border border-black border-x-0 border-collapse text-sm flex justify-center items-center font-semibold text-center">
-                <h1 className="w-[7%] h-full  uppercase border border-b-0 border-black border-collapse text-[0.6rem] flex justify-center items-center font-semibold text-center"></h1>
-                <h1 className="w-[7%] h-full uppercase border border-b-0 border-black border-collapse text-[0.6rem] flex justify-center items-center font-semibold text-center"></h1>
-                <h1 className="w-[7%] h-full uppercase border border-b-0 border-black border-collapse text-[0.6rem] flex justify-center items-center font-semibold text-center"></h1>
-                <h1 className="w-[7%] h-full uppercase border border-b-0 border-black border-collapse text-[0.6rem] flex justify-center items-center font-semibold text-center"></h1>
+                <h1 className="w-[7%] h-full  uppercase border border-b-0 border-black border-collapse text-[0.6rem] flex justify-center items-center font-semibold text-center">50</h1>
+                <h1 className="w-[7%] h-full uppercase border border-b-0 border-black border-collapse text-[0.6rem] flex justify-center items-center font-semibold text-center">50</h1>
+                <h1 className="w-[7%] h-full uppercase border border-b-0 border-black border-collapse text-[0.6rem] flex justify-center items-center font-semibold text-center">50</h1>
+                <h1 className="w-[7%] h-full uppercase border border-b-0 border-black border-collapse text-[0.6rem] flex justify-center items-center font-semibold text-center">50</h1>
                 <h1 className="w-[7%] h-full uppercase border border-b-0 border-black border-collapse text-[0.6rem] flex justify-center items-center font-semibold text-center"></h1>
                 <h1 className="w-[7%] h-full uppercase border border-b-0 border-black border-collapse text-[0.6rem] flex justify-center items-center font-semibold text-center"></h1>
                 <h1 className="w-[7%] h-full uppercase border border-b-0 border-black border-collapse text-[0.6rem] flex justify-center items-center font-semibold text-center"></h1>
@@ -166,7 +166,7 @@ function ClassRecordTemplate({
                 <h1 className="w-[10%] h-full uppercase border border-b-0 border-black border-collapse text-[0.6rem] flex justify-center items-center font-semibold text-center">WS</h1>
             </div>
             <div className="w-[8%] uppercase border border-x-0 border-black border-collapse text-sm leading-relaxed grid grid-cols-3 justify-center items-center font-semibold text-center">
-                <h1 className="h-full uppercase border  border-black border-b-0 border-t-0 border-collapse text-xs flex justify-center items-center  font-semibold text-center"></h1>
+                <h1 className="h-full uppercase border  border-black border-b-0 border-t-0 border-collapse text-xs flex justify-center items-center  font-semibold text-center">50</h1>
                 <h1 className="h-full uppercase border border-black border-b-0 border-t-0 border-collapse text-[0.5rem] flex justify-center items-center  font-semibold text-center">100.00</h1>
                 <h1 className="h-full uppercase border border-black border-b-0 border-t-0 border-collapse text-[0.6rem] flex justify-center items-center  font-semibold text-center">20%</h1>
             </div>
