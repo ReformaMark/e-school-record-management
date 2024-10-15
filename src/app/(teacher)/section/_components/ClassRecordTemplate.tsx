@@ -75,7 +75,7 @@ function ClassRecordTemplate({
 
   return (
 
-    <div>
+    <div className='min-w-[1000px] text-primary'>
         <div className="flex w-full border-collapse">
             <h1 className='border w-[25%] px-3 py-1 uppercase border-black border-collapse text-xs font-semibold text-center'>Fist Quarter</h1>
             <h1 className='border w-[25%] px-3 py-1 uppercase border-black border-collapse text-xs font-semibold text-left'>Grade & Section  </h1>

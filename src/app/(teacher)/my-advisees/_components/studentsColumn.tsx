@@ -29,7 +29,7 @@ export const studentColumn: ColumnDef<StudentType>[]  = [
      
           return (
             <div className="flex items-start gap-x-2 ">
-                <User className="size-10 bg-gray-200 p-1 rounded-full"/>
+                <User className="hidden  size-10 bg-gray-200 p-1 rounded-full"/>
                 <div className="">
                   <h1 className="text-xs">{lastName}, {firstName} {middleNameInitial}.</h1>
                   <h1 className="text-xs">{}</h1>
@@ -60,10 +60,10 @@ export const studentColumn: ColumnDef<StudentType>[]  = [
           return (
             <div className="flex items-center gap-x-2 ">
               <Link href={`/my-advisees/${student.id}`} className="">
-                  <FaUserEdit className="size-6 text-gray-400 hover:text-orange-500"/>
+                  <FaUserEdit className="size-4 md:size-6 text-gray-400 hover:text-orange-500"/>
               </Link>
               <Link href={`/my-advisees/${student.id}`} className="">
-                  <FaInfoCircle className="size-6 text-gray-400 hover:text-blue-500"/>
+                  <FaInfoCircle className="size-4 md:size-6 text-gray-400 hover:text-blue-500"/>
               </Link>
             </div>
           )

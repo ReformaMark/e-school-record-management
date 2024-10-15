@@ -27,21 +27,21 @@ function ClassRecordDialog({
   const [isOpen, setIsOpen ] = useState<boolean>(false)
   console.log(isDialogOpen)
   return (
-    <div className="">
+    <div className="text-primary">
         <Dialog open={isDialogOpen}>
             <DialogTrigger onClick={()=> setIsDialogOpen(!isDialogOpen)} className='border shadow-md flex justify-center items-center gap-x-3 bg-gray-400 text-white border-gray-100 rounded-md px-2 py-1'>
               <FaEye  className='size-5 text-gray-300'/> Class Record
             </DialogTrigger>
-            <DialogContent className='max-w-full'>
-            <DialogHeader>
-                <DialogTitle>Class Record</DialogTitle>
-                <DialogDescription>
+            <DialogContent className='max-w-full '>
+            <DialogHeader className='max-w-full overflow-auto'>
+                <DialogTitle className='text-left text-primary'>Class Record</DialogTitle>
+                <div className=''>
                   <ClassRecordTemplate subject={subject } gradeLevel={gradeLevel}/>
-                </DialogDescription>
+                </div>
             </DialogHeader>
             <DialogFooter>
                 <Button variant={'ghost'}>Cancel</Button>
-                <Button  variant={'default'} onClick={()=> {
+                <Button variant={'default'} onClick={()=> {
                   setIsDialogOpen(false)
                   setIsOpen(true)
                   }} className='text-white flex gap-x-3'><IoMdPrint />Print</Button>
