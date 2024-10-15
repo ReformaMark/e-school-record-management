@@ -23,7 +23,7 @@ const SystemAdminLayout = ({
    
                 <SystemAdminSidenav />
 
-                <div className=" w-full md:absolute md:right-0 md:top-[80px] md:w-[80%] z-0">
+                <div className="w-full md:absolute md:right-0 md:top-[80px] md:w-[80%] z-0">
                     {children}
                 </div>
             </body>

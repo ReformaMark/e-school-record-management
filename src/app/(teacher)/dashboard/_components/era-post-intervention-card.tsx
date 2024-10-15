@@ -41,9 +41,12 @@ export default function EraPostInterventionCard() {
                         </SelectTrigger>
                         <SelectContent>
                             <SelectItem value="all">All Year Levels</SelectItem>
-                            <SelectItem value="1">Year 1</SelectItem>
-                            <SelectItem value="2">Year 2</SelectItem>
-                            <SelectItem value="3">Year 3</SelectItem>
+                            <SelectItem value="grade7">Grade 7</SelectItem>
+                            <SelectItem value="grade8">Grade 8</SelectItem>
+                            <SelectItem value="grade9">Grade 9</SelectItem>
+                            <SelectItem value="grade10">Grade 10</SelectItem>
+                            <SelectItem value="grade11">Grade 11</SelectItem>
+                            <SelectItem value="grade12">Grade 12</SelectItem>
                         </SelectContent>
                     </Select>
                 </div>

@@ -21,17 +21,17 @@ export function StudentPerformanceChart({ studentId, subject }: StudentPerforman
     const chartConfig = {
         score: {
             label: "Score",
-            color: "hsl(142, 76%, 36%)", // Dark Green
+            color: "hsl(var(--pieChart-1))",
         },
     }
 
     console.log(studentId);
 
     return (
-        <Card className="bg-green-50 lg:w-fit">
+        <Card className="lg:w-fit">
             <CardHeader>
-                <CardTitle className="text-green-800">Student Performance</CardTitle>
-                <CardDescription className="text-green-600">Quarterly scores for {subject}</CardDescription>
+                <CardTitle className="text-text">Student Performance</CardTitle>
+                <CardDescription className="text-muted-foreground">Quarterly scores for {subject}</CardDescription>
             </CardHeader>
             <CardContent>
                 <div className="w-full overflow-x-auto">
@@ -56,7 +56,7 @@ export function StudentPerformanceChart({ studentId, subject }: StudentPerforman
                                     cursor={false}
                                     content={<ChartTooltipContent />}
                                 />
-                                <Bar dataKey="score" fill="hsl(142, 76%, 36%)" radius={[4, 4, 0, 0]} />
+                                <Bar dataKey="score" fill="var(--color-score)" radius={[4, 4, 0, 0]} />
                             </BarChart>
                         </ChartContainer>
                     </div>

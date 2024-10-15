@@ -10,28 +10,30 @@ interface ByYearLevelChartProps {
 
 export function ByYearLevelChart({ yearLevel }: ByYearLevelChartProps) {
   const data = [
-    { subject: "Math", preIntervention: 75, postIntervention: 85 },
-    { subject: "Science", preIntervention: 70, postIntervention: 82 },
-    { subject: "English", preIntervention: 80, postIntervention: 88 },
-    { subject: "History", preIntervention: 72, postIntervention: 80 },
+    { yearLevel: "Grade 7", preIntervention: 70, postIntervention: 80 },
+    { yearLevel: "Grade 8", preIntervention: 75, postIntervention: 85 },
+    { yearLevel: "Grade 9", preIntervention: 72, postIntervention: 82 },
+    { yearLevel: "Grade 10", preIntervention: 72, postIntervention: 82 },
+    { yearLevel: "Grade 11", preIntervention: 72, postIntervention: 82 },
+    { yearLevel: "Grade 12", preIntervention: 72, postIntervention: 82 },
   ]
 
   const chartConfig = {
     preIntervention: {
       label: "Pre-Intervention",
-      color: "hsl(142, 76%, 36%)", // Dark Green
+      color: "hsl(var(--pieChart-1))",
     },
     postIntervention: {
       label: "Post-Intervention",
-      color: "hsl(142, 76%, 56%)", // Medium Green
+      color: "hsl(var(--pieChart-3))",
     },
   }
 
   return (
-    <Card className="bg-green-50">
+    <Card className="lg:w-fit">
       <CardHeader>
-        <CardTitle className="text-green-800 text-lg sm:text-xl md:text-2xl">Performance by Year Level: {yearLevel}</CardTitle>
-        <CardDescription className="text-green-600 text-sm sm:text-base">Comparison of pre and post-intervention performance for {yearLevel} across subjects</CardDescription>
+        <CardTitle className="text-text">Performance by Year Level: {yearLevel}</CardTitle>
+        <CardDescription className="text-muted-foreground">Comparison of pre and post-intervention performance for {yearLevel} across subjects</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="w-full overflow-x-auto">
@@ -39,24 +41,24 @@ export function ByYearLevelChart({ yearLevel }: ByYearLevelChartProps) {
             <ChartContainer config={chartConfig} className="h-[300px] sm:h-[400px]">
               <BarChart accessibilityLayer data={data}>
                 <XAxis
-                  dataKey="subject"
+                  dataKey="yearLevel"
                   tickLine={false}
                   axisLine={false}
                   tickMargin={10}
                   stroke="hsl(142, 76%, 36%)"
                   fontSize={12}
                 />
-                <YAxis 
-                  tickLine={false} 
-                  axisLine={false} 
+                <YAxis
+                  tickLine={false}
+                  axisLine={false}
                   stroke="hsl(142, 76%, 36%)"
                   domain={[0, 100]}
                   ticks={[0, 25, 50, 75, 100]}
                   fontSize={12}
                 />
                 <ChartTooltip content={<ChartTooltipContent />} />
-                <Bar dataKey="preIntervention" fill="hsl(142, 76%, 36%)" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="postIntervention" fill="hsl(142, 76%, 56%)" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="preIntervention" fill="var(--color-preIntervention)" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="postIntervention" fill="var(--color-postIntervention)" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ChartContainer>
           </div>

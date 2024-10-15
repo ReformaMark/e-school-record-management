@@ -35,6 +35,7 @@ function Navbar() {
         <div className="flex items-center gap-x-5">
             <FaRegMessage className='size-4 text-textWhite'/>
             <IoMdNotificationsOutline className='size-6 text-textWhite'/>
+            
             <div className="hidden md:flex items-center gap-x-3">
                 <Avatar>
                     <AvatarImage src="https://github.com/shadcn.png" />

@@ -27,7 +27,7 @@ export const ComplaintsCard = () => {
         <>
             <Card className="col-span-1">
                 <CardHeader>
-                    <CardTitle className="text-green-800">Recent Complaints</CardTitle>
+                    <CardTitle>Recent Complaints</CardTitle>
                     <CardDescription>Click on a complaint to respond</CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -35,7 +35,7 @@ export const ComplaintsCard = () => {
                         {complaints.map((complaint) => (
                             <li
                                 key={complaint.id}
-                                className="flex items-center justify-between p-3 bg-white rounded-lg shadow cursor-pointer hover:bg-green-100 transition-colors"
+                                className="flex items-center justify-between p-3 bg-white rounded-lg shadow cursor-pointer hover:bg-foreground/50 transition-colors"
                                 onClick={() => setSelectedComplaint(complaint)}
                             >
                                 <div className="flex items-center space-x-3">
@@ -44,18 +44,18 @@ export const ComplaintsCard = () => {
                                         <AvatarFallback>{complaint.parent.split(' ').map(n => n[0]).join('')}</AvatarFallback>
                                     </Avatar>
                                     <div>
-                                        <p className="font-medium text-green-800">{complaint.subject}</p>
-                                        <p className="text-sm text-green-600">{complaint.parent}</p>
+                                        <p className="font-medium">{complaint.subject}</p>
+                                        <p className="text-sm text-muted-foreground">{complaint.parent}</p>
                                     </div>
                                 </div>
                                 <div className="flex items-center space-x-2">
                                     <span className={`px-2 py-1 text-xs rounded-full ${complaint.status === 'New' ? 'bg-red-100 text-red-800' :
                                         complaint.status === 'In Progress' ? 'bg-yellow-100 text-yellow-800' :
-                                            'bg-green-100 text-green-800'
+                                            'bg-green-100'
                                         }`}>
                                         {complaint.status}
                                     </span>
-                                    <span className="text-sm text-green-600">{complaint.date}</span>
+                                    <span className="text-sm">{complaint.date}</span>
                                 </div>
                             </li>
                         ))}
@@ -65,22 +65,22 @@ export const ComplaintsCard = () => {
 
             <Card className="col-span-1">
                 <CardHeader>
-                    <CardTitle className="text-green-800">Respond to Complaint</CardTitle>
+                    <CardTitle>Respond to Complaint</CardTitle>
                     <CardDescription>Provide a thoughtful response to the selected complaint</CardDescription>
                 </CardHeader>
                 <CardContent>
                     {selectedComplaint ? (
                         <form className="space-y-4">
                             <div className="space-y-2">
-                                <label className="text-sm font-medium text-green-800">Complaint Subject</label>
-                                <Input value={selectedComplaint.subject} readOnly className="bg-green-50" />
+                                <label className="text-sm font-medium">Complaint Subject</label>
+                                <Input value={selectedComplaint.subject} readOnly />
                             </div>
                             <div className="space-y-2">
-                                <label className="text-sm font-medium text-green-800">Parent</label>
-                                <Input value={selectedComplaint.parent} readOnly className="bg-green-50" />
+                                <label className="text-sm font-medium">Parent</label>
+                                <Input value={selectedComplaint.parent} readOnly />
                             </div>
                             <div className="space-y-2">
-                                <label className="text-sm font-medium text-green-800">Status</label>
+                                <label className="text-sm font-medium">Status</label>
                                 <Select defaultValue={selectedComplaint.status}>
                                     <SelectTrigger>
                                         <SelectValue placeholder="Select status" />
@@ -93,13 +93,13 @@ export const ComplaintsCard = () => {
                                 </Select>
                             </div>
                             <div className="space-y-2">
-                                <label className="text-sm font-medium text-green-800">Your Response</label>
+                                <label className="text-sm font-medium">Your Response</label>
                                 <Textarea placeholder="Type your response here..." className="h-32" />
                             </div>
-                            <Button className="w-full bg-green-600 hover:bg-green-700 text-white">Send Response</Button>
+                            <Button className="w-full bg-primary text-white">Send Response</Button>
                         </form>
                     ) : (
-                        <div className="flex flex-col items-center justify-center h-64 text-green-600">
+                        <div className="flex flex-col items-center justify-center h-64 text-foreground">
                             <AlertCircleIcon className="h-12 w-12 mb-4" />
                             <p className="text-lg font-medium">Select a complaint to respond</p>
                         </div>

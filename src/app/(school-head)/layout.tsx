@@ -17,14 +17,14 @@ const SchoolHeadLayout = ({
 }) => {
     return (
         <html className="h-full" lang="en">
-            <body className="bg-[#f0f8f3] relative">
+            <body className="bg-[#E0E7E9] relative">
                 <Toaster />
-                <div className="fixed top-0 right-0 w-[80%] ml-auto z-50">
-                    <SchoolHeadNavbar />
-                </div>
+
+                <SchoolHeadNavbar />
+
                 <SchoolHeadSideNav />
 
-                <div className="absolute right-0 top-[90px] w-[80%] z-0">
+                <div className="w-full pt-[15%] md:pt-0  md:absolute z-30 md:right-0 md:top-[80px] md:w-[80%]">
                     {children}
                 </div>
             </body>

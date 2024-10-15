@@ -17,7 +17,7 @@ export const SidebarSection = ({
 
     return (
         <div className="flex flex-col justify-center mt-3 cursor-pointer pl-1.5">
-            <div className="flex items-center px-4 group" onClick={toggle}>
+            <div className="flex items-center px-4 group text-white" onClick={toggle}>
 
                 <Icon className="mr-2 h-4 w-4" />
 

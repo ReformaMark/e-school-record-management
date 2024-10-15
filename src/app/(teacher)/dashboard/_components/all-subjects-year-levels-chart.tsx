@@ -15,19 +15,19 @@ export function AllSubjectsYearLevelsChart() {
     const chartConfig = {
         preIntervention: {
             label: "Pre-Intervention",
-            color: "hsl(142, 76%, 36%)", // Dark Green
+            color: "hsl(var(--pieChart-1))",
         },
         postIntervention: {
             label: "Post-Intervention",
-            color: "hsl(142, 76%, 56%)", // Medium Green
+            color: "hsl(var(--pieChart-3))",
         },
     }
 
     return (
-        <Card className="bg-green-50 lg:w-fit">
+        <Card className="lg:w-fit">
             <CardHeader>
-                <CardTitle className="text-green-800">All Subjects and Year Levels</CardTitle>
-                <CardDescription className="text-green-600">Comparison of pre and post-intervention performance across all subjects and year levels</CardDescription>
+                <CardTitle className="text-text">All Subjects and Year Levels</CardTitle>
+                <CardDescription className="text-muted-foreground">Comparison of pre and post-intervention performance across all subjects and year levels</CardDescription>
             </CardHeader>
             <CardContent>
                 <div className="w-full overflow-x-auto">
@@ -51,8 +51,8 @@ export function AllSubjectsYearLevelsChart() {
                                     fontSize={12}
                                 />
                                 <ChartTooltip content={<ChartTooltipContent />} />
-                                <Bar dataKey="preIntervention" fill="hsl(142, 76%, 36%)" radius={[4, 4, 0, 0]} />
-                                <Bar dataKey="postIntervention" fill="hsl(142, 76%, 56%)" radius={[4, 4, 0, 0]} />
+                                <Bar dataKey="preIntervention" fill="var(--color-preIntervention)" radius={[4, 4, 0, 0]} />
+                                <Bar dataKey="postIntervention" fill="var(--color-postIntervention)" radius={[4, 4, 0, 0]} />
                             </BarChart>
                         </ChartContainer>
                     </div>

@@ -35,34 +35,34 @@ const SchoolHeadComplaintsPage = () => {
             </Breadcrumb>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 my-6">
-                <Card>
+                <Card className="bg-[#A3C6C4] text-white border-none">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium text-green-600">Total Complaints</CardTitle>
-                        <MessageSquareIcon className="h-4 w-4 text-green-600" />
+                        <CardTitle className="text-sm font-medium">Total Complaints</CardTitle>
+                        <MessageSquareIcon className="h-4 w-4" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold text-green-800">28</div>
-                        <p className="text-xs text-green-600">+2 from last week</p>
+                        <div className="text-2xl font-bold ">28</div>
+                        <p className="text-xs ">+2 from last week</p>
                     </CardContent>
                 </Card>
-                <Card>
+                <Card className="bg-[#354649] text-white border-none">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium text-yellow-600">Pending</CardTitle>
-                        <ClockIcon className="h-4 w-4 text-yellow-600" />
+                        <CardTitle className="text-sm font-medium ">Pending</CardTitle>
+                        <ClockIcon className="h-4 w-4 " />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold text-yellow-800">7</div>
-                        <p className="text-xs text-yellow-600">Requires attention</p>
+                        <div className="text-2xl font-bold ">7</div>
+                        <p className="text-xs ">Requires attention</p>
                     </CardContent>
                 </Card>
-                <Card>
+                <Card className="bg-[#6C7A89] text-white border-none">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium text-green-600">Resolved</CardTitle>
-                        <CheckCircle2Icon className="h-4 w-4 text-green-600" />
+                        <CardTitle className="text-sm font-medium ">Resolved</CardTitle>
+                        <CheckCircle2Icon className="h-4 w-4 " />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold text-green-800">21</div>
-                        <p className="text-xs text-green-600">75% resolution rate</p>
+                        <div className="text-2xl font-bold">21</div>
+                        <p className="text-xs">75% resolution rate</p>
                     </CardContent>
                 </Card>
             </div>

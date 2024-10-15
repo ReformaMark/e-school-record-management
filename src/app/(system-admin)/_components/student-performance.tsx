@@ -38,7 +38,7 @@ export const StudentPerformance = () => {
       <CardContent>
         <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
           <BarChart accessibilityLayer data={studentPerformanceData}>
-            <CartesianGrid vertical={false} />
+            <CartesianGrid strokeDasharray="3 3" />
             <XAxis
               dataKey="name"
               tickLine={false}

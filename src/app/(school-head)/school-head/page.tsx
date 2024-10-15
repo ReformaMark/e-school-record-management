@@ -18,7 +18,7 @@ import { StudentDistribution } from "@/app/(system-admin)/_components/student-di
 
 const SchoolHeadPage = () => {
     return (
-        <div className="container mx-auto p-4">
+        <div className="container mx-auto py-6 px-4">
             <Breadcrumb className="hidden md:flex mb-6">
                 <BreadcrumbList>
                     <BreadcrumbItem>
@@ -32,34 +32,34 @@ const SchoolHeadPage = () => {
             </Breadcrumb>
 
             <div className="grid gap-4 md:grid-cols-3 mb-8">
-                <Card>
+                <Card className="bg-[#A3C6C4] text-white border-none">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">Total Registrars</CardTitle>
-                        <UserCheck className="h-4 w-4 text-primary" />
+                        <UserCheck className="h-4 w-4 text-white" />
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">{schoolStats.totalRegistrars}</div>
-                        <p className="text-xs text-primary">School Registrars</p>
+                        <p className="text-xs text-white">School Registrars</p>
                     </CardContent>
                 </Card>
-                <Card>
+                <Card className="bg-[#6C7A89] text-white border-none">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">Total Teachers</CardTitle>
-                        <Users className="h-4 w-4 text-primary" />
+                        <Users className="h-4 w-4 text-white" />
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">{schoolStats.totalTeachers}</div>
-                        <p className="text-xs text-primary">Class Advisers and Subject Teachers</p>
+                        <p className="text-xs text-white">Class Advisers and Subject Teachers</p>
                     </CardContent>
                 </Card>
-                <Card>
+                <Card className="bg-[#354649] text-white border-none">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">Total Students</CardTitle>
-                        <GraduationCap className="h-4 w-4 text-primary" />
+                        <GraduationCap className="h-4 w-4 text-white" />
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">{schoolStats.totalStudents}</div>
-                        <p className="text-xs text-primary">Enrolled Students</p>
+                        <p className="text-xs text-white">Enrolled Students</p>
                     </CardContent>
                 </Card>
             </div>

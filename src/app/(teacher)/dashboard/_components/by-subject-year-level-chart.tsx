@@ -22,19 +22,19 @@ export function BySubjectYearLevelChart({ subject, yearLevel }: BySubjectYearLev
     const chartConfig = {
         preIntervention: {
             label: "Pre-Intervention",
-            color: "hsl(142, 76%, 36%)", // Dark Green
+            color: "hsl(var(--pieChart-1))",
         },
         postIntervention: {
             label: "Post-Intervention",
-            color: "hsl(24.6, 95%, 53.1%)", // Medium Green
+            color: "hsl(var(--pieChart-3))",
         },
     }
 
     return (
-        <Card className="bg-green-50">
+        <Card className="lg:w-fit">
             <CardHeader>
-                <CardTitle className="text-green-800 text-lg sm:text-xl md:text-2xl">Performance by Subject and Year Level</CardTitle>
-                <CardDescription className="text-green-600 text-sm sm:text-base">Comparison of pre and post-intervention performance for {subject} in {yearLevel}</CardDescription>
+                <CardTitle className="text-text">Performance by Subject and Year Level</CardTitle>
+                <CardDescription className="text-muted-foreground">Comparison of pre and post-intervention performance for {subject} in {yearLevel}</CardDescription>
             </CardHeader>
             <CardContent>
                 <div className="w-full overflow-x-auto">
@@ -58,8 +58,8 @@ export function BySubjectYearLevelChart({ subject, yearLevel }: BySubjectYearLev
                                     fontSize={12}
                                 />
                                 <ChartTooltip content={<ChartTooltipContent />} />
-                                <Line type="monotone" dataKey="preIntervention" strokeWidth={2} stroke="hsl(142, 76%, 36%)" />
-                                <Line type="monotone" dataKey="postIntervention" strokeWidth={2} stroke="hsl(24.6, 95%, 53.1%)" />
+                                <Line type="monotone" dataKey="preIntervention" strokeWidth={2} stroke="var(--color-preIntervention)" />
+                                <Line type="monotone" dataKey="postIntervention" strokeWidth={2} stroke="var(--color-postIntervention)" />
                             </LineChart>
                         </ChartContainer>
                     </div>

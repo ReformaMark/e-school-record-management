@@ -51,6 +51,10 @@ input[type="number"] {
     --chart-5: 27 87% 67%;
     --chart-primary: 189, 16%, 25%;
     --chart-destruction: 0 84.2% 60.2%;
+    --pieChart-1: 189, 16%, 25%;
+    --pieChart-2: 211, 12%, 48%;
+    --pieChart-3: 177, 23%, 71%;
+    --pieChart-4: 193, 17%, 90%;
     --radius: 0.5rem;
   }
   .dark {

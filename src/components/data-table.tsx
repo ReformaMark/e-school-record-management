@@ -1,7 +1,14 @@
 "use client"
 
-import { useState } from "react"
-
+import { Input } from "@/components/ui/input"
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/components/ui/table"
 import {
     ColumnDef,
     ColumnFiltersState,
@@ -13,27 +20,14 @@ import {
     getSortedRowModel,
     useReactTable,
 } from "@tanstack/react-table"
-
-import { Input } from "@/components/ui/input"
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table"
+import { useState } from "react"
 import { DataTablePagination } from "./data-table-pagination"
 
-
-
-
-
 interface DataTableProps<TData, TValue> {
-    columns: ColumnDef<TData, TValue>[];
-    data: TData[];
-    filter?: string;
-    placeholder?: string;
+    columns: ColumnDef<TData, TValue>[]
+    data: TData[]
+    filter?: string
+    placeholder?: string
 }
 
 export function DataTable<TData, TValue>({
@@ -61,8 +55,7 @@ export function DataTable<TData, TValue>({
     })
 
     return (
-        <div>
-
+        <div className="w-full overflow-hidden">
             {/* Input code */}
             <div className="flex items-center py-4">
                 <Input
@@ -71,19 +64,22 @@ export function DataTable<TData, TValue>({
                     onChange={(event) =>
                         table.getColumn(`${filter}`)?.setFilterValue(event.target.value)
                     }
-                    className="md:max-w-sm border-green-300 focus:border-primary-foreground focus:ring-primary"
+                    className="max-w-sm border-primary focus:border-primary-foreground focus:ring-primary"
                 />
             </div>
 
             {/* Table Code */}
-            <div className="rounded-md border border-primary-foreground/50">
+            <div className="rounded-md border border-primary-foreground/50 overflow-x-auto">
                 <Table>
-                    <TableHeader className="bg-foreground text-xs md:text-sm">
+                    <TableHeader className="bg-foreground">
                         {table.getHeaderGroups().map((headerGroup) => (
                             <TableRow key={headerGroup.id}>
                                 {headerGroup.headers.map((header) => {
                                     return (
-                                        <TableHead key={header.id} className="text-primary">
+                                        <TableHead
+                                            key={header.id}
+                                            className="text-primary text-xs sm:text-sm md:text-base whitespace-nowrap px-2 py-3 first:pl-4 last:pr-4"
+                                        >
                                             {header.isPlaceholder
                                                 ? null
                                                 : flexRender(
@@ -96,20 +92,20 @@ export function DataTable<TData, TValue>({
                             </TableRow>
                         ))}
                     </TableHeader>
-                    <TableBody className="text-xs md:text-sm text-primary">
+                    <TableBody className="text-primary">
                         {table.getRowModel().rows?.length ? (
                             table.getRowModel().rows.map((row) => (
                                 <TableRow
                                     key={row.id}
                                     data-state={row.getIsSelected() && "selected"}
-                                    className="hover:bg-green-50"
+                                    className="hover:bg-foreground/50"
                                 >
                                     {row.getVisibleCells().map((cell) => (
-                                        <TableCell key={cell.id}>
-                                            {flexRender(
-                                                cell.column.columnDef.cell,
-                                                cell.getContext()
-                                            )}
+                                        <TableCell
+                                            key={cell.id}
+                                            className="text-xs sm:text-sm md:text-base px-2 py-3 first:pl-4 last:pr-4"
+                                        >
+                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                         </TableCell>
                                     ))}
                                 </TableRow>

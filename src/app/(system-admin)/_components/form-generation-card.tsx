@@ -29,13 +29,12 @@ const chartConfig = {
     },
     form10: {
         label: "Form 10",
-        color: "hsl(var(--chart-destruction))",
+        color: "hsl(var(--pieChart-3))",
     },
     generated: {
         label: "Generated",
     }
 } satisfies ChartConfig
-
 
 export const FormGenerationCard = () => {
     const totalVisitors = useMemo(() => {

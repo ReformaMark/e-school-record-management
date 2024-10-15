@@ -2,13 +2,13 @@
 
 import { Line, LineChart, XAxis, YAxis } from "recharts"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
+import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 
 interface ComparativePerformanceChartProps {
     studentId: string
     subject: string
 }
-
+ 
 export function ComparativePerformanceChart({ studentId, subject }: ComparativePerformanceChartProps) {
 
     const data = [
@@ -21,21 +21,21 @@ export function ComparativePerformanceChart({ studentId, subject }: ComparativeP
     const chartConfig = {
         currentYear: {
             label: "Current Year",
-            color: "hsl(24.6, 95%, 53.1%)",
+            color: "hsl(var(--pieChart-1))",
         },
         previousYear: {
             label: "Previous Year",
-            color: "hsl(142, 76%, 36%)",
-        },
-    }
+            color: "hsl(var(--pieChart-3))",
+        }
+    } satisfies ChartConfig
 
     console.log(studentId);
 
     return (
-        <Card className="bg-green-50 lg:w-fit">
+        <Card className="lg:w-fit">
             <CardHeader>
-                <CardTitle className="text-green-800">Comparative Performance</CardTitle>
-                <CardDescription className="text-green-600">Current year vs Previous year for {subject}</CardDescription>
+                <CardTitle className="text-text">Comparative Performance</CardTitle>
+                <CardDescription className="text-muted-foreground">Current year vs Previous year for {subject}</CardDescription>
             </CardHeader>
             <CardContent>
                 <div className="w-full overflow-x-auto">
@@ -53,8 +53,8 @@ export function ComparativePerformanceChart({ studentId, subject }: ComparativeP
                                     axisLine={false}
                                 />
                                 <ChartTooltip content={<ChartTooltipContent />} />
-                                <Line type="monotone" dataKey="currentYear" strokeWidth={2} stroke="hsl(24.6, 95%, 53.1%)" />
-                                <Line type="monotone" dataKey="previousYear" strokeWidth={2} stroke="hsl(142, 76%, 36%)" />
+                                <Line type="monotone" dataKey="currentYear" strokeWidth={2} stroke="var(--color-currentYear)" />
+                                <Line type="monotone" dataKey="previousYear" strokeWidth={2} stroke="var(--color-previousYear)" />
                             </LineChart>
                         </ChartContainer>
                     </div>

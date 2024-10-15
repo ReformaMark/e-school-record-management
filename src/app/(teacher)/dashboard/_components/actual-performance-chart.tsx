@@ -20,17 +20,17 @@ export function ActualPerformanceChart({ studentId, subject }: ActualPerformance
   const chartConfig = {
     score: {
       label: "Score",
-      color: "hsl(142, 76%, 36%)", // Dark Green
+      color: "hsl(var(--chart-primary))",
     },
   }
 
   console.log(studentId)
 
   return (
-    <Card className="bg-green-50 lg:w-fit">
+    <Card className="lg:w-fit">
       <CardHeader>
-        <CardTitle className="text-green-800 ">Actual Performance (Without Intervention)</CardTitle>
-        <CardDescription className="text-green-600">Quarterly scores for {subject}</CardDescription>
+        <CardTitle className="text-text">Actual Performance (Without Intervention)</CardTitle>
+        <CardDescription className="text-muted-foreground">Quarterly scores for {subject}</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="w-full overflow-x-auto">
@@ -40,8 +40,8 @@ export function ActualPerformanceChart({ studentId, subject }: ActualPerformance
                 <XAxis
                   dataKey="quarter"
                   tickLine={false}
-                  axisLine={false}
                   tickMargin={10}
+                  axisLine={false}
                   stroke="hsl(142, 76%, 36%)"
                   fontSize={12}
                 />
@@ -57,7 +57,7 @@ export function ActualPerformanceChart({ studentId, subject }: ActualPerformance
                   cursor={false}
                   content={<ChartTooltipContent />}
                 />
-                <Bar dataKey="score" fill="hsl(142, 76%, 36%)" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="score" fill="var(--color-score)" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ChartContainer>
           </div>

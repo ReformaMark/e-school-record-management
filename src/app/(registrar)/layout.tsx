@@ -6,8 +6,8 @@ import { SchoolRegistrarNavbar } from "./_components/school-registrar-navbar";
 import { SchoolRegistrarSideNav } from "./_components/school-registrar-sidenav";
 
 export const metadata: Metadata = {
-    title: "System Admin",
-    description: "System Admin Page",
+    title: "School Registrar",
+    description: "School registrar page",
 };
 
 const SchoolHeadLayout = ({
@@ -17,14 +17,14 @@ const SchoolHeadLayout = ({
 }) => {
     return (
         <html className="h-full" lang="en">
-            <body className="bg-[#f0f8f3] relative">
+            <body className="bg-background relative">
                 <Toaster />
-                <div className="fixed top-0 right-0 w-[80%] ml-auto z-50">
-                    <SchoolRegistrarNavbar />
-                </div>
+
+                <SchoolRegistrarNavbar />
+
                 <SchoolRegistrarSideNav />
 
-                <div className="absolute right-0 top-[90px] w-[80%] z-0">
+                <div className="w-full md:absolute md:right-0 md:top-[80px] md:w-[80%] z-0">
                     {children}
                 </div>
             </body>

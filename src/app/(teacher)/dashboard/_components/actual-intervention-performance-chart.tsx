@@ -21,17 +21,17 @@ export function ActualInterventionPerformanceChart({ studentId, subject }: Actua
     const chartConfig = {
         score: {
             label: "Score",
-            color: "hsl(142, 76%, 76%)", // Light Green
+            color: "hsl(var(--chart-primary))",
         },
     }
 
     console.log(studentId);
 
     return (
-        <Card className="bg-green-50 lg:w-fit">
+        <Card className="lg:w-fit">
             <CardHeader>
-                <CardTitle className="text-green-800 ">Actual Intervention Performance</CardTitle>
-                <CardDescription className="text-green-600">Quarterly scores after intervention for {subject}</CardDescription>
+                <CardTitle className="text-text">Actual Intervention Performance</CardTitle>
+                <CardDescription className="text-muted-foreground">Quarterly scores after intervention for {subject}</CardDescription>
             </CardHeader>
             <CardContent>
                 <div className="w-full overflow-x-auto">
@@ -55,7 +55,7 @@ export function ActualInterventionPerformanceChart({ studentId, subject }: Actua
                                     fontSize={12}
                                 />
                                 <ChartTooltip content={<ChartTooltipContent />} />
-                                <Line type="monotone" dataKey="score" strokeWidth={2} stroke="hsl(142, 76%, 76%)" />
+                                <Line type="monotone" dataKey="score" strokeWidth={2} stroke="var(--color-score)" />
                             </LineChart>
                         </ChartContainer>
                     </div>

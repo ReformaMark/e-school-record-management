@@ -31,7 +31,7 @@ function DashboardPage() {
       </Breadcrumb>
 
       <div className="grid gap-4 md:grid-cols-3 mb-8">
-        <Card className="bg-foreground text-text">
+        <Card className="bg-foreground text-white">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Students</CardTitle>
             <UserCheckIcon className="h-4 w-4 " />
@@ -41,7 +41,7 @@ function DashboardPage() {
             <p className="text-xs ">Total Students</p>
           </CardContent>
         </Card>
-        <Card className="bg-primary-foreground text-text">
+        <Card className="bg-primary-foreground text-white">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">At-Risk Students</CardTitle>
             <Users2Icon className="h-4 w-4 " />
@@ -51,7 +51,7 @@ function DashboardPage() {
             <p className="text-xs ">At-Risk Students</p>
           </CardContent>
         </Card>
-        <Card className="bg-primary text-text">
+        <Card className="bg-primary text-white">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Pending Interventions</CardTitle>
             <GraduationCapIcon className="h-4 w-4 " />

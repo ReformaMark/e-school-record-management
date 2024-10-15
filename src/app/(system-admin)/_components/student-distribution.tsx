@@ -28,23 +28,23 @@ const studentDistributionData = [
 const chartConfig = {
     grade7: {
         label: "Grade 7",
-        color: "hsl(var(--chart-1))",
+        color: "hsl(var(--pieChart-1))",
     },
     grade8: {
         label: "Grade 8",
-        color: "hsl(var(--chart-2))",
+        color: "hsl(var(--pieChart-2))",
     },
     grade9: {
         label: "Grade 9",
-        color: "hsl(var(--chart-primary))",
+        color: "hsl(var(--pieChart-3))",
     },
     grade10: {
         label: "Grade 10",
-        color: "hsl(var(--chart-4))",
+        color: "hsl(var(--pieChart-4))",
     },
     grade11: {
         label: "Grade 11",
-        color: "hsl(var(--chart-5))",
+        color: "hsl(var(--chart-2))",
     },
     grade12: {
         label: "Grade 12",
