@@ -1,7 +1,15 @@
 "use client"
+import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
-import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, XAxis, YAxis } from "recharts";
+import {
+  ChartConfig,
+  ChartContainer,
+  ChartLegend,
+  ChartLegendContent,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
 
 const studentPerformanceData = [
   { name: 'Grade 7', passing: 150, failing: 20 },
@@ -10,31 +18,38 @@ const studentPerformanceData = [
   { name: 'Grade 10', passing: 130, failing: 30 },
 ];
 
-const COLORS = ['#099443', '#0ac756', '#0bf268', '#39f589']
+const chartConfig = {
+  passing: {
+    label: "Passing",
+    color: "hsl(var(--chart-primary))",
+  },
+  failing: {
+    label: "Failing",
+    color: "hsl(var(--chart-destruction))",
+  }
+} satisfies ChartConfig
+
 export const StudentPerformance = () => {
   return (
     <Card className="bg-white">
       <CardHeader>
-        <CardTitle className="text-[#099443]">Student Performance Overview</CardTitle>
+        <CardTitle className="text-primary">Student Performance Overview</CardTitle>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={{
-          avgScore: {
-            label: "Average Score",
-            color: "#099443",
-          },
-        }} className="h-full w-full">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={studentPerformanceData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="subject" />
-              <YAxis />
-              <ChartTooltip content={<ChartTooltipContent />} />
-              <Legend />
-              <Bar dataKey="passing" fill={COLORS[3]} />
-              <Bar dataKey="failing" fill="#ef4444" />
-            </BarChart>
-          </ResponsiveContainer>
+        <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
+          <BarChart accessibilityLayer data={studentPerformanceData}>
+            <CartesianGrid vertical={false} />
+            <XAxis
+              dataKey="name"
+              tickLine={false}
+              tickMargin={10}
+              axisLine={false}
+            />
+            <ChartTooltip content={<ChartTooltipContent />} />
+            <ChartLegend content={<ChartLegendContent />} />
+            <Bar dataKey="passing" fill="var(--color-passing)" radius={4} />
+            <Bar dataKey="failing" fill="var(--color-failing)" radius={4} />
+          </BarChart>
         </ChartContainer>
       </CardContent>
     </Card>

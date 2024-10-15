@@ -8,11 +8,11 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
 import { GraduationCap, School, UserCheck, Users } from "lucide-react"
+import { schoolStats } from "../../../../data/school-data"
 import { FormGenerationCard } from "../_components/form-generation-card"
 import { InterventionEffectiveness } from "../_components/intervention-effectiveness"
 import { StudentDistribution } from "../_components/student-distribution"
 import { StudentPerformance } from "../_components/student-performance"
-import { schoolStats } from "../../../../data/school-data"
 
 const SystemAdminPage = () => {
 
@@ -77,11 +77,12 @@ const SystemAdminPage = () => {
             <div className="grid gap-6 md:grid-cols-2">
                 <StudentPerformance />
 
-                <InterventionEffectiveness />
-
                 <FormGenerationCard />
 
                 <StudentDistribution />
+                
+                <InterventionEffectiveness />
+
             </div>
 
         </div>

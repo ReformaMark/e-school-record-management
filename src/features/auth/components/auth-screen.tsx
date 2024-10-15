@@ -14,39 +14,6 @@ export const AuthScreen = () => {
             <div
                 className="hidden lg:w-[50%] bg-primary/90 lg:flex lg:flex-col lg:justify-center lg:items-center text-white px-[76px]"
             >
-                {/* <div className="relative"> */}
-                {/* <Button
-                    variant="ghost"
-                    size="icon"
-                    className="absolute left-12 top-5"
-                    onClick={() => router.push("/")}
-                >
-                    <ArrowLeftIcon className="h-5 w-5" />
-                    <span className="sr-only">Go back</span>
-                </Button> */}
-                {/* </div> */}
-
-                {/* 
-
-                <p>
-                    Follow these steps to secure your account:
-                </p>
-
-                {authSteps.map((step, i) => (
-                    <div key={i} className='flex items-center gap-1 font-semibold'>
-                        <Image
-                            height={50}
-                            width={50}
-                            alt='check icon'
-                            src="/check.svg"
-                        />
-                        {step.text}
-                    </div>
-                ))}
-
-                <p className="text-sm text-gray-300">
-                    Ensuring your account is properly secured helps protect your personal information and helps prevent unauthorized access.
-                </p> */}
                 <Image
                     src="/images/black-logo.svg"
                     alt="Logo of Tanjay National High School"
@@ -55,8 +22,12 @@ export const AuthScreen = () => {
                     className="invert"
                 />
 
-                <h1 className="text-2xl font-semibold my-10 uppercase">
-                    Welcome to Tanjay National High School
+                {/* <h1 className="text-[196px] font-bold">
+                    ERMS.
+                </h1> */}
+
+                <h1 className="text-xl font-medium my-10">
+                    Electronic Record Management System
                 </h1>
             </div>
 
