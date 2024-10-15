@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import "@/lib/globals.css";
 import Navbar from "../components/Navbar";
 import Sidenav from "../components/Sidenav";
+import { Toaster } from "@/components/ui/sonner";
 
 // const geistSans = localFont({
 //   src: "./fonts/GeistVF.woff",
@@ -28,13 +29,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`bg-gray-100 relative`}
+        className={`bg-[#E0E7E9] relative`}
       >
-        <div className="fixed z-50 top-0 right-0 w-[80%] ml-auto">
-            <Navbar/>
-        </div>
+        <Toaster />
+        <Navbar/>
+      
         <Sidenav/>
-        <div className="absolute z-30 right-0 top-[80px] w-[80%] ">
+        <div className="w-full  md:absolute z-30 md:right-0 md:top-[80px] md:w-[80%] ">
             {children}
         </div>
       </body>

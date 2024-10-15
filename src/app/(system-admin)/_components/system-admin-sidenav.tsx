@@ -1,7 +1,7 @@
 'use client'
-import Logo from '@/../public/images/tanjayLogo.png'
+
 import { School2Icon } from 'lucide-react'
-import Image from 'next/image'
+
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { FaChalkboardTeacher } from "react-icons/fa"
@@ -14,11 +14,11 @@ export const SystemAdminSidenav = () => {
     const pathname = usePathname()
 
     return (
-        <main className='fixed inset-0 w-[20%] bg-white py-5 text-text'>
-            <div className="flex items-center gap-x-1 border-b border-b-black px-3 pb-5">
+        <main className='hidden md:block fixed inset-0 w-[20%] bg-[#354649] pt-24 py-5 text-white shadow-lg'>
+            {/* <div className="flex items-center gap-x-1 border-b border-b-black px-3 pb-5">
                 <Image src={Logo} alt='' className='w-16 h-10 object-contain' />
                 <h1 className='text-text text-center text-sm uppercase font-medium leading-relaxed'>Tanjay National High School</h1>
-            </div>
+            </div> */}
 
             {/* for teachers navigation */}
             <div className="px-2 py-5 space-y-2">
