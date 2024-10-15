@@ -35,7 +35,7 @@ export default function RootLayout({
         <Navbar/>
       
         <Sidenav/>
-        <div className="w-full  md:absolute z-30 md:right-0 md:top-[80px] md:w-[80%] ">
+        <div className="w-full pt-[15%] md:pt-0  md:absolute z-30 md:right-0 md:top-[80px] md:w-[80%] ">
             {children}
         </div>
       </body>

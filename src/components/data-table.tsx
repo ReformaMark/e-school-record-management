@@ -71,19 +71,19 @@ export function DataTable<TData, TValue>({
                     onChange={(event) =>
                         table.getColumn(`${filter}`)?.setFilterValue(event.target.value)
                     }
-                    className="max-w-sm border-green-300 focus:border-green-500 focus:ring-green-500"
+                    className="md:max-w-sm border-green-300 focus:border-primary-foreground focus:ring-primary"
                 />
             </div>
 
             {/* Table Code */}
-            <div className="rounded-md border border-green-200">
+            <div className="rounded-md border border-primary-foreground/50">
                 <Table>
-                    <TableHeader className="bg-green-50">
+                    <TableHeader className="bg-foreground text-xs md:text-sm">
                         {table.getHeaderGroups().map((headerGroup) => (
                             <TableRow key={headerGroup.id}>
                                 {headerGroup.headers.map((header) => {
                                     return (
-                                        <TableHead key={header.id} className="text-green-700">
+                                        <TableHead key={header.id} className="text-primary">
                                             {header.isPlaceholder
                                                 ? null
                                                 : flexRender(
@@ -96,7 +96,7 @@ export function DataTable<TData, TValue>({
                             </TableRow>
                         ))}
                     </TableHeader>
-                    <TableBody>
+                    <TableBody className="text-xs md:text-sm text-primary">
                         {table.getRowModel().rows?.length ? (
                             table.getRowModel().rows.map((row) => (
                                 <TableRow

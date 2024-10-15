@@ -17,8 +17,8 @@ function FinalGradeSHSTemplate({
         .sort((a, b) => a.lastName.localeCompare(b.lastName));
 
   return (
-    <div className="">
-        <div className='flex text-sm font-semibold max-w-full'>
+    <div className="overflow-y-auto max-w-full">
+        <div className='flex text-sm font-semibold max-w-full min-w-[100vh]'>
             <div className='w-[25%]'>
                 <h1 className='uppercase w-full h-full  flex justify-center items-center border border-collapse border-black'>Learners&apos; Names</h1>
             </div>

@@ -32,7 +32,7 @@ function Section({params}:{params: {section: string}}) {
   .sort((a, b) => a.lastName.localeCompare(b.lastName));
 
   return (
-    <div className='bg-white m-5 min-h-screen max-w-full shadow-md p-5 space-y-5'>
+    <div className='bg-white text-primary md:m-5 min-h-screen max-w-full shadow-md p-5 space-y-5'>
       <div className="w-full flex items-center justify-between">
         <Link
           href="/section"
@@ -62,7 +62,7 @@ function Section({params}:{params: {section: string}}) {
       </div>
 
        
-        <div className="grid grid-cols-2 font-medium text-sm">
+        <div className="grid grid-cols-1 md:grid-cols-2 font-medium text-sm">
           
           <h1>Section: {params.section}</h1>
           <h1>Grade Level: {section?.gradeLevel}</h1>
@@ -74,12 +74,12 @@ function Section({params}:{params: {section: string}}) {
        
         <Tabs defaultValue={"students"} className="w-full relative space-y-5 mt-5 shadow-md ">
           {/* <h1 className='text-xs text-foreground font-semibold'>Select tab to show: </h1> */}
-          <TabsList className=''> 
-            <TabsTrigger value="students" className='font-medium shadow-md border-b-2 data-[state=active]:border-b-primary' >Master List</TabsTrigger>
+          <TabsList className='max-w-full grid grid-cols-3 mb-10'> 
+            <TabsTrigger value="students" className='font-medium shadow-md border-b-2 data-[state=active]:border-b-primary data-[state=active]:text-primary' ><span className=''>Master List</span> </TabsTrigger>
             {/* <TabsTrigger value="attendance" className='font-medium shadow-md border-b-2 data-[state=active]:border-b-primary' >Attendance</TabsTrigger> */}
-            <TabsTrigger value="class-record" className='font-medium shadow-md border-b-2 data-[state=active]:border-b-primary' >Class Record</TabsTrigger>
-            <TabsTrigger value="grades-summary" className='font-medium shadow-md border-b-2 data-[state=active]:border-b-primary'>Grades Summary</TabsTrigger>
-            <TabsTrigger value="needs-improvement" className='font-medium shadow-md border-b-2 data-[state=active]:border-b-primary'>Needs Improvement</TabsTrigger>
+            <TabsTrigger value="class-record" className='font-medium shadow-md border-b-2 data-[state=active]:border-b-primary data-[state=active]:text-primary' >Class Record</TabsTrigger>
+            <TabsTrigger value="grades-summary" className='font-medium shadow-md border-b-2 data-[state=active]:border-b-primary data-[state=active]:text-primary'>Grades Summary</TabsTrigger>
+            <TabsTrigger value="needs-improvement" className='font-medium shadow-md border-b-2 data-[state=active]:border-b-primary data-[state=active]:text-primary'>Needs Improvement</TabsTrigger>
           </TabsList>
 
           {/* Master List */}
@@ -106,7 +106,7 @@ function Section({params}:{params: {section: string}}) {
           </TabsContent>
 
           {/* Grade summary */}
-          <TabsContent value="grades-summary" className='min-h-screen border-2 border-gray-300'>
+          <TabsContent value="grades-summary" className='min-h-screen max-w-full overflow-y-auto border-2 border-gray-300'>
             {section && section.gradeLevel === "Grade 11" || section?.gradeLevel === "Grade 12" ? (
               <FinalGradeSHSTemplate section={section}/>
             ) :(

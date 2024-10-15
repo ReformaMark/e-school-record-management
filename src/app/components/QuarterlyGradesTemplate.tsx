@@ -24,7 +24,7 @@ function QuarterlyGradesTemplate({
                 .filter((student) => student.gender === 'female')
                 .sort((a, b) => a.lastName.localeCompare(b.lastName));
   return (
-    <div>
+    <div className='w-[1000px] overflow-y-auto'>
         <h1 className='text-center font-semibold'>Summary of Quarterly Grades</h1>
         <div className="">
             {/* First Row */}

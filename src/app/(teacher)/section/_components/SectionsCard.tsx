@@ -12,7 +12,7 @@ function SectionsCard({
    
   return (
     <div className='bg-white rounded-md shadow-md flex flex-col justify-between'>
-        <div className={`flex justify-between text-white shadow-md px-5 py-1 bg-[#09A599] text-lg font-semibold`}>
+        <div className={`flex justify-between text-white shadow-md px-5 py-1 bg-primary-foreground text-lg font-semibold`}>
             <h1>{section.section}</h1>
             <h1>{section.gradeLevel}</h1>
         </div>

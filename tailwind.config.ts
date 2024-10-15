@@ -12,8 +12,9 @@ const config: Config = {
     extend: {
       colors: {
         background: '#E0E7E9',
-        foreground: 'hsl(var(--foreground))',
-        text: '#E0E7E9',
+        foreground: '#A3C6C4',
+        text: '#354649',
+        textWhite:'#E0E7E9',
         card: {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))'
@@ -24,7 +25,7 @@ const config: Config = {
         },
         primary: {
           DEFAULT: '#354649',
-          foreground: '#c0c5b4'
+          foreground: '#6C7A89'
         },
         secondary: {
           DEFAULT: 'hsl(var(--secondary))',
