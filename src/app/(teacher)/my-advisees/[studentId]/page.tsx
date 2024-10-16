@@ -32,7 +32,7 @@ function Student({
               
                 <h1 className='text-lg md:text-xl text-primary font-semibold flex items-center'>Student Report Card</h1>
                 <div className="space-y-3">
-                    <Button size="default" onClick={()=> setIsOpen(!isOpen)} className="s self-end h-7 gap-1 bg-blue-600 text-white py-2 ml-auto">
+                    <Button size="default" onClick={()=> setIsOpen(!isOpen)} className="s self-end h-7 gap-1 bg-red-600 text-white py-2 ml-auto">
                         <FaLevelUpAlt className="h-3.5 w-3.5" />
                         <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
                             Promote
@@ -97,7 +97,7 @@ function Student({
                     
                     {/* Grades Data */}
                     <div className="grid grid-cols-12 w-full bg-gray-100 items-center text-center font-medium text-sm">
-                        <div className='col-span-4 border-b border-black border-x p-2'>English</div>
+                        <div className='col-span-4 border-b border-black border-x p-2 text-left'>English</div>
                         <div className='col-span-1 border-b border-black border-r p-2'>85</div>
                         <div className='col-span-1 border-b border-black border-r p-2'>87</div>
                         <div className='col-span-1 border-b border-black border-r p-2'>88</div>
@@ -106,16 +106,16 @@ function Student({
                         <div className='col-span-2 border-b border-black border-r p-2'>Passed</div>
                     </div>
                     <div className="grid grid-cols-12 w-full bg-gray-100 items-center text-center font-medium text-sm">
-                        <div className='col-span-4 border-b border-black border-x p-2'>Mathematics</div>
-                        <div className='col-span-1 border-b border-black border-r p-2'>82</div>
-                        <div className='col-span-1 border-b border-black border-r p-2'>84</div>
-                        <div className='col-span-1 border-b border-black border-r p-2'>85</div>
-                        <div className='col-span-1 border-b border-black border-r p-2'>83</div>
-                        <div className='col-span-2 border-b border-black border-r p-2'>84</div>
-                        <div className='col-span-2 border-b border-black border-r p-2'>Passed</div>
+                        <div className='col-span-4 border-b border-black border-x p-2 text-left'>Mathematics</div>
+                        <div className='col-span-1 border-b border-black border-r p-2'>75</div>
+                        <div className='col-span-1 border-b border-black border-r p-2'>74</div>
+                        <div className='col-span-1 border-b border-black border-r p-2'>72</div>
+                        <div className='col-span-1 border-b border-black border-r p-2'>70</div>
+                        <div className='col-span-2 border-b border-black border-r p-2'>72</div>
+                        <div className='col-span-2 border-b border-black border-r p-2'>Failed</div>
                     </div>
                     <div className="grid grid-cols-12 w-full bg-gray-100 items-center text-center font-medium text-sm">
-                        <div className='col-span-4 border-b border-black border-x p-2'>Science</div>
+                        <div className='col-span-4 border-b border-black border-x p-2 text-left'>Science</div>
                         <div className='col-span-1 border-b border-black border-r p-2'>89</div>
                         <div className='col-span-1 border-b border-black border-r p-2'>91</div>
                         <div className='col-span-1 border-b border-black border-r p-2'>90</div>
@@ -124,7 +124,7 @@ function Student({
                         <div className='col-span-2 border-b border-black border-r p-2'>Passed</div>
                     </div>
                     <div className="grid grid-cols-12 w-full bg-gray-100 items-center text-center font-medium text-sm">
-                        <div className='col-span-4 border-b border-black border-x p-2'>Filipino</div>
+                        <div className='col-span-4 border-b border-black border-x p-2 text-left'>Filipino</div>
                         <div className='col-span-1 border-b border-black border-r p-2'>90</div>
                         <div className='col-span-1 border-b border-black border-r p-2'>89</div>
                         <div className='col-span-1 border-b border-black border-r p-2'>92</div>
@@ -133,7 +133,7 @@ function Student({
                         <div className='col-span-2 border-b border-black border-r p-2'>Passed</div>
                     </div>
                     <div className="grid grid-cols-12 w-full bg-gray-100 items-center text-center font-medium text-sm">
-                        <div className='col-span-4 border-b border-black border-x p-2'>Araling Panlipunan</div>
+                        <div className='col-span-4 border-b border-black border-x p-2 text-left'>Araling Panlipunan</div>
                         <div className='col-span-1 border-b h-full border-black border-r p-2'>88</div>
                         <div className='col-span-1 border-b h-full border-black border-r p-2'>87</div>
                         <div className='col-span-1 border-b h-full border-black border-r p-2'>89</div>
@@ -142,7 +142,7 @@ function Student({
                         <div className='col-span-2 border-b h-full border-black border-r p-2'>Passed</div>
                     </div>
                     <div className="grid grid-cols-12 w-full bg-gray-100 items-center text-center font-medium text-sm">
-                        <div className='col-span-4 border-b border-black border-x p-2'>Edukasyon sa Pagpapakatao (EsP)</div>
+                        <div className='col-span-4 border-b border-black border-x p-2 text-left'>Edukasyon sa Pagpapakatao (EsP)</div>
                         <div className='col-span-1 border-b h-full border-black border-r p-2'>91</div>
                         <div className='col-span-1 border-b h-full border-black border-r p-2'>90</div>
                         <div className='col-span-1 border-b h-full border-black border-r p-2'>92</div>
@@ -151,7 +151,7 @@ function Student({
                         <div className='col-span-2 border-b h-full border-black border-r p-2'>Passed</div>
                     </div>
                     <div className="grid grid-cols-12 w-full bg-gray-100 items-center text-center font-medium text-sm">
-                        <div className='col-span-4 border-b h-full border-black border-x p-2'>Edukasyong Pantahanan at Pangkabuhayan</div>
+                        <div className='col-span-4 border-b h-full border-black border-x p-2 text-left'>Edukasyong Pantahanan at Pangkabuhayan</div>
                         <div className='col-span-1 border-b h-full border-black border-r p-2'>88</div>
                         <div className='col-span-1 border-b h-full border-black border-r p-2'>87</div>
                         <div className='col-span-1 border-b h-full border-black border-r p-2'>89</div>
