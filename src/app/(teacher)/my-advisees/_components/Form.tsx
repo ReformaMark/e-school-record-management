@@ -177,7 +177,7 @@ function Form() {
         }))
     }
   return (
-    <div className='bg-white p-5 rounded-lg shadow-md'>
+    <div className='bg-white p-5 rounded-lg shadow-md text-primary'>
         <h1 className='font-semibold tracking-widest text-xl text-center'>Student Enrollment Form</h1>
         <div className="">
 
@@ -244,7 +244,20 @@ function Form() {
                         </div>
                         <div className="">
                             <h1  className='mt-3 text-text text-sm'>Returning (Balik Aral)</h1>
-                            <RadioGroup defaultValue="no" className='pl-5 flex gap-x-5'>
+                            <RadioGroup defaultValue="no" className='pl-2 flex gap-x-5'>
+                                <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="Yes" id="yes" className='rounded-none'/>
+                                    <Label htmlFor="Yes">Yes</Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="no" id="no" className='rounded-none'/>
+                                    <Label htmlFor="no">No</Label>
+                                </div>
+                            </RadioGroup>
+                        </div>
+                        <div className="">
+                            <h1  className='mt-3 text-text text-sm'>ALS</h1>
+                            <RadioGroup defaultValue="no" className='pl-2 flex gap-x-5'>
                                 <div className="flex items-center space-x-2">
                                     <RadioGroupItem value="Yes" id="yes" className='rounded-none'/>
                                     <Label htmlFor="Yes">Yes</Label>

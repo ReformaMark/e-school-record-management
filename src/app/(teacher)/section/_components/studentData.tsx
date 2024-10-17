@@ -540,7 +540,7 @@ export const InputGradesCol: ColumnDef<Student>[] = [
         setIsQAOpen(!isQAOpen)
       }
       return (
-        <div className="">
+        <div className="text-primary">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="h-8 w-8 p-0">
@@ -569,7 +569,7 @@ export const InputGradesCol: ColumnDef<Student>[] = [
               </DialogTitle>
               
           </DialogHeader>
-         <div className="">
+         <div className="text-primary">
           <div className="flex gap-x-3 items-center">
             <h1>Writen Work 1 :</h1>
             <Input 
@@ -627,14 +627,14 @@ export const InputGradesCol: ColumnDef<Student>[] = [
         </Dialog>
 
         <Dialog open={isPTOpen}>
-          <DialogContent className='max-h-screen overflow-auto'>
+          <DialogContent className='max-h-screen overflow-auto text-primary'>
           <DialogHeader>
               <DialogTitle>
                   Performance Tasks
               </DialogTitle>
               
           </DialogHeader>
-          <div className="">
+          <div className="text-primary">
           <div className="flex gap-x-3 items-center">
             <h1>Performance Task 1 :</h1>
             <Input 
@@ -690,14 +690,14 @@ export const InputGradesCol: ColumnDef<Student>[] = [
           </DialogContent>
         </Dialog>
         <Dialog open={isQAOpen}>
-          <DialogContent className=' max-h-screen overflow-auto'>
+          <DialogContent className=' max-h-screen overflow-auto text-primary'>
           <DialogHeader>
               <DialogTitle>
                  Quarterly Assessment
               </DialogTitle>
               
           </DialogHeader>
-          <div className="">
+          <div className="text-primary">
           <div className="flex gap-x-3 items-center">
             <h1>Quarterly Assessment 1 :</h1>
             <Input 
@@ -724,11 +724,17 @@ export const InputGradesCol: ColumnDef<Student>[] = [
         <Dialog open={isOpen}>
             <DialogContent className=''>
             <DialogHeader>
-                <DialogTitle className='flex gap-x-3 items-center'><CgDanger className='size-10 text-orange-500' /> {student.lastName}, {student.firstName} {student.middleName} grades is at-risk.</DialogTitle>
-                <DialogDescription>
-                  <h1>Recommendation:</h1>
+                <DialogTitle className='flex text-lg text-primary gap-x-3 items-center'><CgDanger className='size-10 text-red-500' /> {student.lastName}, {student.firstName} {student.middleName} grades is failed.</DialogTitle>
+                <DialogDescription className="grid grid-cols-2 gap-x-5">
+                  <div className=" text-sm font- font-semibold mb-5">
+                    <h1>Subject: Mathematics</h1>
+                    <h1>Grade: 74</h1>
+                  </div>
                   <div className="">
-                    - {student.recommendedInterventions}
+                    <h1 className="font-semibold">Recommendation:</h1>
+                    <div className="">
+                      - {student.recommendedInterventions}
+                    </div>
                   </div>
                 </DialogDescription>
             </DialogHeader>
@@ -821,13 +827,4 @@ export const forImprovementsColumns: ColumnDef<forImprovementsTypes>[] = [
       )
     }
   },
-  {
-    id: "remarks",
-    header: "Remarks",
-    cell: ({  }) => {
-      return (
-        <></>
-      )
-    }
-  }
 ]

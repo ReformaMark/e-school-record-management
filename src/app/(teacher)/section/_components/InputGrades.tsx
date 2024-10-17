@@ -10,7 +10,7 @@ function InputGrades({sec}:{sec:string}) {
         .sort((a, b) => a.lastName.localeCompare(b.lastName));
         const section = sections.find((section)=> section.section === sec)
   return (
-    <div>
+    <div className='text-primary'>
         <Tabs defaultValue="1st" className="w-full">
         <TabsList>
             <TabsTrigger value="1st">1st</TabsTrigger>

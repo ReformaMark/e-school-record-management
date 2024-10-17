@@ -64,7 +64,7 @@ export const endrollmentData = [
       gradeLevel: "10",
       withLrn: "Yes",
       returning: "No",
-      
+        
       // Student Personal Info
       PSABirthCert: "1234567890",
       lrn: "LRN12345",
