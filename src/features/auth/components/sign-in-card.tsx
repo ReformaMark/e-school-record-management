@@ -35,14 +35,14 @@ export const SignInCard = ({
     }
 
     return (
-        <div className="relative h-full w-full flex items-center justify-center">
-            <Image
+        <div className="relative h-full w-full flex items-center justify-center ">
+            {/* <Image
                 src="/images/logo.png"
                 alt="Logo of Tanjay National High School"
                 width={1800}
                 height={1800}
                 className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-0 opacity-10 lg:hidden block"
-            />
+            /> */}
 
             <Card className="w-full h-full p-8 z-50">
                 <CardHeader className="px-0 pt-0">

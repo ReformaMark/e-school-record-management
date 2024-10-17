@@ -108,7 +108,7 @@ const SystemAdminAddSectionPage = () => {
                                 <CardHeader>
                                     <CardTitle>Section Details</CardTitle>
                                     <CardDescription>
-                                        Lipsum dolor sit amet, consectetur adipiscing elit
+                                        Add section details
                                     </CardDescription>
                                 </CardHeader>
                                 <CardContent>
@@ -225,7 +225,7 @@ const SystemAdminAddSectionPage = () => {
                                 <CardHeader>
                                     <CardTitle>Subject Teachers</CardTitle>
                                     <CardDescription>
-                                        Lipsum dolor sit amet, consectetur adipiscing elit
+                                        Add subject teachers for this section
                                     </CardDescription>
                                 </CardHeader>
                                 <CardContent>

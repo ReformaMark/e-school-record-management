@@ -1,3 +1,5 @@
+"use client"
+
 export const sectionData = [
     {
         id: "1",
@@ -207,6 +209,7 @@ export const sectionColumns = [
     {
         accessorKey: "adviser",
         header: "Adviser",
-        // cell: ({ row }) => row.original.adviser.name,
+        // @ts-ignore
+        cell: ({ row }) => row.original.adviser.name,
     },
 ]

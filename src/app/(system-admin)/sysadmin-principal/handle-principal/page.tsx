@@ -94,7 +94,7 @@ const SystemAdminHandlePrincipalPage = () => {
                                 <CardHeader>
                                     <CardTitle>Principal Details</CardTitle>
                                     <CardDescription>
-                                        Lipsum dolor sit amet, consectetur adipiscing elit
+                                        Principal Details
                                     </CardDescription>
                                 </CardHeader>
                                 <CardContent>
@@ -169,9 +169,6 @@ const SystemAdminHandlePrincipalPage = () => {
                             <Card>
                                 <CardHeader>
                                     <CardTitle>Other details</CardTitle>
-                                    <CardDescription>
-                                        Lipsum dolor sit amet, consectetur adipiscing elit
-                                    </CardDescription>
                                 </CardHeader>
                                 <CardContent>
                                     <div className="grid gap-6">
@@ -345,7 +342,7 @@ const SystemAdminHandlePrincipalPage = () => {
                                 <CardHeader>
                                     <CardTitle>Principal Image</CardTitle>
                                     <CardDescription>
-                                        Lipsum dolor sit amet, consectetur adipiscing elit
+                                        Upload principal image
                                     </CardDescription>
                                 </CardHeader>
                                 <CardContent>

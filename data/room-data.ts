@@ -1,7 +1,7 @@
 export const roomData = [
     {
         id: "1",
-        roomNumber: "101",
+        roomName: "Ladjao",
         estimatedCapacity: "40-50",
         roomType: "Classroom",
         roomFeatures: "Basic classroom setup with projector, whiteboard, etc.",
@@ -9,7 +9,7 @@ export const roomData = [
     },
     {
         id: "2",
-        roomNumber: "102",
+        roomName: "Dela Cruz",
         estimatedCapacity: "20-30",
         roomType: "Computer Laboratory",
         roomFeatures: "Computers, Projector, TV, etc.",
@@ -27,8 +27,8 @@ export const roomTypes = [
 
 export const roomColumns = [
     {
-        accessorKey: "roomNumber",
-        header: "Room Number",
+        accessorKey: "roomName",
+        header: "Room Name",
     },
     {
         accessorKey: "estimatedCapacity",

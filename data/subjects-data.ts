@@ -51,4 +51,12 @@ export const schoolGradeLevels = [
         value: "grade-10",
         label: "Grade 10",
     },
+    {
+        value: "grade-11",
+        label: "Grade 11",
+    },
+    {
+        value: "grade-12",
+        label: "Grade 12",
+    },
 ] satisfies SchoolGradeLevels[];

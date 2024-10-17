@@ -20,8 +20,8 @@ import {
 import { DataTable } from "@/components/data-table";
 import { File, ListFilterIcon, PlusCircleIcon } from "lucide-react";
 import Link from "next/link";
-import { studentColumns, studentsData } from "../../../../data/students-data";
 import { cn } from "@/lib/utils";
+import { sysadminColumns, sysadminData } from "../../../../data/sysadmin-data";
 
 const SystemAdminListPage = () => {
     return (
@@ -40,7 +40,7 @@ const SystemAdminListPage = () => {
                 </BreadcrumbList>
             </Breadcrumb>
 
-            <main className="space-y-4">    
+            <main className="space-y-4">
                 <div className="flex items-center">
                     <div className="ml-auto flex items-center gap-2">
                         <DropdownMenu>
@@ -87,12 +87,12 @@ const SystemAdminListPage = () => {
                 <Card className="w-full">
                     <CardHeader>
                         <CardTitle>System Administrators</CardTitle>
-                        <CardDescription>Manage the list of system administrators.</CardDescription>
+                        <CardDescription>Manage the list of system administrators. Note: Only ICT Coordinators can be admin</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <DataTable
-                            columns={studentColumns}
-                            data={studentsData}
+                            columns={sysadminColumns}
+                            data={sysadminData}
                             filter="firstName"
                             placeholder="administrators by first name"
                         />

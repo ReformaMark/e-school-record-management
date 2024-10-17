@@ -32,8 +32,8 @@ export const schoolYearData = [
 ]
 
 export const schoolYearColumns = [
-    { accessorKey: "batchName", header: "Batch Name" },
+    // { accessorKey: "batchName", header: "Batch Name" },
     { accessorKey: "startDate", header: "Start Date" },
     { accessorKey: "endDate", header: "End Date" },
-    { accessorKey: "isActive", header: "Status" },
+    // { accessorKey: "isActive", header: "Status" },
 ]

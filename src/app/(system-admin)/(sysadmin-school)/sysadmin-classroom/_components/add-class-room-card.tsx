@@ -34,11 +34,11 @@ export const AddClassRoomCard = () => {
             </CardHeader>
             <CardContent className="grid gap-8 mt-7">
                 <div className="grid gap-2">
-                    <Label htmlFor="roomNumber">Room Number</Label>
+                    <Label htmlFor="roomName">Room Name</Label>
                     <Input
-                        id="roomNumber"
+                        id="roomName"
                         type="text"
-                        placeholder="Ex: 101"
+                        placeholder="Note: Adviser's lastname is the room name"
                         className="w-full"
                     />
                 </div>

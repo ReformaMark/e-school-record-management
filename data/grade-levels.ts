@@ -15,6 +15,14 @@ export const gradeLevelData = [
         id: "4",
         gradeLevel: "Grade 10",
     },
+    {
+        id: "5",
+        gradeLevel: "Grade 11",
+    },
+    {
+        id: "6",
+        gradeLevel: "Grade 12",
+    },
 ]
 
 export const gradeLevelColumns = [

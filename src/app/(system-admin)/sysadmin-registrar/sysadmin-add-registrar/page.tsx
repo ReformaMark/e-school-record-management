@@ -95,7 +95,7 @@ const SystemAdminAddRegistrarPage = () => {
                                 <CardHeader>
                                     <CardTitle>Registrar Details</CardTitle>
                                     <CardDescription>
-                                        Lipsum dolor sit amet, consectetur adipiscing elit
+                                        Provide the details of the registrar.
                                     </CardDescription>
                                 </CardHeader>
                                 <CardContent>
@@ -184,7 +184,7 @@ const SystemAdminAddRegistrarPage = () => {
                                 <CardHeader>
                                     <CardTitle>Other details</CardTitle>
                                     <CardDescription>
-                                        Lipsum dolor sit amet, consectetur adipiscing elit
+                                        Provide the details of the registrar.
                                     </CardDescription>
                                 </CardHeader>
                                 <CardContent>
@@ -351,7 +351,7 @@ const SystemAdminAddRegistrarPage = () => {
 
                         <div className="grid auto-rows-max items-start gap-4 lg:gap-8">
                             {/* academic details */}
-                            <Card>
+                            {/* <Card>
                                 <CardHeader>
                                     <CardTitle>Training Details</CardTitle>
                                 </CardHeader>
@@ -371,7 +371,7 @@ const SystemAdminAddRegistrarPage = () => {
                                         </div>
                                     </div>
                                 </CardContent>
-                            </Card>
+                            </Card> */}
 
                             {/* teacher Image */}
                             <Card
@@ -380,7 +380,7 @@ const SystemAdminAddRegistrarPage = () => {
                                 <CardHeader>
                                     <CardTitle>School Registrar Image</CardTitle>
                                     <CardDescription>
-                                        Lipsum dolor sit amet, consectetur adipiscing elit
+                                        Upload an image of the school registrar
                                     </CardDescription>
                                 </CardHeader>
                                 <CardContent>

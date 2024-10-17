@@ -16,6 +16,8 @@ const studentPerformanceData = [
   { name: 'Grade 8', passing: 140, failing: 25 },
   { name: 'Grade 9', passing: 160, failing: 15 },
   { name: 'Grade 10', passing: 130, failing: 30 },
+  { name: 'Grade 11', passing: 50, failing: 120 },
+  { name: 'Grade 12', passing: 75, failing: 80 },
 ];
 
 const chartConfig = {

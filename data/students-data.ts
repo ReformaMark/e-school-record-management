@@ -1,5 +1,5 @@
 // Dummy data for students
-// TO ADD: Year level (1st, 2nd, 3rd and 4th year)
+// TO ADD: Year level (1st, 2nd, 3rd and Grade 10)
 export const studentsData = [
     {
         id: "1",
@@ -10,7 +10,7 @@ export const studentsData = [
         birthDate: "2005-05-15",
         gender: "male",
         address: "123 Main St, City, Country",
-        yearLevel: "1st Year",
+        yearLevel: "Grade 12",
         parentGuardianName: "Jane Doe",
         parentGuardianContact: "+1234567890"
     },
@@ -23,7 +23,7 @@ export const studentsData = [
         birthDate: "2006-02-20",
         gender: "female",
         address: "456 Elm St, Town, Country",
-        yearLevel: "2nd Year",
+        yearLevel: "Grade 11",
         parentGuardianName: "Robert Smith",
         parentGuardianContact: "+1987654321"
     },
@@ -36,7 +36,7 @@ export const studentsData = [
         birthDate: "2005-11-10",
         gender: "male",
         address: "789 Oak Ave, Village, Country",
-        yearLevel: "3rd Year",
+        yearLevel: "Grade 9",
         parentGuardianName: "Sarah Johnson",
         parentGuardianContact: "+1122334455"
     },
@@ -49,7 +49,7 @@ export const studentsData = [
         birthDate: "2006-08-05",
         gender: "female",
         address: "101 Pine Rd, Suburb, Country",
-        yearLevel: "4th Year",
+        yearLevel: "Grade 10",
         parentGuardianName: "David Williams",
         parentGuardianContact: "+1555666777"
     },
@@ -62,7 +62,7 @@ export const studentsData = [
         birthDate: "2005-04-30",
         gender: "male",
         address: "202 Cedar Ln, District, Country",
-        yearLevel: "1st Year",
+        yearLevel: "Grade 7",
         parentGuardianName: "Jennifer Brown",
         parentGuardianContact: "+1999888777"
     },
@@ -75,7 +75,7 @@ export const studentsData = [
         birthDate: "2006-01-12",
         gender: "female",
         address: "303 Maple St, City, Country",
-        yearLevel: "2nd Year",
+        yearLevel: "Grade 8",
         parentGuardianName: "Kevin Davis",
         parentGuardianContact: "+1666666666"
     },
@@ -88,7 +88,7 @@ export const studentsData = [
         birthDate: "2005-09-25",
         gender: "male",
         address: "404 Walnut St, Town, Country",
-        yearLevel: "3rd Year",
+        yearLevel: "Grade 9",
         parentGuardianName: "Lisa Miller",
         parentGuardianContact: "+1777777777"
     },
@@ -101,7 +101,7 @@ export const studentsData = [
         birthDate: "2006-05-18",
         gender: "female",
         address: "505 River Rd, Village, Country",
-        yearLevel: "4th Year",
+        yearLevel: "Grade 10",
         parentGuardianName: "Brian Wilson",
         parentGuardianContact: "+1888888888"
     },
@@ -114,7 +114,7 @@ export const studentsData = [
         birthDate: "2005-07-22",
         gender: "male",
         address: "606 Park Ave, Suburb, Country",
-        yearLevel: "1st Year",
+        yearLevel: "Grade 7",
         parentGuardianName: "Karen Moore",
         parentGuardianContact: "+1999999999"
     },
@@ -127,7 +127,7 @@ export const studentsData = [
         birthDate: "2006-03-15",
         gender: "female",
         address: "707 Lake Dr, District, Country",
-        yearLevel: "2nd Year",
+        yearLevel: "Grade 8",
         parentGuardianName: "Richard Hall",
         parentGuardianContact: "+1222222222"
     },
@@ -140,7 +140,7 @@ export const studentsData = [
         birthDate: "2005-06-17",
         gender: "male",
         address: "808 Hillside Dr, City, Country",
-        yearLevel: "3rd Year",
+        yearLevel: "Grade 9",
         parentGuardianName: "Carol White",
         parentGuardianContact: "+1333333333"
     },
@@ -153,7 +153,7 @@ export const studentsData = [
         birthDate: "2006-04-02",
         gender: "male",
         address: "909 Valley Rd, Town, Country",
-        yearLevel: "4th Year",
+        yearLevel: "Grade 10",
         parentGuardianName: "Susan Martin",
         parentGuardianContact: "+1444444444"
     },
@@ -166,7 +166,7 @@ export const studentsData = [
         birthDate: "2005-10-28",
         gender: "female",
         address: "1010 Oak St, Village, Country",
-        yearLevel: "1st Year",
+        yearLevel: "Grade 7",
         parentGuardianName: "James Harris",
         parentGuardianContact: "+1555555555"
     },
@@ -179,7 +179,7 @@ export const studentsData = [
         birthDate: "2006-01-05",
         gender: "male",
         address: "1111 Park Pl, Suburb, Country",
-        yearLevel: "2nd Year",
+        yearLevel: "Grade 8",
         parentGuardianName: "Laura Taylor",
         parentGuardianContact: "+1666666666"
     },
@@ -192,7 +192,7 @@ export const studentsData = [
         birthDate: "2005-09-01",
         gender: "female",
         address: "1212 Maple Ave, District, Country",
-        yearLevel: "3rd Year",
+        yearLevel: "Grade 9",
         parentGuardianName: "Michael Lewis",
         parentGuardianContact: "+1777777777"
     },
@@ -205,7 +205,7 @@ export const studentsData = [
         birthDate: "2006-06-01",
         gender: "male",
         address: "1313 River Rd, City, Country",
-        yearLevel: "4th Year",
+        yearLevel: "Grade 10",
         parentGuardianName: "Rebecca Walker",
         parentGuardianContact: "+1888888888"
     },

@@ -94,7 +94,7 @@ const SystemAdminAddStudentPage = () => {
                                 <CardHeader>
                                     <CardTitle>Student Details</CardTitle>
                                     <CardDescription>
-                                        Lipsum dolor sit amet, consectetur adipiscing elit
+                                        Add student details
                                     </CardDescription>
                                 </CardHeader>
                                 <CardContent>
@@ -144,9 +144,6 @@ const SystemAdminAddStudentPage = () => {
                             <Card>
                                 <CardHeader>
                                     <CardTitle>Other details</CardTitle>
-                                    <CardDescription>
-                                        Lipsum dolor sit amet, consectetur adipiscing elit
-                                    </CardDescription>
                                 </CardHeader>
                                 <CardContent>
                                     <div className="grid gap-6">
@@ -274,7 +271,7 @@ const SystemAdminAddStudentPage = () => {
                                 <CardHeader>
                                     <CardTitle>Student Image</CardTitle>
                                     <CardDescription>
-                                        Lipsum dolor sit amet, consectetur adipiscing elit
+                                        Upload an image of the student
                                     </CardDescription>
                                 </CardHeader>
                                 <CardContent>

@@ -10,7 +10,6 @@ import {
     CardHeader,
     CardTitle
 } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
 export const AddSchoolYearCard = () => {
@@ -23,7 +22,7 @@ export const AddSchoolYearCard = () => {
                 </CardDescription>
             </CardHeader>
             <CardContent className="grid gap-8 mt-7">
-                <div className="grid gap-2">
+                {/* <div className="grid gap-2">
                     <Label htmlFor="batchName" className="font-semibold">Batch Name</Label>
                     <Input
                         id="batchName"
@@ -31,7 +30,7 @@ export const AddSchoolYearCard = () => {
                         placeholder="Batch name"
                         className="w-full"
                     />
-                </div>
+                </div> */}
 
                 <div className="grid gap-2">
                     <Label htmlFor="SY" className="font-semibold">Start Date - End Date</Label>

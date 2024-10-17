@@ -93,7 +93,7 @@ const SystemAdminAddAdminPage = () => {
                                 <CardHeader>
                                     <CardTitle>Admin Details</CardTitle>
                                     <CardDescription>
-                                        Lipsum dolor sit amet, consectetur adipiscing elit
+                                        Add admin details
                                     </CardDescription>
                                 </CardHeader>
                                 <CardContent>
@@ -168,9 +168,6 @@ const SystemAdminAddAdminPage = () => {
                             <Card>
                                 <CardHeader>
                                     <CardTitle>Other details</CardTitle>
-                                    <CardDescription>
-                                        Lipsum dolor sit amet, consectetur adipiscing elit
-                                    </CardDescription>
                                 </CardHeader>
                                 <CardContent>
                                     <div className="grid gap-6">
@@ -337,7 +334,7 @@ const SystemAdminAddAdminPage = () => {
                                 <CardHeader>
                                     <CardTitle>Admin Image</CardTitle>
                                     <CardDescription>
-                                        Lipsum dolor sit amet, consectetur adipiscing elit
+                                        Upload an image of the admin
                                     </CardDescription>
                                 </CardHeader>
                                 <CardContent>
