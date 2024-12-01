@@ -21,9 +21,10 @@ import Link from 'next/link'
 import { cn } from '@/lib/utils'
 import FinalGradeSHSTemplate from '@/app/components/FinalGradeSHSTemplate'
 import { DataTable } from '@/components/data-table'
-import { studentMasterList, studentsData } from '../_components/studentData'
+import { forRemedial, studentMasterList, studentsData, summerClassStatus } from '../_components/studentData'
 import NeedsImprovement from '../_components/NeedsImprovement'
 import InputGrades from '../_components/InputGrades'
+import SeniorHighInputGrades from '../_components/SeniorHighInputGrades'
 
 function Section({params}:{params: {section: string}}) {
 
@@ -70,16 +71,23 @@ function Section({params}:{params: {section: string}}) {
           <h1>Schedule: {section?.schedule} - ( {section?.days.join(',')} )</h1>
           <h1>Room: {section?.roomNumber}</h1>
           <h1>School Year: 2025-2026</h1>
+          {section?.gradeLevel === "Grade 11" && ( 
+            <h1>Current Semester: 1st</h1>
+          )}
+          {section?.gradeLevel === "Grade 12" && ( 
+            <h1>Current Semester: 1st</h1>
+          )}
         </div>
        
         <Tabs defaultValue={"students"} className="w-full relative space-y-5 mt-5 shadow-md ">
           {/* <h1 className='text-xs text-foreground font-semibold'>Select tab to show: </h1> */}
-          <TabsList className='max-w-full grid grid-cols-3 mb-10'> 
+          <TabsList className=''> 
             <TabsTrigger value="students" className='font-medium shadow-md border-b-2 data-[state=active]:border-b-primary data-[state=active]:text-primary' ><span className=''>Master List</span> </TabsTrigger>
             {/* <TabsTrigger value="attendance" className='font-medium shadow-md border-b-2 data-[state=active]:border-b-primary' >Attendance</TabsTrigger> */}
             <TabsTrigger value="class-record" className='font-medium shadow-md border-b-2 data-[state=active]:border-b-primary data-[state=active]:text-primary' >Class Record</TabsTrigger>
             <TabsTrigger value="grades-summary" className='font-medium shadow-md border-b-2 data-[state=active]:border-b-primary data-[state=active]:text-primary'>Grades Summary</TabsTrigger>
-            <TabsTrigger value="needs-improvement" className='font-medium shadow-md border-b-2 data-[state=active]:border-b-primary data-[state=active]:text-primary'>Needs Improvement</TabsTrigger>
+            <TabsTrigger value="intervention" className='font-medium shadow-md border-b-2 data-[state=active]:border-b-primary data-[state=active]:text-primary'>Needs Intervention</TabsTrigger>
+            <TabsTrigger value="remedial-class" className='font-medium shadow-md border-b-2 data-[state=active]:border-b-primary data-[state=active]:text-primary'>For Summer Class</TabsTrigger>
           </TabsList>
 
           {/* Master List */}
@@ -93,16 +101,14 @@ function Section({params}:{params: {section: string}}) {
             placeholder="students by LRN"
            />
           </TabsContent>
-
-          {/* Attendance */}
-          {/* <TabsContent value="attendance" className='min-h-screen border-2 border-gray-300'>
-            
-          </TabsContent> */}
-
           {/* Class Record*/}
           <TabsContent value="class-record" className=''>
-            <InputGrades sec={section?.section ? section.section : ""}/>
-             {/* <ClassRecord sec={section ? section.section : ""}/> */}
+            {section && section.gradeLevel === "Grade 11" || section?.gradeLevel === "Grade 12" ? (
+            
+              <SeniorHighInputGrades sec={section?.section ? section.section : ""}/>
+            ) : (
+              <InputGrades sec={section?.section ? section.section : ""}/>
+            )}
           </TabsContent>
 
           {/* Grade summary */}
@@ -121,8 +127,17 @@ function Section({params}:{params: {section: string}}) {
             )}
           </TabsContent>
 
-          <TabsContent value="needs-improvement" className="">
+          <TabsContent value="intervention" className="">
             <NeedsImprovement/>
+          </TabsContent>
+          <TabsContent value="remedial-class" className="">
+            <DataTable 
+              //@ts-ignore
+              columns={forRemedial}
+              data={summerClassStatus}
+              filter='lrn'
+              placeholder="students by LRN"
+              />
           </TabsContent>
         </Tabs>
     </div>

@@ -11,22 +11,24 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 
-export type StudentType = {
-    id: string;
-    lrn: string;
-    firstName: string;
-    middleName: string;
-    lastName: string;
-    birthDate: string; // Use `Date` if you plan to work with date objects instead of strings
-    gender: 'male' | 'female' | 'other'; // if you're including more gender options
-    address: string;
-    yearLevel: string;
-    parentGuardianName: string;
-    parentGuardianContact: string;
+type Student = {
+  id: string;
+  lrn: string;
+  firstName: string;
+  middleName: string;
+  lastName: string;
+  birthDate: string;
+  gender: "Male" | "Female";
+  address: string;
+  yearLevel: "Grade 7" | "Grade 8" | "Grade 9" | "Grade 10" | "Grade 11" | "Grade 12";
+  strand?: "STEM" | "ABM" | "HUMSS" | "TVL" | "GAS"; // Optional field for Grade 11 and 12
+  parentGuardianName: string;
+  parentGuardianContact: string;
 };
-export const studentColumn: ColumnDef<StudentType>[]  = [
+export const studentColumn: ColumnDef<Student>[]  = [
     {
-        id: "id",
+        id: "lastName",
+        accessorKey: "lastName",
         header: "Info",
         cell: ({ row }) => {
     

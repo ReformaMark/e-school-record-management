@@ -4,30 +4,30 @@ export const sectionData = [
     {
         id: "1",
         sectionNumber: 1,
-        sectionName: "Mahusay",
+        sectionName: "Bituin", // Star
         schoolYear: "2023-2024",
         gradeLevel: "Grade 7",
         roomNumber: "101",
         adviser: {
             id: "1",
-            name: "John Doe",
+            name: "Juan dela Cruz",
             subject: "English",
         },
         subjectsTeachers: [
             {
-                teacher: "Kennedy Jones",
+                teacher: "Maria Santos",
                 subject: "Mathematics"
             },
             {
-                teacher: "Brock Lesnar",
+                teacher: "Josefa Estrada",
                 subject: "Physical Education"
             },
             {
-                teacher: "Lincoln Henderson",
+                teacher: "Andres Reyes",
                 subject: "Science",
             },
             {
-                teacher: "Carmen Rivera",
+                teacher: "Lourdes Cruz",
                 subject: "History"
             },
         ]
@@ -35,30 +35,30 @@ export const sectionData = [
     {
         id: "2",
         sectionNumber: 2,
-        sectionName: "Malinis",
+        sectionName: "Liwanag", // Light
         schoolYear: "2023-2024",
         gradeLevel: "Grade 7",
         roomNumber: "102",
         adviser: {
             id: "2",
-            name: "Jane Doe",
+            name: "Maria Clara",
             subject: "Mathematics",
         },
         subjectsTeachers: [
             {
-                teacher: "Kennedy Jones",
+                teacher: "Maria Santos",
                 subject: "English"
             },
             {
-                teacher: "Brock Lesnar",
+                teacher: "Josefa Estrada",
                 subject: "Physical Education"
             },
             {
-                teacher: "Lincoln Henderson",
+                teacher: "Andres Reyes",
                 subject: "Science",
             },
             {
-                teacher: "Carmen Rivera",
+                teacher: "Lourdes Cruz",
                 subject: "History"
             },
         ]
@@ -66,30 +66,30 @@ export const sectionData = [
     {
         id: "3",
         sectionNumber: 1,
-        sectionName: "Patience",
+        sectionName: "Katipunan", // League
         schoolYear: "2023-2024",
         gradeLevel: "Grade 8",
         roomNumber: "201",
         adviser: {
             id: "3",
-            name: "Albert Limestein",
+            name: "Pedro Santos",
             subject: "Science",
         },
         subjectsTeachers: [
             {
-                teacher: "Kennedy Jones",
+                teacher: "Maria Santos",
                 subject: "Mathematics"
             },
             {
-                teacher: "Brock Lesnar",
+                teacher: "Josefa Estrada",
                 subject: "Physical Education"
             },
             {
-                teacher: "Lincoln Henderson",
+                teacher: "Andres Reyes",
                 subject: "Science",
             },
             {
-                teacher: "Carmen Rivera",
+                teacher: "Lourdes Cruz",
                 subject: "History"
             },
         ]
@@ -97,30 +97,30 @@ export const sectionData = [
     {
         id: "4",
         sectionNumber: 1,
-        sectionName: "Iron",
+        sectionName: "Makabayan", // Nationalist
         schoolYear: "2023-2024",
         gradeLevel: "Grade 9",
         roomNumber: "301",
         adviser: {
             id: "4",
-            name: "Mac Arthur Returnson",
+            name: "Ana Rodriguez",
             subject: "History",
         },
         subjectsTeachers: [
             {
-                teacher: "Kennedy Jones",
+                teacher: "Maria Santos",
                 subject: "Mathematics"
             },
             {
-                teacher: "Brock Lesnar",
+                teacher: "Josefa Estrada",
                 subject: "Physical Education"
             },
             {
-                teacher: "Lincoln Henderson",
+                teacher: "Andres Reyes",
                 subject: "Science",
             },
             {
-                teacher: "Carmen Rivera",
+                teacher: "Lourdes Cruz",
                 subject: "History"
             },
         ]
@@ -128,30 +128,30 @@ export const sectionData = [
     {
         id: "5",
         sectionNumber: 3,
-        sectionName: "Matapang",
+        sectionName: "Bayanihan", // Community Spirit
         schoolYear: "2023-2024",
         gradeLevel: "Grade 9",
         roomNumber: "302",
         adviser: {
             id: "5",
-            name: "Robert Oppenheimer",
+            name: "Ricardo Ramirez",
             subject: "Science",
         },
         subjectsTeachers: [
             {
-                teacher: "Kennedy Jones",
+                teacher: "Maria Santos",
                 subject: "Mathematics"
             },
             {
-                teacher: "Brock Lesnar",
+                teacher: "Josefa Estrada",
                 subject: "Physical Education"
             },
             {
-                teacher: "Lincoln Henderson",
+                teacher: "Andres Reyes",
                 subject: "Science",
             },
             {
-                teacher: "Carmen Rivera",
+                teacher: "Lourdes Cruz",
                 subject: "History"
             },
         ]
@@ -159,30 +159,30 @@ export const sectionData = [
     {
         id: "6",
         sectionNumber: 1,
-        sectionName: "Amethyst",
+        sectionName: "Pag-asa", // Hope
         schoolYear: "2023-2024",
         gradeLevel: "Grade 10",
         roomNumber: "401",
         adviser: {
             id: "6",
-            name: "Eddard Stark",
+            name: "Elena Cruz",
             subject: "History",
         },
         subjectsTeachers: [
             {
-                teacher: "Kennedy Jones",
+                teacher: "Maria Santos",
                 subject: "Mathematics"
             },
             {
-                teacher: "Brock Lesnar",
+                teacher: "Josefa Estrada",
                 subject: "Physical Education"
             },
             {
-                teacher: "Lincoln Henderson",
+                teacher: "Andres Reyes",
                 subject: "Science",
             },
             {
-                teacher: "Carmen Rivera",
+                teacher: "Lourdes Cruz",
                 subject: "History"
             },
         ]

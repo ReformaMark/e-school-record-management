@@ -9,11 +9,12 @@ function FinalGradeSHSTemplate({
 }) {
     
     const males = studentsData
-        .filter((student) => student.gender === 'male')
+        .filter((student) => student.gender === 'Male')
         .sort((a, b) => a.lastName.localeCompare(b.lastName));
 
+        console.log(males.length)
     const females = studentsData
-        .filter((student) => student.gender === 'female')
+        .filter((student) => student.gender === 'Female')
         .sort((a, b) => a.lastName.localeCompare(b.lastName));
 
   return (

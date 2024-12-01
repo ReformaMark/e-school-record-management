@@ -12,7 +12,6 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 
-import Image from "next/image"
 import { useState } from "react"
 
 export const SignInCard = ({

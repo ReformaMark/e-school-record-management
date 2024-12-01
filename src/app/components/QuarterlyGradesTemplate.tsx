@@ -17,14 +17,14 @@ function QuarterlyGradesTemplate({
     //fetch students that are assigned to the teache that are currently logs in
     //inlcude there grades
     const males = studentsData
-                .filter((student) => student.gender === 'male')
+                .filter((student) => student.gender === 'Male')
                 .sort((a, b) => a.lastName.localeCompare(b.lastName));
 
     const females = studentsData
-                .filter((student) => student.gender === 'female')
+                .filter((student) => student.gender === 'Female')
                 .sort((a, b) => a.lastName.localeCompare(b.lastName));
   return (
-    <div className='w-[1000px] overflow-y-auto'>
+    <div className='w-[1000px] md:w-full overflow-y-auto'>
         <h1 className='text-center font-semibold'>Summary of Quarterly Grades</h1>
         <div className="">
             {/* First Row */}

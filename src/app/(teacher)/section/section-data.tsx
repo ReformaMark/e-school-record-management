@@ -26,7 +26,7 @@ export interface Section {
 
 export const sections = [
   {
-    section: "7-A",
+    section: "Bituin", // Star for Grade 7
     gradeLevel: "Grade 7",
     subject: "Mathematics",
     schedule: "7:00 AM - 8:30 AM",
@@ -36,7 +36,7 @@ export const sections = [
     averageGrade: 85.6 // Average grade for the section
   },
   {
-    section: "7-B",
+    section: "Liwanag", // Light for Grade 7
     gradeLevel: "Grade 7",
     subject: "Filipino",
     schedule: "8:30 AM - 10:00 AM",
@@ -46,7 +46,7 @@ export const sections = [
     averageGrade: 88.2 // Average grade for the section
   },
   {
-    section: "8-A",
+    section: "Katipunan", // League for Grade 8
     gradeLevel: "Grade 8",
     subject: "Science",
     schedule: "10:00 AM - 11:30 AM",
@@ -56,7 +56,7 @@ export const sections = [
     averageGrade: 89.5 // Average grade for the section
   },
   {
-    section: "8-B",
+    section: "Makabayan", // Nationalist for Grade 8
     gradeLevel: "Grade 8",
     subject: "Araling Panlipunan",
     schedule: "1:00 PM - 2:30 PM",
@@ -66,7 +66,7 @@ export const sections = [
     averageGrade: 84.1 // Average grade for the section
   },
   {
-    section: "9-A",
+    section: "Bayanihan", // Community Spirit for Grade 9
     gradeLevel: "Grade 9",
     subject: "English",
     schedule: "7:00 AM - 8:30 AM",
@@ -76,7 +76,7 @@ export const sections = [
     averageGrade: 87.3 // Average grade for the section
   },
   {
-    section: "9-B",
+    section: "Pag-asa", // Hope for Grade 9
     gradeLevel: "Grade 9",
     subject: "TLE (Technology & Livelihood Education)",
     schedule: "8:30 AM - 10:00 AM",
@@ -86,7 +86,7 @@ export const sections = [
     averageGrade: 86.9 // Average grade for the section
   },
   {
-    section: "11-A",
+    section: "11-A", // Keeping original for Grade 11
     gradeLevel: "Grade 11",
     subject: "Pre Calculus",
     schedule: "10:00 AM - 11:30 AM",
@@ -96,6 +96,7 @@ export const sections = [
     averageGrade: 90.2 // Average grade for the section
   },
 ];
+
 
 export const sectionColumns: ColumnDef<Section>[] = [
   {

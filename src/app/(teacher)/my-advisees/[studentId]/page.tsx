@@ -6,6 +6,11 @@ import { Button, buttonVariants } from '@/components/ui/button'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
 import { FaLevelUpAlt } from 'react-icons/fa'
+import { studentsData } from '../../../../../data/students-data'
+import JrGradesTemplate from '../_components/JrGradesTemplate'
+import SrGradesTemplate from '../_components/SrGradesTemplate'
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+
 function Student({
     params
 }:{
@@ -14,10 +19,11 @@ function Student({
     }
 }) {
     const [isOpen, setIsOpen] = useState<boolean>(false)
-
+    const student = studentsData.find( student => student.id === params.studentId)
 
   return (
     <div className='p-3 md:p-10 text-primary'>
+    
         <div className="bg-white w-full-full min-h-screen h-fit p-5 shadow-md">
             <Link
                 href="/my-advisees"
@@ -29,16 +35,16 @@ function Student({
                 <span className="sr-only">Back</span>
             </Link>
             <div className="w-full flex item-start justify-between mb-5 gap-x-2">
-              
+                
                 <h1 className='text-lg md:text-xl text-primary font-semibold flex items-center'>Student Report Card</h1>
                 <div className="space-y-3">
-                    <Button size="default" onClick={()=> setIsOpen(!isOpen)} className="s self-end h-7 gap-1 bg-red-600 text-white py-2 ml-auto">
+                    <Button size="default" onClick={()=> setIsOpen(!isOpen)} className="s self-end h-7 gap-1 bg-blue-600 text-white py-2 ml-auto">
                         <FaLevelUpAlt className="h-3.5 w-3.5" />
                         <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                            Promote
+                            Promotion
                         </span>
                     </Button>
-                    <div className="text-xs text-primary">
+                    {/* <div className="text-xs text-primary">
                         <div className="flex items-center gap-x-2">
                             <div className="bg-blue-600 p-1 rounded-full size-2"></div>
                             <h1 className=''>Ready for promotion</h1>
@@ -52,26 +58,65 @@ function Student({
                             <h1 className=''>Pending</h1>
                         </div>
 
-                    </div>
+                    </div> */}
                 </div>
             </div>
+            <Dialog open={isOpen}>
+                <DialogContent className=' max-h-screen overflow-auto text-primary'>
+                <DialogHeader>
+                    <DialogTitle className='text-lg'>
+                        Promote to the next grade level? 
+                    </DialogTitle>
+                    
+                </DialogHeader>
+                <div className="space-y-3">
+                    <p>{student?.lastName} has <strong>failed (1)</strong> of his subjects.</p>
+                    <h1>Failed Subject(s):</h1>
+                    <h1 className='pl-5'>- <strong>Pre-Calculus - (74)</strong></h1>
+                    <p className='text-sm text-justify'>* Must pass remedial classes for failed competencies in the subjects or learning areas to be allowed to enroll in the next semester. Otherwise the learner must retake the subjects failed.</p>
+                </div>
+                <DialogFooter>
+                    <Button variant={'default'} onClick={()=> setIsOpen(!isOpen)} className=" text-white">Conditionally Promote</Button>
+                </DialogFooter>
+                </DialogContent>
+            </Dialog>
             <div className="grid grid-cols-4 mb-5 text-sm md:text-sm">
-                <h1 className='col-span-4 md:col-span-2  text-text'>Student Number: <span className='text-sm md:text-lg font-semibold'> {params.studentId} </span></h1>
-                <h1 className='col-span-4 md:col-span-2  text-text'>LRN: <span className='text-sm md:text-lg font-semibold'> LRN123456 </span></h1>
-                <h1 className='col-span-4 md:col-span-2  text-text'>Full Name: <span className='text-sm md:text-lg font-semibold'> Doe, John Smith </span></h1>      
-                <h1 className='col-span-4 md:col-span-2  text-text'>Grade Level: <span className='text-sm md:text-lg font-semibold'> 8 </span></h1>           
-                <h1 className='col-span-4 md:col-span-2  text-text'>Adviser: <span className='text-sm md:text-lg font-semibold'> Micheal Smith </span></h1>           
-                <h1 className='col-span-4 md:col-span-2  text-text'>Section: <span className='text-sm md:text-lg font-semibold'> Matikas </span></h1>        
-            </div>
-            <div className="flex justify-end w-full">
-                <Button size="default" variant="outline" className="h-7 gap-1 bg-gray-100 py-2 ml-auto">
-                    <File className="h-3.5 w-3.5" />
-                    <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                        Generate Report Card
-                    </span>
-                </Button>
+                <h1 className='col-span-4 md:col-span-2  text-text'>Student Number: <span className='text-sm md:text-lg font-semibold'> {student?.id} </span></h1>
+                <h1 className='col-span-4 md:col-span-2  text-text'>LRN: <span className='text-sm md:text-lg font-semibold'> {student?.lrn} </span></h1>
+                <h1 className='col-span-4 md:col-span-2  text-text'>Full Name: <span className='text-sm md:text-lg font-semibold'>{student?.lastName}, {student?.firstName} {student?.middleName} </span></h1>      
+                <h1 className='col-span-4 md:col-span-2  text-text'>Grade Level: <span className='text-sm md:text-lg font-semibold'> {student?.yearLevel} </span></h1>           
+                <h1 className='col-span-4 md:col-span-2  text-text'>Adviser: <span className='text-sm md:text-lg font-semibold'> Micheal Reyes </span></h1>           
+                <h1 className='col-span-4 md:col-span-2  text-text'>Section: 11-A</h1> 
+                {student?.yearLevel === "Grade 11"  && (
+                    <>
+                        <h1 className='col-span-4 md:col-span-2  text-text'>Strand: <span className='text-sm md:text-lg font-semibold'> {student?.strand} </span></h1>
+                        <h1 className='col-span-4 md:col-span-2  text-text'>Semister: <span className='text-sm md:text-lg font-semibold'> 1st </span></h1>
+                    </>
+                )}       
+                {student?.yearLevel === "Grade 12"  && (
+                    <>
+                        <h1 className='col-span-4 md:col-span-2  text-text'>Strand: <span className='text-sm md:text-lg font-semibold'> {student?.strand} </span></h1>
+                        <h1 className='col-span-4 md:col-span-2  text-text'>Semister: <span className='text-sm md:text-lg font-semibold'> 1st </span></h1>
+                    </>
+                )}       
+            </div> 
+       
+                <div className="flex  w-full my-4">
+                    <Button size="default" variant="outline" className="h-7 gap-1 bg-gray-100 py-2 ">
+                        <File className="h-3.5 w-3.5" />
+                        <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                            Generate SF9
+                        </span>
+                    </Button>
+                    <Button size="default" variant="outline" className="h-7 gap-1 bg-gray-100 py-2 ml-auto">
+                        <File className="h-3.5 w-3.5" />
+                        <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                            Generate SF10
+                        </span>
+                    </Button>
 
-            </div>
+                </div>
+             
             <Tabs defaultValue="grades" className="w-full">
                 <TabsList>
                     <TabsTrigger value="grades">Grades</TabsTrigger>
@@ -79,150 +124,39 @@ function Student({
                     <TabsTrigger value="attendance">Attendance</TabsTrigger>
                 </TabsList>
                 {/* Grades Content */}
-                <TabsContent value="grades" className='text-xs md:text-sm w-full gap-x-10'>
-                    <h1 className='text-sm font-semibold text-center mb-4'>REPORT ON LEARNING PROGRESS AND ACHIEVEMENT</h1>
-                   
-                    <div className="grid grid-cols-12 w-full bg-gray-200 items-center text-center font-semibold text-xs md:text-sm border border-black">
-                        <h1 className='col-span-4 h-full flex items-center justify-center border-r border-r-black'>Learning Areas</h1>
-                        <div className="col-span-4 grid grid-cols-4 text-center items-center border-r border-r-black">
-                            <h1 className='col-span-4 border-b border-b-black'>Quarter</h1>
-                            <h1 className='col-span-1 '>1st</h1>
-                            <h1 className='col-span-1 border-l border-l-black'>2nd</h1>
-                            <h1 className='col-span-1 border-l border-l-black'>3rd</h1>
-                            <h1 className='col-span-1 border-l border-l-black'>4th</h1>
-                        </div>
-                        <h1 className='col-span-2 flex items-center justify-center h-full '>Final Rating</h1>
-                        <h1 className='col-span-2 flex items-center justify-center h-full border-l border-l-black'>Remarks</h1>
-                    </div>
-                    
-                    {/* Grades Data */}
-                    <div className="grid grid-cols-12 w-full bg-gray-100 items-center text-center font-medium text-sm">
-                        <div className='col-span-4 border-b border-black border-x p-2 text-left'>English</div>
-                        <div className='col-span-1 border-b border-black border-r p-2'>85</div>
-                        <div className='col-span-1 border-b border-black border-r p-2'>87</div>
-                        <div className='col-span-1 border-b border-black border-r p-2'>88</div>
-                        <div className='col-span-1 border-b border-black border-r p-2'>86</div>
-                        <div className='col-span-2 border-b border-black border-r p-2'>87</div>
-                        <div className='col-span-2 border-b border-black border-r p-2'>Passed</div>
-                    </div>
-                    <div className="grid grid-cols-12 w-full bg-gray-100 items-center text-center font-medium text-sm">
-                        <div className='col-span-4 border-b border-black border-x p-2 text-left'>Mathematics</div>
-                        <div className='col-span-1 border-b border-black border-r p-2'>75</div>
-                        <div className='col-span-1 border-b border-black border-r p-2'>74</div>
-                        <div className='col-span-1 border-b border-black border-r p-2'>72</div>
-                        <div className='col-span-1 border-b border-black border-r p-2'>70</div>
-                        <div className='col-span-2 border-b border-black border-r p-2'>72</div>
-                        <div className='col-span-2 border-b border-black border-r p-2'>Failed</div>
-                    </div>
-                    <div className="grid grid-cols-12 w-full bg-gray-100 items-center text-center font-medium text-sm">
-                        <div className='col-span-4 border-b border-black border-x p-2 text-left'>Science</div>
-                        <div className='col-span-1 border-b border-black border-r p-2'>89</div>
-                        <div className='col-span-1 border-b border-black border-r p-2'>91</div>
-                        <div className='col-span-1 border-b border-black border-r p-2'>90</div>
-                        <div className='col-span-1 border-b border-black border-r p-2'>88</div>
-                        <div className='col-span-2 border-b border-black border-r p-2'>90</div>
-                        <div className='col-span-2 border-b border-black border-r p-2'>Passed</div>
-                    </div>
-                    <div className="grid grid-cols-12 w-full bg-gray-100 items-center text-center font-medium text-sm">
-                        <div className='col-span-4 border-b border-black border-x p-2 text-left'>Filipino</div>
-                        <div className='col-span-1 border-b border-black border-r p-2'>90</div>
-                        <div className='col-span-1 border-b border-black border-r p-2'>89</div>
-                        <div className='col-span-1 border-b border-black border-r p-2'>92</div>
-                        <div className='col-span-1 border-b border-black border-r p-2'>91</div>
-                        <div className='col-span-2 border-b border-black border-r p-2'>91</div>
-                        <div className='col-span-2 border-b border-black border-r p-2'>Passed</div>
-                    </div>
-                    <div className="grid grid-cols-12 w-full bg-gray-100 items-center text-center font-medium text-sm">
-                        <div className='col-span-4 border-b border-black border-x p-2 text-left'>Araling Panlipunan</div>
-                        <div className='col-span-1 border-b h-full border-black border-r p-2'>88</div>
-                        <div className='col-span-1 border-b h-full border-black border-r p-2'>87</div>
-                        <div className='col-span-1 border-b h-full border-black border-r p-2'>89</div>
-                        <div className='col-span-1 border-b h-full border-black border-r p-2'>90</div>
-                        <div className='col-span-2 border-b h-full border-black border-r p-2'>89</div>
-                        <div className='col-span-2 border-b h-full border-black border-r p-2'>Passed</div>
-                    </div>
-                    <div className="grid grid-cols-12 w-full bg-gray-100 items-center text-center font-medium text-sm">
-                        <div className='col-span-4 border-b border-black border-x p-2 text-left'>Edukasyon sa Pagpapakatao (EsP)</div>
-                        <div className='col-span-1 border-b h-full border-black border-r p-2'>91</div>
-                        <div className='col-span-1 border-b h-full border-black border-r p-2'>90</div>
-                        <div className='col-span-1 border-b h-full border-black border-r p-2'>92</div>
-                        <div className='col-span-1 border-b h-full border-black border-r p-2'>91</div>
-                        <div className='col-span-2 border-b h-full border-black border-r p-2'>91</div>
-                        <div className='col-span-2 border-b h-full border-black border-r p-2'>Passed</div>
-                    </div>
-                    <div className="grid grid-cols-12 w-full bg-gray-100 items-center text-center font-medium text-sm">
-                        <div className='col-span-4 border-b h-full border-black border-x p-2 text-left'>Edukasyong Pantahanan at Pangkabuhayan</div>
-                        <div className='col-span-1 border-b h-full border-black border-r p-2'>88</div>
-                        <div className='col-span-1 border-b h-full border-black border-r p-2'>87</div>
-                        <div className='col-span-1 border-b h-full border-black border-r p-2'>89</div>
-                        <div className='col-span-1 border-b h-full border-black border-r p-2'>90</div>
-                        <div className='col-span-2 border-b h-full border-black border-r p-2'>89</div>
-                        <div className='col-span-2 border-b h-full border-black border-r p-2'>Passed</div>
-                    </div>
-                    <div className="grid grid-cols-12 w-full border-x border-b border-black bg-gray-100 items-center text-center font-medium text-sm">
-                        <div className='col-span-4  text-center border-r border-r-black'>
-                            <h1 className='text-left border-b border-b-black p-2'>MAPEH</h1>
-                            <h1 className='border-b border-b-black p-1'>Music</h1>
-                            <h1 className='border-b border-b-black p-1'>Arts</h1>
-                            <h1 className='border-b border-b-black p-1'>Physical <br/>Education</h1>
-                            <h1 >Health</h1>
-                        </div>
-                        <div className='col-span-1 border-r border-r-black h-full'>
-                            <h1 className='border-b border-b-black p-2'>90</h1>
-                            <h1 className='border-b border-b-black p-1'>90</h1>
-                            <h1 className='border-b border-b-black p-1'>90</h1>
-                            <h1 className='border-b border-b-black p-1'>90<br/> <span className='text-white'> 0</span> </h1>
-                            <h1 >90</h1>
-                        </div>
-                        <div className='col-span-1 border-r border-r-black h-full'>
-                            <h1 className='border-b border-b-black p-2'>90</h1>
-                            <h1 className='border-b border-b-black p-1'>90</h1>
-                            <h1 className='border-b border-b-black p-1'>90</h1>
-                            <h1 className='border-b border-b-black p-1'>90<br/> <span className='text-white'> 0</span> </h1>
-                            <h1 >90</h1>
-                        </div>
-                        <div className='col-span-1 border-r border-r-black h-full'>
-                        <h1 className='border-b border-b-black p-2'>90</h1>
-                            <h1 className='border-b border-b-black p-1'>90</h1>
-                            <h1 className='border-b border-b-black p-1'>90</h1>
-                            <h1 className='border-b border-b-black p-1'>90 <br/> <span className='text-white'> 0</span></h1>
-                            <h1 >90</h1>
-                        </div>
-                        <div className='col-span-1 border-r border-r-black h-full'>
-                            <h1 className='border-b border-b-black p-2'>90</h1>
-                            <h1 className='border-b border-b-black p-1'>90</h1>
-                            <h1 className='border-b border-b-black p-1'>90</h1>
-                            <h1 className='border-b border-b-black p-1'>90 <br/> <span className='text-white'> 0</span></h1>
-                            <h1 >90</h1>
-                        </div>
-                        <div className='col-span-2  h-full'>
-                            <h1  className='border-b border-b-black p-2'>90</h1>
-                           
-                        </div>
-                        <div className='col-span-2 border-l border-l-black  h-full'>
-                            <h1  className='border-b border-b-black p-2'>Passed</h1>
-                        </div>
-                    </div>
-                    <div className="grid grid-cols-12 w-full bg-gray-100 items-center text-center font-medium text-sm">
-                        <div className='col-span-4 border-r '></div>
-                        <div className='col-span-4 border-b border-black border-x font-semibold tracking-widest font-serif text-lg'>General Average</div>
-                        
-                        <div className='col-span-2 border-b border-black border-r font-semibold text-lg'>89</div>
-                        
-                    </div>
-                   
-                </TabsContent>
+                
+                {student?.yearLevel === "Grade 11" || student?.yearLevel === "Grade 12" ? (
+                    <TabsContent value="grades" className='text-xs md:text-sm w-full gap-x-10'>
+                        <Tabs defaultValue="1st">
+                            <TabsList>
+                                <TabsTrigger value="1st">1st Semester</TabsTrigger>
+                                <TabsTrigger value="2nd">2nd Semester</TabsTrigger>
+                            </TabsList>
+                            <TabsContent value='1st'>
+                                <SrGradesTemplate sem='1st' strand={student.strand? student.strand : ''}/>
+                            </TabsContent>
+                            <TabsContent value='2nd'>
+                                <SrGradesTemplate sem='2nd' strand={student.strand? student.strand : ''}/>
+                            </TabsContent>
+                        </Tabs>
+                       
+                    </TabsContent>
+                ) :(
+                    <TabsContent value="grades" className='text-xs md:text-sm w-full gap-x-10'>
+                        <JrGradesTemplate/>
+                    </TabsContent>
+                )}
                 {/* {Values} */}
                 <TabsContent value='values'>
                     <div className="flex justify-end">
                         <Button size="default" variant="outline" className="h-7 gap-1 bg-gray-100 py-2 ml-auto">
                             <Edit className="h-3.5 w-3.5" />
                             <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                               Edit
+                                Edit
                             </span>
                         </Button>
                     </div>
-                   
+                    
                     <h1 className='text-sm font-semibold text-center'>REPORT ON LEARNER&apos;S OBSERVANCE OF VALUES</h1>
                     
                     <div className="grid grid-cols-12 w-full border-collapse border border-black  border-b-0 bg-gray-200 items-center text-center font-semibold text-sm">
@@ -437,6 +371,7 @@ function Student({
             </Tabs>
 
         </div>
+     
     </div>
   )
 }
