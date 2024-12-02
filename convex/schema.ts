@@ -5,65 +5,100 @@ import { v } from "convex/values";
 export default defineSchema({
   ...authTables,
   users: defineTable({
-    name: v.optional(v.string()),
-    lastName: v.optional(v.string()),
-    image: v.optional(v.string()),
-    email: v.optional(v.string()),
-    emailVerificationTime: v.optional(v.number()),
-    phone: v.optional(v.string()),
-    phoneVerificationTime: v.optional(v.number()),
-    isAnonymous: v.optional(v.boolean()),
-    role: v.union(v.literal("teacher"), v.literal("admin")),
-  }),
-
-  teachers: defineTable({
-    id: v.string(),
+    // Basic Info
     firstName: v.string(),
     middleName: v.optional(v.string()),
     lastName: v.string(),
     email: v.string(),
-    emailVerified: v.boolean(),
-    image: v.string(),
-    role: v.string(),
-    specialization: v.string(),
-    yearsOfExperience: v.number()
+    emailVerified: v.optional(v.boolean()),
+    image: v.optional(v.string()),
+    contactNumber: v.string(),
+    birthDate: v.string(),
+
+    // Role and Status
+    role: v.union(
+      v.literal("admin"),
+      v.literal("teacher"),
+      v.literal("school-head"),
+      v.literal("staff")  // for registrars
+    ),
+    isActive: v.optional(v.boolean()),
+
+    // Additional fields for specific roles
+    department: v.optional(v.string()), // for staff/registrar
+    specialization: v.optional(v.string()), // for teachers
+    yearsOfExperience: v.optional(v.number()), // for all roles
+    startDate: v.optional(v.string()), // primarily for school-head
+    endDate: v.optional(v.string()), // primarily for school-head
   }),
 
-  //class or section
+  students: defineTable({
+    lrn: v.string(),
+    firstName: v.string(),
+    middleName: v.optional(v.string()),
+    lastName: v.string(),
+    extensionName: v.optional(v.string()),
+    birthDate: v.string(),
+    birthPlace: v.string(),
+    age: v.number(),
+    sex: v.union(v.literal("Male"), v.literal("Female"), v.literal("Other")),
+
+    // Address
+    province: v.string(),
+    municipality: v.string(),
+    barangay: v.string(),
+    street: v.optional(v.string()),
+    houseNum: v.optional(v.string()),
+
+    // Parent/Guardian Info
+    fatherName: v.string(),
+    fatherContact: v.string(),
+    motherName: v.string(),
+    motherContact: v.string(),
+    guardianName: v.optional(v.string()),
+    guardianContact: v.optional(v.string()),
+
+    // Academic Info
+    gradeLevel: v.number(),
+    strand: v.optional(v.string()),
+    track: v.optional(v.string()),
+    section: v.optional(v.id('sections')),
+
+    // Additional Info
+    indigenous: v.boolean(),
+    indigenousCommunity: v.optional(v.string()),
+    fourPsBeneficiary: v.boolean(),
+    fourPsId: v.optional(v.string()),
+  }),
+
   sections: defineTable({
     name: v.string(),
     gradeLevel: v.number(),
-    studentIds: v.array(v.id('students')),
-    advisorId: v.id('teachers'),
-    classIds: v.array(v.id('classes')),
+    advisorId: v.id('users'), // references teacher in users table
+    roomId: v.id('rooms'),
     schoolYearId: v.id('schoolYears'),
-    room: v.id('rooms'),
-
+    isActive: v.boolean(),
   }),
-  
-  classes: defineTable ({
-    className: v.string(), // Name of the subject or class (e.g., "English 9"
-    gradeLevel: v.number(),
-    subjectCode: v.string(), // Code for the subject (e.g., "ENG9")
-    teacherId: v.id('teachers') ,
+
+  classes: defineTable({
+    subjectId: v.id('subjects'),
+    teacherId: v.id('users'), // references teacher in users table
     sectionId: v.id('sections'),
-    scheduleId: v.id('schedules')
+    scheduleId: v.id('schedules'),
+    schoolYearId: v.id('schoolYears'),
   }),
 
-  schedules: defineTable ({
-    classId: v.id('classes'), // Links to the class
-    sectionId: v.id('sections'), // Links to the section
-   // school period must have days of week e.g., "Monday", "Tuesday" and time range Start time (e.g., "08:00") End time (e.g., "09:00")
-    schoolPeriodId: v.id('schoolPeriods'), 
-    room: v.string() // Room number or code
-
+  subjects: defineTable({
+    name: v.string(),
+    code: v.string(),
+    applicableGradeLevels: v.array(v.number()),
   }),
 
-  schoolYears: defineTable({
-      startDate: v.string(),
-      endDate: v.string(),
-      batchName: v.string(),
-      isActive: v.boolean(),
+  schedules: defineTable({
+    day: v.string(),
+    startTime: v.string(),
+    endTime: v.string(),
+    roomId: v.id('rooms'),
   }),
 
   schoolPeriods: defineTable({
@@ -77,21 +112,18 @@ export default defineSchema({
   }),
 
   rooms: defineTable({
-    roomName: v.string(),
-    estimatedCapacity: v.string(),
-    roomType: v.string(),
-    roomFeatures: v.string()
+    name: v.string(),
+    capacity: v.number(),
+    type: v.string(),
+    features: v.array(v.string()),
   }),
 
-  subjects: defineTable({
-    subject: v.string(),
-    applicableTo: v.array(v.id('gradeLevels'))
+  schoolYears: defineTable({
+    startDate: v.string(),
+    endDate: v.string(),
+    batchName: v.string(),
+    isActive: v.boolean(),
   }),
-
- 
-
-
-
 });
 
 
