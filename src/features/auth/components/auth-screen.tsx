@@ -4,9 +4,16 @@ import { useState } from "react"
 import { AuthFlow } from "../types"
 import { SignInCard } from "./sign-in-card"
 import { SignUpCard } from "./sign-up-card"
+import { useConvexAuth } from "convex/react"
+import { RoleCheck } from "@/components/guards/logged-in"
 
 export const AuthScreen = () => {
     const [state, setState] = useState<AuthFlow>("signIn")
+    const { isAuthenticated } = useConvexAuth()
+
+    if (isAuthenticated) {
+        return <RoleCheck />
+    }
 
     return (
         <div className="h-screen w-full lg:flex lg:flex-row">

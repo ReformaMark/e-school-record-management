@@ -32,13 +32,13 @@ export const createUser = mutation({
     handler: async (ctx, args) => {
         try {
             // Only admin can create users
-            // const adminId = await getAuthUserId(ctx);
-            // if (!adminId) throw new ConvexError("Not authenticated");
+            const adminId = await getAuthUserId(ctx);
+            if (!adminId) throw new ConvexError("Not authenticated");
 
-            // const admin = await ctx.db.get(adminId);
-            // if (!admin || admin.role !== "admin") {
-            //     throw new ConvexError("Unauthorized - Only admins can create users");
-            // }
+            const admin = await ctx.db.get(adminId);
+            if (!admin || admin.role !== "admin") {
+                throw new ConvexError("Unauthorized - Only admins can create users");
+            }
 
             // Check if email already exists
             const existingUser = await ctx.db
@@ -115,5 +115,16 @@ export const current = query({
         const userId = await getAuthUserId(ctx);
         if (!userId) return null;
         return await ctx.db.get(userId);
+    },
+});
+
+export const role = query({
+    args: {},
+    handler: async (ctx) => {
+        const userId = await getAuthUserId(ctx);
+        if (!userId) return null;
+
+        const user = await ctx.db.get(userId);
+        return user?.role;
     },
 });

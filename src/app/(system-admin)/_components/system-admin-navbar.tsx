@@ -22,9 +22,23 @@ import { IoMdNotificationsOutline } from 'react-icons/io';
 import { MdOutlineDashboard, MdOutlineSupportAgent } from 'react-icons/md';
 import { PiStudent } from 'react-icons/pi';
 import { SidebarSection } from './sidebar-section';
+import { useCurrentUser } from '@/features/current/api/use-current-user';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { useAuthActions } from '@convex-dev/auth/react';
 
 export const SystemAdminNavbar = () => {
     const pathname = usePathname()
+    const { user, isLoading } = useCurrentUser()
+    const { signOut } = useAuthActions()
+
+    if (isLoading) {
+        return null;
+    }
 
     return (
         <nav className='w-full h-fit z-50 shadow-md py-5 fixed flex justify-between items-center pr-3 sm:pr-5 md:pr-10 bg-primary text-white'>
@@ -38,14 +52,31 @@ export const SystemAdminNavbar = () => {
                 <IoMdNotificationsOutline className='size-6' />
 
                 <div className="hidden md:flex items-center gap-x-3">
-                    <Avatar>
-                        <AvatarImage src="https://github.com/shadcn.png" />
-                        <AvatarFallback>CN</AvatarFallback>
-                    </Avatar>
-                    <div className="text-center">
-                        <h3 className='text-sm'>Surname, Firstname MI.</h3>
-                        <h6 className='text-xs text-left text-white/70'>System Administrator</h6>
-                    </div>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger>
+                            <div className="flex items-center gap-x-3">
+                                <Avatar>
+                                    <AvatarImage src={user?.image || ""} />
+                                    <AvatarFallback
+                                        className='bg-sky-500 text-white'
+                                    >{user?.firstName?.charAt(0)}{user?.lastName?.charAt(0)}</AvatarFallback>
+                                </Avatar>
+                                <div className="text-center">
+                                    <h3 className='text-sm'>{user?.lastName}, {user?.firstName} {user?.middleName}</h3>
+                                    <h6 className='text-xs text-left text-white/70'>System Administrator</h6>
+                                </div>
+                            </div>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent>
+                            <DropdownMenuItem
+                                onClick={() => signOut()}
+                                className="cursor-pointer"
+                            >
+                                <BiLogOut className="mr-2 h-4 w-4" />
+                                <span>Logout</span>
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
                 </div>
 
                 <div className="md:hidden">
@@ -55,12 +86,16 @@ export const SystemAdminNavbar = () => {
                             <SheetHeader className='py-5'>
                                 <SheetTitle >
                                     <div className="flex items-center gap-x-3">
-                                        <Avatar>
-                                            <AvatarImage src="https://github.com/shadcn.png" />
-                                            <AvatarFallback className=''>CN</AvatarFallback>
+                                        <Avatar
+                                            className=''
+                                        >
+                                            <AvatarImage src={user?.image || ""} />
+                                            <AvatarFallback
+                                                className='bg-sky-500 text-white'
+                                            >{user?.firstName?.charAt(0)}{user?.lastName?.charAt(0)}</AvatarFallback>
                                         </Avatar>
                                         <div className="text-center ">
-                                            <h3 className='text-sm '>Surname, Firstname MI.</h3>
+                                            <h3 className='text-sm '>{user?.lastName}, {user?.firstName}</h3>
                                             <h6 className='text-xs text-left text-white/70'>System Administrator</h6>
                                         </div>
                                     </div>
@@ -174,11 +209,12 @@ export const SystemAdminNavbar = () => {
                             </div>
 
                             <SheetFooter className='mt-auto'>
-                                <Link href={'/assessments'} className={`${pathname === '/asda' ? "bg-background/50 text-white" : "bg-transparent"}   text-white flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}>
-                                    <BiLogOut
-                                        className='size-4 w-10' />
-                                    <h1 className='tracking-wider'>Logout</h1>
-                                </Link>
+                                <button
+                                    onClick={() => signOut()}
+                                    className="text-white flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium text-center hover:bg-background/50">
+                                    <BiLogOut className='size-4 w-10' />
+                                    <span className='tracking-wider'>Logout</span>
+                                </button>
                             </SheetFooter>
                         </SheetContent>
                     </Sheet>

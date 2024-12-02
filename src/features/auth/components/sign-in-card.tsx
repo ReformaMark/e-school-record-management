@@ -1,7 +1,5 @@
 import { AuthFlow } from "../types"
-
 import { TriangleAlertIcon } from "lucide-react"
-
 import { Button } from "@/components/ui/button"
 import {
     Card,
@@ -11,8 +9,8 @@ import {
     CardTitle
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-
 import { useState } from "react"
+import { useAuthActions } from "@convex-dev/auth/react"
 
 export const SignInCard = ({
     //eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -26,11 +24,39 @@ export const SignInCard = ({
     const [pending, setPending] = useState<boolean>(false);
     //eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [error, setError] = useState("");
+    const { signIn } = useAuthActions()
 
-    const onSignIn = (e: React.FormEvent<HTMLFormElement>) => {
+    const onSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
+        
+        if (pending) return;
+        
+        setPending(true);
+        setError("");
 
-        setPending(true)
+        try {
+            await signIn("password", {
+                email,
+                password,
+                flow: "signIn"
+            });
+            setError("");
+            
+        } catch (error) {
+            console.error("Sign in error:", error);
+            
+            if (error instanceof Error) {
+                if (error.message.includes("Failed to fetch")) {
+                    setError("Connection error. Please check your internet connection and try again.");
+                } else {
+                    setError(error.message);
+                }
+            } else {
+                setError("Invalid email or password");
+            }
+        } finally {
+            setPending(false);
+        }
     }
 
     return (

@@ -1,6 +1,6 @@
-import { Metadata } from "next";
 import "@/lib/globals.css";
 import { ConvexAuthNextjsServerProvider } from "@convex-dev/auth/nextjs/server";
+import { Metadata } from "next";
 import { ConvexClientProvider } from "../components/convex-client-provider";
 export const metadata: Metadata = {
     title: "ERMS-Authentication",
@@ -16,9 +16,9 @@ const AuthLayout = ({
         <ConvexAuthNextjsServerProvider>
             <html className="h-full" lang="en">
                 <body>
-                <ConvexClientProvider>
-                    {children}
-                </ConvexClientProvider>
+                    <ConvexClientProvider>
+                            {children}
+                    </ConvexClientProvider>
                 </body>
             </html>
         </ConvexAuthNextjsServerProvider>
