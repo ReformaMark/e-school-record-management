@@ -1,3 +1,5 @@
+"use client";
+
 import {
     Breadcrumb,
     BreadcrumbItem,
@@ -12,18 +14,23 @@ import {
     DropdownMenu,
     DropdownMenuCheckboxItem,
     DropdownMenuContent,
+    DropdownMenuItem,
     DropdownMenuLabel,
     DropdownMenuSeparator,
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 
 import { DataTable } from "@/components/data-table";
-import { File, ListFilterIcon, PlusCircleIcon } from "lucide-react";
+import { File, ListFilterIcon, MoreHorizontal, PlusCircleIcon } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { sysadminColumns, sysadminData } from "../../../../data/sysadmin-data";
+import { useQuery } from "convex/react";
+import { api } from "../../../../convex/_generated/api";
+import { sysadminColumns } from "./columns"
 
 const SystemAdminListPage = () => {
+    const admins = useQuery(api.admin.fetchAdmins);
+
     return (
         <div className="container mx-auto p-4">
             <Breadcrumb className="hidden md:flex">
@@ -92,7 +99,7 @@ const SystemAdminListPage = () => {
                     <CardContent>
                         <DataTable
                             columns={sysadminColumns}
-                            data={sysadminData}
+                            data={admins || []}
                             filter="firstName"
                             placeholder="administrators by first name"
                         />

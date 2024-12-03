@@ -30,7 +30,10 @@ export default defineSchema({
     yearsOfExperience: v.optional(v.number()), // for all roles
     startDate: v.optional(v.string()), // primarily for school-head
     endDate: v.optional(v.string()), // primarily for school-head
-  }),
+  }).index("by_email", ["email"])
+    .index("by_role", ["role"])
+    .index("by_department", ["department"])
+    .index("by_name", ["firstName", "lastName"]),
 
   students: defineTable({
     lrn: v.string(),
