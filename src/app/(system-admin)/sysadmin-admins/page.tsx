@@ -28,6 +28,7 @@ import { useQuery } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { sysadminColumns } from "./columns"
 import { useState } from "react";
+import { exportToExcel } from "@/lib/export-to-excel";
 
 const SystemAdminListPage = () => {
     const admins = useQuery(api.admin.fetchAdmins);
@@ -85,7 +86,7 @@ const SystemAdminListPage = () => {
                                 </DropdownMenuCheckboxItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
-                        <Button size="sm" variant="outline" className="h-7 gap-1">
+                        <Button size="sm" variant="outline" className="h-7 gap-1" onClick={() => exportToExcel(filteredAdmins || [], "system_administrators")}>
                             <File className="h-3.5 w-3.5" />
                             <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
                                 Export

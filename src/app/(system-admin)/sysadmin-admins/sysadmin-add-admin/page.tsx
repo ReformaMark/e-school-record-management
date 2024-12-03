@@ -160,7 +160,7 @@ const SystemAdminAddAdminPage = () => {
                                     <CardContent>
                                         <div className="grid gap-6">
                                             <div className="grid gap-3">
-                                                <Label htmlFor="name">Email</Label>
+                                                <Label htmlFor="name">Email <span className="text-red-500">*</span></Label>
                                                 <Input
                                                     id="email"
                                                     type="email"
@@ -173,7 +173,7 @@ const SystemAdminAddAdminPage = () => {
 
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                 <div className="grid gap-3">
-                                                    <Label htmlFor="name">First Name</Label>
+                                                    <Label htmlFor="name">First Name <span className="text-red-500">*</span></Label>
                                                     <Input
                                                         id="name"
                                                         type="text"
@@ -184,7 +184,7 @@ const SystemAdminAddAdminPage = () => {
                                                     {errors.firstName && <p className="text-red-500">{errors.firstName.message}</p>}
                                                 </div>
                                                 <div className="grid gap-3">
-                                                    <Label htmlFor="name">Last Name</Label>
+                                                    <Label htmlFor="name">Last Name <span className="text-red-500">*</span></Label>
                                                     <Input
                                                         id="name"
                                                         type="text"
@@ -196,7 +196,7 @@ const SystemAdminAddAdminPage = () => {
                                                 </div>
                                             </div>
                                             <div className="grid gap-3">
-                                                <Label htmlFor="name">Middle Name</Label>
+                                                <Label htmlFor="name">Middle Name (Optional)</Label>
                                                 <Input
                                                     id="name"
                                                     type="text"
@@ -209,7 +209,7 @@ const SystemAdminAddAdminPage = () => {
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                 {/* password and current password */}
                                                 <div className="grid gap-3">
-                                                    <Label htmlFor="password">Password</Label>
+                                                    <Label htmlFor="password">Password <span className="text-red-500">*</span></Label>
                                                     <Input
                                                         id="password"
                                                         type="password"
@@ -227,7 +227,7 @@ const SystemAdminAddAdminPage = () => {
                                                 </div>
 
                                                 <div className="grid gap-3">
-                                                    <Label htmlFor="confirmPassword">Confirm Password</Label>
+                                                    <Label htmlFor="confirmPassword">Confirm Password <span className="text-red-500">*</span></Label>
                                                     <Input
                                                         id="confirmPassword"
                                                         type="password"
@@ -253,7 +253,7 @@ const SystemAdminAddAdminPage = () => {
                                     <CardContent>
                                         <div className="grid gap-6">
                                             <div className="grid gap-3">
-                                                <Label htmlFor="contact">Contact Number</Label>
+                                                <Label htmlFor="contact">Contact Number <span className="text-red-500">*</span></Label>
                                                 <Input
                                                     id="contact"
                                                     type="text"
@@ -266,7 +266,7 @@ const SystemAdminAddAdminPage = () => {
                                             </div>
 
                                             <div className="grid gap-3">
-                                                <Label htmlFor="birthDate">Birth Date</Label>
+                                                <Label htmlFor="birthDate">Birth Date <span className="text-red-500">*</span></Label>
                                                 <Input
                                                     id="birthDate"
                                                     type="date"
@@ -297,7 +297,7 @@ const SystemAdminAddAdminPage = () => {
                                             </div>
 
                                             <div className="grid gap-3">
-                                                <Label htmlFor="department">Department</Label>
+                                                <Label htmlFor="department">Department (Optional)</Label>
                                                 <Input
                                                     id="department"
                                                     type="text"
@@ -309,7 +309,7 @@ const SystemAdminAddAdminPage = () => {
 
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                 <div className="grid gap-3">
-                                                    <Label htmlFor="specialization">Specialization</Label>
+                                                    <Label htmlFor="specialization">Specialization (Optional)</Label>
                                                     <Input
                                                         id="specialization"
                                                         type="text"
@@ -320,7 +320,7 @@ const SystemAdminAddAdminPage = () => {
                                                 </div>
 
                                                 <div className="grid gap-3">
-                                                    <Label htmlFor="experience">Years of Experience</Label>
+                                                    <Label htmlFor="experience">Years of Experience (Optional)</Label>
                                                     <Input
                                                         id="experience"
                                                         type="number"
@@ -345,7 +345,7 @@ const SystemAdminAddAdminPage = () => {
                                         <div className="grid gap-6">
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                 <div className="grid gap-3">
-                                                    <Label htmlFor="province">Province</Label>
+                                                    <Label htmlFor="province">Province (Optional)</Label>
                                                     <Select>
                                                         <SelectTrigger className="w-full">
                                                             <SelectValue placeholder="Select province" />
@@ -361,7 +361,7 @@ const SystemAdminAddAdminPage = () => {
                                                 </div>
 
                                                 <div className="grid gap-3">
-                                                    <Label htmlFor="city">City</Label>
+                                                    <Label htmlFor="city">City (Optional)</Label>
                                                     <Select>
                                                         <SelectTrigger className="w-full">
                                                             <SelectValue placeholder="Select city" />
@@ -379,7 +379,7 @@ const SystemAdminAddAdminPage = () => {
 
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                 <div className="grid gap-3">
-                                                    <Label htmlFor="brgy">Barangay</Label>
+                                                    <Label htmlFor="brgy">Barangay (Optional)</Label>
                                                     <Select>
                                                         <SelectTrigger className="w-full">
                                                             <SelectValue placeholder="Select brgy" />
@@ -395,7 +395,7 @@ const SystemAdminAddAdminPage = () => {
                                                 </div>
 
                                                 <div className="grid gap-3">
-                                                    <Label htmlFor="strt">Street</Label>
+                                                    <Label htmlFor="strt">Street (Optional)</Label>
                                                     <Input
                                                         id="strt"
                                                         type="text"
@@ -407,7 +407,7 @@ const SystemAdminAddAdminPage = () => {
 
 
                                             <div className="grid gap-3">
-                                                <Label htmlFor="address">Complete Address</Label>
+                                                <Label htmlFor="address">Complete Address (Optional)</Label>
                                                 <Input
                                                     id="address"
                                                     type="text"
@@ -429,7 +429,7 @@ const SystemAdminAddAdminPage = () => {
                                     <CardContent>
                                         <div className="grid gap-6">
                                             <div className="grid gap-3">
-                                                <Label htmlFor="status">Status</Label>
+                                                <Label htmlFor="status">Status <span className="text-red-500">*</span></Label>
                                                 <Select defaultValue="active" onValueChange={(value) => setValue("isActive", value === "active")}>
                                                     <SelectTrigger id="status" aria-label="Select status">
                                                         <SelectValue placeholder="Select status" />
@@ -451,7 +451,7 @@ const SystemAdminAddAdminPage = () => {
                                     <CardHeader>
                                         <CardTitle>Admin Image</CardTitle>
                                         <CardDescription>
-                                            Upload an image of the admin
+                                            Upload an image of the admin (Optional)
                                         </CardDescription>
                                     </CardHeader>
                                     <CardContent>
