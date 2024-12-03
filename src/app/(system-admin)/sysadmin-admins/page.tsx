@@ -27,9 +27,18 @@ import { cn } from "@/lib/utils";
 import { useQuery } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { sysadminColumns } from "./columns"
+import { useState } from "react";
 
 const SystemAdminListPage = () => {
     const admins = useQuery(api.admin.fetchAdmins);
+    const [showActive, setShowActive] = useState(true);
+    const [showInactive, setShowInactive] = useState(true);
+
+    const filteredAdmins = admins?.filter(admin => {
+        if (showActive && admin.isActive) return true;
+        if (showInactive && !admin.isActive) return true;
+        return false;
+    });
 
     return (
         <div className="container mx-auto p-4">
@@ -60,13 +69,19 @@ const SystemAdminListPage = () => {
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
-                                <DropdownMenuLabel>Filter by</DropdownMenuLabel>
+                                <DropdownMenuLabel>Filter by Status</DropdownMenuLabel>
                                 <DropdownMenuSeparator />
-                                <DropdownMenuCheckboxItem checked>
+                                <DropdownMenuCheckboxItem 
+                                    checked={showActive}
+                                    onCheckedChange={setShowActive}
+                                >
                                     Active
                                 </DropdownMenuCheckboxItem>
-                                <DropdownMenuCheckboxItem>
-                                    Graduated
+                                <DropdownMenuCheckboxItem 
+                                    checked={showInactive}
+                                    onCheckedChange={setShowInactive}
+                                >
+                                    Inactive
                                 </DropdownMenuCheckboxItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
@@ -99,7 +114,7 @@ const SystemAdminListPage = () => {
                     <CardContent>
                         <DataTable
                             columns={sysadminColumns}
-                            data={admins || []}
+                            data={filteredAdmins || []}
                             filter="firstName"
                             placeholder="administrators by first name"
                         />
