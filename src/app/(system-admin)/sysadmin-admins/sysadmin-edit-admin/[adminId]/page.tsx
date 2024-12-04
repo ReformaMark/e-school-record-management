@@ -27,48 +27,69 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-
-
-import {
-    ChevronLeft
-} from "lucide-react";
-
-import { UserAvatarUpload } from "@/components/shared/user-avatar-upload";
 import { Barangay, City, fetchBarangays, fetchCities, fetchProvinces, fetchRegions, Province, Region } from "@/lib/address-api";
 import { AdminFormData } from "@/lib/types";
 import { cn } from "@/lib/utils";
-import { useMutation } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
+import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { api } from "../../../../../convex/_generated/api";
+import { api } from "../../../../../../convex/_generated/api";
+import { Id } from "../../../../../../convex/_generated/dataModel";
 
-const SystemAdminAddAdminPage = () => {
-    const createAdmin = useMutation(api.users.createUser)
-    const [isLoading, setIsLoading] = useState(false)
-    const router = useRouter()
+const SystemAdminEditAdminPage = () => {
+    const params = useParams();
+    const adminId = params.adminId as Id<"users">;
+    const router = useRouter();
+    
+    const admin = useQuery(api.users.getUser, { id: adminId });
+    const updateAdmin = useMutation(api.users.updateUser);
+    const [isLoading, setIsLoading] = useState(false);
 
     const {
         register,
         handleSubmit,
         formState: { errors },
         watch,
-        setValue
-    } = useForm<AdminFormData>({
-        defaultValues: {
-            isActive: true
-        }
-    })
-    const password = watch("password")
+        setValue,
+        reset
+    } = useForm<AdminFormData>();
 
     const [regions, setRegions] = useState<Region[]>([]);
     const [provinces, setProvinces] = useState<Province[]>([]);
     const [cities, setCities] = useState<City[]>([]);
     const [barangays, setBarangays] = useState<Barangay[]>([]);
     const [isNCR, setIsNCR] = useState(false);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [imageStorageId, setImageStorageId] = useState<string | undefined>();
+
+    useEffect(() => {
+        if (admin) {
+            setImageStorageId(admin.imageStorageId);
+            reset({
+                email: admin.email,
+                firstName: admin.firstName,
+                middleName: admin.middleName || "",
+                lastName: admin.lastName,
+                contactNumber: admin.contactNumber,
+                department: admin.department || "",
+                specialization: admin.specialization || "",
+                yearsOfExperience: admin.yearsOfExperience,
+                birthDate: admin.birthDate,
+                isActive: admin.isActive,
+                region: admin.region || "",
+                province: admin.province || "",
+                city: admin.city || "",
+                barangay: admin.barangay || "",
+                street: admin.street || "",
+                houseNumber: admin.houseNumber || "",
+                postalCode: admin.postalCode || ""
+            });
+        }
+    }, [admin, reset]);
 
     useEffect(() => {
         fetchRegions().then(data => {
@@ -141,44 +162,41 @@ const SystemAdminAddAdminPage = () => {
     };
 
     const onSubmit = async (data: AdminFormData) => {
-        if (data.password !== data.confirmPassword) {
-            toast.error("Passwords do not match");
-            return;
-        }
-
         setIsLoading(true);
         try {
-            await createAdmin({
+            await updateAdmin({
+                id: adminId,
                 email: data.email,
-                password: data.password,
                 firstName: data.firstName,
                 middleName: data.middleName,
                 lastName: data.lastName,
                 contactNumber: data.contactNumber,
-                role: "admin",
                 department: data.department,
                 specialization: data.specialization,
                 yearsOfExperience: data.yearsOfExperience,
                 birthDate: data.birthDate as string,
-                isActive: data.isActive,
+                isActive: data.isActive || false,
                 region: data.region,
                 province: data.province,
                 city: data.city,
                 barangay: data.barangay,
                 street: data.street,
                 houseNumber: data.houseNumber,
-                postalCode: data.postalCode,
-                imageStorageId: imageStorageId,
+                postalCode: data.postalCode
             });
 
-            toast.success("Admin created successfully");
+            toast.success("Admin updated successfully");
             router.push("/sysadmin-admins");
         } catch (error) {
-            toast.error("Failed to create admin: " + (error as Error).message);
+            toast.error("Failed to update admin: " + (error as Error).message);
         } finally {
             setIsLoading(false);
         }
     };
+
+    if (!admin) {
+        return <div>Loading...</div>;
+    }
 
     return (
         <div className="container mx-auto p-4">
@@ -197,7 +215,7 @@ const SystemAdminAddAdminPage = () => {
                     </BreadcrumbItem>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
-                        <BreadcrumbPage>Add a System Administrator</BreadcrumbPage>
+                        <BreadcrumbPage>Edit System Administrator</BreadcrumbPage>
                     </BreadcrumbItem>
                 </BreadcrumbList>
             </Breadcrumb>
@@ -216,10 +234,9 @@ const SystemAdminAddAdminPage = () => {
                                 <span className="sr-only">Back</span>
                             </Link>
                             <h1 className="flex-1 shrink-0 whitespace-nowrap text-xl font-semibold tracking-tight sm:grow-0">
-                                Add a System Administrator
+                                Edit System Administrator
                             </h1>
 
-                            {/* Button for desktop/laptop users */}
                             <div className="hidden items-center gap-2 md:ml-auto md:flex">
                                 <Button
                                     type="submit"
@@ -227,30 +244,30 @@ const SystemAdminAddAdminPage = () => {
                                     className="text-white"
                                     disabled={isLoading}
                                 >
-                                    {isLoading ? "Creating..." : "Save"}
+                                    {isLoading ? "Saving..." : "Save Changes"}
                                 </Button>
                             </div>
                         </div>
 
                         <div className="grid gap-4 md:grid-cols-[1fr_250px] lg:grid-cols-3 lg:gap-8">
                             <div className="grid auto-rows-max items-start gap-4 lg:col-span-2 lg:gap-8">
-                                {/* Fname, Lname, Mname, Desc */}
+                                {/* Admin Details Card */}
                                 <Card>
                                     <CardHeader>
                                         <CardTitle>Admin Details</CardTitle>
                                         <CardDescription>
-                                            Add admin details
+                                            Edit admin details
                                         </CardDescription>
                                     </CardHeader>
                                     <CardContent>
                                         <div className="grid gap-6">
                                             <div className="grid gap-3">
-                                                <Label htmlFor="name">Email <span className="text-red-500">*</span></Label>
+                                                <Label htmlFor="email">Email <span className="text-red-500">*</span></Label>
                                                 <Input
                                                     id="email"
                                                     type="email"
                                                     className="w-full"
-                                                    placeholder="zKj6w@example.com"
+                                                    placeholder="email@example.com"
                                                     {...register("email", { required: "Email is required" })}
                                                 />
                                                 {errors.email && <p className="text-red-500">{errors.email.message}</p>}
@@ -258,92 +275,53 @@ const SystemAdminAddAdminPage = () => {
 
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                 <div className="grid gap-3">
-                                                    <Label htmlFor="name">First Name <span className="text-red-500">*</span></Label>
+                                                    <Label htmlFor="firstName">First Name <span className="text-red-500">*</span></Label>
                                                     <Input
-                                                        id="name"
+                                                        id="firstName"
                                                         type="text"
                                                         className="w-full"
-                                                        placeholder="John"
                                                         {...register("firstName", { required: "First name is required" })}
                                                     />
                                                     {errors.firstName && <p className="text-red-500">{errors.firstName.message}</p>}
                                                 </div>
                                                 <div className="grid gap-3">
-                                                    <Label htmlFor="name">Last Name <span className="text-red-500">*</span></Label>
+                                                    <Label htmlFor="lastName">Last Name <span className="text-red-500">*</span></Label>
                                                     <Input
-                                                        id="name"
+                                                        id="lastName"
                                                         type="text"
                                                         className="w-full"
-                                                        placeholder="Doe"
                                                         {...register("lastName", { required: "Last name is required" })}
                                                     />
                                                     {errors.lastName && <p className="text-red-500">{errors.lastName.message}</p>}
                                                 </div>
                                             </div>
+
                                             <div className="grid gap-3">
-                                                <Label htmlFor="name">Middle Name (Optional)</Label>
+                                                <Label htmlFor="middleName">Middle Name (Optional)</Label>
                                                 <Input
-                                                    id="name"
+                                                    id="middleName"
                                                     type="text"
                                                     className="w-full"
-                                                    placeholder="Kennedy"
                                                     {...register("middleName")}
                                                 />
-                                            </div>
-
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                {/* password and current password */}
-                                                <div className="grid gap-3">
-                                                    <Label htmlFor="password">Password <span className="text-red-500">*</span></Label>
-                                                    <Input
-                                                        id="password"
-                                                        type="password"
-                                                        {...register("password", {
-                                                            required: "Password is required",
-                                                            minLength: {
-                                                                value: 8,
-                                                                message: "Password must be at least 8 characters"
-                                                            }
-                                                        })}
-                                                        className="w-full"
-                                                        placeholder="********"
-                                                    />
-                                                    {errors.password && <p className="text-red-500">{errors.password.message}</p>}
-                                                </div>
-
-                                                <div className="grid gap-3">
-                                                    <Label htmlFor="confirmPassword">Confirm Password <span className="text-red-500">*</span></Label>
-                                                    <Input
-                                                        id="confirmPassword"
-                                                        type="password"
-                                                        {...register("confirmPassword", {
-                                                            validate: value =>
-                                                                value === password || "Passwords do not match"
-                                                        })}
-                                                        className="w-full"
-                                                        placeholder="********"
-                                                    />
-                                                    {errors.confirmPassword && <p className="text-red-500">{errors.confirmPassword.message}</p>}
-                                                </div>
                                             </div>
                                         </div>
                                     </CardContent>
                                 </Card>
 
-                                {/* Other details */}
+                                {/* Other Details Card */}
                                 <Card>
                                     <CardHeader>
-                                        <CardTitle>Other details</CardTitle>
+                                        <CardTitle>Other Details</CardTitle>
                                     </CardHeader>
                                     <CardContent>
                                         <div className="grid gap-6">
                                             <div className="grid gap-3">
-                                                <Label htmlFor="contact">Contact Number <span className="text-red-500">*</span></Label>
+                                                <Label htmlFor="contactNumber">Contact Number <span className="text-red-500">*</span></Label>
                                                 <Input
-                                                    id="contact"
+                                                    id="contactNumber"
                                                     type="text"
                                                     className="w-full"
-                                                    placeholder="Enter your contact number"
                                                     {...register("contactNumber", { required: "Contact number is required" })}
                                                     maxLength={11}
                                                 />
@@ -356,27 +334,7 @@ const SystemAdminAddAdminPage = () => {
                                                     id="birthDate"
                                                     type="date"
                                                     className="w-full"
-                                                    {...register("birthDate", { 
-                                                        required: "Birth date is required",
-                                                        validate: (value) => {
-                                                            if (!value) return "Birth date is required";
-                                                            
-                                                            const birthDate = new Date(value);
-                                                            const today = new Date();
-                                                            let calculatedAge = today.getFullYear() - birthDate.getFullYear();
-                                                            
-                                                            if (
-                                                                today.getMonth() < birthDate.getMonth() || 
-                                                                (today.getMonth() === birthDate.getMonth() && today.getDate() < birthDate.getDate())
-                                                            ) {
-                                                                calculatedAge--;
-                                                            }
-
-                                                            if (calculatedAge < 18) return "Must be at least 18 years old";
-                                                            if (calculatedAge > 65) return "Must not exceed 65 years old";
-                                                            return true;
-                                                        }
-                                                    })}
+                                                    {...register("birthDate", { required: "Birth date is required" })}
                                                 />
                                                 {errors.birthDate && <p className="text-red-500">{errors.birthDate.message}</p>}
                                             </div>
@@ -387,7 +345,6 @@ const SystemAdminAddAdminPage = () => {
                                                     id="department"
                                                     type="text"
                                                     className="w-full"
-                                                    placeholder="Enter department"
                                                     {...register("department")}
                                                 />
                                             </div>
@@ -399,18 +356,16 @@ const SystemAdminAddAdminPage = () => {
                                                         id="specialization"
                                                         type="text"
                                                         className="w-full"
-                                                        placeholder="Enter specialization"
                                                         {...register("specialization")}
                                                     />
                                                 </div>
 
                                                 <div className="grid gap-3">
-                                                    <Label htmlFor="experience">Years of Experience (Optional)</Label>
+                                                    <Label htmlFor="yearsOfExperience">Years of Experience (Optional)</Label>
                                                     <Input
-                                                        id="experience"
+                                                        id="yearsOfExperience"
                                                         type="number"
                                                         className="w-full"
-                                                        placeholder="Enter years of experience"
                                                         {...register("yearsOfExperience", {
                                                             valueAsNumber: true
                                                         })}
@@ -421,7 +376,7 @@ const SystemAdminAddAdminPage = () => {
                                     </CardContent>
                                 </Card>
 
-                                {/* Address details */}
+                                {/* Address Details Card */}
                                 <Card>
                                     <CardHeader>
                                         <CardTitle>Address Details</CardTitle>
@@ -544,7 +499,6 @@ const SystemAdminAddAdminPage = () => {
                                                         id="street"
                                                         type="text"
                                                         className="w-full"
-                                                        placeholder="Enter street"
                                                         {...register("street")}
                                                     />
                                                 </div>
@@ -555,7 +509,6 @@ const SystemAdminAddAdminPage = () => {
                                                         id="houseNumber"
                                                         type="text"
                                                         className="w-full"
-                                                        placeholder="Enter house number"
                                                         {...register("houseNumber")}
                                                     />
                                                 </div>
@@ -567,7 +520,6 @@ const SystemAdminAddAdminPage = () => {
                                                     id="postalCode"
                                                     type="text"
                                                     className="w-full"
-                                                    placeholder="Enter postal code"
                                                     {...register("postalCode")}
                                                 />
                                             </div>
@@ -577,8 +529,8 @@ const SystemAdminAddAdminPage = () => {
                             </div>
 
                             <div className="grid auto-rows-max items-start gap-4 lg:gap-8">
-                                {/* Admin status */}
-                                <Card x-chunk="dashboard-07-chunk-3">
+                                {/* Admin Status Card */}
+                                <Card>
                                     <CardHeader>
                                         <CardTitle>Admin Status</CardTitle>
                                     </CardHeader>
@@ -586,8 +538,11 @@ const SystemAdminAddAdminPage = () => {
                                         <div className="grid gap-6">
                                             <div className="grid gap-3">
                                                 <Label htmlFor="status">Status <span className="text-red-500">*</span></Label>
-                                                <Select defaultValue="active" onValueChange={(value) => setValue("isActive", value === "active")}>
-                                                    <SelectTrigger id="status" aria-label="Select status">
+                                                <Select 
+                                                    defaultValue={admin.isActive ? "active" : "inactive"} 
+                                                    onValueChange={(value) => setValue("isActive", value === "active")}
+                                                >
+                                                    <SelectTrigger id="status">
                                                         <SelectValue placeholder="Select status" />
                                                     </SelectTrigger>
                                                     <SelectContent>
@@ -599,41 +554,25 @@ const SystemAdminAddAdminPage = () => {
                                         </div>
                                     </CardContent>
                                 </Card>
-
-                                {/* Admin Image */}
-                                <Card
-                                    className="overflow-hidden" x-chunk="dashboard-07-chunk-4"
-                                >
-                                    <CardHeader>
-                                        <CardTitle>Admin Image</CardTitle>
-                                        <CardDescription>
-                                            Upload an image of the admin (Optional)
-                                        </CardDescription>
-                                    </CardHeader>
-                                    <CardContent>
-                                        <UserAvatarUpload
-                                            onImageUpload={(storageId) => setImageStorageId(storageId)}
-                                            onImageRemove={() => setImageStorageId(undefined)}
-                                        />
-                                    </CardContent>
-                                </Card>
                             </div>
                         </div>
 
-                        {/* Button for mobile users */}
+                        {/* Mobile Save Button */}
                         <div className="flex items-center justify-center gap-2 md:hidden">
                             <Button
+                                type="submit"
                                 size="sm"
                                 className="text-white"
+                                disabled={isLoading}
                             >
-                                Save Product
+                                {isLoading ? "Saving..." : "Save Changes"}
                             </Button>
                         </div>
                     </div>
                 </form>
             </main>
         </div>
-    )
-}
+    );
+};
 
-export default SystemAdminAddAdminPage;
+export default SystemAdminEditAdminPage; 

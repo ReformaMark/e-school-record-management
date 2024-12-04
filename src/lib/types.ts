@@ -13,4 +13,11 @@ export interface AdminFormData {
     isActive?: boolean;
     emailVerified?: boolean;
     birthDate?: string;
+    region: string;
+    province: string;
+    city: string;
+    barangay: string;
+    street: string;
+    houseNumber: string;
+    postalCode: string;
 }

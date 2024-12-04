@@ -14,21 +14,20 @@ import {
     DropdownMenu,
     DropdownMenuCheckboxItem,
     DropdownMenuContent,
-    DropdownMenuItem,
     DropdownMenuLabel,
     DropdownMenuSeparator,
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 
 import { DataTable } from "@/components/data-table";
-import { File, ListFilterIcon, MoreHorizontal, PlusCircleIcon } from "lucide-react";
-import Link from "next/link";
+import { exportToExcel } from "@/lib/export-to-excel";
 import { cn } from "@/lib/utils";
 import { useQuery } from "convex/react";
-import { api } from "../../../../convex/_generated/api";
-import { sysadminColumns } from "./columns"
+import { File, ListFilterIcon, PlusCircleIcon } from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
-import { exportToExcel } from "@/lib/export-to-excel";
+import { api } from "../../../../convex/_generated/api";
+import { sysadminColumns } from "./columns";
 
 const SystemAdminListPage = () => {
     const admins = useQuery(api.admin.fetchAdmins);

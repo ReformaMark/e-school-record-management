@@ -8,6 +8,7 @@ type ExportData = {
     yearsOfExperience?: number;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const exportToExcel = (data: any[], fileName: string) => {
     // Transform data to desired format
     const exportData: ExportData[] = data.map(item => ({

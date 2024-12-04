@@ -28,6 +28,14 @@ export const createUser = mutation({
         yearsOfExperience: v.optional(v.number()),
         birthDate: v.string(),
         isActive: v.optional(v.boolean()),
+        region: v.optional(v.string()),
+        province: v.optional(v.string()),
+        city: v.optional(v.string()),
+        barangay: v.optional(v.string()),
+        street: v.optional(v.string()),
+        houseNumber: v.optional(v.string()),
+        postalCode: v.optional(v.string()),
+        imageStorageId: v.optional(v.string()),
     },
     handler: async (ctx, args) => {
         try {
@@ -49,7 +57,7 @@ export const createUser = mutation({
             if (existingUser) throw new ConvexError("Email already exists");
 
             // Create account
-            const { email, password, ...userData } = args;
+            const { email, password, imageStorageId, ...userData } = args;
 
             // @ts-expect-error - type error in convex auth
             const accountResponse = await createAccount(ctx, {
@@ -60,6 +68,7 @@ export const createUser = mutation({
                 },
                 profile: {
                     email,
+                    imageStorageId,
                     ...userData,
                 },
             });
@@ -126,5 +135,100 @@ export const role = query({
 
         const user = await ctx.db.get(userId);
         return user?.role;
+    },
+});
+
+export const updateUser = mutation({
+    args: {
+        id: v.id("users"),
+        email: v.string(),
+        firstName: v.string(),
+        middleName: v.optional(v.string()),
+        lastName: v.string(),
+        contactNumber: v.string(),
+        department: v.optional(v.string()),
+        specialization: v.optional(v.string()),
+        yearsOfExperience: v.optional(v.number()),
+        birthDate: v.string(),
+        isActive: v.boolean(),
+        region: v.optional(v.string()),
+        province: v.optional(v.string()),
+        city: v.optional(v.string()),
+        barangay: v.optional(v.string()),
+        street: v.optional(v.string()),
+        houseNumber: v.optional(v.string()),
+        postalCode: v.optional(v.string()),
+        imageStorageId: v.optional(v.string()),
+    },
+    handler: async (ctx, args) => {
+        const existingUser = await ctx.db.get(args.id);
+        if (!existingUser) {
+            throw new Error("User not found");
+        }
+
+        // If there's a new image and an old one exists, you might want to delete the old one
+        if (args.imageStorageId && existingUser.imageStorageId && args.imageStorageId !== existingUser.imageStorageId) {
+            try {
+                await ctx.storage.delete(existingUser.imageStorageId);
+            } catch (error) {
+                console.error("Failed to delete old image:", error);
+                // Continue with update even if delete fails
+            }
+        }
+
+        // Update user
+        return await ctx.db.patch(args.id, {
+            email: args.email,
+            firstName: args.firstName,
+            middleName: args.middleName,
+            lastName: args.lastName,
+            contactNumber: args.contactNumber,
+            department: args.department,
+            specialization: args.specialization,
+            yearsOfExperience: args.yearsOfExperience,
+            birthDate: args.birthDate,
+            isActive: args.isActive,
+            region: args.region,
+            province: args.province,
+            city: args.city,
+            barangay: args.barangay,
+            street: args.street,
+            houseNumber: args.houseNumber,
+            postalCode: args.postalCode,
+            imageStorageId: args.imageStorageId,
+        });
+    },
+});
+
+export const getUser = query({
+    args: { id: v.id("users") },
+    handler: async (ctx, args) => {
+        return await ctx.db.get(args.id);
+    },
+});
+
+export const deleteUserImage = mutation({
+    args: {
+        userId: v.id("users"),
+    },
+    handler: async (ctx, args) => {
+        const user = await ctx.db.get(args.userId);
+        if (!user) {
+            throw new Error("User not found");
+        }
+
+        if (user.imageStorageId) {
+            try {
+                await ctx.storage.delete(user.imageStorageId);
+                await ctx.db.patch(args.userId, {
+                    imageStorageId: undefined
+                });
+            } catch (error) {
+                console.error("Failed to delete image:", error);
+                throw new Error("Failed to delete image");
+            }
+        }
+
+        return true;
     },
 });
