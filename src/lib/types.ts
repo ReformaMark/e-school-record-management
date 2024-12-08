@@ -21,3 +21,25 @@ export interface AdminFormData {
     houseNumber: string;
     postalCode: string;
 }
+
+export interface PrincipalFormData {
+    email: string;
+    password: string;
+    confirmPassword: string;
+    firstName: string;
+    middleName?: string;
+    lastName: string;
+    contactNumber: string;
+    birthDate: string | Date;
+    gender: string;
+    description?: string;
+    // Address fields
+    region?: string;
+    province?: string;
+    city?: string;
+    barangay?: string;
+    street?: string;
+    houseNumber?: string;
+    postalCode?: string;
+    imageStorageId?: string;
+}

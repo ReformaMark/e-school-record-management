@@ -7,6 +7,7 @@ export const fetchAdmins = query({
         return await ctx.db
             .query("users")
             .withIndex("by_role", (q) => q.eq("role", "admin"))
+            .order("desc")
             .collect();
     }
 })

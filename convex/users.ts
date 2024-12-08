@@ -36,6 +36,8 @@ export const createUser = mutation({
         houseNumber: v.optional(v.string()),
         postalCode: v.optional(v.string()),
         imageStorageId: v.optional(v.string()),
+        gender: v.optional(v.string()),
+        description: v.optional(v.string()),
     },
     handler: async (ctx, args) => {
         try {
@@ -230,5 +232,48 @@ export const deleteUserImage = mutation({
         }
 
         return true;
+    },
+});
+
+export const createPrincipal = mutation({
+    args: {
+        email: v.string(),
+        password: v.string(),
+        firstName: v.string(),
+        middleName: v.optional(v.string()),
+        lastName: v.string(),
+        contactNumber: v.string(),
+        birthDate: v.string(),
+        gender: v.string(),
+        description: v.optional(v.string()),
+        region: v.optional(v.string()),
+        province: v.optional(v.string()),
+        city: v.optional(v.string()),
+        barangay: v.optional(v.string()),
+        street: v.optional(v.string()),
+        houseNumber: v.optional(v.string()),
+        postalCode: v.optional(v.string()),
+        imageStorageId: v.optional(v.string()),
+    },
+    handler: async (ctx, args) => {
+        // Set existing principals to inactive
+        await ctx.db
+            .query("users")
+            .filter((q) => q.eq(q.field("role"), "school-head"))
+            .collect()
+            .then((principals) => {
+                principals.forEach(async (principal) => {
+                    await ctx.db.patch(principal._id, { isActive: false });
+                });
+            });
+
+        // Create the principal using createUser
+        return createUser(ctx, {
+            ...args,
+            role: "school-head",
+            isActive: true,
+            // department: args.description,
+            description: args.description,
+        });
     },
 });
