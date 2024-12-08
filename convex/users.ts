@@ -161,6 +161,8 @@ export const updateUser = mutation({
         houseNumber: v.optional(v.string()),
         postalCode: v.optional(v.string()),
         imageStorageId: v.optional(v.string()),
+        gender: v.optional(v.string()),
+        description: v.optional(v.string()),
     },
     handler: async (ctx, args) => {
         const existingUser = await ctx.db.get(args.id);
@@ -198,6 +200,8 @@ export const updateUser = mutation({
             houseNumber: args.houseNumber,
             postalCode: args.postalCode,
             imageStorageId: args.imageStorageId,
+            gender: args.gender,
+            description: args.description,
         });
     },
 });

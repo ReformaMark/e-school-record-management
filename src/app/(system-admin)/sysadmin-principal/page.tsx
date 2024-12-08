@@ -1,3 +1,6 @@
+"use client";
+
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import {
     Breadcrumb,
@@ -8,16 +11,48 @@ import {
     BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Card } from "@/components/ui/card";
-
+import { useQuery } from "convex/react";
 import { Award, Book, Calendar, Mail, MapPin, Phone, Users } from "lucide-react";
-
 import Image from "next/image";
 import Link from "next/link";
-import { schoolHeadData } from "../../../../data/school-head-data";
+import { api } from "../../../../convex/_generated/api";
 
 const SystemAdminPrincipalPage = () => {
+    const principals = useQuery(api.admin.fetchPrincipals);
+    const currentPrincipal = principals?.find(p => p.isActive);
 
-    const fullName = `${schoolHeadData.firstName} ${schoolHeadData.middleName} ${schoolHeadData.lastName}`
+    const storageUrl = useQuery(api.files.getStorageUrl, 
+        currentPrincipal?.imageStorageId ? { storageId: currentPrincipal.imageStorageId } : "skip"
+    );
+
+    if (!currentPrincipal) {
+        return (
+            <div className="container mx-auto p-4">
+                <Breadcrumb className="hidden md:flex">
+                    <BreadcrumbList>
+                        <BreadcrumbItem>
+                            <BreadcrumbLink asChild>
+                                <Link href="/sysadmin">Dashboard</Link>
+                            </BreadcrumbLink>
+                        </BreadcrumbItem>
+                        <BreadcrumbSeparator />
+                        <BreadcrumbItem>
+                            <BreadcrumbPage>Current School Head Principal</BreadcrumbPage>
+                        </BreadcrumbItem>
+                    </BreadcrumbList>
+                </Breadcrumb>
+
+                <div className="max-w-4xl mx-auto mt-8">
+                    <Card className="p-6">
+                        <h2 className="text-xl font-semibold">No Active Principal</h2>
+                        <p className="text-muted-foreground mt-2">There is currently no active school head principal.</p>
+                    </Card>
+                </div>
+            </div>
+        );
+    }
+
+    const fullName = `${currentPrincipal.firstName} ${currentPrincipal.middleName ? `${currentPrincipal.middleName} ` : ''}${currentPrincipal.lastName}`;
 
     return (
         <div className="container mx-auto p-4">
@@ -39,24 +74,36 @@ const SystemAdminPrincipalPage = () => {
                 <Card className="bg-white shadow-lg rounded-lg overflow-hidden">
                     <div className="md:flex">
                         <div className="md:flex-shrink-0">
-                            <Image
-                                className="h-48 w-full object-cover md:h-full md:w-48"
-                                width={200}
-                                height={200}
-                                src="https://github.com/shadcn.png"
-                                alt="Dr. Margaret Thompson"
-                            />
+                            {storageUrl ? (
+                                <Image
+                                    className="h-48 w-full object-cover md:h-full md:w-48"
+                                    width={200}
+                                    height={200}
+                                    src={storageUrl}
+                                    alt={fullName}
+                                />
+                            ) : (
+                                <Avatar className="h-48 w-full md:h-full md:w-48">
+                                    <AvatarFallback className="text-4xl">
+                                        {currentPrincipal.firstName[0]}{currentPrincipal.lastName[0]}
+                                    </AvatarFallback>
+                                </Avatar>
+                            )}
                         </div>
                         <div className="p-8">
                             <div className="uppercase tracking-wide text-sm text-[#099443] font-semibold">School Head Principal</div>
                             <h1 className="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">
-                                Dr. {fullName}
+                                {fullName}
                             </h1>
-                            <p className="mt-2 text-xl text-gray-500">Ph.D. in Educational Leadership</p>
+                            <p className="mt-2 text-xl text-gray-500">{currentPrincipal.description || "School Head Principal"}</p>
                             <div className="mt-4 flex flex-wrap gap-2">
-                                <Badge variant="secondary" className="bg-[#e6f7ed] text-[#099443]">20+ Years Experience</Badge>
-                                <Badge variant="secondary" className="bg-[#e6f7ed] text-[#099443]">Curriculum Development Expert</Badge>
-                                <Badge variant="secondary" className="bg-[#e6f7ed] text-[#099443]">Published Author</Badge>
+                                <Badge variant="secondary" className="bg-[#e6f7ed] text-[#099443]">School Head</Badge>
+                                {currentPrincipal.gender && (
+                                    <Badge variant="secondary" className="bg-[#e6f7ed] text-[#099443] capitalize">{currentPrincipal.gender}</Badge>
+                                )}
+                                <Badge variant="secondary" className="bg-[#e6f7ed] text-[#099443]">
+                                    {currentPrincipal.isActive ? "Active" : "Inactive"}
+                                </Badge>
                             </div>
                         </div>
                     </div>
@@ -68,59 +115,70 @@ const SystemAdminPrincipalPage = () => {
                         <div className="space-y-3">
                             <div className="flex items-center">
                                 <Mail className="h-5 w-5 text-[#099443] mr-2" />
-                                <span>{schoolHeadData.email}</span>
+                                <span>{currentPrincipal.email}</span>
                             </div>
                             <div className="flex items-center">
                                 <Phone className="h-5 w-5 text-[#099443] mr-2" />
-                                <span>(555) 123-4567</span>
+                                <span>{currentPrincipal.contactNumber}</span>
                             </div>
-                            <div className="flex items-center">
-                                <MapPin className="h-5 w-5 text-[#099443] mr-2" />
-                                <span>Office 201, Administration Building</span>
-                            </div>
+                            {[
+                                currentPrincipal.houseNumber,
+                                currentPrincipal.street,
+                                currentPrincipal.barangay,
+                                currentPrincipal.city,
+                                currentPrincipal.province,
+                                currentPrincipal.region,
+                                currentPrincipal.postalCode
+                            ].some(Boolean) && (
+                                <div className="flex items-start">
+                                    <MapPin className="h-5 w-5 text-[#099443] mr-2 mt-1" />
+                                    <span>
+                                        {[
+                                            currentPrincipal.houseNumber,
+                                            currentPrincipal.street,
+                                            currentPrincipal.barangay,
+                                            currentPrincipal.city,
+                                            currentPrincipal.province,
+                                            currentPrincipal.region,
+                                            currentPrincipal.postalCode
+                                        ].filter(Boolean).join(', ')}
+                                    </span>
+                                </div>
+                            )}
                             <div className="flex items-center">
                                 <Calendar className="h-5 w-5 text-[#099443] mr-2" />
-                                <span>Office Hours: Mon-Fri, 9AM-4PM</span>
+                                <span>Birth Date: {new Date(currentPrincipal.birthDate).toLocaleDateString()}</span>
                             </div>
                         </div>
                     </Card>
 
                     <Card className="bg-white p-6">
-                        <h2 className="text-xl font-semibold text-gray-900 mb-4">Key Achievements</h2>
+                        <h2 className="text-xl font-semibold text-gray-900 mb-4">Key Responsibilities</h2>
                         <ul className="space-y-3">
                             <li className="flex items-start">
                                 <Award className="h-5 w-5 text-[#099443] mr-2 mt-1" />
-                                <span>Increased graduation rates by 15% over 5 years</span>
+                                <span>Overall management of school operations</span>
                             </li>
                             <li className="flex items-start">
                                 <Book className="h-5 w-5 text-[#099443] mr-2 mt-1" />
-                                <span>Implemented innovative STEM curriculum</span>
+                                <span>Curriculum development and oversight</span>
                             </li>
                             <li className="flex items-start">
                                 <Users className="h-5 w-5 text-[#099443] mr-2 mt-1" />
-                                <span>Established successful mentorship program</span>
+                                <span>Staff and student leadership</span>
                             </li>
                         </ul>
                     </Card>
                 </div>
 
-                <Card className="bg-white p-6 mt-8">
-                    <h2 className="text-xl font-semibold text-gray-900 mb-4">About Dr. {fullName}</h2>
-                    <p className="text-gray-600 mb-4">
-                        Dr. {fullName} has been at the helm of our school for over a decade, bringing with her a wealth of
-                        experience in educational leadership and a passion for nurturing young minds. Her innovative approaches
-                        to curriculum development and student engagement have transformed our institution into a beacon of
-                        academic excellence.
-                    </p>
-                    <p className="text-gray-600 mb-4">
-                        Under her guidance, our school has seen remarkable improvements in student performance, teacher
-                        satisfaction, and community involvement. Dr. {schoolHeadData.lastName} open-door policy and commitment to transparent
-                        communication have fostered a collaborative and supportive environment for students, parents, and staff alike.
-                    </p>
-                    {/* <Button className="bg-[#099443] hover:bg-[#077a36] text-white">
-                        Read Full Bio
-                    </Button> */}
-                </Card>
+                {currentPrincipal.description && (
+                    <Card className="bg-white p-6 mt-8">
+                        <h2 className="text-xl font-semibold text-gray-900 mb-4">About {fullName}</h2>
+                        <p className="text-gray-600 mb-4">
+                            {currentPrincipal.description}
+                        </p>
+                    </Card>
+                )}
             </div>
         </div>
     )

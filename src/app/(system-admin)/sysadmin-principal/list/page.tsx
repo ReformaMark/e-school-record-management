@@ -1,3 +1,5 @@
+"use client";
+
 import {
     Breadcrumb,
     BreadcrumbItem,
@@ -6,7 +8,7 @@ import {
     BreadcrumbPage,
     BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
     DropdownMenu,
@@ -18,12 +20,26 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { DataTable } from "@/components/data-table";
-import { File, ListFilterIcon } from "lucide-react";
+import { exportToExcel } from "@/lib/export-to-excel";
+import { cn } from "@/lib/utils";
+import { useQuery } from "convex/react";
+import { File, ListFilterIcon, PlusCircleIcon } from "lucide-react";
 import Link from "next/link";
-import { listOfSchoolHeads, schoolHeadColumns } from "../../../../../data/school-head-data";
-import { HandleCurrentPrincipalLink } from "./_components/handle-current-principal-link";
+import { useState } from "react";
+import { api } from "../../../../../convex/_generated/api";
+import { principalColumns } from "./columns";
 
-const SystemAdminListPrincipalPage = () => {
+const SystemAdminPrincipalListPage = () => {
+    const principals = useQuery(api.admin.fetchPrincipals);
+    const [showActive, setShowActive] = useState(true);
+    const [showInactive, setShowInactive] = useState(true);
+
+    const filteredPrincipals = principals?.filter(principal => {
+        if (showActive && principal.isActive) return true;
+        if (showInactive && !principal.isActive) return true;
+        return false;
+    }) || [];
+
     return (
         <div className="container mx-auto p-4">
             <Breadcrumb className="hidden md:flex">
@@ -35,7 +51,7 @@ const SystemAdminListPrincipalPage = () => {
                     </BreadcrumbItem>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
-                        <BreadcrumbPage>List of Principals</BreadcrumbPage>
+                        <BreadcrumbPage>School Principals</BreadcrumbPage>
                     </BreadcrumbItem>
                 </BreadcrumbList>
             </Breadcrumb>
@@ -53,36 +69,53 @@ const SystemAdminListPrincipalPage = () => {
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
-                                <DropdownMenuLabel>Filter by</DropdownMenuLabel>
+                                <DropdownMenuLabel>Filter by Status</DropdownMenuLabel>
                                 <DropdownMenuSeparator />
-                                <DropdownMenuCheckboxItem checked>
+                                <DropdownMenuCheckboxItem 
+                                    checked={showActive}
+                                    onCheckedChange={setShowActive}
+                                >
                                     Active
                                 </DropdownMenuCheckboxItem>
-                                <DropdownMenuCheckboxItem>
-                                    Graduated
+                                <DropdownMenuCheckboxItem 
+                                    checked={showInactive}
+                                    onCheckedChange={setShowInactive}
+                                >
+                                    Inactive
                                 </DropdownMenuCheckboxItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
-                        <Button size="sm" variant="outline" className="h-7 gap-1">
+                        <Button size="sm" variant="outline" className="h-7 gap-1" onClick={() => exportToExcel(filteredPrincipals || [], "school_principals")}>
                             <File className="h-3.5 w-3.5" />
                             <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
                                 Export
                             </span>
                         </Button>
-
-                        <HandleCurrentPrincipalLink />
+                        <Link
+                            href="/sysadmin-principal/handle-principal"
+                            className={cn("", buttonVariants({
+                                variant: "default",
+                                size: "sm",
+                                className: "text-white h-7 gap-1 w-full p-2"
+                            }))}>
+                            <PlusCircleIcon className="h-3.5 w-3.5" />
+                            <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                                Add a principal
+                            </span>
+                        </Link>
                     </div>
                 </div>
 
-                <Card x-chunk="dashboard-06-chunk-0">
+                <Card className="w-full">
                     <CardHeader>
-                        <CardTitle>List of Principals</CardTitle>
-                        <CardDescription>Note: This is a list of previous and current principals of Tanjay National High School.</CardDescription>
+                        <CardTitle>School Principals</CardTitle>
+                        <CardDescription>Manage the list of school principals. Note: There can only be one active principal at a time.</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <DataTable
-                            columns={schoolHeadColumns}
-                            data={listOfSchoolHeads}
+                            columns={principalColumns}
+                            // @ts-expect-error slight typing issue
+                            data={filteredPrincipals}
                             filter="firstName"
                             placeholder="principals by first name"
                         />
@@ -93,4 +126,4 @@ const SystemAdminListPrincipalPage = () => {
     )
 }
 
-export default SystemAdminListPrincipalPage;
+export default SystemAdminPrincipalListPage;

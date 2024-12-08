@@ -24,3 +24,15 @@ export const mutateStatus = mutation({
             })
     }
 })
+
+export const fetchPrincipals = query({
+    args: {},
+    handler: async (ctx) => {
+        const principals = await ctx.db
+            .query("users")
+            .filter((q) => q.eq(q.field("role"), "school-head"))
+            .collect();
+
+        return principals;
+    },
+});

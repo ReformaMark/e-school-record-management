@@ -8,19 +8,19 @@ import { Upload, X } from "lucide-react";
 import { toast } from "sonner";
 import { api } from "../../../convex/_generated/api";
 
-interface UserAvatarUploadProps {
-    defaultImageUrl?: string;
+export interface UserAvatarUploadProps {
+    currentImageId?: string;
     onImageUpload: (storageId: string) => void;
     onImageRemove: () => void;
 }
 
-export function UserAvatarUpload({ 
-    defaultImageUrl,
+export const UserAvatarUpload: React.FC<UserAvatarUploadProps> = ({
+    currentImageId,
     onImageUpload,
-    onImageRemove 
-}: UserAvatarUploadProps) {
+    onImageRemove
+}) => {
     const generateUploadUrl = useMutation(api.files.generateUploadUrl);
-    const [storageId, setStorageId] = useState<string | undefined>(defaultImageUrl);
+    const [storageId, setStorageId] = useState<string | undefined>(currentImageId);
     const [isUploading, setIsUploading] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -29,10 +29,10 @@ export function UserAvatarUpload({
         storageId ? { storageId } : "skip"
     );
 
-    // Update storage ID when defaultImageUrl changes
+    // Update storage ID when currentImageId changes
     useEffect(() => {
-        setStorageId(defaultImageUrl);
-    }, [defaultImageUrl]);
+        setStorageId(currentImageId);
+    }, [currentImageId]);
 
     const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
