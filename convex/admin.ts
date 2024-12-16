@@ -31,6 +31,7 @@ export const fetchPrincipals = query({
         const principals = await ctx.db
             .query("users")
             .filter((q) => q.eq(q.field("role"), "school-head"))
+            .order("desc")
             .collect();
 
         return principals;

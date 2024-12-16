@@ -38,6 +38,10 @@ export const createUser = mutation({
         imageStorageId: v.optional(v.string()),
         gender: v.optional(v.string()),
         description: v.optional(v.string()),
+        employeeId: v.optional(v.string()),
+        position: v.optional(v.string()),
+        advisoryClass: v.optional(v.string()),
+        subjects: v.optional(v.array(v.string())),
     },
     handler: async (ctx, args) => {
         try {
@@ -94,13 +98,51 @@ export const createTeacher = mutation({
         firstName: v.string(),
         lastName: v.string(),
         middleName: v.optional(v.string()),
+        employeeId: v.string(),
         contactNumber: v.string(),
+        birthDate: v.string(),
+        gender: v.string(),
         specialization: v.string(),
         yearsOfExperience: v.number(),
-        birthDate: v.string(),
+        position: v.string(),
+        advisoryClass: v.optional(v.string()),
+        subjects: v.array(v.string()),
+        region: v.optional(v.string()),
+        province: v.optional(v.string()),
+        city: v.optional(v.string()),
+        barangay: v.optional(v.string()),
+        street: v.optional(v.string()),
+        imageStorageId: v.optional(v.string()),
     },
     handler: async (ctx, args) => {
-        return createUser(ctx, { ...args, role: "teacher" });
+        try {
+            // Only admin can create teachers
+            const adminId = await getAuthUserId(ctx);
+            if (!adminId) throw new ConvexError("Not authenticated");
+
+            const admin = await ctx.db.get(adminId);
+            if (!admin || admin.role !== "admin") {
+                throw new ConvexError("Unauthorized - Only admins can create teachers");
+            }
+
+            // Check if email already exists
+            const existingUser = await ctx.db
+                .query("users")
+                .filter((q) => q.eq(q.field("email"), args.email))
+                .first();
+
+            if (existingUser) throw new ConvexError("Email already exists");
+
+            // Create the teacher using createUser
+            return createUser(ctx, {
+                ...args,
+                role: "teacher",
+                isActive: true,
+            });
+        } catch (error) {
+            console.error("Error in createTeacher:", error);
+            throw error;
+        }
     },
 });
 

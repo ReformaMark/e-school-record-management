@@ -20,7 +20,7 @@ export default defineSchema({
       v.literal("admin"),
       v.literal("teacher"),
       v.literal("school-head"),
-      v.literal("staff")  // for registrars
+      v.literal("staff")
     ),
     isActive: v.optional(v.boolean()),
 
@@ -31,17 +31,23 @@ export default defineSchema({
     barangay: v.optional(v.string()),
     street: v.optional(v.string()),
     houseNumber: v.optional(v.string()),
-    postalCode: v.optional(v.string()),    
+    postalCode: v.optional(v.string()),
 
     // Additional fields for specific roles
     department: v.optional(v.string()), // for staff/registrar
     specialization: v.optional(v.string()), // for teachers
-    yearsOfExperience: v.optional(v.float64()), // for all roles
+    yearsOfExperience: v.optional(v.number()),
     startDate: v.optional(v.string()), // primarily for school-head
     endDate: v.optional(v.string()), // primarily for school-head
     imageStorageId: v.optional(v.string()),
     gender: v.optional(v.string()),
     description: v.optional(v.string()),
+
+    // New fields for teachers
+    employeeId: v.optional(v.string()),
+    position: v.optional(v.string()),
+    advisoryClass: v.optional(v.string()),
+    subjects: v.optional(v.array(v.string())),
   }).index("by_email", ["email"])
     .index("by_role", ["role"])
     .index("by_department", ["department"])

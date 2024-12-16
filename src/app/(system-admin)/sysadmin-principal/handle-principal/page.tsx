@@ -399,6 +399,7 @@ const SystemAdminHandlePrincipalPage = () => {
                                                         className="w-full"
                                                         placeholder="Enter your contact number"
                                                         {...register("contactNumber", { required: "Contact Number is required" })}
+                                                        maxLength={11}
                                                     />
                                                     {errors.contactNumber && <p className="text-red-500">{errors.contactNumber.message}</p>}
                                                 </div>
