@@ -15,15 +15,34 @@ import { useCallback, useRef, useState } from "react";
 
 import { schoolSubjects, SchoolSubjects } from "../../../../data/teachers-data";
 
-export const MultiSelectSubject = () => {
+type MultiSelectSubjectProps = {
+    value?: SchoolSubjects[];
+    onChange?: (subjects: SchoolSubjects[]) => void;
+    defaultValue?: SchoolSubjects[];
+};
+
+export const MultiSelectSubject = ({
+    value,
+    onChange,
+    defaultValue = []
+}: MultiSelectSubjectProps) => {
+    // Use controlled or uncontrolled component pattern
+    const [internalSubjects, setInternalSubjects] = useState<SchoolSubjects[]>(defaultValue);
+    
+    // Determine which subjects to use
+    const selectedSubjects = value !== undefined ? value : internalSubjects;
+    
+    // Determine which set function to use
+    const setSelectedSubjects = onChange || setInternalSubjects;
+
     const inputRef = useRef<HTMLInputElement>(null);
     const [open, setOpen] = useState<boolean>(false);
-    const [selected, setSelected] = useState<SchoolSubjects[]>([schoolSubjects[0]]);
     const [inputValue, setInputValue] = useState<string>("");
 
     const handleUnselect = useCallback((subject: SchoolSubjects) => {
-        setSelected((prev) => prev.filter((s) => s.value !== subject.value));
-    }, []);
+        const newSubjects = selectedSubjects.filter((s) => s.value !== subject.value);
+        setSelectedSubjects(newSubjects);
+    }, [selectedSubjects, setSelectedSubjects]);
 
     const handleKeyDown = useCallback(
         (e: React.KeyboardEvent<HTMLDivElement>) => {
@@ -31,11 +50,8 @@ export const MultiSelectSubject = () => {
             if (input) {
                 if (e.key === "Delete" || e.key === "Backspace") {
                     if (input.value === "") {
-                        setSelected((prev) => {
-                            const newSelected = [...prev];
-                            newSelected.pop();
-                            return newSelected;
-                        });
+                        const newSubjects = selectedSubjects.slice(0, -1);
+                        setSelectedSubjects(newSubjects);
                     }
                 }
                 // This is not a default behaviour of the <input /> field
@@ -44,11 +60,11 @@ export const MultiSelectSubject = () => {
                 }
             }
         },
-        []
+        [selectedSubjects, setSelectedSubjects]
     );
 
     const selectables = schoolSubjects.filter(
-        (subject) => !selected.includes(subject)
+        (subject) => !selectedSubjects.some((s) => s.value === subject.value)
     );
 
     return (
@@ -60,7 +76,7 @@ export const MultiSelectSubject = () => {
             >
                 <div className="group rounded-md border border-input px-3 py-2 text-sm ring-offset-background focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
                     <div className="flex flex-wrap gap-1">
-                        {selected.map((subject) => {
+                        {selectedSubjects.map((subject) => {
                             return (
                                 <Badge key={subject.value} variant="secondary">
                                     {subject.label}
@@ -82,7 +98,6 @@ export const MultiSelectSubject = () => {
                                 </Badge>
                             );
                         })}
-                        {/* Avoid having the "Search" Icon */}
                         <CommandPrimitive.Input
                             ref={inputRef}
                             value={inputValue}
@@ -107,10 +122,10 @@ export const MultiSelectSubject = () => {
                                                     e.preventDefault();
                                                     e.stopPropagation();
                                                 }}
-                                                // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                                                onSelect={(value) => {
+                                                onSelect={() => {
                                                     setInputValue("");
-                                                    setSelected((prev) => [...prev, subject]);
+                                                    const newSubjects = [...selectedSubjects, subject];
+                                                    setSelectedSubjects(newSubjects);
                                                 }}
                                                 className={"cursor-pointer"}
                                             >
@@ -125,5 +140,5 @@ export const MultiSelectSubject = () => {
                 </div>
             </Command>
         </div>
-    )
-}
+    );
+};

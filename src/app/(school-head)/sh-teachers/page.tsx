@@ -1,3 +1,5 @@
+"use client"
+
 import {
     Breadcrumb,
     BreadcrumbItem,
@@ -94,6 +96,7 @@ const SchoolHeadTeachersPage = () => {
                     <CardContent>
                         <DataTable
                             columns={teacherColumns}
+                            // @ts-expect-error TODO: change this to the backend teachers and paganahin yung filtering
                             data={teachersData}
                             filter="firstName"
                             placeholder="teachers by first name"

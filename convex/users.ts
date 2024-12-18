@@ -323,3 +323,101 @@ export const createPrincipal = mutation({
         });
     },
 });
+
+export const getTeachers = query({
+    handler: async (ctx) => {
+        const teachers = await ctx.db
+            .query("users")
+            .filter((q) => q.eq(q.field("role"), "teacher"))
+            .order("desc")
+            .collect();
+
+        return teachers.map(teacher => ({
+            id: teacher._id,
+            firstName: teacher.firstName,
+            lastName: teacher.lastName,
+            middleName: teacher.middleName,
+            email: teacher.email,
+            employeeId: teacher.employeeId || "",
+            position: teacher.position || "",
+            specialization: teacher.specialization || "",
+            advisoryClass: teacher.advisoryClass,
+            imageUrl: teacher.image,
+            isActive: teacher.isActive,
+            contactNumber: teacher.contactNumber,
+            gender: teacher.gender,
+            yearsOfExperience: teacher.yearsOfExperience,
+        }));
+    },
+});
+
+export const updateTeacher = mutation({
+    args: {
+        id: v.id("users"),
+        email: v.string(),
+        firstName: v.string(),
+        middleName: v.optional(v.string()),
+        lastName: v.string(),
+        contactNumber: v.string(),
+        employeeId: v.optional(v.string()),
+        position: v.optional(v.string()),
+        specialization: v.optional(v.string()),
+        yearsOfExperience: v.optional(v.number()),
+        birthDate: v.string(),
+        gender: v.optional(v.string()),
+        region: v.optional(v.string()),
+        province: v.optional(v.string()),
+        city: v.optional(v.string()),
+        barangay: v.optional(v.string()),
+        street: v.optional(v.string()),
+        advisoryClass: v.optional(v.string()),
+        subjects: v.optional(v.array(v.string())),
+        imageStorageId: v.optional(v.string()),
+    },
+    handler: async (ctx, args) => {
+        // Only admin can update teachers
+        const adminId = await getAuthUserId(ctx);
+        if (!adminId) throw new ConvexError("Not authenticated");
+
+        const admin = await ctx.db.get(adminId);
+        if (!admin || admin.role !== "admin") {
+            throw new ConvexError("Unauthorized - Only admins can update teachers");
+        }
+
+        const teacher = await ctx.db.get(args.id);
+        if (!teacher) throw new ConvexError("Teacher not found");
+        if (teacher.role !== "teacher") throw new ConvexError("User is not a teacher");
+
+        return await ctx.db.patch(args.id, {
+            email: args.email,
+            firstName: args.firstName,
+            middleName: args.middleName,
+            lastName: args.lastName,
+            contactNumber: args.contactNumber,
+            employeeId: args.employeeId,
+            position: args.position,
+            specialization: args.specialization,
+            yearsOfExperience: args.yearsOfExperience,
+            birthDate: args.birthDate,
+            gender: args.gender,
+            region: args.region,
+            province: args.province,
+            city: args.city,
+            barangay: args.barangay,
+            street: args.street,
+            advisoryClass: args.advisoryClass,
+            subjects: args.subjects,
+            imageStorageId: args.imageStorageId,
+        });
+    },
+});
+
+export const getTeacher = query({
+    args: { teacherId: v.id("users") },
+    handler: async (ctx, args) => {
+        const teacher = await ctx.db.get(args.teacherId);
+        if (!teacher) throw new ConvexError("Teacher not found");
+        if (teacher.role !== "teacher") throw new ConvexError("User is not a teacher");
+        return teacher;
+    },
+});

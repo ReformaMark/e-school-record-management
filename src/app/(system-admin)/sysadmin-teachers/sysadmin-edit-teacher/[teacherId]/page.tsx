@@ -27,39 +27,93 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-
-
-import {
-    ChevronLeft
-} from "lucide-react";
-
-import { UserAvatarUpload } from "@/components/shared/user-avatar-upload";
-import { Barangay, City, Province, Region, fetchBarangays, fetchCities, fetchProvinces, fetchRegions } from "@/lib/address-api";
+import { ChevronLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useMutation } from "convex/react";
 import Link from "next/link";
+import { SchoolSubjects, schoolSubjects } from "../../../../../../data/teachers-data";
+import { MultiSelectSubject } from "../../../_components/multi-select-subject";
+import { useMutation, useQuery } from "convex/react";
+import { api } from "../../../../../../convex/_generated/api";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { api } from "../../../../../convex/_generated/api";
-import { SchoolSubjects, schoolSubjects } from "../../../../../data/teachers-data";
-import { MultiSelectSubject } from "../../_components/multi-select-subject";
+import { UserAvatarUpload } from "@/components/shared/user-avatar-upload";
+import { Barangay, City, Province, Region, fetchBarangays, fetchCities, fetchProvinces, fetchRegions } from "@/lib/address-api";
+import { useForm } from "react-hook-form";
+import { Id } from "../../../../../../convex/_generated/dataModel";
 
-const SystemAdminAddTeacherPage = () => {
-    const createTeacher = useMutation(api.users.createTeacher);
+interface TeacherFormData {
+    email: string;
+    firstName: string;
+    middleName?: string;
+    lastName: string;
+    contactNumber: string;
+    employeeId: string;
+    position: string;
+    specialization: string;
+    yearsOfExperience: number;
+    birthDate: string;
+    gender: string;
+    region?: string;
+    province?: string;
+    city?: string;
+    barangay?: string;
+    street?: string;
+    advisoryClass?: string;
+    subjects: string[];
+}
+
+const SystemAdminEditTeacherPage = ({ params }: { params: { teacherId: string } }) => {
+    const { register, handleSubmit, setValue, watch } = useForm<TeacherFormData>();
+    const updateTeacher = useMutation(api.users.updateTeacher);
+    const teacher = useQuery(api.users.getTeacher, { teacherId: params.teacherId as Id<"users"> });
     const [isLoading, setIsLoading] = useState(false);
     const router = useRouter();
-    const [imageStorageId, setImageStorageId] = useState<string | undefined>();
+    const [imageStorageId, setImageStorageId] = useState<string>();
     const [regions, setRegions] = useState<Region[]>([]);
     const [provinces, setProvinces] = useState<Province[]>([]);
     const [cities, setCities] = useState<City[]>([]);
     const [barangays, setBarangays] = useState<Barangay[]>([]);
     const [isNCR, setIsNCR] = useState(false);
-    const { setValue, watch } = useForm();
     const [selectedSubjects, setSelectedSubjects] = useState<SchoolSubjects[]>([])
 
-    console.log(selectedSubjects)
+    useEffect(() => {
+        if (teacher) {
+            // Basic Info
+            setValue('email', teacher.email);
+            setValue('firstName', teacher.firstName);
+            setValue('middleName', teacher.middleName || '');
+            setValue('lastName', teacher.lastName);
+            setValue('contactNumber', teacher.contactNumber);
+            setValue('employeeId', teacher.employeeId || '');
+            setValue('birthDate', teacher.birthDate);
+            setValue('gender', teacher.gender || '');
+
+            // Academic Info
+            setValue('position', teacher.position || '');
+            setValue('specialization', teacher.specialization || '');
+            setValue('yearsOfExperience', teacher.yearsOfExperience || 0);
+            setValue('advisoryClass', teacher.advisoryClass || '');
+            setValue('subjects', teacher.subjects || []);
+
+            // Address Info
+            setValue('region', teacher.region || '');
+            setValue('province', teacher.province || '');
+            setValue('city', teacher.city || '');
+            setValue('barangay', teacher.barangay || '');
+            setValue('street', teacher.street || '');
+
+            // Image
+            if (teacher.imageStorageId) {
+            setImageStorageId(teacher.imageStorageId);
+            }
+
+            // If address data exists, fetch the corresponding options
+            if (teacher.region) {
+                handleRegionChange(teacher.region);
+            }
+        }
+    }, [teacher, setValue]);
 
     useEffect(() => {
         fetchRegions().then(data => {
@@ -126,55 +180,44 @@ const SystemAdminAddTeacherPage = () => {
         }
     };
 
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
+    const onSubmit = async (data: TeacherFormData) => {
         setIsLoading(true);
-
         try {
-            const formData = new FormData(e.currentTarget);
-            
-            // Validate required fields
-            const email = formData.get('email') as string;
-            const password = formData.get('password') as string;
-            const confirmPassword = formData.get('cpassword') as string;
-            
-            if (password !== confirmPassword) {
-                toast.error("Passwords do not match");
-                return;
-            }
-
-            await createTeacher({
-                email,
-                password,
-                firstName: formData.get('firstName') as string,
-                lastName: formData.get('lastName') as string,
-                middleName: (formData.get('middleName') as string) || undefined,
-                employeeId: formData.get('empId') as string,
-                contactNumber: formData.get('contact') as string,
-                birthDate: formData.get('bday') as string,
-                gender: formData.get('gender') as string,
-                specialization: formData.get('specialization') as string,
-                yearsOfExperience: parseInt(formData.get('yrsOfExp') as string),
-                position: formData.get('position') as string,
-                advisoryClass: (formData.get('advisoryClass') as string) || undefined,
-                subjects: formData.getAll('subjects') as string[],
-                // Use watch to get the address values
+            await updateTeacher({
+                id: params.teacherId as Id<"users">,
+                email: data.email,
+                firstName: data.firstName,
+                middleName: data.middleName,
+                lastName: data.lastName,
+                contactNumber: data.contactNumber,
+                employeeId: data.employeeId,
+                position: data.position,
+                specialization: data.specialization,
+                yearsOfExperience: Number(data.yearsOfExperience),
+                birthDate: data.birthDate,
+                gender: data.gender,
                 region: watch('region'),
                 province: watch('province'),
                 city: watch('city'),
                 barangay: watch('barangay'),
-                street: formData.get('street') as string,
-                ...(imageStorageId && { imageStorageId }),
+                street: data.street,
+                advisoryClass: data.advisoryClass,
+                subjects: data.subjects,
+                imageStorageId,
             });
 
-            toast.success("Teacher created successfully");
+            toast.success("Teacher updated successfully");
             router.push("/sysadmin-teachers");
         } catch (error) {
-            toast.error("Failed to create teacher: " + (error as Error).message);
+            toast.error("Failed to update teacher: " + (error as Error).message);
         } finally {
             setIsLoading(false);
         }
     };
+
+    if (!teacher) {
+        return <div>Loading...</div>;
+    }
 
     return (
         <div className="container mx-auto p-4">
@@ -193,13 +236,13 @@ const SystemAdminAddTeacherPage = () => {
                     </BreadcrumbItem>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
-                        <BreadcrumbPage>Add a Teacher</BreadcrumbPage>
+                        <BreadcrumbPage>Edit Teacher</BreadcrumbPage>
                     </BreadcrumbItem>
                 </BreadcrumbList>
             </Breadcrumb>
 
             <main className="space-y-4 mt-8">
-                <form id="teacher-form" onSubmit={handleSubmit}>
+                <form id="teacher-form" onSubmit={handleSubmit(onSubmit)}>
                     <div className="mx-auto grid max-w-[59rem] flex-1 auto-rows-max gap-4">
                         <div className="flex items-center gap-4">
                             <Link
@@ -212,19 +255,18 @@ const SystemAdminAddTeacherPage = () => {
                                 <span className="sr-only">Back</span>
                             </Link>
                             <h1 className="flex-1 shrink-0 whitespace-nowrap text-xl font-semibold tracking-tight sm:grow-0">
-                                Add a Teacher
+                                Edit Teacher
                             </h1>
 
                             {/* Button for desktop/laptop users */}
                             <div className="hidden items-center gap-2 md:ml-auto md:flex">
                                 <Button
                                     type="submit"
-                                    form="teacher-form"
                                     size="sm"
                                     className="text-white"
                                     disabled={isLoading}
                                 >
-                                    {isLoading ? "Creating..." : "Save"}
+                                    {isLoading ? "Updating..." : "Save"}
                                 </Button>
                             </div>
                         </div>
@@ -242,8 +284,7 @@ const SystemAdminAddTeacherPage = () => {
                                             <div className="grid gap-3">
                                                 <Label htmlFor="email">Email <span className="text-red-500">*</span></Label>
                                                 <Input
-                                                    id="email"
-                                                    name="email"
+                                                    {...register('email')}
                                                     type="email"
                                                     required
                                                     placeholder="email@example.com"
@@ -254,8 +295,7 @@ const SystemAdminAddTeacherPage = () => {
                                                 <div className="grid gap-3">
                                                     <Label htmlFor="firstName">First Name <span className="text-red-500">*</span></Label>
                                                     <Input
-                                                        id="firstName"
-                                                        name="firstName"
+                                                        {...register('firstName')}
                                                         type="text"
                                                         required
                                                         placeholder="John"
@@ -264,8 +304,7 @@ const SystemAdminAddTeacherPage = () => {
                                                 <div className="grid gap-3">
                                                     <Label htmlFor="lastName">Last Name <span className="text-red-500">*</span></Label>
                                                     <Input
-                                                        id="lastName"
-                                                        name="lastName"
+                                                        {...register('lastName')}
                                                         type="text"
                                                         required
                                                         placeholder="Doe"
@@ -277,8 +316,7 @@ const SystemAdminAddTeacherPage = () => {
                                                 <div className="grid gap-3">
                                                     <Label htmlFor="middleName">Middle Name</Label>
                                                     <Input
-                                                        id="middleName"
-                                                        name="middleName"
+                                                        {...register('middleName')}
                                                         type="text"
                                                         placeholder="Middle Name"
                                                     />
@@ -286,34 +324,10 @@ const SystemAdminAddTeacherPage = () => {
                                                 <div className="grid gap-3">
                                                     <Label htmlFor="empId">Employee ID <span className="text-red-500">*</span></Label>
                                                     <Input
-                                                        id="empId"
-                                                        name="empId"
+                                                        {...register('employeeId')}
                                                         type="text"
                                                         required
                                                         placeholder="2023-002"
-                                                    />
-                                                </div>
-                                            </div>
-
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                <div className="grid gap-3">
-                                                    <Label htmlFor="password">Password <span className="text-red-500">*</span></Label>
-                                                    <Input
-                                                        id="password"
-                                                        name="password"
-                                                        type="password"
-                                                        required
-                                                        placeholder="********"
-                                                    />
-                                                </div>
-                                                <div className="grid gap-3">
-                                                    <Label htmlFor="cpassword">Confirm Password <span className="text-red-500">*</span></Label>
-                                                    <Input
-                                                        id="cpassword"
-                                                        name="cpassword"
-                                                        type="password"
-                                                        required
-                                                        placeholder="********"
                                                     />
                                                 </div>
                                             </div>
@@ -331,8 +345,7 @@ const SystemAdminAddTeacherPage = () => {
                                             <div className="grid gap-3">
                                                 <Label htmlFor="bday">Birth Date <span className="text-red-500">*</span></Label>
                                                 <Input
-                                                    id="bday"
-                                                    name="bday"
+                                                    {...register('birthDate')}
                                                     type="date"
                                                     required
                                                 />
@@ -341,7 +354,12 @@ const SystemAdminAddTeacherPage = () => {
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                 <div className="grid gap-3">
                                                     <Label htmlFor="gender">Gender <span className="text-red-500">*</span></Label>
-                                                    <Select name="gender" required>
+                                                    <Select
+                                                        onValueChange={(value) => setValue('gender', value)}
+                                                        value={watch("gender")}
+                                                        defaultValue={teacher.gender}
+                                                        required
+                                                    >
                                                         <SelectTrigger>
                                                             <SelectValue placeholder="Select gender" />
                                                         </SelectTrigger>
@@ -354,8 +372,7 @@ const SystemAdminAddTeacherPage = () => {
                                                 <div className="grid gap-3">
                                                     <Label htmlFor="contact">Contact Number <span className="text-red-500">*</span></Label>
                                                     <Input
-                                                        id="contact"
-                                                        name="contact"
+                                                        {...register('contactNumber')}
                                                         type="tel"
                                                         required
                                                         placeholder="09123456789"
@@ -366,7 +383,12 @@ const SystemAdminAddTeacherPage = () => {
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                 <div className="grid gap-3">
                                                     <Label htmlFor="specialization">Specialization <span className="text-red-500">*</span></Label>
-                                                    <Select name="specialization" required>
+                                                    <Select
+                                                        onValueChange={(value) => setValue('specialization', value)}
+                                                        value={watch('specialization')}
+                                                        defaultValue={teacher.specialization}
+                                                        required
+                                                    >
                                                         <SelectTrigger>
                                                             <SelectValue placeholder="Select specialization" />
                                                         </SelectTrigger>
@@ -382,8 +404,7 @@ const SystemAdminAddTeacherPage = () => {
                                                 <div className="grid gap-3">
                                                     <Label htmlFor="yrsOfExp">Years of Experience <span className="text-red-500">*</span></Label>
                                                     <Input
-                                                        id="yrsOfExp"
-                                                        name="yrsOfExp"
+                                                        {...register('yearsOfExperience')}
                                                         type="number"
                                                         required
                                                         min="0"
@@ -404,7 +425,12 @@ const SystemAdminAddTeacherPage = () => {
                                         <div className="grid gap-6">
                                             <div className="grid gap-3">
                                                 <Label htmlFor="position">Position <span className="text-red-500">*</span></Label>
-                                                <Select name="position" required>
+                                                <Select 
+                                                    onValueChange={(value) => setValue('position', value)}
+                                                    value={watch('position')}
+                                                    defaultValue={teacher.position}
+                                                    required
+                                                >
                                                     <SelectTrigger>
                                                         <SelectValue placeholder="Select position" />
                                                     </SelectTrigger>
@@ -417,7 +443,11 @@ const SystemAdminAddTeacherPage = () => {
 
                                             <div className="grid gap-3">
                                                 <Label htmlFor="advisoryClass">Advisory Class</Label>
-                                                <Select name="advisoryClass">
+                                                <Select
+                                                    onValueChange={(value) => setValue('advisoryClass', value)}
+                                                    value={watch('advisoryClass')}
+                                                    defaultValue={teacher.advisoryClass}
+                                                >
                                                     <SelectTrigger>
                                                         <SelectValue placeholder="Select advisory class" />
                                                     </SelectTrigger>
@@ -440,6 +470,7 @@ const SystemAdminAddTeacherPage = () => {
                                     </CardContent>
                                 </Card>
 
+                                {/* Address Details Card */}
                                 <Card>
                                     <CardHeader>
                                         <CardTitle>Address Details</CardTitle>
@@ -476,13 +507,12 @@ const SystemAdminAddTeacherPage = () => {
                                                             value="Metro Manila" 
                                                             disabled 
                                                             className="bg-muted"
-                                                            name="province"
+                                                            {...register("province")}
                                                         />
                                                     ) : (
                                                         <Select
                                                             onValueChange={handleProvinceChange}
                                                             disabled={!regions.length}
-                                                            name="province"
                                                         >
                                                             <SelectTrigger className="w-full">
                                                                 <SelectValue placeholder="Select province" />
@@ -508,7 +538,6 @@ const SystemAdminAddTeacherPage = () => {
                                                     <Select
                                                         onValueChange={handleCityChange}
                                                         disabled={!provinces.length && !isNCR}
-                                                        name="city"
                                                     >
                                                         <SelectTrigger className="w-full">
                                                             <SelectValue placeholder="Select city" />
@@ -531,7 +560,6 @@ const SystemAdminAddTeacherPage = () => {
                                                     <Select
                                                         onValueChange={handleBarangayChange}
                                                         disabled={!cities.length}
-                                                        name="barangay"
                                                     >
                                                         <SelectTrigger className="w-full">
                                                             <SelectValue placeholder="Select barangay" />
@@ -553,8 +581,7 @@ const SystemAdminAddTeacherPage = () => {
                                             <div className="grid gap-3">
                                                 <Label htmlFor="street">Street (Optional)</Label>
                                                 <Input
-                                                    id="street"
-                                                    name="street"
+                                                    {...register("street")}
                                                     type="text"
                                                     className="w-full"
                                                     placeholder="Enter street"
@@ -577,6 +604,7 @@ const SystemAdminAddTeacherPage = () => {
                                         <UserAvatarUpload
                                             onImageUpload={(storageId) => setImageStorageId(storageId)}
                                             onImageRemove={() => setImageStorageId(undefined)}
+                                            currentImageId={teacher.imageStorageId}
                                         />
                                     </CardContent>
                                 </Card>
@@ -591,7 +619,7 @@ const SystemAdminAddTeacherPage = () => {
                                 className="text-white"
                                 disabled={isLoading}
                             >
-                                {isLoading ? "Creating..." : "Save"}
+                                {isLoading ? "Updating..." : "Save"}
                             </Button>
                         </div>
                     </div>
@@ -601,4 +629,4 @@ const SystemAdminAddTeacherPage = () => {
     );
 };
 
-export default SystemAdminAddTeacherPage;
+export default SystemAdminEditTeacherPage; 
