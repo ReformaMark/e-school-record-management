@@ -1,5 +1,5 @@
 import { ConvexError, v } from "convex/values";
-import { mutation } from "./_generated/server";
+import { mutation, query } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
 
 export const create = mutation({
@@ -39,5 +39,16 @@ export const create = mutation({
         return await ctx.db.insert("schoolYears", {
             ...args
         })
+    }
+})
+
+export const get = query({
+    args: {},
+    handler: async (ctx) => {
+
+        return await ctx.db
+            .query("schoolYears")
+            .order("desc")
+            .collect()
     }
 })

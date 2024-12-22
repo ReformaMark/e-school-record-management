@@ -1,3 +1,5 @@
+"use client"
+
 import { DataTable } from "@/components/data-table";
 import { Button } from "@/components/ui/button";
 import {
@@ -7,9 +9,15 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import { schoolYearColumns, schoolYearData } from "../../data/school-year-data";
+import { schoolYearColumns } from "../../data/school-year-data";
+import { useQuery } from "convex/react";
+import { api } from "../../convex/_generated/api";
 
 export const SchoolYearCardTable = () => {
+    const schoolYearData = useQuery(api.schoolYear.get)
+
+    if (!schoolYearData) return <>No School Year Data found.</>
+
     return (
         <Card
             className="xl:col-span-2" x-chunk="dashboard-01-chunk-4"
