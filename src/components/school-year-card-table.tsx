@@ -9,9 +9,9 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import { schoolYearColumns } from "../../data/school-year-data";
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
+import { schoolYearColumns } from "../../data/school-year-data";
 
 export const SchoolYearCardTable = () => {
     const schoolYearData = useQuery(api.schoolYear.get)
