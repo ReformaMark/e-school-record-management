@@ -144,8 +144,5 @@ export default defineSchema({
     startDate: v.string(),
     endDate: v.string(),
     batchName: v.string(),
-    isActive: v.boolean(),
   }),
 });
-
-
