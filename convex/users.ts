@@ -41,7 +41,7 @@ export const createUser = mutation({
         employeeId: v.optional(v.string()),
         position: v.optional(v.string()),
         advisoryClass: v.optional(v.string()),
-        subjects: v.optional(v.array(v.string())),
+        subjectId: v.optional(v.array(v.id('subjects'))),
     },
     handler: async (ctx, args) => {
         try {
@@ -106,13 +106,13 @@ export const createTeacher = mutation({
         yearsOfExperience: v.number(),
         position: v.string(),
         advisoryClass: v.optional(v.string()),
-        subjects: v.array(v.string()),
         region: v.optional(v.string()),
         province: v.optional(v.string()),
         city: v.optional(v.string()),
         barangay: v.optional(v.string()),
         street: v.optional(v.string()),
         imageStorageId: v.optional(v.string()),
+        subjectId: v.optional(v.array(v.id('subjects'))),
     },
     handler: async (ctx, args) => {
         try {
@@ -371,7 +371,7 @@ export const updateTeacher = mutation({
         barangay: v.optional(v.string()),
         street: v.optional(v.string()),
         advisoryClass: v.optional(v.string()),
-        subjects: v.optional(v.array(v.string())),
+        subjectId: v.optional(v.array(v.id('subjects'))),
         imageStorageId: v.optional(v.string()),
     },
     handler: async (ctx, args) => {
@@ -406,7 +406,7 @@ export const updateTeacher = mutation({
             barangay: args.barangay,
             street: args.street,
             advisoryClass: args.advisoryClass,
-            subjects: args.subjects,
+            subjectId: args.subjectId,
             imageStorageId: args.imageStorageId,
         });
     },

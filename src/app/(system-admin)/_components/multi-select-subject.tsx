@@ -40,7 +40,8 @@ export const MultiSelectSubject = ({
     const [inputValue, setInputValue] = useState<string>("");
 
     const handleUnselect = useCallback((subject: SchoolSubjects) => {
-        const newSubjects = selectedSubjects.filter((s) => s.value !== subject.value);
+        const newSubjects = selectedSubjects.filter((s) => s?.value !== subject?.value);
+        console.log("Unselecting subject:", subject, "New Subjects:", newSubjects)
         setSelectedSubjects(newSubjects);
     }, [selectedSubjects, setSelectedSubjects]);
 
@@ -64,7 +65,7 @@ export const MultiSelectSubject = ({
     );
 
     const selectables = schoolSubjects.filter(
-        (subject) => !selectedSubjects.some((s) => s.value === subject.value)
+        (subject) => !selectedSubjects.some((s) => s?.value === subject.value)
     );
 
     return (
@@ -78,8 +79,8 @@ export const MultiSelectSubject = ({
                     <div className="flex flex-wrap gap-1">
                         {selectedSubjects.map((subject) => {
                             return (
-                                <Badge key={subject.value} variant="secondary">
-                                    {subject.label}
+                                <Badge key={subject?.value} variant="secondary">
+                                    {subject?.label}
                                     <button
                                         className="ml-1 rounded-full outline-none ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2"
                                         onKeyDown={(e) => {
@@ -117,7 +118,7 @@ export const MultiSelectSubject = ({
                                     {selectables.map((subject) => {
                                         return (
                                             <CommandItem
-                                                key={subject.value}
+                                                key={subject?.value}
                                                 onMouseDown={(e) => {
                                                     e.preventDefault();
                                                     e.stopPropagation();
@@ -125,11 +126,12 @@ export const MultiSelectSubject = ({
                                                 onSelect={() => {
                                                     setInputValue("");
                                                     const newSubjects = [...selectedSubjects, subject];
+                                                    console.log("Selecting subject:", subject, "New subjects:", newSubjects)
                                                     setSelectedSubjects(newSubjects);
                                                 }}
                                                 className={"cursor-pointer"}
                                             >
-                                                {subject.label}
+                                                {subject?.label}
                                             </CommandItem>
                                         );
                                     })}
