@@ -47,7 +47,9 @@ export default defineSchema({
     employeeId: v.optional(v.string()),
     position: v.optional(v.string()),
     advisoryClass: v.optional(v.string()),
-    subjects: v.optional(v.array(v.string())),
+
+    // reference for teachers
+    subjectId: v.optional(v.array(v.id('subjects')))
   }).index("by_email", ["email"])
     .index("by_role", ["role"])
     .index("by_department", ["department"])
@@ -146,7 +148,6 @@ export default defineSchema({
 
   subjects: defineTable({
     name: v.string(),
-    code: v.string(),
     applicableGradeLevels: v.array(v.number()),
   }),
 
@@ -178,8 +179,5 @@ export default defineSchema({
     startDate: v.string(),
     endDate: v.string(),
     batchName: v.string(),
-    isActive: v.boolean(),
   }),
 });
-
-

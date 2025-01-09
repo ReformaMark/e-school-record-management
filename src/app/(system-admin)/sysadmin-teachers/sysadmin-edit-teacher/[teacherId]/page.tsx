@@ -60,7 +60,7 @@ interface TeacherFormData {
     barangay?: string;
     street?: string;
     advisoryClass?: string;
-    subjects: string[];
+    subjects: SchoolSubjects[];
 }
 
 const SystemAdminEditTeacherPage = ({ params }: { params: { teacherId: string } }) => {
@@ -75,7 +75,7 @@ const SystemAdminEditTeacherPage = ({ params }: { params: { teacherId: string } 
     const [cities, setCities] = useState<City[]>([]);
     const [barangays, setBarangays] = useState<Barangay[]>([]);
     const [isNCR, setIsNCR] = useState(false);
-    const [selectedSubjects, setSelectedSubjects] = useState<SchoolSubjects[]>([])
+    const [selectedSubjects, setSelectedSubjects] = useState<SchoolSubjects[]>([]);
 
     useEffect(() => {
         if (teacher) {
@@ -105,7 +105,7 @@ const SystemAdminEditTeacherPage = ({ params }: { params: { teacherId: string } 
 
             // Image
             if (teacher.imageStorageId) {
-            setImageStorageId(teacher.imageStorageId);
+                setImageStorageId(teacher.imageStorageId);
             }
 
             // If address data exists, fetch the corresponding options
@@ -124,15 +124,15 @@ const SystemAdminEditTeacherPage = ({ params }: { params: { teacherId: string } 
     const handleRegionChange = async (regionCode: string) => {
         setCities([]);
         setBarangays([]);
-        
+
         const isNCRSelected = regionCode === '130000000';
         setIsNCR(isNCRSelected);
-        
+
         const selectedRegion = regions.find(r => r.code === regionCode);
         if (selectedRegion) {
             setValue('region', selectedRegion.name);
         }
-        
+
         if (isNCRSelected) {
             setValue('province', 'Metro Manila');
             const cityData = await fetchCities('130000000');
@@ -147,24 +147,24 @@ const SystemAdminEditTeacherPage = ({ params }: { params: { teacherId: string } 
         setValue('city', '');
         setValue('barangay', '');
         setBarangays([]);
-        
+
         const selectedProvince = provinces.find(p => p.code === provinceCode);
         if (selectedProvince) {
             setValue('province', selectedProvince.name);
         }
-        
+
         const cityData = await fetchCities(provinceCode);
         setCities(cityData);
     };
 
     const handleCityChange = async (cityCode: string) => {
         setValue('barangay', '');
-        
+
         const selectedCity = cities.find(c => c.code === cityCode);
         if (selectedCity) {
             setValue('city', selectedCity.name);
         }
-        
+
         try {
             const barangayData = await fetchBarangays(cityCode);
             setBarangays(barangayData);
@@ -181,7 +181,11 @@ const SystemAdminEditTeacherPage = ({ params }: { params: { teacherId: string } 
     };
 
     const onSubmit = async (data: TeacherFormData) => {
+        // console.log("Form data before submit:", data);
         setIsLoading(true);
+
+        // console.log(data, "Honlulu:" ,data.subjects.map((subject) => subject.value));
+
         try {
             await updateTeacher({
                 id: params.teacherId as Id<"users">,
@@ -425,7 +429,7 @@ const SystemAdminEditTeacherPage = ({ params }: { params: { teacherId: string } 
                                         <div className="grid gap-6">
                                             <div className="grid gap-3">
                                                 <Label htmlFor="position">Position <span className="text-red-500">*</span></Label>
-                                                <Select 
+                                                <Select
                                                     onValueChange={(value) => setValue('position', value)}
                                                     value={watch('position')}
                                                     defaultValue={teacher.position}
@@ -462,8 +466,8 @@ const SystemAdminEditTeacherPage = ({ params }: { params: { teacherId: string } 
                                             <div className="grid gap-3">
                                                 <Label>Subjects <span className="text-red-500">*</span></Label>
                                                 <MultiSelectSubject
-                                                    value={selectedSubjects}
-                                                    onChange={setSelectedSubjects}
+                                                    value={watch('subjects') as SchoolSubjects[]}
+                                                    onChange={(subjects) => setValue('subjects', subjects as SchoolSubjects[])}
                                                 />
                                             </div>
                                         </div>
@@ -480,7 +484,7 @@ const SystemAdminEditTeacherPage = ({ params }: { params: { teacherId: string } 
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                 <div className="grid gap-3">
                                                     <Label htmlFor="region">Region (Optional)</Label>
-                                                    <Select 
+                                                    <Select
                                                         onValueChange={handleRegionChange}
                                                         name="region"
                                                     >
@@ -503,9 +507,9 @@ const SystemAdminEditTeacherPage = ({ params }: { params: { teacherId: string } 
                                                 <div className="grid gap-3">
                                                     <Label htmlFor="province">Province (Optional)</Label>
                                                     {isNCR ? (
-                                                        <Input 
-                                                            value="Metro Manila" 
-                                                            disabled 
+                                                        <Input
+                                                            value="Metro Manila"
+                                                            disabled
                                                             className="bg-muted"
                                                             {...register("province")}
                                                         />
