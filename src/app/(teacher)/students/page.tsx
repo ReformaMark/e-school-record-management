@@ -8,11 +8,22 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { DataTable } from '@/components/data-table'
 
 import EnrollmentDialog from '../my-advisees/_components/EnrollmentDialog'
-import { endrollmentData, enrollmentColumn } from './enrollment-data'
+import { enrollmentColumn } from './enrollment-data'
+import { useQuery } from 'convex/react'
+import { api } from '../../../../convex/_generated/api'
+import Loading from '@/app/components/Loading'
 
 
 
 function StudentsPage() {
+    const students = useQuery(api.students.getStudent)
+
+
+
+    if(!students){
+        return <Loading/>
+    }
+
     return (
         <div className='container mx-auto p-4'>
             <main className="space-y-4">
@@ -65,7 +76,7 @@ function StudentsPage() {
                         <DataTable
                             columns={enrollmentColumn}
                             // @ts-ignore
-                            data={endrollmentData}
+                            data={students}
                             filter="lastName"
                             placeholder="students by Last Name"
 

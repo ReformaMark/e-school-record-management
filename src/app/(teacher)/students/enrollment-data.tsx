@@ -466,5 +466,5 @@ export const endrollmentData = [
     )
   },
 },
-  ] 
+] 
 

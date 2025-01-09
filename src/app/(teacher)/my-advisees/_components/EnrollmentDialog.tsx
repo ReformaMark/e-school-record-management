@@ -1,4 +1,5 @@
-import React from 'react'
+'use client'
+import React, { useState } from 'react'
 import {
     Dialog,
     DialogContent,
@@ -7,14 +8,15 @@ import {
     DialogTrigger,
   } from "@/components/ui/dialog"
 import { PlusCircleIcon } from 'lucide-react'
-import Form from './Form'
+import EnrollmentForm from './Form'
 
 
 function EnrollmentDialog() {
+  const [isOpen, setIsOpen] = useState(false)
   return (
     <div>
-        <Dialog>
-            <DialogTrigger className='border shadow-md flex justify-center items-center gap-x-3 disabled:bg-blue-200 bg-blue-600 text-white border-gray-100 rounded-md px-2 py-1'>
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
+            <DialogTrigger onClick={()=>setIsOpen(true)} className='border shadow-md flex justify-center items-center gap-x-3 disabled:bg-blue-200 bg-blue-600 text-white border-gray-100 rounded-md px-2 py-1'>
                 <PlusCircleIcon className="h-3.5 w-3.5" />
                 <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
                     Enroll student
@@ -25,7 +27,7 @@ function EnrollmentDialog() {
                 <DialogTitle>Enroll new student</DialogTitle>
                 
               </DialogHeader>
-              <Form/>
+              <EnrollmentForm onClose={()=>setIsOpen(false)}/>
             </DialogContent>
           </Dialog>
     </div>

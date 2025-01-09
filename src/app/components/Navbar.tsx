@@ -22,9 +22,18 @@ import { TbListNumbers } from 'react-icons/tb';
 import { usePathname } from 'next/navigation';
 import { Separator } from '@/components/ui/separator';
 import { BiLogOut } from "react-icons/bi";
+import { useCurrentUser } from '@/features/current/api/use-current-user';
+import { useAuthActions } from '@convex-dev/auth/react';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
 function Navbar() {
     const pathname = usePathname()
+    const { user, isLoading } = useCurrentUser()
+    const { signOut } = useAuthActions()
+
+    if (isLoading) {
+        return null;
+    }
   return (
     <nav className='w-full h-fit z-50 shadow-md py-5 fixed flex justify-between items-center pr-3 sm:pr-5 md:pr-10 lg:pr-10 bg-primary'>
         <div className="flex items-center gap-x-1 px-3 md:w-[20%] ">
@@ -37,15 +46,32 @@ function Navbar() {
             <IoMdNotificationsOutline className='size-6 text-textWhite'/>
             
             <div className="hidden md:flex items-center gap-x-3">
-                <Avatar>
-                    <AvatarImage src="https://github.com/shadcn.png" />
-                    <AvatarFallback className='text-textWhite'>CN</AvatarFallback>
-                </Avatar>
-                <div className="text-center text-textWhite">
-                    <h3 className='text-sm '>Surname, Firstname MI.</h3>
-                    <h6 className='text-xs text-left text-primary-foreground'>Teacher</h6>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger>
+                            <div className="flex items-center gap-x-3">
+                                <Avatar>
+                                    <AvatarImage src={user?.image || ""} />
+                                    <AvatarFallback
+                                        className='bg-sky-500 text-white'
+                                    >{user?.firstName?.charAt(0)}{user?.lastName?.charAt(0)}</AvatarFallback>
+                                </Avatar>
+                                <div className="text-center">
+                                    <h3 className='text-sm'>{user?.lastName}, {user?.firstName} {user?.middleName}</h3>
+                                    <h6 className='text-xs text-left text-white/70'>Teacher</h6>
+                                </div>
+                            </div>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent>
+                            <DropdownMenuItem
+                                onClick={() => signOut()}
+                                className="cursor-pointer"
+                            >
+                                <BiLogOut className="mr-2 h-4 w-4" />
+                                <span>Logout</span>
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
                 </div>
-            </div>
             <div className="md:hidden">
                 <Sheet>
                     <SheetTrigger><GiHamburgerMenu className="text-textWhite"/></SheetTrigger>

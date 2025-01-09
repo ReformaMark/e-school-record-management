@@ -17,7 +17,7 @@ export function RoleCheck() {
                     router.push("/sysadmin")
                     break
                 case "teacher":
-                    router.push("/teacher")
+                    router.push("/dashboard")
                     break
                 case "school-head":
                     router.push("/school-head")

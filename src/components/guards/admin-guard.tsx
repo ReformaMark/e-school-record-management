@@ -22,7 +22,7 @@ export function SystemAdminGuard({ children }: { children: React.ReactNode }) {
                 // Redirect non-admin users to appropriate routes
                 switch (role) {
                     case "teacher":
-                        router.push("/teacher")
+                        router.push("/dashboard")
                         break
                     case "school-head":
                         router.push("/school-head")
