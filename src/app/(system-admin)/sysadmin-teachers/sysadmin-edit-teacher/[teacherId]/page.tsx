@@ -60,7 +60,7 @@ interface TeacherFormData {
     barangay?: string;
     street?: string;
     advisoryClass?: string;
-    subjects: SchoolSubjects[];
+    subjects: string[];
 }
 
 const SystemAdminEditTeacherPage = ({ params }: { params: { teacherId: string } }) => {
@@ -76,6 +76,9 @@ const SystemAdminEditTeacherPage = ({ params }: { params: { teacherId: string } 
     const [barangays, setBarangays] = useState<Barangay[]>([]);
     const [isNCR, setIsNCR] = useState(false);
     // const [selectedSubjects, setSelectedSubjects] = useState<SchoolSubjects[]>([]);
+    // const [subjects, setSubjects] = useState<SchoolSubjects[]>([])
+    const subjectIds = teacher?.subjectId || []
+    const subjects = useQuery(api.users.getSubjects, { subjectIds })
 
     useEffect(() => {
         if (teacher) {
@@ -94,7 +97,7 @@ const SystemAdminEditTeacherPage = ({ params }: { params: { teacherId: string } 
             setValue('specialization', teacher.specialization || '');
             setValue('yearsOfExperience', teacher.yearsOfExperience || 0);
             setValue('advisoryClass', teacher.advisoryClass || '');
-            setValue('subjects', teacher.subjects || []);
+            setValue('subjects', subjects?.map((s) => s.name) || []);
 
             // Address Info
             setValue('region', teacher.region || '');
@@ -206,7 +209,7 @@ const SystemAdminEditTeacherPage = ({ params }: { params: { teacherId: string } 
                 barangay: watch('barangay'),
                 street: data.street,
                 advisoryClass: data.advisoryClass,
-                subjects: data.subjects,
+                subjectId: subjects?.map((s) => s._id),
                 imageStorageId,
             });
 
@@ -466,7 +469,9 @@ const SystemAdminEditTeacherPage = ({ params }: { params: { teacherId: string } 
                                             <div className="grid gap-3">
                                                 <Label>Subjects <span className="text-red-500">*</span></Label>
                                                 <MultiSelectSubject
+                                                    //@ts-expect-error this is correctly typed
                                                     value={watch('subjects') as SchoolSubjects[]}
+                                                    //@ts-expect-error this is correctly typed
                                                     onChange={(subjects) => setValue('subjects', subjects as SchoolSubjects[])}
                                                 />
                                             </div>

@@ -60,8 +60,6 @@ const SystemAdminAddTeacherPage = () => {
     const { setValue, watch } = useForm();
     const [selectedSubjects, setSelectedSubjects] = useState<SchoolSubjects[]>([])
 
-    console.log(selectedSubjects)
-
     useEffect(() => {
         fetchRegions().then(data => {
             setRegions(data);
@@ -71,15 +69,15 @@ const SystemAdminAddTeacherPage = () => {
     const handleRegionChange = async (regionCode: string) => {
         setCities([]);
         setBarangays([]);
-        
+
         const isNCRSelected = regionCode === '130000000';
         setIsNCR(isNCRSelected);
-        
+
         const selectedRegion = regions.find(r => r.code === regionCode);
         if (selectedRegion) {
             setValue('region', selectedRegion.name);
         }
-        
+
         if (isNCRSelected) {
             setValue('province', 'Metro Manila');
             const cityData = await fetchCities('130000000');
@@ -94,24 +92,24 @@ const SystemAdminAddTeacherPage = () => {
         setValue('city', '');
         setValue('barangay', '');
         setBarangays([]);
-        
+
         const selectedProvince = provinces.find(p => p.code === provinceCode);
         if (selectedProvince) {
             setValue('province', selectedProvince.name);
         }
-        
+
         const cityData = await fetchCities(provinceCode);
         setCities(cityData);
     };
 
     const handleCityChange = async (cityCode: string) => {
         setValue('barangay', '');
-        
+
         const selectedCity = cities.find(c => c.code === cityCode);
         if (selectedCity) {
             setValue('city', selectedCity.name);
         }
-        
+
         try {
             const barangayData = await fetchBarangays(cityCode);
             setBarangays(barangayData);
@@ -133,12 +131,12 @@ const SystemAdminAddTeacherPage = () => {
 
         try {
             const formData = new FormData(e.currentTarget);
-            
+
             // Validate required fields
             const email = formData.get('email') as string;
             const password = formData.get('password') as string;
             const confirmPassword = formData.get('cpassword') as string;
-            
+
             if (password !== confirmPassword) {
                 toast.error("Passwords do not match");
                 return;
@@ -450,7 +448,7 @@ const SystemAdminAddTeacherPage = () => {
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                 <div className="grid gap-3">
                                                     <Label htmlFor="region">Region (Optional)</Label>
-                                                    <Select 
+                                                    <Select
                                                         onValueChange={handleRegionChange}
                                                         name="region"
                                                     >
@@ -473,9 +471,9 @@ const SystemAdminAddTeacherPage = () => {
                                                 <div className="grid gap-3">
                                                     <Label htmlFor="province">Province (Optional)</Label>
                                                     {isNCR ? (
-                                                        <Input 
-                                                            value="Metro Manila" 
-                                                            disabled 
+                                                        <Input
+                                                            value="Metro Manila"
+                                                            disabled
                                                             className="bg-muted"
                                                             name="province"
                                                         />

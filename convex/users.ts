@@ -1,6 +1,7 @@
 import { ConvexError, v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { createAccount, getAuthUserId } from "@convex-dev/auth/server";
+import { CarTaxiFront } from "lucide-react";
 
 const UserRole = v.union(
     v.literal("admin"),
@@ -421,3 +422,22 @@ export const getTeacher = query({
         return teacher;
     },
 });
+
+export const getSubjects = query({
+    args: {
+        subjectIds: v.optional(v.array(v.id("subjects")))
+    },
+    handler: async (ctx, args) => {
+        if (!args.subjectIds || args.subjectIds.length === 0) {
+            return []
+        }
+
+        // @ts-expect-error this is correctly typed.
+        const subjectQueries = args.subjectIds.map((id) => q.eq(q.field("_id")))
+
+        return await ctx.db
+            .query("subjects")
+            .filter((q) => q.or(...subjectQueries))
+            .collect()
+    }
+})
