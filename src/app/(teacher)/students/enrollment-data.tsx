@@ -1,60 +1,62 @@
 'use client'
-import { Button } from "@/components/ui/button";
 import { ColumnDef } from "@tanstack/react-table";
 import { User } from "lucide-react";
+import { StudentTypes } from "@/lib/types";
+import { Badge } from "@/components/ui/badge";
+import EnrollmentConfirmationDialog from "./_components/EnrollmentConfirmationDialog";
 
-interface StudentData {
-  schoolYear: string;
-  gradeLevel: string;
-  withLrn: "Yes" | "No";
-  returning: "Yes" | "No";
-  PSABirthCert: string;
-  lrn: string;
-  indigenous: "Yes" | "No";
-  indigenousCommunity: string;
-  fourpsBenef: "Yes" | "No";
-  fourpsIdNum: string;
-  firstName: string;
-  lastName: string;
-  middleName: string;
-  extensionName: string;
-  birthday: Date;
-  birthPlace: string;
-  age: number;
-  sex: "Male" | "Female" | "Other"; // Adjust as needed for inclusivity
-  province: string;
-  municipality: string;
-  barangay: string;
-  street: string;
-  houseNum: string;
-  fullAddress: string;
-  sameAsCurrent: "Yes" | "No";
-  permanentProvince: string;
-  permanentMunicipality: string;
-  permanentBarangay: string;
-  permanentStreet: string;
-  permanentHouseNum: string;
-  permanentFullAddress: string;
-  fatherFirstName: string;
-  fatherLastName: string;
-  fatherMiddleName: string;
-  fatherContact: string;
-  motherFirstName: string;
-  motherLastName: string;
-  motherMiddleName: string;
-  motherContact: string;
-  guardianFirstName: string;
-  guardianLastName: string;
-  guardianMiddleName: string;
-  guardianContact: string;
-  lastGradeLevel: string;
-  lastSYAttended: string;
-  lastSchoolAttended: string;
-  schoolId: string;
-  semester: string;
-  strand: string;
-  track: string;
-}
+// interface StudentData {
+//   schoolYear: string;
+//   gradeLevel: string;
+//   withLrn: "Yes" | "No";
+//   returning: "Yes" | "No";
+//   PSABirthCert: string;
+//   lrn: string;
+//   indigenous: "Yes" | "No";
+//   indigenousCommunity: string;
+//   fourpsBenef: "Yes" | "No";
+//   fourpsIdNum: string;
+//   firstName: string;
+//   lastName: string;
+//   middleName: string;
+//   extensionName: string;
+//   birthday: Date;
+//   birthPlace: string;
+//   age: number;
+//   sex: "Male" | "Female" | "Other"; // Adjust as needed for inclusivity
+//   province: string;
+//   municipality: string;
+//   barangay: string;
+//   street: string;
+//   houseNum: string;
+//   fullAddress: string;
+//   sameAsCurrent: "Yes" | "No";
+//   permanentProvince: string;
+//   permanentMunicipality: string;
+//   permanentBarangay: string;
+//   permanentStreet: string;
+//   permanentHouseNum: string;
+//   permanentFullAddress: string;
+//   fatherFirstName: string;
+//   fatherLastName: string;
+//   fatherMiddleName: string;
+//   fatherContact: string;
+//   motherFirstName: string;
+//   motherLastName: string;
+//   motherMiddleName: string;
+//   motherContact: string;
+//   guardianFirstName: string;
+//   guardianLastName: string;
+//   guardianMiddleName: string;
+//   guardianContact: string;
+//   lastGradeLevel: string;
+//   lastSYAttended: string;
+//   lastSchoolAttended: string;
+//   schoolId: string;
+//   semester: string;
+//   strand: string;
+//   track: string;
+// }
 
 
 export const endrollmentData = [
@@ -385,22 +387,28 @@ export const endrollmentData = [
   ];
   
 
-  export const enrollmentColumn: ColumnDef<StudentData>[] = [
+  export const enrollmentColumn: ColumnDef<StudentTypes>[] = [
     {
       id: "fullName",
+      accessorFn: (row) => {
+        const { firstName, middleName, lastName } = row;
+        return `${firstName} ${middleName ? middleName + ' ' : ''}${lastName}`;
+      },
       header: "Info",
       cell: ({ row }) => {
   
         const firstName = row.original.firstName
         const lastName = row.original.lastName
         const middleNameInitial = row.original.middleName ? row.original.middleName.charAt(0) : '';
-   
+        const extensionName = row.original.extensionName
+        const fullName = `${lastName}, ${firstName} ${middleNameInitial} ${extensionName}`
+        const lrn = row.original.lrn
         return (
           <div className="flex items-start gap-x-2 ">
               <User className="size-10 bg-gray-200 p-1 rounded-full"/>
               <div className="">
-                <h1 className="text-xs">{lastName}, {firstName} {middleNameInitial}.</h1>
-                <h1 className="text-xs">{}</h1>
+                <h1 className="text-xs font-bold uppercase">{fullName}</h1>
+                <h1 className="text-xs font-bold">{lrn}</h1>
   
               </div>
           </div>
@@ -414,10 +422,12 @@ export const endrollmentData = [
       cell: ({ row }) => {
   
        const gradeLevel = row.original.gradeLevel
+       const gradeLevelToEnroll = row.original.gradeLevelToEnroll
    
         return (
-          <div className=" ">
-              {gradeLevel}
+          <div className="">
+              <h1>Grade {gradeLevel}</h1> 
+              <h1>Enroll in Grade {gradeLevelToEnroll}</h1>
           </div>
         )
       },
@@ -439,17 +449,15 @@ export const endrollmentData = [
       },
     },
     {
-      id: "contact",
-      header: "Parent/Guardian Contact",
+      id: "enrollmentStatus",
+      header: "Enrollment Status",
       cell: ({ row }) => {
   
-       const gradeLevel = row.original
-   
+       const enrollmentStatus = row.original.enrollmentStatus
+        
         return (
-          <div className="flex flex-col">
-              <h1>{gradeLevel.fatherContact} </h1>
-              <h1>{gradeLevel.motherContact} </h1>
-              <h1>{gradeLevel.guardianContact}</h1>
+          <div className=" text-white">
+              <Badge className="text-white rounded-lg bg-blue-500 uppercase tracking-wide">{enrollmentStatus}</Badge>
           </div>
         )
       },
@@ -457,11 +465,12 @@ export const endrollmentData = [
 {
   id: "actions",
   header: "Actions",
-  cell: ({  }) => {
-    
+  cell: ({ row }) => {
+    const enrollmentStatus = row.original.enrollmentStatus 
+    const isEnrolling = enrollmentStatus === "Can Enroll"
     return (
       <div className="flex items-center gap-x-2 ">
-          <Button variant={'default'} className="text-white">Enroll</Button> 
+         <EnrollmentConfirmationDialog isEnrolling={isEnrolling} student={row.original}/>
       </div>
     )
   },

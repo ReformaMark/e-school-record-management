@@ -87,3 +87,18 @@ export const createStudent = mutation({
         return student
     }
 })
+
+export const updateStudentGradeLevel = mutation({
+  args:{
+    studentId: v.id('students')
+  },
+  handler: async(ctx, args) =>{
+  
+    const student = await ctx.db.get(args.studentId)
+  
+    await ctx.db.patch(args.studentId, {
+      gradeLevel: student?.gradeLevelToEnroll,
+      enrollmentStatus: "Enrolled"
+    })
+  }
+})

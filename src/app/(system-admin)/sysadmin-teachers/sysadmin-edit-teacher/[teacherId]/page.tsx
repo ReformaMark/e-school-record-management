@@ -75,7 +75,7 @@ const SystemAdminEditTeacherPage = ({ params }: { params: { teacherId: string } 
     const [cities, setCities] = useState<City[]>([]);
     const [barangays, setBarangays] = useState<Barangay[]>([]);
     const [isNCR, setIsNCR] = useState(false);
-    const [selectedSubjects, setSelectedSubjects] = useState<SchoolSubjects[]>([]);
+    // const [selectedSubjects, setSelectedSubjects] = useState<SchoolSubjects[]>([]);
 
     useEffect(() => {
         if (teacher) {

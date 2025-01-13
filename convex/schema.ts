@@ -115,6 +115,7 @@ export default defineSchema({
     section: v.optional(v.id('sections')),
     schoolYear: v.string(),
     gradeLevelToEnroll: v.optional(v.string()),
+    enrollmentStatus: v.optional(v.string()),
 
     // For Returning Student
     lastGradeLevelCompleted: v.optional(v.string()),
@@ -129,13 +130,24 @@ export default defineSchema({
 
   }),
 
+  enrollments: defineTable({
+    studentId: v.id('students'),
+    sectionId: v.id('sections'),
+    schoolYearId: v.id('schoolYears'),
+    dateEnrolled: v.string(),
+    dateWithdrawn: v.optional(v.string()),
+    status: v.string(),
+    enrolledBy: v.id('users'),
+  }),
+
   sections: defineTable({
     name: v.string(),
     gradeLevel: v.number(),
     advisorId: v.id('users'), // references teacher in users table
-    roomId: v.id('rooms'),
+    roomId: v.optional(v.id('rooms')),
     schoolYearId: v.id('schoolYears'),
     isActive: v.boolean(),
+    students: v.array(v.id('students'))
   }),
 
   classes: defineTable({
@@ -179,5 +191,7 @@ export default defineSchema({
     startDate: v.string(),
     endDate: v.string(),
     batchName: v.string(),
+    // example: 2025-2026... need ilagay sa form kapag magaadd ng school year or pwedeng automatic
+    sy: v.optional(v.string())
   }),
 });

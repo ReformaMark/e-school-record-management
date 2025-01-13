@@ -77,8 +77,8 @@ function StudentsPage() {
                             columns={enrollmentColumn}
                             // @ts-ignore
                             data={students}
-                            filter="lastName"
-                            placeholder="students by Last Name"
+                            filter="fullName"
+                            placeholder="students by name"
 
                         />
                     </CardContent>

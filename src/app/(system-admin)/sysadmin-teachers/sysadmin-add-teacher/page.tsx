@@ -45,6 +45,7 @@ import { toast } from "sonner";
 import { api } from "../../../../../convex/_generated/api";
 import { SchoolSubjects, schoolSubjects } from "../../../../../data/teachers-data";
 import { MultiSelectSubject } from "../../_components/multi-select-subject";
+import { Id } from "../../../../../convex/_generated/dataModel";
 
 const SystemAdminAddTeacherPage = () => {
     const createTeacher = useMutation(api.users.createTeacher);
@@ -157,7 +158,7 @@ const SystemAdminAddTeacherPage = () => {
                 yearsOfExperience: parseInt(formData.get('yrsOfExp') as string),
                 position: formData.get('position') as string,
                 advisoryClass: (formData.get('advisoryClass') as string) || undefined,
-                subjects: formData.getAll('subjects') as string[],
+                subjectId: formData.getAll('subjects') as Id<'subjects'>[],
                 // Use watch to get the address values
                 region: watch('region'),
                 province: watch('province'),

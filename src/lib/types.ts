@@ -1,3 +1,5 @@
+import { Doc } from "../../convex/_generated/dataModel";
+
 export interface AdminFormData {
     email: string;
     password: string;
@@ -43,3 +45,5 @@ export interface PrincipalFormData {
     postalCode?: string;
     imageStorageId?: string;
 }
+
+export type StudentTypes = Doc<"students">
