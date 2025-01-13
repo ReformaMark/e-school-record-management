@@ -1,6 +1,9 @@
 
-import { v } from "convex/values";
+import { ConvexError, v } from "convex/values";
 import { mutation, query } from "./_generated/server";
+import { getAuthUserId } from "@convex-dev/auth/server";
+import { asyncMap } from "convex-helpers";
+import { StudentTypes } from "@/lib/types";
 
 export const getStudent = query({
     handler: async (ctx) => {
@@ -102,3 +105,29 @@ export const updateStudentGradeLevel = mutation({
     })
   }
 })
+
+
+export const getStudentByTeacher = query({
+  handler: async(ctx)=>{
+    const teacherId = await getAuthUserId(ctx)
+
+    if(!teacherId){
+      throw new ConvexError("No teacher Id.")
+    }
+
+    const section = await ctx.db.query('sections')
+      .withIndex('by_advisorId')
+      .first()
+   
+    if(!section || section === null) {
+      throw new ConvexError('No section found.')
+    }
+
+    const students = await asyncMap(section.students, async (studentId)=>{
+      const student = await ctx.db.get(studentId)
+      return student
+    })
+
+    return students as StudentTypes[]
+  }
+}) 

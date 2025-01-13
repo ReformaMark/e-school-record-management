@@ -128,7 +128,7 @@ export default defineSchema({
     strand: v.optional(v.string()),
     track: v.optional(v.string())
 
-  }),
+  }).index('by_section', ['section']),
 
   enrollments: defineTable({
     studentId: v.id('students'),
@@ -148,7 +148,7 @@ export default defineSchema({
     schoolYearId: v.id('schoolYears'),
     isActive: v.boolean(),
     students: v.array(v.id('students'))
-  }),
+  }).index('by_advisorId', ['advisorId']),
 
   classes: defineTable({
     subjectId: v.id('subjects'),

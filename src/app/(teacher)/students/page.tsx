@@ -28,7 +28,7 @@ function StudentsPage() {
         <div className='container mx-auto p-4'>
             <main className="space-y-4">
                 <div className="flex items-center">
-                    <div className="ml-auto flex items-center gap-2">
+                    <div className="hidden md:flex   ml-auto items-center gap-2">
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Button variant="outline" size="sm" className="h-7 gap-1">
@@ -65,22 +65,21 @@ function StudentsPage() {
                 <Card x-chunk="dashboard-06-chunk-0">
                     <CardHeader>
                         <CardTitle>List of Students</CardTitle>
-                        <CardDescription>
-                            <div className="flex justify-between">
-                                <h1>Manage the list of students.</h1>
-
-                            </div>
+                        <CardDescription className="flex justify-between">
+                           Manage the list of students.
                         </CardDescription>
                     </CardHeader>
                     <CardContent className=''>
-                        <DataTable
-                            columns={enrollmentColumn}
-                            // @ts-ignore
-                            data={students}
-                            filter="fullName"
-                            placeholder="students by name"
-
-                        />
+                        <div className="">
+                            <DataTable
+                                columns={enrollmentColumn}
+                                // @ts-ignore
+                                data={students}
+                                filter="fullName"
+                                placeholder="students by name"
+                                
+                            />
+                        </div>
                     </CardContent>
                 </Card>
             </main>

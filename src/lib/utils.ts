@@ -20,3 +20,21 @@ export function getSchoolYear(){
 export const updateDatePart = (month: Date, newDay: Date): Date => {
   return setDate(month, newDay.getDate());
 };
+
+export const getAge = (birthDate: string) =>{
+    const currentDate = new Date()
+      //get age
+    const bDate = new Date(birthDate);
+    let age = 0
+    const currentYear = currentDate.getFullYear();
+    const currentMonth = currentDate.getMonth() + 1;
+    const currentDay = currentDate.getDate();
+    age = currentYear - bDate.getFullYear()
+    const isBirthMoth = currentMonth ===( bDate.getMonth() + 1)
+    const isBirthDay = currentDay >=  bDate.getDate()
+
+    if(isBirthMoth && isBirthDay){
+        age += 1
+    }
+  return age
+}
