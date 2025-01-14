@@ -2,12 +2,17 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, XAxis, YAxis } from "recharts";
-import { sections } from '../section-data';
+import { useClasses } from '../section-data';
+import Loading from '@/app/components/Loading';
 
 
 
 const COLORS = ['#099443', '#0ac756', '#0bf268', '#39f589']
 export const SectionAverageChart = () => {
+  const {isLoading, classes} = useClasses()
+  if(isLoading) {
+    return <Loading/>
+  }
   return (
     <Card className="bg-white">
       <CardHeader>
@@ -21,7 +26,7 @@ export const SectionAverageChart = () => {
           },
         }} className="h-full w-full">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={sections}>
+            <BarChart data={classes}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="section" />
               <YAxis dataKey='averageGrade'/>

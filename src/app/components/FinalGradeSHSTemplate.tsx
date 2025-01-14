@@ -1,11 +1,13 @@
 import React from 'react'
 import { studentsData } from '../../../data/students-data'
-import { Section } from '../(teacher)/section/section-data';
+import { Doc } from '../../../convex/_generated/dataModel';
 
 function FinalGradeSHSTemplate({
-    section
+    section,
+    subject
 }:{
-    section: Section
+    section: Doc<'sections'>
+    subject: Doc<'subjects'> | null
 }) {
     
     const males = studentsData
@@ -26,10 +28,10 @@ function FinalGradeSHSTemplate({
 
             <div className='w-[75%]'>
                 <div className="border border-collapse border-black flex items-center">
-                    <h1 className='uppercase w-[60%] h-full px-2 text-sm font-semibold '>Grade & Section: {section.gradeLevel} - {section.section}</h1>
+                    <h1 className='uppercase w-[60%] h-full px-2 text-sm font-semibold '>Grade & Section: {section.gradeLevel} - {section.name}</h1>
                     <div className="w-[40%]">
                         <h1 className='uppercase border border-collapse py-1 px-2 border-black h-full text-sm font-semibold'>Semester: 1st</h1>
-                        <h1 className='uppercase border border-collapse border-b-0 py-1 pl-2 border-black h-full text-sm font-semibold'>Subject: {section.subject}</h1>
+                        <h1 className='uppercase border border-collapse border-b-0 py-1 pl-2 border-black h-full text-sm font-semibold'>Subject: {subject?.name}</h1>
                     </div>
                 </div>
                 <div className="flex">

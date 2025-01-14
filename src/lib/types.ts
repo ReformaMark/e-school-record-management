@@ -47,3 +47,14 @@ export interface PrincipalFormData {
 }
 
 export type StudentTypes = Doc<"students">
+
+export interface ScheduleWithRoom extends Doc<'schedules'>{
+    room: Doc<'rooms'> | null
+}
+export interface ClassesWithDetails extends Doc<'classes'> {
+    subject: Doc<'subjects'> | null,
+    teacher: Doc<'users'> | null,
+    section: Doc<'sections'>| null,
+    schedule: ScheduleWithRoom,
+    schoolYear: Doc<'schoolYears'> | null,
+}

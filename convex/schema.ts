@@ -147,7 +147,7 @@ export default defineSchema({
     roomId: v.optional(v.id('rooms')),
     schoolYearId: v.id('schoolYears'),
     isActive: v.boolean(),
-    students: v.array(v.id('students'))
+    students: v.array(v.id('students')),
   }).index('by_advisorId', ['advisorId']),
 
   classes: defineTable({
@@ -160,7 +160,9 @@ export default defineSchema({
 
   subjects: defineTable({
     name: v.string(),
-    applicableGradeLevels: v.array(v.number()),
+    gradeLevel: v.number(),
+    subjectCode: v.string(),
+    // applicableGradeLevels: v.array(v.number()),
   }),
 
   schedules: defineTable({
@@ -194,4 +196,12 @@ export default defineSchema({
     // example: 2025-2026... need ilagay sa form kapag magaadd ng school year or pwedeng automatic
     sy: v.optional(v.string())
   }),
+
+  studentClasses: defineTable({
+    studentId: v.id('students'),
+    classId:v.id('classes')
+  }).index('by_sudentId', ['studentId']).index('by_classId', ['classId']),
+
+
+
 });

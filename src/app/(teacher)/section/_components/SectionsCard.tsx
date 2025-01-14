@@ -1,31 +1,31 @@
 import React from 'react'
-import { Section } from '../section-data'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { FaAngleDoubleRight } from 'react-icons/fa'
+import { ClassesWithDetails } from '@/lib/types'
 
 function SectionsCard({
-    section
+    cls
 }:{
-    section: Section,
+    cls: ClassesWithDetails,
 }) {
-   
+   const totalStudents = cls?.section?.students.length
   return (
     <div className='bg-white rounded-md shadow-md flex flex-col justify-between'>
         <div className={`flex justify-between text-white shadow-md px-5 py-1 bg-primary-foreground text-lg font-semibold`}>
-            <h1>{section.section}</h1>
-            <h1>{section.gradeLevel}</h1>
+            <h1>{cls.section?.name}</h1>
+            <h1>Grade {cls.section?.gradeLevel.toString()}</h1>
         </div>
         <div className="p-5 text-sm ">
-            <h3>Subject: <span className='font-medium text-sm'>{section.subject}</span></h3>
-            <h3>Time: {section.schedule}</h3>
-            <h3>Days: {section.days.join(',')}</h3>
-            <h3>Room: {section.roomNumber}</h3>
-            <h3>Students: {section.totalStudents}</h3>
+            <h3>Subject: <span className='font-medium text-sm'>{cls.subject?.name}</span></h3>
+            <h3>Time: {cls.schedule.startTime} - {cls.schedule.endTime}</h3>
+            <h3>Days: {cls.schedule.day}</h3>
+            <h3>Room: {cls.schedule.room?.name}</h3>
+            <h3>Students: {totalStudents}</h3>
         </div>
         <div className='flex justify-end'>
             <Button variant={'ghost'}>
-                <Link href={`/section/${section.section}`} className='flex items-center gap-3 text-gray-400'>
+                <Link href={`/section/${cls.section?.name}`} className='flex items-center gap-3 text-gray-400'>
                 View section <FaAngleDoubleRight className='size-6'/>
                 </Link>
             </Button>
