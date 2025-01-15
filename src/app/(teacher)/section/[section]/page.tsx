@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 'use client'
 import React from 'react'
-import { sections } from '../section-data'
+import { useClasses } from '../section-data'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import QuarterlyGradesTemplate from '@/app/components/QuarterlyGradesTemplate'
 import { Button, buttonVariants } from '@/components/ui/button'
@@ -25,13 +25,17 @@ import { forRemedial, studentMasterList, studentsData, summerClassStatus } from 
 import NeedsImprovement from '../_components/NeedsImprovement'
 import InputGrades from '../_components/InputGrades'
 import SeniorHighInputGrades from '../_components/SeniorHighInputGrades'
+import Loading from '@/app/components/Loading'
 
 function Section({params}:{params: {section: string}}) {
-
-  const section = sections.find((section) => section.section === params.section);
+  const {isLoading, classes} = useClasses()
+  const section = classes?.find((section) => section.section?.name === params.section);
   const students = studentsData
   .sort((a, b) => a.lastName.localeCompare(b.lastName));
 
+  if(isLoading){
+    return <Loading/>
+  }
   return (
     <div className='bg-white text-primary md:m-5 min-h-screen max-w-full shadow-md p-5 space-y-5'>
       <div className="w-full flex items-center justify-between">
@@ -66,15 +70,15 @@ function Section({params}:{params: {section: string}}) {
         <div className="grid grid-cols-1 md:grid-cols-2 font-medium text-sm">
           
           <h1>Section: {params.section}</h1>
-          <h1>Grade Level: {section?.gradeLevel}</h1>
-          <h1>Subject: {section?.subject}</h1>
-          <h1>Schedule: {section?.schedule} - ( {section?.days.join(',')} )</h1>
-          <h1>Room: {section?.roomNumber}</h1>
-          <h1>School Year: 2025-2026</h1>
-          {section?.gradeLevel === "Grade 11" && ( 
+          <h1>Grade Level: {section?.section?.gradeLevel}</h1>
+          <h1>Subject: {section?.subject?.name}</h1>
+          <h1>Schedule: {section?.schedule.startTime} - {section?.schedule.endTime} - ( {section?.schedule.day} )</h1>
+          <h1>Room: {section?.schedule.room?.name}</h1>
+          <h1>School Year: {section?.schoolYear?.sy}</h1>
+          {section?.section?.gradeLevel === 11 && ( 
             <h1>Current Semester: 1st</h1>
           )}
-          {section?.gradeLevel === "Grade 12" && ( 
+          {section?.section?.gradeLevel === 12 && ( 
             <h1>Current Semester: 1st</h1>
           )}
         </div>
@@ -103,25 +107,25 @@ function Section({params}:{params: {section: string}}) {
           </TabsContent>
           {/* Class Record*/}
           <TabsContent value="class-record" className=''>
-            {section && section.gradeLevel === "Grade 11" || section?.gradeLevel === "Grade 12" ? (
+            {section && section.section?.gradeLevel === 11 || section?.section?.gradeLevel === 12 ? (
             
-              <SeniorHighInputGrades sec={section?.section ? section.section : ""}/>
+              <SeniorHighInputGrades sec={section?.section ? section.section.name : ""}/>
             ) : (
-              <InputGrades sec={section?.section ? section.section : ""}/>
+              <InputGrades sec={section?.section?.name ?? ""}/>
             )}
           </TabsContent>
 
           {/* Grade summary */}
           <TabsContent value="grades-summary" className='min-h-screen max-w-full overflow-y-auto border-2 border-gray-300'>
-            {section && section.gradeLevel === "Grade 11" || section?.gradeLevel === "Grade 12" ? (
-              <FinalGradeSHSTemplate section={section}/>
+            {section && section.section?.gradeLevel === 11 || section?.section?.gradeLevel === 12 ? (
+              <FinalGradeSHSTemplate section={section.section} subject={section.subject}/>
             ) :(
               <QuarterlyGradesTemplate 
                 teacher='Currently Login Teacher name' 
-                subject={section?.subject} 
+                subject={section?.subject?.name} 
                 // change to dynamic data from db
-                schoolYear='2024-2025'
-                gradeAndSection={(section?.section)}
+                schoolYear={section?.schoolYear?.sy}
+                gradeAndSection={`${section?.section?.gradeLevel} - ${section?.section?.name}`}
               />
 
             )}

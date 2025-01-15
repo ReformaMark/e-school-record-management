@@ -9,8 +9,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { ColumnDef } from "@tanstack/react-table";
+import { useQuery } from "convex/react";
 import { MoreHorizontal } from "lucide-react";
-import React from 'react';
+import { api } from "../../../../convex/_generated/api";
 
 
 export interface Section {
@@ -24,78 +25,87 @@ export interface Section {
   averageGrade: number;     // Average grade for the section (e.g., 90.2)
 }
 
-export const sections = [
-  {
-    section: "Bituin", // Star for Grade 7
-    gradeLevel: "Grade 7",
-    subject: "Mathematics",
-    schedule: "7:00 AM - 8:30 AM",
-    days: ["M", "W", "F"],
-    totalStudents: 40,
-    roomNumber: "101", // Example room number
-    averageGrade: 85.6 // Average grade for the section
-  },
-  {
-    section: "Liwanag", // Light for Grade 7
-    gradeLevel: "Grade 7",
-    subject: "Filipino",
-    schedule: "8:30 AM - 10:00 AM",
-    days: ["M", "W", "F"],
-    totalStudents: 38,
-    roomNumber: "102", // Example room number
-    averageGrade: 88.2 // Average grade for the section
-  },
-  {
-    section: "Katipunan", // League for Grade 8
-    gradeLevel: "Grade 8",
-    subject: "Science",
-    schedule: "10:00 AM - 11:30 AM",
-    days: ["M", "W", "F"],
-    totalStudents: 42,
-    roomNumber: "201", // Example room number
-    averageGrade: 89.5 // Average grade for the section
-  },
-  {
-    section: "Makabayan", // Nationalist for Grade 8
-    gradeLevel: "Grade 8",
-    subject: "Araling Panlipunan",
-    schedule: "1:00 PM - 2:30 PM",
-    days: ["M", "W", "F"],
-    totalStudents: 39,
-    roomNumber: "202", // Example room number
-    averageGrade: 84.1 // Average grade for the section
-  },
-  {
-    section: "Bayanihan", // Community Spirit for Grade 9
-    gradeLevel: "Grade 9",
-    subject: "English",
-    schedule: "7:00 AM - 8:30 AM",
-    days: ["T", "Th"],
-    totalStudents: 36,
-    roomNumber: "301", // Example room number
-    averageGrade: 87.3 // Average grade for the section
-  },
-  {
-    section: "Pag-asa", // Hope for Grade 9
-    gradeLevel: "Grade 9",
-    subject: "TLE (Technology & Livelihood Education)",
-    schedule: "8:30 AM - 10:00 AM",
-    days: ["T", "Th"],
-    totalStudents: 40,
-    roomNumber: "302", // Example room number
-    averageGrade: 86.9 // Average grade for the section
-  },
-  {
-    section: "11-A", // Keeping original for Grade 11
-    gradeLevel: "Grade 11",
-    subject: "Pre Calculus",
-    schedule: "10:00 AM - 11:30 AM",
-    days: ["T", "Th"],
-    totalStudents: 37,
-    roomNumber: "401", // Example room number
-    averageGrade: 90.2 // Average grade for the section
-  },
-];
+// export const sections = [
+//   {
+//     section: "Bituin", // Star for Grade 7
+//     gradeLevel: "Grade 7",
+//     subject: "Mathematics",
+//     schedule: "7:00 AM - 8:30 AM",
+//     days: ["M", "W", "F"],
+//     totalStudents: 40,
+//     roomNumber: "101", // Example room number
+//     averageGrade: 85.6 // Average grade for the section
+//   },
+//   {
+//     section: "Liwanag", // Light for Grade 7
+//     gradeLevel: "Grade 7",
+//     subject: "Filipino",
+//     schedule: "8:30 AM - 10:00 AM",
+//     days: ["M", "W", "F"],
+//     totalStudents: 38,
+//     roomNumber: "102", // Example room number
+//     averageGrade: 88.2 // Average grade for the section
+//   },
+//   {
+//     section: "Katipunan", // League for Grade 8
+//     gradeLevel: "Grade 8",
+//     subject: "Science",
+//     schedule: "10:00 AM - 11:30 AM",
+//     days: ["M", "W", "F"],
+//     totalStudents: 42,
+//     roomNumber: "201", // Example room number
+//     averageGrade: 89.5 // Average grade for the section
+//   },
+//   {
+//     section: "Makabayan", // Nationalist for Grade 8
+//     gradeLevel: "Grade 8",
+//     subject: "Araling Panlipunan",
+//     schedule: "1:00 PM - 2:30 PM",
+//     days: ["M", "W", "F"],
+//     totalStudents: 39,
+//     roomNumber: "202", // Example room number
+//     averageGrade: 84.1 // Average grade for the section
+//   },
+//   {
+//     section: "Bayanihan", // Community Spirit for Grade 9
+//     gradeLevel: "Grade 9",
+//     subject: "English",
+//     schedule: "7:00 AM - 8:30 AM",
+//     days: ["T", "Th"],
+//     totalStudents: 36,
+//     roomNumber: "301", // Example room number
+//     averageGrade: 87.3 // Average grade for the section
+//   },
+//   {
+//     section: "Pag-asa", // Hope for Grade 9
+//     gradeLevel: "Grade 9",
+//     subject: "TLE (Technology & Livelihood Education)",
+//     schedule: "8:30 AM - 10:00 AM",
+//     days: ["T", "Th"],
+//     totalStudents: 40,
+//     roomNumber: "302", // Example room number
+//     averageGrade: 86.9 // Average grade for the section
+//   },
+//   {
+//     section: "11-A", // Keeping original for Grade 11
+//     gradeLevel: "Grade 11",
+//     subject: "Pre Calculus",
+//     schedule: "10:00 AM - 11:30 AM",
+//     days: ["T", "Th"],
+//     totalStudents: 37,
+//     roomNumber: "401", // Example room number
+//     averageGrade: 90.2 // Average grade for the section
+//   },
+// ];
+
+export const useClasses = () =>{
+  const data = useQuery(api.classes.getTeacherClasses)
+  const isLoading = data === undefined
+
+  return {
+    classes: data,
+    isLoading,
+}}
 
 
 export const sectionColumns: ColumnDef<Section>[] = [

@@ -2,13 +2,20 @@ import React from 'react'
 import { InputGradesCol, studentsData } from './studentData'
 import { DataTable } from '@/components/data-table';
 import ClassRecordDialog from './ClassRecordDialog';
-import { sections } from '../section-data';
+import { useClasses } from '../section-data';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import Loading from '@/app/components/Loading';
 
 function SeniorHighInputGrades({sec}:{sec:string}) {
+    const {isLoading, classes} = useClasses()
     const males = studentsData
         .sort((a, b) => a.lastName.localeCompare(b.lastName));
-        const section = sections.find((section)=> section.section === sec)
+        const section = classes?.find((cls)=> cls.section?.name === sec)
+
+    if(isLoading){
+
+        return <Loading/>
+    }
   return (
     <div className='text-primary'>
        
@@ -18,7 +25,7 @@ function SeniorHighInputGrades({sec}:{sec:string}) {
                 <TabsTrigger value="2nd">2nd quarter</TabsTrigger>
             </TabsList>
             <TabsContent value="1st">
-                <ClassRecordDialog subject={section ? section.subject : ''} gradeLevel={section ? section.gradeLevel : ''}/>
+                <ClassRecordDialog subject={section ? section.subject?.name ?? "": ''} gradeLevel={section ? section.section?.name ?? "" : ''}/>
                 <DataTable
                     columns={InputGradesCol}
                     data={males}
@@ -27,7 +34,7 @@ function SeniorHighInputGrades({sec}:{sec:string}) {
                 />
             </TabsContent>
             <TabsContent value="2nd">
-                <ClassRecordDialog subject={section ? section.subject : ''} gradeLevel={section ? section.gradeLevel : ''}/>
+                <ClassRecordDialog subject={section ? section.subject?.name ?? "" : ''} gradeLevel={section ? section.section?.name ?? "" : ''}/>
                 <DataTable
                     columns={InputGradesCol}
                     data={males}
