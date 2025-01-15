@@ -1,3 +1,5 @@
+"use client"
+
 import { DataTable } from "@/components/data-table";
 import { Button } from "@/components/ui/button";
 import {
@@ -7,10 +9,14 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import { schoolPeriodColumns, schoolPeriodData } from "../../data/school-period-data";
+import { schoolPeriodColumns } from "../../data/school-period-data";
+import { useQuery } from "convex/react";
+import { api } from "../../convex/_generated/api";
 
 
 export const SchoolPeriodCardTable = () => {
+    const schoolPeriodData = useQuery(api.schoolPeriod.get)
+
     return (
         <Card
             className="xl:col-span-2"
@@ -32,7 +38,7 @@ export const SchoolPeriodCardTable = () => {
             <CardContent>
                 <DataTable
                     columns={schoolPeriodColumns}
-                    data={schoolPeriodData}
+                    data={schoolPeriodData || []}
                     filter="period"
                     placeholder="by period"
                 />

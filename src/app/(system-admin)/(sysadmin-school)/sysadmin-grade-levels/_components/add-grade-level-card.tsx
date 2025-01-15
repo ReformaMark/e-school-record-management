@@ -11,8 +11,32 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { useConvexMutation } from "@convex-dev/react-query"
+import { useMutation } from "@tanstack/react-query"
+import { useState } from "react"
+import { api } from "../../../../../../convex/_generated/api"
+import { toast } from "sonner"
 
 export const AddGradeLevelCard = () => {
+    const [gradeLevel, setGradeLevel] = useState("")
+
+    const { mutate, isPending, isError } = useMutation({
+        mutationFn: useConvexMutation(api.gradeLevel.create)
+    })
+
+    const onSubmit = async () => {
+        if (gradeLevel.length <= 1) return toast.error("Invalid grade level")
+
+        await mutate({
+            gradeLevel
+        })
+
+        if (isError) return toast.error("Grade level already exists")
+
+        setGradeLevel("")
+        toast.success("Grade level created!")
+    }
+
     return (
         <Card className="flex flex-col h-fit">
             <CardHeader>
@@ -29,12 +53,19 @@ export const AddGradeLevelCard = () => {
                         type="text"
                         placeholder="Ex: Grade 11"
                         className="w-full"
+                        disabled={isPending}
+                        value={gradeLevel}
+                        onChange={(e) => setGradeLevel(e.target.value)}
                     />
                 </div>
             </CardContent>
             <CardFooter className="mt-auto">
-                <Button className="text-white">
-                    Add
+                <Button
+                    className="text-white"
+                    onClick={onSubmit}
+                    disabled={isPending}
+                >
+                    {isPending ? "Adding..." : "Add"}
                 </Button>
             </CardFooter>
         </Card>

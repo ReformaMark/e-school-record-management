@@ -171,7 +171,6 @@ export default defineSchema({
   }),
 
   schoolPeriods: defineTable({
-    day: v.string(), // e.g., "Monday", "Tuesday"
     period: v.string(),
     timeRange: v.string(), // e.g time range Start time (e.g., "08:00") End time (e.g., "09:00")
   }),
