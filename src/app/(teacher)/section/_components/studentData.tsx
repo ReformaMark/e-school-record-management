@@ -33,6 +33,7 @@ import { Input } from "@/components/ui/input";
 import { CgDanger } from "react-icons/cg";
 import Link from "next/link";
 import { Label } from "@/components/ui/label";
+import { StudentsWithEnrollMentTypes, StudentTypes } from "@/lib/types";
 
 
 type Student = {
@@ -752,7 +753,7 @@ export const students: ColumnDef<Student>[] = [
   },
 ];
 
-export const studentMasterList: ColumnDef<Student>[] = [
+export const studentMasterList: ColumnDef<StudentsWithEnrollMentTypes>[] = [
    {
     id: "number",
     header: "",
@@ -764,11 +765,64 @@ export const studentMasterList: ColumnDef<Student>[] = [
       )
     },
   },
-  { accessorKey: "lrn", header: "LRN" },
-  { accessorKey: "lastName", header: "Last Name" },
-  { accessorKey: "firstName", header: "First Name" },
-  { accessorKey: "middleName", header: "Middle name" },
-  { accessorKey: "dateEnrolled", header: "Enrollment Date" },
+  { 
+    id: "number",
+    header: "LRN",
+    accessorKey: "lrn",
+    cell: ({ row }) => {
+      const student = row.original
+
+      return (
+        <h1>{student.lrn === "" ? "-": student.lrn}</h1>
+      )
+    },
+  },
+  {  
+    id: "lastName",
+    header: "Last Name",
+    accessorKey: "lastName",
+    cell: ({ row }) => {
+      const lastName = row.original.lastName
+
+      return (
+        <h1 className="capitalize">{lastName ? lastName : '-'}</h1>
+      )
+    },
+   },
+  { 
+    id: "firstName",
+    header: "First Name",
+    accessorKey: "firstName",
+    cell: ({ row }) => {
+      const middleName = row.original.middleName
+
+      return (
+        <h1 className="capitalize">{middleName ? middleName : '-'}</h1>
+      )
+    },
+  },
+  { id: "middleName",
+    header: "Middle name",
+    accessorKey: "middleName",
+    cell: ({ row }) => {
+      const middleName = row.original.middleName
+
+      return (
+        <h1 className="capitalize">{middleName ? middleName : '-'}</h1>
+      )
+    },
+  },
+  { id: "dateEnrolled",
+    header: "Enrollment Date",
+    accessorKey: "dateEnrolled",
+    cell: ({ row }) => {
+      const enrollmentDate = row.original.enrollment.dateEnrolled
+
+      return (
+        <h1>{enrollmentDate}</h1>
+      )
+    },
+   },
 
 ]
 

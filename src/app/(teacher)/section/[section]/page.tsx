@@ -26,16 +26,22 @@ import NeedsImprovement from '../_components/NeedsImprovement'
 import InputGrades from '../_components/InputGrades'
 import SeniorHighInputGrades from '../_components/SeniorHighInputGrades'
 import Loading from '@/app/components/Loading'
+import { useQuery } from 'convex/react'
+import { api } from '../../../../../convex/_generated/api'
+import { StudentsWithEnrollMentTypes, StudentTypes } from '@/lib/types'
 
 function Section({params}:{params: {section: string}}) {
+  const sectionName = params.section.replace(/%20/g, ' ');
   const {isLoading, classes} = useClasses()
-  const section = classes?.find((section) => section.section?.name === params.section);
-  const students = studentsData
-  .sort((a, b) => a.lastName.localeCompare(b.lastName));
-
-  if(isLoading){
+  //section === class
+  const section = classes?.find((section) => section.section?.name === sectionName);
+  
+  const studentInMasterlist = useQuery(api.students.studentsInMasterList, {classId: section?._id })
+  const students = studentInMasterlist?.sort((a, b) => a.lastName.localeCompare(b.lastName));
+  if(isLoading || !studentInMasterlist ){
     return <Loading/>
   }
+
   return (
     <div className='bg-white text-primary md:m-5 min-h-screen max-w-full shadow-md p-5 space-y-5'>
       <div className="w-full flex items-center justify-between">
@@ -67,31 +73,31 @@ function Section({params}:{params: {section: string}}) {
       </div>
 
        
-        <div className="grid grid-cols-1 md:grid-cols-2 font-medium text-sm">
+        <div className="grid grid-cols-1 md:grid-cols-2 font-bold text-sm">
           
-          <h1>Section: {params.section}</h1>
-          <h1>Grade Level: {section?.section?.gradeLevel}</h1>
-          <h1>Subject: {section?.subject?.name}</h1>
-          <h1>Schedule: {section?.schedule.startTime} - {section?.schedule.endTime} - ( {section?.schedule.day} )</h1>
-          <h1>Room: {section?.schedule.room?.name}</h1>
-          <h1>School Year: {section?.schoolYear?.sy}</h1>
+          <h1>Section: <span className='font-normal'>{sectionName}</span></h1>
+          <h1>Grade Level: <span className='font-normal'>{section?.section?.gradeLevel}</span></h1>
+          <h1>Subject: <span className='font-normal'>{section?.subject?.name}</span></h1>
+          <h1>Schedule: <span className='font-normal'>{section?.schedule.startTime} - {section?.schedule.endTime} - ( {section?.schedule.day} )</span></h1>
+          <h1>Room: <span className='font-normal'>{section?.schedule.room?.name}</span></h1>
+          <h1>School Year: <span className='font-normal'>{section?.schoolYear?.sy}</span></h1>
           {section?.section?.gradeLevel === 11 && ( 
-            <h1>Current Semester: 1st</h1>
+            <h1><span className='font-normal'>Current Semester: 1st</span></h1>
           )}
           {section?.section?.gradeLevel === 12 && ( 
-            <h1>Current Semester: 1st</h1>
+            <h1><span className='font-normal'>Current Semester: 1st</span></h1>
           )}
         </div>
        
-        <Tabs defaultValue={"students"} className="w-full relative space-y-5 mt-5 shadow-md ">
+        <Tabs defaultValue={"students"} className="w-full relative  space-y-5 mt-5 shadow-md ">
           {/* <h1 className='text-xs text-foreground font-semibold'>Select tab to show: </h1> */}
-          <TabsList className=''> 
-            <TabsTrigger value="students" className='font-medium shadow-md border-b-2 data-[state=active]:border-b-primary data-[state=active]:text-primary' ><span className=''>Master List</span> </TabsTrigger>
+          <TabsList className='w-fit grid grid-cols-3 md:block'> 
+            <TabsTrigger value="students" className='font-medium text-xs md:text-md shadow-md border-b-2 data-[state=active]:border-b-primary data-[state=active]:text-primary' ><span className=''>Master List</span> </TabsTrigger>
             {/* <TabsTrigger value="attendance" className='font-medium shadow-md border-b-2 data-[state=active]:border-b-primary' >Attendance</TabsTrigger> */}
-            <TabsTrigger value="class-record" className='font-medium shadow-md border-b-2 data-[state=active]:border-b-primary data-[state=active]:text-primary' >Class Record</TabsTrigger>
-            <TabsTrigger value="grades-summary" className='font-medium shadow-md border-b-2 data-[state=active]:border-b-primary data-[state=active]:text-primary'>Grades Summary</TabsTrigger>
-            <TabsTrigger value="intervention" className='font-medium shadow-md border-b-2 data-[state=active]:border-b-primary data-[state=active]:text-primary'>Needs Intervention</TabsTrigger>
-            <TabsTrigger value="remedial-class" className='font-medium shadow-md border-b-2 data-[state=active]:border-b-primary data-[state=active]:text-primary'>For Summer Class</TabsTrigger>
+            <TabsTrigger value="class-record" className='font-medium text-xs md:text-md  shadow-md border-b-2 data-[state=active]:border-b-primary data-[state=active]:text-primary' >Class Record</TabsTrigger>
+            <TabsTrigger value="grades-summary" className='font-medium text-xs md:text-md  shadow-md border-b-2 data-[state=active]:border-b-primary data-[state=active]:text-primary'>Grades Summary</TabsTrigger>
+            <TabsTrigger value="intervention" className='font-medium text-xs md:text-md  shadow-md border-b-2 data-[state=active]:border-b-primary data-[state=active]:text-primary'>Needs Intervention</TabsTrigger>
+            <TabsTrigger value="remedial-class" className='font-medium text-xs md:text-md  shadow-md border-b-2 data-[state=active]:border-b-primary data-[state=active]:text-primary'>For Summer Class</TabsTrigger>
           </TabsList>
 
           {/* Master List */}
@@ -100,11 +106,12 @@ function Section({params}:{params: {section: string}}) {
            <DataTable 
      
             columns={studentMasterList}
-            data={students}
-            filter='lrn'
+            data={studentInMasterlist as StudentsWithEnrollMentTypes[]}
+            filter='lastName'
             placeholder="students by LRN"
            />
           </TabsContent>
+
           {/* Class Record*/}
           <TabsContent value="class-record" className=''>
             {section && section.section?.gradeLevel === 11 || section?.section?.gradeLevel === 12 ? (

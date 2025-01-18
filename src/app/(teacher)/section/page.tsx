@@ -13,7 +13,7 @@ function SectionPage() {
 
 
   return (
-    <div className=' shadow-md m-5 text-primary'>
+    <div className=' m-5 text-primary'>
         <h1 className="font-semibold font-serif text-lg text-center">Classes</h1>
         {isLoading ? (<Loading/>) : classes && (
           <div className=' m-5 grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-10'>

@@ -48,6 +48,10 @@ export interface PrincipalFormData {
 
 export type StudentTypes = Doc<"students">
 
+export interface StudentsWithEnrollMentTypes extends Doc<"students">{
+    enrollment: Doc<"enrollments">
+}
+
 export interface ScheduleWithRoom extends Doc<'schedules'>{
     room: Doc<'rooms'> | null
 }

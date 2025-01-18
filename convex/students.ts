@@ -3,7 +3,7 @@ import { ConvexError, v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { asyncMap } from "convex-helpers";
-import { StudentTypes } from "@/lib/types";
+import { StudentsWithEnrollMentTypes, StudentTypes } from "@/lib/types";
 
 export const getStudent = query({
     handler: async (ctx) => {
@@ -131,3 +131,38 @@ export const getStudentByTeacher = query({
     return students as StudentTypes[]
   }
 }) 
+
+export const studentsInMasterList = query({
+  args:{
+    classId: v.optional(v.id('classes'))
+  },
+  handler: async(ctx, args) => {
+    const teacherId = await getAuthUserId(ctx)
+    if(!teacherId) {
+      throw new ConvexError("No teacher Id.")
+    }
+    if(!args.classId){
+    throw new ConvexError("Np section Id")
+    }
+    const cls = await ctx.db.get(args.classId)
+
+    if(!cls) {
+      throw new ConvexError("No class Found.")
+    }
+    const section = await ctx.db.get(cls.sectionId)
+    if(!section) {
+      throw new ConvexError("No section Found.")
+    }
+    const students = await asyncMap(section.students, async(studentId) =>{
+      const student = await ctx.db.get(studentId)
+      const enrollment = await ctx.db.query('enrollments')
+        .filter((q) => q.eq(q.field("studentId"), studentId))
+        .filter((q) => q.eq(q.field("sectionId"), section._id))
+        .order('desc')
+        .first()
+        
+      return {...student, enrollment: enrollment}
+    })
+    return students as StudentsWithEnrollMentTypes[]
+  }
+})
