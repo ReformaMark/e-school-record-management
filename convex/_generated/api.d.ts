@@ -14,6 +14,7 @@ import type {
   FunctionReference,
 } from "convex/server";
 import type * as admin from "../admin.js";
+import type * as assessments from "../assessments.js";
 import type * as auth from "../auth.js";
 import type * as classes from "../classes.js";
 import type * as enrollments from "../enrollments.js";
@@ -24,6 +25,7 @@ import type * as schoolPeriod from "../schoolPeriod.js";
 import type * as schoolYear from "../schoolYear.js";
 import type * as sections from "../sections.js";
 import type * as students from "../students.js";
+import type * as subjects from "../subjects.js";
 import type * as users from "../users.js";
 
 /**
@@ -36,6 +38,7 @@ import type * as users from "../users.js";
  */
 declare const fullApi: ApiFromModules<{
   admin: typeof admin;
+  assessments: typeof assessments;
   auth: typeof auth;
   classes: typeof classes;
   enrollments: typeof enrollments;
@@ -46,6 +49,7 @@ declare const fullApi: ApiFromModules<{
   schoolYear: typeof schoolYear;
   sections: typeof sections;
   students: typeof students;
+  subjects: typeof subjects;
   users: typeof users;
 }>;
 export declare const api: FilterApi<

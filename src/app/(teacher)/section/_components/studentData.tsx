@@ -33,7 +33,7 @@ import { Input } from "@/components/ui/input";
 import { CgDanger } from "react-icons/cg";
 import Link from "next/link";
 import { Label } from "@/components/ui/label";
-import { StudentsWithEnrollMentTypes, StudentTypes } from "@/lib/types";
+import { StudentsWithEnrollMentTypes } from "@/lib/types";
 
 
 type Student = {

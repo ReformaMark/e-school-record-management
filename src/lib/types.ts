@@ -62,3 +62,7 @@ export interface ClassesWithDetails extends Doc<'classes'> {
     schedule: ScheduleWithRoom,
     schoolYear: Doc<'schoolYears'> | null,
 }
+
+export interface AssessmentTypes extends Doc<"assessments"> {
+    subject: Doc<'subjects'> | null
+}

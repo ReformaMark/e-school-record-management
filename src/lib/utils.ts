@@ -38,3 +38,7 @@ export const getAge = (birthDate: string) =>{
     }
   return age
 }
+
+export const normalize = (value: number, min: number, max: number): number => {
+  return (value - min) / (max - min);
+};

@@ -201,6 +201,19 @@ export default defineSchema({
     classId:v.id('classes')
   }).index('by_sudentId', ['studentId']).index('by_classId', ['classId']),
 
-
+  assessments: defineTable({
+    type: v.string(), // ww, pp, qe
+    gradeLevel: v.number(),
+    quarter: v.string(), 
+    semester: v.optional(v.string()), // for senior high
+    assessmentNo: v.number(),
+    subjectId: v.id('subjects'),
+    highestScore: v.number(),
+    teacherId: v.id("users"),
+    classId: v.array(v.id('classes')),
+    schoolYear: v.optional(v.string()) 
+  }).index("by_classId", ["classId"])
+    .index("by_teacherId", ["teacherId"])
+    .index("by_subject", ["subjectId"])
 
 });

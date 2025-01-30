@@ -1,45 +1,35 @@
 'use client'
 import { DataTable } from '@/components/data-table'
 import React from 'react'
-import { AssessmentColumn, assessments } from './AssessmentData'
-import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-  } from "@/components/ui/dialog"
-import { Plus } from 'lucide-react'
+import { AssessmentColumn } from './AssessmentData'
+import { AssessmentTypes } from '@/lib/types'
+import Loading from '@/app/components/Loading'
+import { AssessmentForm } from './AssessmentForm'
 
-function QuarterExam() {
-    const quarterlyAssessments = assessments.filter((assessment) => assessment.assessmentType === 'Quarterly Assessment')
+interface QuarterExamPropsTypes {
+    assessments: AssessmentTypes[] | undefined
+}
+
+function QuarterExam({assessments}: QuarterExamPropsTypes) {
+    const quarterlyAssessments = assessments?.filter((assessment) => assessment.type === 'Quarterly Assessment')
   return (
     <div className='bg-white p-10'>
         <div className="">
             <div className="flex justify-between">
             <h1>Quarter Exam</h1>
-                <Dialog>
-                    <DialogTrigger className='border shadow-md  text-xs flex justify-center items-center gap-x-3 disabled:bg-blue-200 bg-blue-600 text-white border-gray-100 rounded-md px-2 py-1'>
-                        <Plus/> Assesment
-                    </DialogTrigger>
-                    <DialogContent className='max-w-6xl max-h-screen overflow-auto'>
-                    <DialogHeader>
-                        <DialogTitle>
-                            
-                        </DialogTitle>
-                        
-                    </DialogHeader>
-               
-                    </DialogContent>
-                </Dialog>
+            <AssessmentForm assessmment='Quarterly Assessment'/>
             </div>
-          
+          {quarterlyAssessments ? (
             <DataTable 
-                columns={AssessmentColumn}
-                data={quarterlyAssessments}
-                filter=''
-                placeholder=''
+             columns={AssessmentColumn}
+             data={quarterlyAssessments}
+             filter='assessmentNo'
+             placeholder='Seach for Quarterly Assessment Number'
             />
+          ): (
+            <Loading/>
+          )}
+           
         </div>
       
     </div>

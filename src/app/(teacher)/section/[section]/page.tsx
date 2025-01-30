@@ -21,14 +21,14 @@ import Link from 'next/link'
 import { cn } from '@/lib/utils'
 import FinalGradeSHSTemplate from '@/app/components/FinalGradeSHSTemplate'
 import { DataTable } from '@/components/data-table'
-import { forRemedial, studentMasterList, studentsData, summerClassStatus } from '../_components/studentData'
+import { forRemedial, studentMasterList, summerClassStatus } from '../_components/studentData'
 import NeedsImprovement from '../_components/NeedsImprovement'
 import InputGrades from '../_components/InputGrades'
 import SeniorHighInputGrades from '../_components/SeniorHighInputGrades'
 import Loading from '@/app/components/Loading'
 import { useQuery } from 'convex/react'
 import { api } from '../../../../../convex/_generated/api'
-import { StudentsWithEnrollMentTypes, StudentTypes } from '@/lib/types'
+import { StudentsWithEnrollMentTypes } from '@/lib/types'
 
 function Section({params}:{params: {section: string}}) {
   const sectionName = params.section.replace(/%20/g, ' ');
@@ -37,7 +37,7 @@ function Section({params}:{params: {section: string}}) {
   const section = classes?.find((section) => section.section?.name === sectionName);
   
   const studentInMasterlist = useQuery(api.students.studentsInMasterList, {classId: section?._id })
-  const students = studentInMasterlist?.sort((a, b) => a.lastName.localeCompare(b.lastName));
+ 
   if(isLoading || !studentInMasterlist ){
     return <Loading/>
   }
@@ -72,7 +72,6 @@ function Section({params}:{params: {section: string}}) {
           </Dialog>
       </div>
 
-       
         <div className="grid grid-cols-1 md:grid-cols-2 font-bold text-sm">
           
           <h1>Section: <span className='font-normal'>{sectionName}</span></h1>

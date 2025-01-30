@@ -218,7 +218,7 @@ function EnrollmentForm({onClose}: {onClose: () => void}) {
         <div className="">
 
         </div>
-        <Form {...form}>
+        <Form {...form}> 
             <form onSubmit={form.handleSubmit(onSubmit)}>
 
             {/* {Step One} */}
