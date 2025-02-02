@@ -59,7 +59,11 @@ export const AssessmentForm = ({
     const [isLoading, setIsLoading] = useState<boolean>(false)
 
     const addWrittenWorks = useMutation(api.assessments.addWrittenWorks)
+    const createClassRecords = useMutation(api.classRecords.create)
     const {classes} = useClasses()
+    const schoolYears = useQuery(api.schoolYear.get)
+
+    const sy = schoolYears && schoolYears[0] 
     const teacherGradeLevels = Array.from(new Set(classes?.map((cl) => cl.section?.gradeLevel)));
     const gradelevels = teacherGradeLevels.filter(level => level !== undefined)
 
@@ -102,9 +106,17 @@ export const AssessmentForm = ({
             subjectId: data.subject as Id<'subjects'>
         }), {
             loading: 'Adding new assessment...',
-            success: () => {
+            success: async() => {
                 setIsLoading(false)
-
+                await createClassRecords({
+                    gradeLevel: Number(data.gradeLevel),
+                    subjectId: data.subject as Id<'subjects'>,
+                    quarter: data.quarter,
+                    assessmentNo: data.assessmentNo,
+                    type: data.type as string,
+                    score: data.highestScore,
+                    schoolYearId: sy?._id
+                })
                 form.reset()
                 setDialogOpen(false)
                 return 'Assessment added successfully.'
@@ -204,13 +216,16 @@ export const AssessmentForm = ({
                                             <FormItem>
                                                 <FormLabel>Subject <span className='text-red-700'>*</span></FormLabel>
                                                 <FormControl>
-                                                    <Select onValueChange={field.onChange} value={field.value.toString()} >
+                                                    <Select onValueChange={(value) => {
+                                                            field.onChange(value)
+                                                            setSelectedSubjectId(value as Id<'subjects'>)
+                                                        }} value={field.value.toString()} >
                                                         <SelectTrigger>
                                                             <SelectValue placeholder="Select a Subject " />
                                                         </SelectTrigger>
                                                         <SelectContent>
                                                         {filteredSubjects && filteredSubjects.map((subject)=>(
-                                                            <SelectItem key={subject._id} onClick={()=> setSelectedSubjectId(subject._id)} value={subject._id}>{subject.name}</SelectItem>
+                                                            <SelectItem key={subject._id} value={subject._id}>{subject.name}</SelectItem>
                                                         ))}
                                                         </SelectContent>
                                                     </Select>
@@ -275,8 +290,8 @@ export const AssessmentForm = ({
                                                 </FormControl>
                                                 <FormMessage/>
                                             </FormItem>
-                                        )}
-                                    />
+                                            )}
+                                         />
                                     </div> 
                                 </div>
                                 

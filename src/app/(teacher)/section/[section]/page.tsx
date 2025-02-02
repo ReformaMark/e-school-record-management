@@ -28,15 +28,15 @@ import SeniorHighInputGrades from '../_components/SeniorHighInputGrades'
 import Loading from '@/app/components/Loading'
 import { useQuery } from 'convex/react'
 import { api } from '../../../../../convex/_generated/api'
-import { StudentsWithEnrollMentTypes } from '@/lib/types'
+import { ClassesWithDetails, StudentsWithEnrollMentTypes } from '@/lib/types'
 
 function Section({params}:{params: {section: string}}) {
   const sectionName = params.section.replace(/%20/g, ' ');
   const {isLoading, classes} = useClasses()
   //section === class
-  const section = classes?.find((section) => section.section?.name === sectionName);
+  const cls = classes?.find((section) => section.section?.name === sectionName);
   
-  const studentInMasterlist = useQuery(api.students.studentsInMasterList, {classId: section?._id })
+  const studentInMasterlist = useQuery(api.students.studentsInMasterList, {classId: cls?._id })
  
   if(isLoading || !studentInMasterlist ){
     return <Loading/>
@@ -75,15 +75,15 @@ function Section({params}:{params: {section: string}}) {
         <div className="grid grid-cols-1 md:grid-cols-2 font-bold text-sm">
           
           <h1>Section: <span className='font-normal'>{sectionName}</span></h1>
-          <h1>Grade Level: <span className='font-normal'>{section?.section?.gradeLevel}</span></h1>
-          <h1>Subject: <span className='font-normal'>{section?.subject?.name}</span></h1>
-          <h1>Schedule: <span className='font-normal'>{section?.schedule.startTime} - {section?.schedule.endTime} - ( {section?.schedule.day} )</span></h1>
-          <h1>Room: <span className='font-normal'>{section?.schedule.room?.name}</span></h1>
-          <h1>School Year: <span className='font-normal'>{section?.schoolYear?.sy}</span></h1>
-          {section?.section?.gradeLevel === 11 && ( 
+          <h1>Grade Level: <span className='font-normal'>{cls?.section?.gradeLevel}</span></h1>
+          <h1>Subject: <span className='font-normal'>{cls?.subject?.name}</span></h1>
+          <h1>Schedule: <span className='font-normal'>{cls?.schedule.startTime} - {cls?.schedule.endTime} - ( {cls?.schedule.day} )</span></h1>
+          <h1>Room: <span className='font-normal'>{cls?.schedule.room?.name}</span></h1>
+          <h1>School Year: <span className='font-normal'>{cls?.schoolYear?.sy}</span></h1>
+          {cls?.section?.gradeLevel === 11 && ( 
             <h1><span className='font-normal'>Current Semester: 1st</span></h1>
           )}
-          {section?.section?.gradeLevel === 12 && ( 
+          {cls?.section?.gradeLevel === 12 && ( 
             <h1><span className='font-normal'>Current Semester: 1st</span></h1>
           )}
         </div>
@@ -113,25 +113,25 @@ function Section({params}:{params: {section: string}}) {
 
           {/* Class Record*/}
           <TabsContent value="class-record" className=''>
-            {section && section.section?.gradeLevel === 11 || section?.section?.gradeLevel === 12 ? (
+            {cls && cls.section?.gradeLevel === 11 || cls?.section?.gradeLevel === 12 ? (
             
-              <SeniorHighInputGrades sec={section?.section ? section.section.name : ""}/>
+              <SeniorHighInputGrades clss={cls as ClassesWithDetails} sec={cls?.section ? cls.section.name : ""}/>
             ) : (
-              <InputGrades sec={section?.section?.name ?? ""}/>
+              <InputGrades clss={cls as ClassesWithDetails} sec={cls?.section?.name ?? ""}/>
             )}
           </TabsContent>
 
           {/* Grade summary */}
           <TabsContent value="grades-summary" className='min-h-screen max-w-full overflow-y-auto border-2 border-gray-300'>
-            {section && section.section?.gradeLevel === 11 || section?.section?.gradeLevel === 12 ? (
-              <FinalGradeSHSTemplate section={section.section} subject={section.subject}/>
+            {cls && cls.section?.gradeLevel === 11 || cls?.section?.gradeLevel === 12 ? (
+              <FinalGradeSHSTemplate section={cls.section} subject={cls.subject}/>
             ) :(
               <QuarterlyGradesTemplate 
                 teacher='Currently Login Teacher name' 
-                subject={section?.subject?.name} 
+                subject={cls?.subject?.name} 
                 // change to dynamic data from db
-                schoolYear={section?.schoolYear?.sy}
-                gradeAndSection={`${section?.section?.gradeLevel} - ${section?.section?.name}`}
+                schoolYear={cls?.schoolYear?.sy}
+                gradeAndSection={`${cls?.section?.gradeLevel} - ${cls?.section?.name}`}
               />
 
             )}

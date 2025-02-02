@@ -25,7 +25,6 @@ function ClassRecordDialog({
 }) {
   const [isDialogOpen, setIsDialogOpen ] = useState<boolean>(false)
   const [isOpen, setIsOpen ] = useState<boolean>(false)
-  console.log(isDialogOpen)
   return (
     <div className="text-primary">
         <Dialog open={isDialogOpen}>

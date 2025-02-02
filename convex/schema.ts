@@ -156,7 +156,7 @@ export default defineSchema({
     sectionId: v.id('sections'),
     scheduleId: v.id('schedules'),
     schoolYearId: v.id('schoolYears'),
-  }),
+  }).index('by_teacherId', ['teacherId']),
 
   subjects: defineTable({
     name: v.string(),
@@ -214,6 +214,28 @@ export default defineSchema({
     schoolYear: v.optional(v.string()) 
   }).index("by_classId", ["classId"])
     .index("by_teacherId", ["teacherId"])
-    .index("by_subject", ["subjectId"])
+    .index("by_subject", ["subjectId"]),
 
-});
+
+  classRecords: defineTable({
+    studentId: v.id('students'),
+    classId: v.id('classes'),
+    written: v.array(v.object({
+      assessmentNo: v.number(),
+      score: v.optional(v.number()),
+      highestScore: v.number(),
+    })),
+    performance: v.array(v.object({
+      assessmentNo: v.number(),
+      score: v.optional(v.number()),
+      highestScore: v.number(),
+    })),
+    quarterlyExam: v.array(v.object({
+      assessmentNo: v.number(),
+      score: v.optional(v.number()),
+      highestScore: v.number(),
+    })),
+    quarter: v.string(),
+  }).index("by_studentId", ["studentId"])
+    .index("by_classId", ["classId"])
+  })

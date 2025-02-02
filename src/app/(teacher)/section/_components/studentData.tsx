@@ -33,7 +33,10 @@ import { Input } from "@/components/ui/input";
 import { CgDanger } from "react-icons/cg";
 import Link from "next/link";
 import { Label } from "@/components/ui/label";
-import { StudentsWithEnrollMentTypes } from "@/lib/types";
+import { StudentsWithClassRecord, StudentsWithEnrollMentTypes } from "@/lib/types";
+import PerformanceTaskDialog from "./PerformanceTaskDialog";
+import WrittenWorksDialog from "./WrittenWorksDialog";
+import QuarterlyAssessmentDialog from "./QuarterlyExamDialog";
 
 
 type Student = {
@@ -828,7 +831,7 @@ export const studentMasterList: ColumnDef<StudentsWithEnrollMentTypes>[] = [
 
 
 
-export const InputGradesCol: ColumnDef<Student>[] = [
+export const InputGradesCol: ColumnDef<StudentsWithClassRecord>[] = [
   {
     id: "number",
     header: "",
@@ -847,7 +850,6 @@ export const InputGradesCol: ColumnDef<Student>[] = [
     header: "Name",
     cell: ({ row }) => {
       const student = row.original
- 
       return (
         <div className="">
           {student.lastName}, {student.firstName} {student.middleName}
@@ -855,20 +857,133 @@ export const InputGradesCol: ColumnDef<Student>[] = [
       )
     },
   },
-  { accessorKey: "writtenWorks", header: "Written Works" },
-  { accessorKey: "performanceTask", header: "Performance Task" },
-  { accessorKey: "quarterlyAssessment", header: "Quarterly Assessment" },
+  {
+    id: "written",
+    accessorKey: "writtenWorks", 
+    header: "Written Works",
+    cell: ({ row }) => {
+      const student = row.original
+      const classRecord = student.classRecords.flatMap(c => {
+        return c.written.map(ww => {
+          return {
+            ...c,
+            written: ww
+          };
+        });
+      });
+      const recordWithScore = classRecord.filter(c => c.written.score !== undefined)
+      
+      return (
+ 
+        <div className="">
+          {classRecord.length < 1 ? (
+            <h1>-</h1>
+          ) : (
+
+            <p>{recordWithScore.length.toString()} out of {classRecord.length.toString()}</p>
+          )}
+        </div>
+      )
+    },
+  },
+  {
+    id: "performance",
+    accessorKey: "performance", 
+    header: "Performance Tasks",
+    cell: ({ row }) => {
+      const student = row.original
+      const classRecord = student.classRecords.flatMap(c => {
+        return c.performance.map(pt => {
+          return {
+            ...c,
+            performance: pt
+          };
+        });
+      });
+      const recordWithScore = classRecord.filter(c => c.performance.score !== undefined)
+      
+      return (
+ 
+        <div className="">
+          {classRecord.length < 1 ? (
+            <h1>-</h1>
+          ) : (
+
+            <p>{recordWithScore.length.toString()} out of {classRecord.length.toString()}</p>
+          )}
+        </div>
+      )
+    },
+  },
+  {
+    id: "quarterlyAssessment",
+    accessorKey: "quarterlyExam", 
+    header: "Quarterly Assessment",
+    cell: ({ row }) => {
+      const student = row.original
+      const classRecord = student.classRecords.flatMap(c => {
+        return c.quarterlyExam.map(qe => {
+          return {
+            ...c,
+            quarterlyExam: qe
+          };
+        });
+      });
+      const recordWithScore = classRecord.filter(c => c.quarterlyExam.score !== undefined)
+      
+      return (
+ 
+        <div className="">
+          {classRecord.length < 1 ? (
+            <h1>-</h1>
+          ) : (
+
+            <p>{recordWithScore.length.toString()} out of {classRecord.length.toString()}</p>
+          )}
+        </div>
+      )
+    },
+  },
   {
     id: "actions",
     cell: ({ row }) => {
       const [isWWOpen, setIsWWOpen] = useState<boolean>(false)
       const [isPTOpen, setIsPTOpen] = useState<boolean>(false)
       const [isQAOpen, setIsQAOpen] = useState<boolean>(false)
+     
       // const [isOSOpen, setIsOSOpen] = useState<boolean>(false)
       const [isOpen, setIsOpen ] = useState<boolean>(false)
-
-
       const student = row.original
+      const studentName = `${student.lastName}, ${student.firstName}`
+      
+      const quarterExams = student.classRecords.flatMap(c => {
+        return c.quarterlyExam.map(qe => {
+          return {
+            _id: c._id,
+            quarterlyExam: qe
+          };
+        });
+      });
+      const writtenWorks = student.classRecords.flatMap(c => {
+        return c.written.map(ww => {
+          return {
+            _id: c._id,
+            written: ww
+          };
+        });
+      });
+      const performanceTasks = student.classRecords.flatMap(c => {
+        return c.performance.map(pt => {
+          return {
+            _id: c._id,
+            performance: pt
+          };
+        });
+      });
+
+      const sortedPerformanceTasks = performanceTasks.sort((a, b) => a.performance.assessmentNo - b.performance.assessmentNo)
+      const sortedWrittenWorks = writtenWorks.sort((a, b) => a.written.assessmentNo - b.written.assessmentNo)
+      
       const openWW = ()=> {
         setIsWWOpen(!isWWOpen)
       }
@@ -878,9 +993,6 @@ export const InputGradesCol: ColumnDef<Student>[] = [
       const openQA = ()=> {
         setIsQAOpen(!isQAOpen)
       }
-      // const openOS = ()=> {
-      //   setIsOSOpen(!isOSOpen)
-      // }
       return (
         <div className="text-primary">
           <DropdownMenu>
@@ -904,165 +1016,24 @@ export const InputGradesCol: ColumnDef<Student>[] = [
             </DropdownMenuContent>
           </DropdownMenu>
 
-        <Dialog open={isWWOpen}>
-          <DialogContent className=' max-h-screen overflow-auto'>
-          <DialogHeader>
-              <DialogTitle>
-                 {student.lastName}, {student.firstName} Written Works
-              </DialogTitle>
-              
-          </DialogHeader>
-         <div className="text-primary">
-          <div className="flex gap-x-3 items-center">
-            <h1>Writen Work 1 :</h1>
-            <Input 
-              id="roomNumber"
-              type="number" 
-              placeholder="Ex: 50"
-              className="w-32"
-              value={30}
-             />
-
-             <h1>/ 50</h1>
-          </div>
-          <div  className="flex gap-x-3 items-center">
-          <h1>Writen Work 2 :</h1>
-            <Input 
-              id="roomNumber"
-              type="number" 
-              placeholder="Ex: 50"
-              className="w-32"
-              value={40}
-             />
-
-             <h1>/ 50</h1>
-          </div>
-          <div  className="flex gap-x-3 items-center">
-          <h1>Writen Work 3 :</h1>
-            <Input 
-              id="roomNumber"
-              type="number" 
-              placeholder="Ex: 50"
-              className="w-32"
-              value={45}
-             />
-
-             <h1>/ 50</h1>
-          </div>
-          <div  className="flex gap-x-3 items-center">
-            <h1>Writen Work 4 :</h1>
-            <Input 
-              id="roomNumber"
-              type="number" 
-              placeholder="Ex: 50"
-              className="w-32"
-             
-             />
-
-             <h1>/ 50</h1>
-          </div>
-         </div>
-          <DialogFooter>
-            <Button variant={'default'} onClick={()=> setIsWWOpen(!isWWOpen)} className="text-white">Save</Button>
-          </DialogFooter>
-          </DialogContent>
-        
-        </Dialog>
-
-        <Dialog open={isPTOpen}>
-          <DialogContent className='max-h-screen overflow-auto text-primary'>
-          <DialogHeader>
-              <DialogTitle>
-                  Performance Tasks
-              </DialogTitle>
-              
-          </DialogHeader>
-          <div className="text-primary">
-          <div className="flex gap-x-3 items-center">
-            <h1>Performance Task 1 :</h1>
-            <Input 
-              id="roomNumber"
-              type="number" 
-              placeholder="Ex: 50"
-              className="w-32"
-              value={30}
-             />
-
-             <h1>/ 50</h1>
-          </div>
-          <div  className="flex gap-x-3 items-center">
-          <h1>Performance Task 2 :</h1>
-            <Input 
-              id="roomNumber"
-              type="number" 
-              placeholder="Ex: 50"
-              className="w-32"
-              value={40}
-             />
-
-             <h1>/ 50</h1>
-          </div>
-          <div  className="flex gap-x-3 items-center">
-          <h1>Performance Task 3 :</h1>
-            <Input 
-              id="roomNumber"
-              type="number" 
-              placeholder="Ex: 50"
-              className="w-32"
-              value={45}
-             />
-
-             <h1>/ 50</h1>
-          </div>
-          <div  className="flex gap-x-3 items-center">
-            <h1>Performance Task 4 :</h1>
-            <Input 
-              id="roomNumber"
-              type="number" 
-              placeholder="Ex: 50"
-              className="w-32"
-             
-             />
-
-             <h1>/ 50</h1>
-          </div>
-         </div>
-          <DialogFooter>
-            <Button variant={'default'} onClick={()=> setIsPTOpen(!isPTOpen)} className="text-white">Save</Button>
-          </DialogFooter>
-          </DialogContent>
-        </Dialog>
-        <Dialog open={isQAOpen}>
-          <DialogContent className=' max-h-screen overflow-auto text-primary'>
-          <DialogHeader>
-              <DialogTitle>
-                 Quarterly Assessment
-              </DialogTitle>
-              
-          </DialogHeader>
-          <div className="text-primary">
-          <div className="flex gap-x-3 items-center">
-            <h1>Quarterly Assessment 1 :</h1>
-            <Input 
-              id="roomNumber"
-              type="number" 
-              placeholder="Ex: 50"
-              className="w-32"
-              value={30}
-             />
-
-             <h1>/ 50</h1>
-          </div>
-          
-         </div>
-          <DialogFooter>
-            <Button variant={'default'} onClick={()=> {
-              setIsQAOpen(!isQAOpen)
-              setIsOpen(true)  
-            }} className="text-white">Save</Button>
-          </DialogFooter>
-          </DialogContent>
-        </Dialog>
+        <WrittenWorksDialog 
+          sortedWrittenWorks={sortedWrittenWorks}
+          isWWOpen={isWWOpen}
+          setIsWWOpen={setIsWWOpen}
+          name={studentName}
+        />
+       <PerformanceTaskDialog 
+          sortedPerformanceTasks={sortedPerformanceTasks}
+          isPTOpen={isPTOpen}
+          setIsPTOpen={setIsPTOpen}
+          name={studentName}
+       />
+       <QuarterlyAssessmentDialog 
+          quarterExams={quarterExams}
+          isQAOpen={isQAOpen}
+          setIsQAOpen={setIsQAOpen}
+          name={studentName}
+       />
 
         <Dialog open={isOpen}>
             <DialogContent className=''>
@@ -1076,7 +1047,7 @@ export const InputGradesCol: ColumnDef<Student>[] = [
                   <div className="">
                     <h1 className="font-semibold">Recommendation:</h1>
                     <div className="">
-                      - {student.recommendedInterventions}
+                      - 
                     </div>
                   </div>
                 </DialogDescription>
