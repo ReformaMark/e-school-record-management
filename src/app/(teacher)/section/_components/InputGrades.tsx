@@ -50,7 +50,11 @@ function InputGrades({sec, clss}:IProps) {
             <TabsTrigger value="4th">4th</TabsTrigger>
         </TabsList>
         <TabsContent value="1st">
-            <ClassRecordDialog subject={cls ? cls.subject?.name ?? "" : ''} gradeLevel={cls ? cls.section?.gradeLevel.toString() ?? "" : ''}/>
+            <ClassRecordDialog 
+                data={firstQuarterStudents ?? []} 
+                subject={cls ? cls.subject?.name ?? "" : ''} 
+                gradeLevel={cls ? cls.section?.gradeLevel.toString() ?? "" : ''}
+            />
             <DataTable
                 columns={InputGradesCol}
                 data={firstQuarterStudents ?? []}
@@ -59,7 +63,11 @@ function InputGrades({sec, clss}:IProps) {
             />
         </TabsContent>
         <TabsContent value="2nd">
-            <ClassRecordDialog subject={cls ? cls.subject?.name ?? "" : ''} gradeLevel={cls ? cls.section?.gradeLevel.toString() ?? "" : ''}/>
+        <ClassRecordDialog 
+                data={secondQuarterStudents ?? []} 
+                subject={cls ? cls.subject?.name ?? "" : ''} 
+                gradeLevel={cls ? cls.section?.gradeLevel.toString() ?? "" : ''}
+            />
             <DataTable
                 columns={InputGradesCol}
                 data={secondQuarterStudents ?? []}
@@ -68,7 +76,11 @@ function InputGrades({sec, clss}:IProps) {
             />
         </TabsContent>
         <TabsContent value="3rd">
-            <ClassRecordDialog subject={cls ? cls.subject?.name ?? "" : ''} gradeLevel={cls ? cls.section?.gradeLevel.toString() ?? "" : ''}/>
+            <ClassRecordDialog 
+                data={thirdQuarterStudents ?? []} 
+                subject={cls ? cls.subject?.name ?? "" : ''} 
+                gradeLevel={cls ? cls.section?.gradeLevel.toString() ?? "" : ''}
+            />
             <DataTable
                 columns={InputGradesCol}
                 data={thirdQuarterStudents ?? []}
@@ -77,7 +89,11 @@ function InputGrades({sec, clss}:IProps) {
             />
         </TabsContent>
         <TabsContent value="4th">
-            <ClassRecordDialog subject={cls ? cls.subject?.name ?? "" : ''} gradeLevel={cls ? cls.section?.gradeLevel.toString() ?? "" : ''}/>
+            <ClassRecordDialog 
+                data={fourthQuarterStudents ?? []} 
+                subject={cls ? cls.subject?.name ?? "" : ''} 
+                gradeLevel={cls ? cls.section?.gradeLevel.toString() ?? "" : ''}
+            />
             <DataTable
                 columns={InputGradesCol}
                 data={fourthQuarterStudents ?? []}

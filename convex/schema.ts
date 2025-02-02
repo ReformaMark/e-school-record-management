@@ -162,8 +162,22 @@ export default defineSchema({
     name: v.string(),
     gradeLevel: v.number(),
     subjectCode: v.string(),
+    gradeWeights: v.optional(v.object({
+      written: v.number(),
+      performance: v.number(),
+      exam: v.optional(v.number())
+    }))
     // applicableGradeLevels: v.array(v.number()),
   }),
+
+  appliedGradeWeigths: defineTable({
+    subjectId: v.id('subjects'),
+    teacherId: v.id('users'),
+    learningMode: v.string(),
+    written: v.number(),
+    performance: v.number(),
+    exam: v.optional(v.number())
+  }).index('by_teacherId',['teacherId']).index('by_subjectId', ['subjectId']),
 
   schedules: defineTable({
     day: v.string(),
@@ -237,5 +251,9 @@ export default defineSchema({
     })),
     quarter: v.string(),
   }).index("by_studentId", ["studentId"])
-    .index("by_classId", ["classId"])
+    .index("by_classId", ["classId"]),
+
+ 
   })
+
+  

@@ -15,16 +15,20 @@ import ClassRecordTemplate from './ClassRecordTemplate'
 import { useState } from 'react'
 import { CgDanger } from "react-icons/cg";
 import { IoMdPrint } from 'react-icons/io'
+import { StudentsWithClassRecord } from '@/lib/types'
 
 function ClassRecordDialog({
   subject,
   gradeLevel,
+  data
 }:{
   subject: string,
   gradeLevel: string,
+  data: StudentsWithClassRecord[]
 }) {
   const [isDialogOpen, setIsDialogOpen ] = useState<boolean>(false)
   const [isOpen, setIsOpen ] = useState<boolean>(false)
+  
   return (
     <div className="text-primary">
         <Dialog open={isDialogOpen}>

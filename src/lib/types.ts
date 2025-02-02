@@ -71,3 +71,7 @@ export interface StudentsWithClassRecord extends Doc<"students">{
     classRecords: Doc<"classRecords">[],
     sectionDoc: Doc<'sections'>
 }
+
+export interface SubjectsWithAppliedGradeWeihts extends Doc<'subjects'>{
+    appliedGradeWeights: Doc<'appliedGradeWeigths'> | null
+}

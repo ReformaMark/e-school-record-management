@@ -66,7 +66,6 @@ const PerformanceTaskDialog: React.FC<PerformanceTaskDialogProp> = ({
         setIsPTOpen(false)
     };
 
-    console.log(sortedPerformanceTasks)
 
     return (
        
@@ -98,26 +97,6 @@ const PerformanceTaskDialog: React.FC<PerformanceTaskDialogProp> = ({
                                                     />
                                                 </FormControl>
                                                 <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                     <FormField
-                                        name={`classRecordId`} 
-                                        control={form.control}
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormControl>
-                                                    <Input 
-                                                        type="number" 
-                                                        placeholder="Score" 
-                                                        min={0}
-                                                        max={pt.performance.highestScore}
-                                                        {...field} 
-                                                        value={pt._id}
-                                                        className='hidden' 
-                                                    />
-                                                </FormControl>
-                                                <FormMessage className='hidden'/>
                                             </FormItem>
                                         )}
                                     />

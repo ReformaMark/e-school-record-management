@@ -14,6 +14,7 @@ import type {
   FunctionReference,
 } from "convex/server";
 import type * as admin from "../admin.js";
+import type * as appliedGradeWeigths from "../appliedGradeWeigths.js";
 import type * as assessments from "../assessments.js";
 import type * as auth from "../auth.js";
 import type * as classes from "../classes.js";
@@ -39,6 +40,7 @@ import type * as users from "../users.js";
  */
 declare const fullApi: ApiFromModules<{
   admin: typeof admin;
+  appliedGradeWeigths: typeof appliedGradeWeigths;
   assessments: typeof assessments;
   auth: typeof auth;
   classes: typeof classes;
