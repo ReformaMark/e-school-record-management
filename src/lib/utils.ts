@@ -65,13 +65,13 @@ interface assessment {
   score?: number | undefined;
   assessmentNo: number;
   highestScore: number;
-}[]
+}
 
 export function calculateTotalScore(classRecords: assessment[]): number {
-  return classRecords.reduce((total, record) => {
+  return classRecords?.reduce((total, record) => {
       const score = record?.score; // Accessing the score safely
       return total + (score || 0); // Add score if it exists, otherwise add 0
-  }, 0);
+  }, 0) ?? 0;
 }
 
 export function calculateInitialGrade(wwWS: number, ptWS: number, qeWS: number): number {
@@ -104,3 +104,19 @@ export function convertToTransmutedGrade(
   return foundEntry ? foundEntry.transmutedGrade : initialGrade; // Return original grade if no match found
 }
 
+export function formatQuarter(quarter: string): string {
+  const suffixes = ["st", "nd", "rd", "th"];
+
+  // Convert quarter string to a number
+  const quarterNumber = parseInt(quarter, 10);
+
+  // Validate the quarter range (1 to 4)
+  if (isNaN(quarterNumber) || quarterNumber < 1 || quarterNumber > 4) {
+    throw new Error("Invalid quarter. Must be '1', '2', '3', or '4'.");
+  }
+
+  // Determine suffix
+  const suffix = quarterNumber >= 1 && quarterNumber <= 3 ? suffixes[quarterNumber - 1] : "th";
+
+  return `${quarterNumber}${suffix}`;
+}

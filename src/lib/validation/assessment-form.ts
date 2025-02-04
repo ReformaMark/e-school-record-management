@@ -9,5 +9,6 @@ export const AssessmentFormSchema = z.object({
     highestScore: z.coerce.number().min(5, { message: "Highest possible score must be at least 5." }).nonnegative({ message: "Highest possible score must not be negative." }),
     classId: z.array(z.string()).optional(),
     schoolYear: z.string().optional(),
-    subject: z.string({ required_error: "Subject is required." }).min(1, { message: "Subject cannot be empty." })
+    subject: z.string({ required_error: "Subject is required." }).min(1, { message: "Subject cannot be empty." }),
+    subComponent: z.string().optional()
 })

@@ -30,11 +30,11 @@ import { useQuery } from 'convex/react'
 import { api } from '../../../../../convex/_generated/api'
 import { ClassesWithDetails, StudentsWithEnrollMentTypes } from '@/lib/types'
 
-function Section({params}:{params: {section: string}}) {
-  const sectionName = params.section.replace(/%20/g, ' ');
+function Section({params}:{params: {class: string}}) {
+  const classId = params.class;
   const {isLoading, classes} = useClasses()
   //section === class
-  const cls = classes?.find((section) => section.section?.name === sectionName);
+  const cls = classes?.find((section) => section._id === classId);
   
   const studentInMasterlist = useQuery(api.students.studentsInMasterList, {classId: cls?._id })
  
@@ -74,7 +74,7 @@ function Section({params}:{params: {section: string}}) {
 
         <div className="grid grid-cols-1 md:grid-cols-2 font-bold text-sm">
           
-          <h1>Section: <span className='font-normal'>{sectionName}</span></h1>
+          <h1>Section: <span className='font-normal'>{cls?.section?.name}</span></h1>
           <h1>Grade Level: <span className='font-normal'>{cls?.section?.gradeLevel}</span></h1>
           <h1>Subject: <span className='font-normal'>{cls?.subject?.name}</span></h1>
           <h1>Schedule: <span className='font-normal'>{cls?.schedule.startTime} - {cls?.schedule.endTime} - ( {cls?.schedule.day} )</span></h1>
@@ -117,7 +117,7 @@ function Section({params}:{params: {section: string}}) {
             
               <SeniorHighInputGrades clss={cls as ClassesWithDetails} sec={cls?.section ? cls.section.name : ""}/>
             ) : (
-              <InputGrades clss={cls as ClassesWithDetails} sec={cls?.section?.name ?? ""}/>
+              <InputGrades clss={cls as ClassesWithDetails}/>
             )}
           </TabsContent>
 

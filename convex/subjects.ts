@@ -1,6 +1,6 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { query } from "./_generated/server";
-import { ConvexError } from "convex/values";
+import { ConvexError, v } from "convex/values";
 import { Doc, Id } from "./_generated/dataModel";
 import { asyncMap } from "convex-helpers";
 
@@ -55,3 +55,13 @@ function filterUniqueSubjects(classes : Doc<'classes'>[]): typeof classes {
         return true;
     });
 }
+
+export const getSubject = query({
+    args:{
+        subjectId: v.optional(v.id('subjects'))
+    },
+    handler: async(ctx,args) => {
+        if(!args.subjectId) return;
+        return  await ctx.db.get(args.subjectId)
+    }
+})

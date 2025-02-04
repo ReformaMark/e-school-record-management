@@ -25,7 +25,7 @@ function SectionsCard({
         </div>
         <div className='flex justify-end'>
             <Button variant={'ghost'}>
-                <Link href={`/section/${cls.section?.name}`} className='flex items-center gap-3 text-gray-400'>
+                <Link href={`/section/${cls._id}`} className='flex items-center gap-3 text-gray-400'>
                     View section <FaAngleDoubleRight className='size-6'/>
                 </Link>
             </Button>

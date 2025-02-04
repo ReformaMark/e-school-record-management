@@ -11,7 +11,8 @@ export const create = mutation({
         assessmentNo: v.number(),
         type:v.string(),
         score: v.number(),
-        schoolYearId: v.optional(v.id('schoolYears'))
+        schoolYearId: v.optional(v.id('schoolYears')),
+        subComponent: v.optional(v.string())
     },
     handler: async(ctx, args) =>{
         const teacherId = await getAuthSessionId(ctx)
@@ -28,11 +29,24 @@ export const create = mutation({
             if(!section) return
            
             await asyncMap(section.students, async(studentId) =>{
-                const hasExistingCR = await ctx.db.query('classRecords')
-                .filter(q=> q.eq(q.field('classId'), cls._id))
-                .filter(q=> q.eq(q.field('studentId'), studentId))
-                .filter(q=> q.eq(q.field('quarter'), args.quarter))
-                .first()
+                let hasExistingCR
+                if(args.subComponent){
+                    const rec = await ctx.db.query('classRecords')
+                        .filter(q=> q.eq(q.field('classId'), cls._id))
+                        .filter(q=> q.eq(q.field('studentId'), studentId))
+                        .filter(q=> q.eq(q.field('quarter'), args.quarter))
+                        .filter(q=> q.eq(q.field('subComponent'),args.subComponent))
+                        .first()
+                    hasExistingCR = rec
+                } else {
+                    const rec = await ctx.db.query('classRecords')
+                    .filter(q=> q.eq(q.field('classId'), cls._id))
+                    .filter(q=> q.eq(q.field('studentId'), studentId))
+                    .filter(q=> q.eq(q.field('quarter'), args.quarter))
+                    .first()
+                    hasExistingCR = rec
+                }
+               
 
                 if (hasExistingCR) {
                     if (args.type === "Written Works") {
@@ -52,7 +66,6 @@ export const create = mutation({
                                             ...work,
                                             highestScore: args.score,
                                             score: undefined
-                                            // Add other fields to update here
                                         };
                                     }
                                     return work;
@@ -172,6 +185,7 @@ export const create = mutation({
                             performance: [],
                             quarterlyExam: [],
                             quarter: args.quarter,
+                            subComponent: args.subComponent
                         });
                     } else if (args.quarter === '1st' && args.type === 'Performance Tasks') {
                         await ctx.db.insert('classRecords', {
@@ -185,6 +199,7 @@ export const create = mutation({
                             }],
                             quarterlyExam: [],
                             quarter: args.quarter,
+                            subComponent: args.subComponent
                         });
                     } else if (args.quarter === '1st' && args.type === 'Quarterly Assessment') {
                         await ctx.db.insert('classRecords', {
@@ -198,6 +213,7 @@ export const create = mutation({
                                 highestScore: args.score,
                             }],
                             quarter: args.quarter,
+                            subComponent: args.subComponent
                         });
                     } else if (args.quarter === '2nd' && args.type === 'Written Works') {
                         await ctx.db.insert('classRecords', {
@@ -211,6 +227,7 @@ export const create = mutation({
                             performance: [],
                             quarterlyExam: [],
                             quarter: args.quarter,
+                            subComponent: args.subComponent
                         });
                     } else if (args.quarter === '2nd' && args.type === 'Performance Tasks') {
                         await ctx.db.insert('classRecords', {
@@ -224,6 +241,7 @@ export const create = mutation({
                             }],
                             quarterlyExam: [],
                             quarter: args.quarter,
+                            subComponent: args.subComponent
                         });
                     } else if (args.quarter === '2nd' && args.type === 'Quarterly Assessment') {
                         await ctx.db.insert('classRecords', {
@@ -237,6 +255,7 @@ export const create = mutation({
                                 highestScore: args.score,
                             }],
                             quarter: args.quarter,
+                            subComponent: args.subComponent
                         });
                     } else if (args.quarter === '3rd' && args.type === 'Written Works') {
                         await ctx.db.insert('classRecords', {
@@ -250,6 +269,7 @@ export const create = mutation({
                             performance: [],
                             quarterlyExam: [],
                             quarter: args.quarter,
+                            subComponent: args.subComponent
                         });
                     } else if (args.quarter === '3rd' && args.type === 'Performance Tasks') {
                         await ctx.db.insert('classRecords', {
@@ -263,6 +283,7 @@ export const create = mutation({
                             }],
                             quarterlyExam: [],
                             quarter: args.quarter,
+                            subComponent: args.subComponent
                         });
                     } else if (args.quarter === '3rd' && args.type === 'Quarterly Assessment') {
                         await ctx.db.insert('classRecords', {
@@ -276,6 +297,7 @@ export const create = mutation({
                                 highestScore: args.score,
                             }],
                             quarter: args.quarter,
+                            subComponent: args.subComponent
                         });
                     } else if (args.quarter === '4th' && args.type === 'Written Works') {
                         await ctx.db.insert('classRecords', {
@@ -289,6 +311,7 @@ export const create = mutation({
                             performance: [],
                             quarterlyExam: [],
                             quarter: args.quarter,
+                            subComponent: args.subComponent
                         });
                     } else if (args.quarter === '4th' && args.type === 'Performance Tasks') {
                         await ctx.db.insert('classRecords', {
@@ -302,6 +325,7 @@ export const create = mutation({
                             }],
                             quarterlyExam: [],
                             quarter: args.quarter,
+                            subComponent: args.subComponent
                         });
                     } else if (args.quarter === '4th' && args.type === 'Quarterly Assessment') {
                         await ctx.db.insert('classRecords', {
@@ -315,6 +339,7 @@ export const create = mutation({
                                 highestScore: args.score,
                             }],
                             quarter: args.quarter,
+                            subComponent: args.subComponent
                         });
                     }
                  

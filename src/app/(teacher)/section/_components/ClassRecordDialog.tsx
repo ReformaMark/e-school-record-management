@@ -17,6 +17,9 @@ import { CgDanger } from "react-icons/cg";
 import { IoMdPrint } from 'react-icons/io'
 import { StudentsWithClassRecord } from '@/lib/types'
 import { Doc } from '../../../../../convex/_generated/dataModel'
+import { useReactToPrint } from "react-to-print";
+import { useRef } from "react";
+
 
 interface ClassRecordDialogProp {
   teacher: Doc<'users'>,
@@ -25,20 +28,21 @@ interface ClassRecordDialogProp {
   appliedGW: Doc<'appliedGradeWeigths'>,
   assessments: Doc<'assessments'>[],
   data: StudentsWithClassRecord[]
-
+  subComponent?: string | undefined
 }
 
 function ClassRecordDialog({
-  teacher,
+  teacher, 
   subject,
   section,
   appliedGW,
   assessments,
-  data
+  data,
+  subComponent
 }: ClassRecordDialogProp) {
   const [isDialogOpen, setDialogOpen ] = useState<boolean>(false)
   const [isOpen, setIsOpen ] = useState<boolean>(false)
-
+  const componentRef = useRef(null);
   const sortedrecords = data.map(s => ({
     ...s,
     classRecords: s.classRecords.map(c => ({
@@ -48,6 +52,18 @@ function ClassRecordDialog({
         quarterlyExam: [...c.quarterlyExam].sort((a, b) => a.assessmentNo - b.assessmentNo),
     }))
   }));
+
+  const reactToPrintContent = () => {
+    return componentRef.current;
+  };
+
+  const subjectName = subComponent ? subComponent : subject.name
+  const sectionName = `${section.gradeLevel}-${section.name}`
+
+  const handlePrint = useReactToPrint({
+    documentTitle: `${subjectName}-${sectionName} Class record`,
+
+  });
   
   return (
     <div className="text-primary">
@@ -58,16 +74,13 @@ function ClassRecordDialog({
             <DialogContent className='max-w-full'>
             <DialogHeader className='max-w-full overflow-auto'>
                 <DialogTitle className='text-left text-primary'>Class Record</DialogTitle>
-                <div className=''>
-                  <ClassRecordTemplate assessments={assessments} appliedGW={appliedGW} teacher={teacher} sortedRecords={sortedrecords} subject={subject } section={section}/>
+                <div ref={componentRef} className='p-5'>
+                  <ClassRecordTemplate subComponent={subComponent} assessments={assessments} appliedGW={appliedGW} teacher={teacher} sortedRecords={sortedrecords} subject={subject } section={section}/>
                 </div>
             </DialogHeader>
             <DialogFooter>
                 <Button variant={'ghost'}>Cancel</Button>
-                <Button variant={'default'} onClick={()=> {
-                  setDialogOpen(false)
-                  setIsOpen(true)
-                  }} className='text-white flex gap-x-3'><IoMdPrint />Print</Button>
+                <Button variant={'default'} onClick={()=> {handlePrint(reactToPrintContent)}} className='text-white flex gap-x-3'><IoMdPrint />Print</Button>
             </DialogFooter>
             </DialogContent>
         </Dialog>

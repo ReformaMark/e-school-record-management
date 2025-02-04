@@ -2,10 +2,10 @@
 import React from 'react'
 import { InputGradesCol } from './studentData'
 import { DataTable } from '@/components/data-table';
-import ClassRecordDialog from './ClassRecordDialog';
-import { useClasses } from '../section-data';
+// import ClassRecordDialog from './ClassRecordDialog';
+// import { useClasses } from '../section-data';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import Loading from '@/app/components/Loading';
+// import Loading from '@/app/components/Loading';
 import { ClassesWithDetails } from '@/lib/types';
 import { useQuery } from 'convex/react';
 import { api } from '../../../../../convex/_generated/api';
@@ -15,16 +15,16 @@ interface IProps {
     clss: ClassesWithDetails
 }
 
-function SeniorHighInputGrades({clss, sec}:IProps) {
-    const {isLoading, classes} = useClasses()
+function SeniorHighInputGrades({clss}:IProps) {
+    // const {isLoading, classes} = useClasses()
     const students = useQuery(api.classRecords.get, {classId: clss?._id})
 
     const studentsWithClassRecord = students?.sort((a, b) => (a?.lastName ?? '').localeCompare(b?.lastName ?? ''));
-    const cls = classes?.find((section)=> section.section?.name === sec)
+    // const cls = classes?.find((section)=> section.section?.name === sec)
  
-    if(isLoading) {
-        return <Loading/>
-    }
+    // if(isLoading) {
+    //     return <Loading/>
+    // }
 
     const filterByQuarter = (quarter: string) => {
         return studentsWithClassRecord?.map(student => ({
@@ -49,7 +49,7 @@ function SeniorHighInputGrades({clss, sec}:IProps) {
                 <TabsTrigger value="2nd">4th quarter</TabsTrigger>
             </TabsList>
             <TabsContent value="1st">
-                <ClassRecordDialog subject={cls ? cls.subject?.name ?? "": ''} gradeLevel={cls ? cls.section?.name ?? "" : ''}/>
+                {/* <ClassRecordDialog subject={cls?.subject} gradeLevel={cls ? cls.section?.name ?? "" : ''}/> */}
                 <DataTable
                     columns={InputGradesCol}
                     data={firstQuarterStudents  ?? []}
@@ -58,7 +58,7 @@ function SeniorHighInputGrades({clss, sec}:IProps) {
                 />
             </TabsContent>
             <TabsContent value="2nd">
-                <ClassRecordDialog subject={cls ? cls.subject?.name ?? "" : ''} gradeLevel={cls ? cls.section?.name ?? "" : ''}/>
+                {/* <ClassRecordDialog subject={cls ? cls.subject?.name ?? "" : ''} gradeLevel={cls ? cls.section?.name ?? "" : ''}/> */}
                 <DataTable
                     columns={InputGradesCol}
                     data={secondQuarterStudents ?? []}
@@ -67,7 +67,7 @@ function SeniorHighInputGrades({clss, sec}:IProps) {
                 />
             </TabsContent>
             <TabsContent value="3rd">
-                <ClassRecordDialog subject={cls ? cls.subject?.name ?? "" : ''} gradeLevel={cls ? cls.section?.name ?? "" : ''}/>
+                {/* <ClassRecordDialog subject={cls ? cls.subject?.name ?? "" : ''} gradeLevel={cls ? cls.section?.name ?? "" : ''}/> */}
                 <DataTable
                     columns={InputGradesCol}
                     data={thirdQuarterStudents  ?? []}
@@ -76,7 +76,7 @@ function SeniorHighInputGrades({clss, sec}:IProps) {
                 />
             </TabsContent>
             <TabsContent value="4th">
-                <ClassRecordDialog subject={cls ? cls.subject?.name ?? "" : ''} gradeLevel={cls ? cls.section?.name ?? "" : ''}/>
+                {/* <ClassRecordDialog subject={cls ? cls.subject?.name ?? "" : ''} gradeLevel={cls ? cls.section?.name ?? "" : ''}/> */}
                 <DataTable
                     columns={InputGradesCol}
                     data={fourthQuarterStudents ?? []}

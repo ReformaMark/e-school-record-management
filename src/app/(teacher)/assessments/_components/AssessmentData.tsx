@@ -27,7 +27,7 @@ export const AssessmentColumn: ColumnDef<AssessmentTypes>[] = [
           const assessment = row.original
           return (
             <div className="">
-              <h3>{assessment.subject?.name}</h3>
+              <h3>{assessment.subject?.name} {assessment.subComponent ? `- ${assessment.subComponent}` : ""}</h3>
             </div>
           )
         }

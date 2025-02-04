@@ -162,7 +162,7 @@ export default defineSchema({
     name: v.string(),
     gradeLevel: v.number(),
     subjectCode: v.string(),
-    subjectCategory: v.string(), // core, applied and, specialized
+    subjectCategory: v.optional(v.string()), // core, applied and, specialized
     gradeWeights: v.optional(v.object({
       written: v.number(),
       performance: v.number(),
@@ -226,7 +226,8 @@ export default defineSchema({
     highestScore: v.number(),
     teacherId: v.id("users"),
     classId: v.array(v.id('classes')),
-    schoolYear: v.optional(v.string()) 
+    schoolYear: v.optional(v.string()),
+    subComponent: v.optional(v.string())
   }).index("by_classId", ["classId"])
     .index("by_teacherId", ["teacherId"])
     .index("by_subject", ["subjectId"]),
@@ -250,6 +251,7 @@ export default defineSchema({
       score: v.optional(v.number()),
       highestScore: v.number(),
     })),
+    subComponent: v.optional(v.string()), // Music, arts, PE, Health
     quarter: v.string(),
   }).index("by_studentId", ["studentId"])
     .index("by_classId", ["classId"]),

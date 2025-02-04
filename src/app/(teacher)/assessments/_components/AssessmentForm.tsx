@@ -57,25 +57,24 @@ export const AssessmentForm = ({
     const [selectedQuarter, setSelectedQuarter] = useState<string>("")
     const [selectedSubjectId, setSelectedSubjectId] = useState<Id<'subjects'> | undefined>()
     const [isLoading, setIsLoading] = useState<boolean>(false)
+    const [subComponent, setSubComponent] = useState<string>()
 
     const addWrittenWorks = useMutation(api.assessments.addWrittenWorks)
     const createClassRecords = useMutation(api.classRecords.create)
     const {classes} = useClasses()
     const schoolYears = useQuery(api.schoolYear.get)
+    const subject = useQuery(api.subjects.getSubject, {subjectId: selectedSubjectId})
 
     const sy = schoolYears && schoolYears[0] 
-    const teacherGradeLevels = Array.from(new Set(classes?.map((cl) => cl.section?.gradeLevel)));
-    const gradelevels = teacherGradeLevels.filter(level => level !== undefined)
+    const teacherGradeLevels = Array.from(new Set(classes?.map((cl) => cl.subject?.gradeLevel)));
+    const gradelevels = teacherGradeLevels.filter(level => level !== undefined).sort((a,b)=> a - b)
 
     const teacherSubjects = Array.from(new Set(classes?.map((cl) => cl.subject?.name)));
     const subjects = useQuery(api.subjects.getSubjects);
     const filteredSubjects = subjects?.filter(subject => 
         subject.gradeLevel === Number(selectedGLevel) && 
         teacherSubjects.includes(subject.name)
-    );
-    const getTheHighestAssessmentNo = useQuery(api.assessments.getTheHighestAssessmentNo, {type: assessmment, gradeLevel: selectedGLevel, subjectId: selectedSubjectId, quarter: selectedQuarter})
-    const existingAssessmentNo = getTheHighestAssessmentNo?.assessments.map(assessment => assessment.assessmentNo) ?? [];
-  
+    )
 
     const form = useForm<z.infer<typeof AssessmentFormSchema>>({
         resolver: zodResolver(AssessmentFormSchema),
@@ -88,9 +87,12 @@ export const AssessmentForm = ({
             highestScore: 0,
             classId: [],
             schoolYear: "",
-            subject: ""
+            subject: "",
+            subComponent: undefined,
         }
     })
+    const getTheHighestAssessmentNo = useQuery(api.assessments.getTheHighestAssessmentNo, {type: assessmment, gradeLevel: selectedGLevel, subjectId: selectedSubjectId, quarter: selectedQuarter, subComponent:subComponent})
+    const existingAssessmentNo = getTheHighestAssessmentNo?.assessments.map(assessment => assessment.assessmentNo) ?? [];
 
     function onSubmit(data: z.infer<typeof AssessmentFormSchema>) {
         setIsLoading(true)
@@ -103,7 +105,8 @@ export const AssessmentForm = ({
             highestScore: data.highestScore,
             classId: [],
             schoolYear: data.schoolYear,
-            subjectId: data.subject as Id<'subjects'>
+            subjectId: data.subject as Id<'subjects'>,
+            subComponent: subComponent
         }), {
             loading: 'Adding new assessment...',
             success: async() => {
@@ -115,10 +118,12 @@ export const AssessmentForm = ({
                     assessmentNo: data.assessmentNo,
                     type: data.type as string,
                     score: data.highestScore,
-                    schoolYearId: sy?._id
+                    schoolYearId: sy?._id,
+                    subComponent: subComponent
                 })
                 form.reset()
                 setDialogOpen(false)
+                
                 return 'Assessment added successfully.'
             },
             error: (error) => {
@@ -129,8 +134,13 @@ export const AssessmentForm = ({
                 return 'Failed to add new assessment.'
             }
         })
-    
+        setDialogOpen(false)
+        setSelectedGLevel("")
+        setSelectedQuarter("")
+        setSelectedSubjectId(undefined)
+        setSubComponent(undefined)
     }
+
     return (
         <Dialog open={dialogOpen}>
             <DialogTrigger onClick={()=>{setDialogOpen(true)}} className='border shadow-md  text-xs flex justify-center items-center gap-x-3 disabled:bg-blue-200 bg-blue-600 text-white border-gray-100 rounded-md px-2 py-1'>
@@ -219,13 +229,14 @@ export const AssessmentForm = ({
                                                     <Select onValueChange={(value) => {
                                                             field.onChange(value)
                                                             setSelectedSubjectId(value as Id<'subjects'>)
+                                                          
                                                         }} value={field.value.toString()} >
                                                         <SelectTrigger>
                                                             <SelectValue placeholder="Select a Subject " />
                                                         </SelectTrigger>
                                                         <SelectContent>
                                                         {filteredSubjects && filteredSubjects.map((subject)=>(
-                                                            <SelectItem key={subject._id} value={subject._id}>{subject.name}</SelectItem>
+                                                            <SelectItem key={subject._id} value={subject._id} onClick={() => subject?.name?.toUpperCase() !== "MAPEH" && setSubComponent(undefined)}>{subject.name}</SelectItem>
                                                         ))}
                                                         </SelectContent>
                                                     </Select>
@@ -235,6 +246,39 @@ export const AssessmentForm = ({
                                             )}
                                         />
                                     </div>
+                                    {subject && subject.name?.toUpperCase() === "MAPEH" && (
+                                        <div className="grid gap-2">
+                                            <FormField
+                                                name="subComponent"
+                                                control={form.control}
+                                                render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Sub Component <span className='text-red-700'>*</span></FormLabel>
+                                                    <FormControl>
+                                                        <Select 
+                                                            onValueChange={(value) => {
+                                                                setSubComponent(value)
+                                                                field.onChange(value)
+                                                            }} 
+                                                            value={subject?.name?.toUpperCase() !== "MAPEH" ? undefined : field.value} 
+                                                        >
+                                                            <SelectTrigger>
+                                                                <SelectValue placeholder="Select a Subject " />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                            {["Music"," Arts", "Physical Education", "Health"].map((s)=>(
+                                                                <SelectItem key={s} value={s} >{s}</SelectItem>
+                                                            ))}
+                                                            </SelectContent>
+                                                        </Select>
+                                                    </FormControl>
+                                                    <FormMessage/>
+                                                </FormItem>
+                                                )}
+                                            />
+                                        </div>
+                                    )}
+                                  
 
                                     <div className="grid gap-2">
                                         <FormField
@@ -305,6 +349,7 @@ export const AssessmentForm = ({
                                         setSelectedGLevel("")
                                         setSelectedQuarter("")
                                         setSelectedSubjectId(undefined)
+                                        setSubComponent(undefined)
                                         form.reset()
                                     }} 
                                     disabled={isLoading} 

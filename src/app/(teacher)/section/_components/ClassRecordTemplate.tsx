@@ -2,7 +2,7 @@
 import React from 'react'
 import { StudentsWithClassRecord } from '@/lib/types';
 import { Doc } from '../../../../../convex/_generated/dataModel';
-import { calculateInitialGrade, calculatePercentageScore, calculateTotalScore, calculateWeightedScore, convertToTransmutedGrade } from '@/lib/utils';
+import { calculateInitialGrade, calculatePercentageScore, calculateTotalScore, calculateWeightedScore, convertToTransmutedGrade, formatQuarter } from '@/lib/utils';
 
 interface ClassRecordTemplateProps {
     sortedRecords: StudentsWithClassRecord[],
@@ -10,7 +10,8 @@ interface ClassRecordTemplateProps {
     teacher: Doc<'users'>,
     section: Doc<'sections'>,
     appliedGW: Doc<'appliedGradeWeigths'>
-    assessments: Doc<'assessments'>[]
+    assessments: Doc<'assessments'>[],
+    subComponent: string | undefined
 }
 
 function ClassRecordTemplate({
@@ -19,9 +20,10 @@ function ClassRecordTemplate({
     subject,
     section,
     appliedGW,
-    assessments
+    assessments,
+    subComponent
 }: ClassRecordTemplateProps) {
-    // let performanceTaskPercentage;
+    // let performanceTaskPercentage; 
     // let writtenTaskPercentage;
     // let quarterlyAssesmentPercentage = 20;
 
@@ -77,9 +79,9 @@ function ClassRecordTemplate({
     // }
 
     const teacherFullName = `${teacher.firstName} ${teacher.middleName ? teacher.middleName : ""} ${teacher.lastName}`
-    const quarter = sortedRecords[0].classRecords[0].quarter
+    const quarter = sortedRecords[0].classRecords.length < 1 ? "1" : sortedRecords[0].classRecords[0].quarter
     const gradeAndSection = `${section.gradeLevel} - ${section.name}`
-    const subjectName = subject.name
+    const subjectName = subComponent ? subComponent : subject.name
 
     const writtenAssessments = assessments.filter( a => a.type === "Written Works").filter(a => a.quarter === quarter).sort((a,b)=> a.assessmentNo - b.assessmentNo)
     const performanceAssessments = assessments.filter( a => a.type === "Performance Tasks").filter(a => a.quarter === quarter).sort((a,b)=> a.assessmentNo - b.assessmentNo)
@@ -89,9 +91,9 @@ function ClassRecordTemplate({
     const totalPerformance = performanceAssessments.reduce((sum, assessment) => sum + assessment.highestScore, 0);
     const totalQE = quarterlyAssessments.reduce((sum, assessment) => sum + assessment.highestScore, 0);
 
-    const writtenWeight = appliedGW.written
-    const performanceWeight = appliedGW.performance
-    const examWeight = appliedGW.exam
+    const writtenWeight = appliedGW?.written ?? 0
+    const performanceWeight = appliedGW?.performance ?? 0
+    const examWeight = appliedGW?.exam ?? 0
 
 
     const males = sortedRecords
@@ -106,17 +108,17 @@ function ClassRecordTemplate({
 
     <div className='min-w-[1000px] text-primary'>
         <div className="flex w-full border-collapse">
-            <h1 className='border w-[25%] px-3 py-1 uppercase border-black border-collapse text-xs font-semibold text-center'>{quarter} Quarter</h1>
-            <h1 className='border w-[25%] px-3 py-1 uppercase border-black border-collapse text-xs font-semibold text-left'>{gradeAndSection}</h1>
-            <h1 className='border w-[25%] px-3 py-1 uppercase border-black border-collapse text-xs font-semibold text-left'>{teacherFullName}</h1>
+            <h1 className='border w-[25%] px-3 py-1 uppercase border-black border-collapse text-xs font-semibold text-center'>{formatQuarter(quarter)} Quarter</h1>
+            <h1 className='border w-[25%] px-3 py-1 uppercase border-black border-collapse text-xs font-semibold text-left'>Grade & Section: {gradeAndSection}</h1>
+            <h1 className='border w-[25%] px-3 py-1 uppercase border-black border-collapse text-xs font-semibold text-left'>Teacher: {teacherFullName}</h1>
             <h1 className='border w-[25%] px-3 py-1 uppercase border-black border-collapse text-xs font-semibold text-center'>{subjectName}</h1>
         </div>
         <div className="flex max-w-full">
             <h1 className="w-[3%] uppercase border border-black border-collapse text-sm font-semibold text-center"></h1>
             <h1 className="w-[22%] uppercase border border-black border-collapse text-sm flex justify-center items-center font-semibold text-center">Learner&apos; Names</h1>
-            <h1 className="w-[27%] uppercase border border-black border-collapse text-sm flex justify-center items-center font-semibold text-center">Written Works ({appliedGW.written}%)</h1>
-            <h1 className="w-[28%] uppercase border border-black border-collapse text-sm flex justify-center items-center font-semibold text-center">Performance Task ({appliedGW.performance}%)</h1>
-            <h1 className="w-[8%] uppercase border border-black border-collapse text-[0.6rem] leading-relaxed flex justify-center items-center font-semibold text-center">Quarterly Assessment ({appliedGW.exam}%)</h1>
+            <h1 className="w-[27%] uppercase border border-black border-collapse text-sm flex justify-center items-center font-semibold text-center">Written Works ({writtenWeight}%)</h1>
+            <h1 className="w-[28%] uppercase border border-black border-collapse text-sm flex justify-center items-center font-semibold text-center">Performance Task ({performanceWeight}%)</h1>
+            <h1 className="w-[8%] uppercase border border-black border-collapse text-[0.6rem] leading-relaxed flex justify-center items-center font-semibold text-center">Quarterly Assessment ({examWeight}%)</h1>
             <h1 className="w-[6%] uppercase border border-black border-b-0 border-collapse text-[0.6rem] flex justify-center items-center  font-semibold text-center">Initial</h1>
             <h1 className="w-[6%] uppercase border border-black border-b-0  border-collapse text-[0.55rem] flex justify-center items-center font-semibold text-center">Quarterly</h1>
         </div>
@@ -176,7 +178,7 @@ function ClassRecordTemplate({
                 ))}
                 <h1 className="w-[10%]  h-full border border-b-0 border-black border-collapse text-[0.6rem] flex justify-center items-center font-semibold text-center">{totalWritten}</h1>
                 <h1 className="w-[10%]  h-full uppercase border border-b-0 border-black border-collapse text-[0.5rem] flex justify-center items-center font-semibold text-center">{calculatePercentageScore(totalWritten,totalWritten)}</h1>
-                <h1 className="w-[10%] h-full uppercase border border-b-0 border-black border-collapse text-[0.6rem] flex justify-center items-center font-semibold text-center">{calculateWeightedScore(calculatePercentageScore(totalWritten,totalWritten),writtenWeight)}%</h1>
+                <h1 className="w-[10%] h-full uppercase border border-b-0 border-black border-collapse text-[0.5rem] md:text-[0.6rem] flex justify-center items-center font-semibold text-center">{calculateWeightedScore(calculatePercentageScore(totalWritten,totalWritten),writtenWeight)}%</h1>
             </div>
             <div className="w-[28%] uppercase border border-black border-x-0 border-collapse text-sm flex justify-center items-center font-semibold text-center">
                 {Array.from({ length: 10 }).map((_, index) => (
@@ -188,13 +190,13 @@ function ClassRecordTemplate({
                     </h1>
                 ))}
                 <h1 className="w-[10%] h-full border border-b-0 border-black border-collapse text-[0.6rem] flex justify-center items-center font-semibold text-center">{totalPerformance}</h1>
-                <h1 className="w-[10%] h-full uppercase border border-b-0 border-black border-collapse text-[0.6rem] flex justify-center items-center font-semibold text-center">{calculatePercentageScore(totalPerformance,totalPerformance)}</h1>
-                <h1 className="w-[10%] h-full uppercase border border-b-0 border-black border-collapse text-[0.6rem] flex justify-center items-center font-semibold text-center">{calculateWeightedScore(calculatePercentageScore(totalPerformance,totalPerformance),performanceWeight)}%</h1>
+                <h1 className="w-[10%] h-full uppercase border border-b-0 border-black border-collapse text-[0.5rem] md:text-[0.6rem] flex justify-center items-center font-semibold text-center">{calculatePercentageScore(totalPerformance,totalPerformance)}</h1>
+                <h1 className="w-[10%] h-full uppercase border border-b-0 border-black border-collapse text-[0.5rem] md:text-[0.6rem] flex justify-center items-center font-semibold text-center">{calculateWeightedScore(calculatePercentageScore(totalPerformance,totalPerformance),performanceWeight)}%</h1>
             </div>
             <div className="w-[8%] uppercase border border-x-0 border-black border-collapse text-sm leading-relaxed grid grid-cols-3 justify-center items-center font-semibold text-center">
                 <h1 className="h-full uppercase border  border-black border-b-0 border-t-0 border-collapse text-xs flex justify-center items-center  font-semibold text-center">{totalQE}</h1>
-                <h1 className="h-full uppercase border border-black border-b-0 border-t-0 border-collapse text-[0.5rem] flex justify-center items-center  font-semibold text-center">{calculatePercentageScore(totalQE,totalQE)}</h1>
-                <h1 className="h-full uppercase border border-black border-b-0 border-t-0 border-collapse text-[0.6rem] flex justify-center items-center  font-semibold text-center">{examWeight ? `${calculateWeightedScore(calculatePercentageScore(totalQE,totalQE),examWeight ?? 0)}%` : ""}</h1>
+                <h1 className="h-full uppercase border border-black border-b-0 border-t-0 border-collapse text-[0.5rem] md:text-[0.6rem] flex justify-center items-center  font-semibold text-center">{calculatePercentageScore(totalQE,totalQE)}</h1>
+                <h1 className="h-full uppercase border border-black border-b-0 border-t-0 border-collapse text-[0.5rem] md:text-[0.6rem] flex justify-center items-center  font-semibold text-center">{examWeight ? `${calculateWeightedScore(calculatePercentageScore(totalQE,totalQE),examWeight ?? 0)}%` : ""}</h1>
             </div>
             <h1 className="w-[6%] uppercase border border-black border-t-0  border-collapse text-xs flex justify-center items-start  font-semibold text-center"></h1>
             <h1 className="w-[6%] uppercase border border-black border-t-0   border-collapse text-xs flex justify-center items-start font-semibold text-center"></h1>
@@ -249,8 +251,8 @@ function ClassRecordTemplate({
                     </h1>
                 ))}
                 <h1 className="w-[10%]  h-full border border-b-0 border-black border-collapse text-[0.6rem] flex justify-center items-center font-semibold text-center">{calculateTotalScore(male.classRecords[0]?.written)}</h1>
-                <h1 className="w-[10%]  h-full uppercase border border-b-0 border-black border-collapse text-xs flex justify-center items-center font-semibold text-center">{calculatePercentageScore(calculateTotalScore(male.classRecords[0]?.written), totalWritten).toFixed(2)}</h1>
-                <h1 className="w-[10%] h-full uppercase border border-b-0 border-black border-collapse text-xs flex justify-center items-center font-semibold text-center">{calculateWeightedScore(calculatePercentageScore(calculateTotalScore(male.classRecords[0]?.written), totalWritten), writtenWeight).toFixed(2)}%</h1>
+                <h1 className="w-[10%]  h-full uppercase border border-b-0 border-black border-collapse text-[0.5rem] md:text-[0.6rem] flex justify-center items-center font-semibold text-center">{calculatePercentageScore(calculateTotalScore(male.classRecords[0]?.written), totalWritten).toFixed(1)}</h1>
+                <h1 className="w-[10%] h-full uppercase border border-b-0 border-black border-collapse text-[0.5rem] md:text-[0.6rem] flex justify-center items-center font-semibold text-center">{calculateWeightedScore(calculatePercentageScore(calculateTotalScore(male.classRecords[0]?.written), totalWritten), writtenWeight).toFixed(0)}%</h1>
             </div>
             <div className="w-[28%] uppercase border border-x-0 border-black border-collapse text-sm flex justify-center items-center font-semibold text-center">
                 {Array.from({ length: 10 }).map((_, index) => (
@@ -262,13 +264,13 @@ function ClassRecordTemplate({
                     </h1>
                 ))}
                 <h1 className="w-[10%]  h-full border border-b-0 border-black border-collapse text-[0.6rem] flex justify-center items-center font-semibold text-center">{calculateTotalScore(male.classRecords[0]?.performance)}</h1>
-                <h1 className="w-[10%]  h-full uppercase border border-b-0 border-black border-collapse text-xs flex justify-center items-center font-semibold text-center">{calculatePercentageScore(calculateTotalScore(male.classRecords[0]?.performance), totalPerformance).toFixed(2)}</h1>
-                <h1 className="w-[10%] h-full uppercase border border-b-0 border-black border-collapse text-xs flex justify-center items-center font-semibold text-center">{calculateWeightedScore(calculatePercentageScore(calculateTotalScore(male.classRecords[0]?.performance), totalPerformance), performanceWeight).toFixed(2)}%</h1>
+                <h1 className="w-[10%]  h-full uppercase border border-b-0 border-black border-collapse text-[0.5rem] md:text-[0.6rem] flex justify-center items-center font-semibold text-center">{calculatePercentageScore(calculateTotalScore(male.classRecords[0]?.performance), totalPerformance).toFixed(1)}</h1>
+                <h1 className="w-[10%] h-full uppercase border border-b-0 border-black border-collapse text-[0.5rem] md:text-[0.6rem] flex justify-center items-center font-semibold text-center">{calculateWeightedScore(calculatePercentageScore(calculateTotalScore(male.classRecords[0]?.performance), totalPerformance), performanceWeight).toFixed(0)}%</h1>
             </div>
             <div className="w-[8%] uppercase border border-x-0 border-black border-collapse text-sm leading-relaxed grid grid-cols-3 justify-center items-center font-semibold text-center">
-                <h1 className="h-full uppercase border border-black border-b-0 border-t-0 border-collapse text-xs flex justify-center items-center  font-semibold text-center">{male?.classRecords?.[0]?.quarterlyExam?.[0]?.score ?? 0}</h1>
-                <h1 className="h-full uppercase border border-black border-b-0 border-t-0 border-collapse text-xs flex justify-center items-center  font-semibold text-center">{calculatePercentageScore(calculateTotalScore(male.classRecords[0]?.quarterlyExam), totalQE).toFixed(2)}</h1>
-                <h1 className="h-full uppercase border border-black border-b-0 border-t-0 border-collapse text-xs flex justify-center items-center  font-semibold text-center">{calculateWeightedScore(calculatePercentageScore(calculateTotalScore(male.classRecords[0]?.quarterlyExam), totalQE ?? 0), examWeight?? 0).toFixed(2)}%</h1>
+                <h1 className="h-full uppercase border border-black border-b-0 border-t-0 border-collapse text-[0.5rem] md:text-[0.6rem] flex justify-center items-center  font-semibold text-center">{male?.classRecords?.[0]?.quarterlyExam?.[0]?.score ?? 0}</h1>
+                <h1 className="h-full uppercase border border-black border-b-0 border-t-0 border-collapse text-[0.5rem] md:text-[0.6rem] flex justify-center items-center  font-semibold text-center">{calculatePercentageScore(calculateTotalScore(male.classRecords[0]?.quarterlyExam), totalQE).toFixed(1)}</h1>
+                <h1 className="h-full uppercase border border-black border-b-0 border-t-0 border-collapse text-[0.5rem] md:text-[0.6rem] flex justify-center items-center  font-semibold text-center">{calculateWeightedScore(calculatePercentageScore(calculateTotalScore(male.classRecords[0]?.quarterlyExam), totalQE ?? 0), examWeight?? 0).toFixed(0)}%</h1>
             </div>
             <div className="w-[12%] uppercase border border-x-0 border-black border-collapse text-sm leading-relaxed grid grid-cols-2 justify-center items-center font-semibold text-center">
                 <h1 className="h-full uppercase border border-black border-b-0 border-t-0 border-collapse text-xs flex justify-center items-center  font-semibold text-center">
@@ -285,9 +287,9 @@ function ClassRecordTemplate({
                             calculateWeightedScore(calculatePercentageScore(calculateTotalScore(male.classRecords[0]?.performance), totalPerformance ?? 0), performanceWeight?? 0),
                             calculateWeightedScore(calculatePercentageScore(calculateTotalScore(male.classRecords[0]?.quarterlyExam), totalQE ?? 0), examWeight?? 0)
                         ),
-                        section.gradeLevel,
-                        appliedGW.learningMode,
-                        subject.subjectCategory?.toLowerCase()
+                        section?.gradeLevel,
+                        appliedGW?.learningMode,
+                        subject?.subjectCategory?.toLowerCase()
                     )}
                 </h1>
              </div>
@@ -344,8 +346,8 @@ function ClassRecordTemplate({
                 ))}
                 
                  <h1 className="w-[10%]  h-full border border-b-0 border-black border-collapse text-[0.6rem] flex justify-center items-center font-semibold text-center">{calculateTotalScore(female.classRecords[0]?.written)}</h1>
-                 <h1 className="w-[10%]  h-full uppercase border border-b-0 border-black border-collapse text-xs flex justify-center items-center font-semibold text-center">{calculatePercentageScore(calculateTotalScore(female.classRecords[0]?.written), totalWritten).toFixed(2)}</h1>
-                 <h1 className="w-[10%] h-full uppercase border border-b-0 border-black border-collapse text-xs flex justify-center items-center font-semibold text-center">{calculateWeightedScore(calculatePercentageScore(calculateTotalScore(female.classRecords[0]?.written), totalWritten), writtenWeight).toFixed(2)}%</h1>
+                 <h1 className="w-[10%]  h-full uppercase border border-b-0 border-black border-collapse text-[0.5rem] md:text-[0.6rem] flex justify-center items-center font-semibold text-center">{calculatePercentageScore(calculateTotalScore(female.classRecords[0]?.written), totalWritten).toFixed(1)}</h1>
+                 <h1 className="w-[10%] h-full uppercase border border-b-0 border-black border-collapse text-[0.5rem] md:text-[0.6rem] flex justify-center items-center font-semibold text-center">{calculateWeightedScore(calculatePercentageScore(calculateTotalScore(female.classRecords[0]?.written), totalWritten), writtenWeight).toFixed(0)}%</h1>
              </div>
              <div className="w-[28%] uppercase border border-x-0 border-black border-collapse text-sm flex justify-center items-center font-semibold text-center">
                 {Array.from({ length: 10 }).map((_, index) => (
@@ -357,13 +359,13 @@ function ClassRecordTemplate({
                 </h1>
                 ))}
                  <h1 className="w-[10%] h-full border border-b-0 border-black border-collapse text-[0.6rem] flex justify-center items-center font-semibold text-center">{female.classRecords[0]?.performance[0]?.score || ""}</h1>
-                 <h1 className="w-[10%] h-full uppercase border border-b-0 border-black border-collapse text-[0.6rem] flex justify-center items-center font-semibold text-center">{calculatePercentageScore(calculateTotalScore(female.classRecords[0]?.performance), totalPerformance).toFixed(2)}</h1>
-                 <h1 className="w-[10%] h-full uppercase border border-b-0 border-black border-collapse text-[0.6rem] flex justify-center items-center font-semibold text-center">{calculateWeightedScore(calculatePercentageScore(calculateTotalScore(female.classRecords[0]?.performance), totalPerformance ?? 0), performanceWeight?? 0).toFixed(2)}%</h1>
+                 <h1 className="w-[10%] h-full uppercase border border-b-0 border-black border-collapse text-[0.5rem] md:text-[0.6rem] flex justify-center items-center font-semibold text-center">{calculatePercentageScore(calculateTotalScore(female.classRecords[0]?.performance), totalPerformance).toFixed(1)}</h1>
+                 <h1 className="w-[10%] h-full uppercase border border-b-0 border-black border-collapse text-[0.5rem] md:text-[0.6rem] flex justify-center items-center font-semibold text-center">{calculateWeightedScore(calculatePercentageScore(calculateTotalScore(female.classRecords[0]?.performance), totalPerformance ?? 0), performanceWeight?? 0).toFixed(0)}%</h1>
              </div>
              <div className="w-[8%] uppercase border border-x-0 border-black border-collapse text-sm leading-relaxed grid grid-cols-3 justify-center items-center font-semibold text-center">
-                 <h1 className="h-full uppercase border border-black border-b-0 border-t-0 border-collapse text-xs flex justify-center items-center  font-semibold text-center">{female.classRecords[0]?.performance[0]?.score}</h1>
-                 <h1 className="h-full uppercase border border-black border-b-0 border-t-0 border-collapse text-xs flex justify-center items-center  font-semibold text-center">{calculatePercentageScore(calculateTotalScore(female.classRecords[0]?.quarterlyExam), totalQE).toFixed(2)}</h1>
-                 <h1 className="h-full uppercase border border-black border-b-0 border-t-0 border-collapse text-xs flex justify-center items-center  font-semibold text-center">{calculateWeightedScore(calculatePercentageScore(calculateTotalScore(female.classRecords[0]?.quarterlyExam), totalQE ?? 0), examWeight?? 0).toFixed(2)}%</h1>
+                 <h1 className="h-full uppercase border border-black border-b-0 border-t-0 border-collapse text-[0.5rem] md:text-[0.6rem] flex justify-center items-center  font-semibold text-center">{female.classRecords[0]?.performance[0]?.score}</h1>
+                 <h1 className="h-full uppercase border border-black border-b-0 border-t-0 border-collapse text-[0.5rem] md:text-[0.6rem] flex justify-center items-center  font-semibold text-center">{calculatePercentageScore(calculateTotalScore(female.classRecords[0]?.quarterlyExam), totalQE).toFixed(1)}</h1>
+                 <h1 className="h-full uppercase border border-black border-b-0 border-t-0 border-collapse text-[0.5rem] md:text-[0.6rem] flex justify-center items-center  font-semibold text-center">{calculateWeightedScore(calculatePercentageScore(calculateTotalScore(female.classRecords[0]?.quarterlyExam), totalQE ?? 0), examWeight?? 0).toFixed(0)}%</h1>
              </div>
              <div className="w-[12%] uppercase border border-x-0 border-black border-collapse text-sm leading-relaxed grid grid-cols-2 justify-center items-center font-semibold text-center">
                 <h1 className="h-full uppercase border border-black border-b-0 border-t-0 border-collapse text-xs flex justify-center items-center  font-semibold text-center">{
@@ -380,9 +382,9 @@ function ClassRecordTemplate({
                             calculateWeightedScore(calculatePercentageScore(calculateTotalScore(female.classRecords[0]?.performance), totalPerformance ?? 0), performanceWeight?? 0),
                             calculateWeightedScore(calculatePercentageScore(calculateTotalScore(female.classRecords[0]?.quarterlyExam), totalQE ?? 0), examWeight?? 0)
                         ),
-                        section.gradeLevel,
-                        appliedGW.learningMode,
-                        subject.subjectCategory?.toLowerCase()
+                        section?.gradeLevel,
+                        appliedGW?.learningMode,
+                        subject?.subjectCategory?.toLowerCase()
                     )}
                 </h1>
              </div>

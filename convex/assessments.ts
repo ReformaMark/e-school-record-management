@@ -70,7 +70,8 @@ export const addWrittenWorks = mutation({
         highestScore: v.number(),
         classId: v.array(v.id('classes')),
         schoolYear: v.optional(v.string()),
-        subjectId: v.id('subjects')
+        subjectId: v.id('subjects'),
+        subComponent: v.optional(v.string())
     },
     handler: async(ctx, args) =>{
         const teacherId = await getAuthUserId(ctx)
@@ -89,6 +90,7 @@ export const addWrittenWorks = mutation({
                 throw new ConvexError('Quarterly Assessment already exists.')
             }
         }
+       
         const ww = await ctx.db.insert('assessments', {
             type: args.type,
             teacherId: teacherId,
@@ -99,7 +101,8 @@ export const addWrittenWorks = mutation({
             classId: args.classId,
             quarter: args.quarter,
             schoolYear: args.schoolYear,
-            subjectId: args.subjectId
+            subjectId: args.subjectId,
+            subComponent: args.subComponent
         })
         return
     }
@@ -110,7 +113,8 @@ export const getTheHighestAssessmentNo = query({
         type: v.string(),
         gradeLevel: v.optional(v.string()),
         subjectId: v.optional(v.id('subjects')),
-        quarter: v.optional(v.string())
+        quarter: v.optional(v.string()),
+        subComponent: v.optional(v.string())
 
     },
     handler: async(ctx, args) =>{
@@ -119,18 +123,36 @@ export const getTheHighestAssessmentNo = query({
             throw new ConvexError('No teacher Id.')
         }
 
-        const assessment = await ctx.db.query('assessments')
-        .filter(q => q.eq(q.field('gradeLevel'), Number(args.gradeLevel)))
-        .filter(q => q.eq(q.field('subjectId'), args.subjectId))
-        .filter(q => q.eq(q.field('type'), args.type))
-        .filter(q => q.eq(q.field('teacherId'), teacherId))
-        .filter(q => q.eq(q.field('quarter'), args.quarter))
-        .collect()
-        const filteredAssessment = assessment?.sort((a,b) => b.assessmentNo - a.assessmentNo)
-        return {
-            ...filteredAssessment[0],
-            assessments: filteredAssessment
+        if(args.subComponent){
+            const assessment = await ctx.db.query('assessments')
+            .filter(q => q.eq(q.field('gradeLevel'), Number(args.gradeLevel)))
+            .filter(q => q.eq(q.field('subjectId'), args.subjectId))
+            .filter(q => q.eq(q.field('type'), args.type))
+            .filter(q => q.eq(q.field('teacherId'), teacherId))
+            .filter(q => q.eq(q.field('quarter'), args.quarter))
+            .filter(q => q.eq(q.field('subComponent'), args.subComponent))
+            .collect()
+            const filteredAssessment = assessment?.sort((a,b) => b.assessmentNo - a.assessmentNo)
+            return {
+                ...filteredAssessment[0],
+                assessments: filteredAssessment
+            }
+        } else {
+            const assessment = await ctx.db.query('assessments')
+            .filter(q => q.eq(q.field('gradeLevel'), Number(args.gradeLevel)))
+            .filter(q => q.eq(q.field('subjectId'), args.subjectId))
+            .filter(q => q.eq(q.field('type'), args.type))
+            .filter(q => q.eq(q.field('teacherId'), teacherId))
+            .filter(q => q.eq(q.field('quarter'), args.quarter))
+            .collect()
+            const filteredAssessment = assessment?.sort((a,b) => b.assessmentNo - a.assessmentNo)
+            return {
+                ...filteredAssessment[0],
+                assessments: filteredAssessment
+            }
         }
+       
+      
     }
 });
 
