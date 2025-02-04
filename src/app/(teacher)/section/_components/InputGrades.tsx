@@ -9,6 +9,7 @@ import Loading from '@/app/components/Loading';
 import { ClassesWithDetails } from '@/lib/types';
 import { useQuery } from 'convex/react';
 import { api } from '../../../../../convex/_generated/api';
+import { Doc } from '../../../../../convex/_generated/dataModel';
 
 interface IProps {
     sec: string
@@ -18,9 +19,13 @@ interface IProps {
 function InputGrades({sec, clss}:IProps) {
     const {isLoading, classes} = useClasses()
     const students = useQuery(api.classRecords.get, {classId: clss?._id})
+    const teacher = useQuery(api.users.teacher)
+   
 
     const studentsWithClassRecord = students?.sort((a, b) => (a?.lastName ?? '').localeCompare(b?.lastName ?? ''));
     const cls = classes?.find((section)=> section.section?.name === sec)
+    const appliedGW = useQuery(api.appliedGradeWeigths.get, {subjectId: cls?.subjectId })
+    const assessments = useQuery(api.assessments.getAssessmentsBySubject, {subjectId: cls?.subjectId })
     
     if(isLoading) {
         return <Loading/>
@@ -51,9 +56,12 @@ function InputGrades({sec, clss}:IProps) {
         </TabsList>
         <TabsContent value="1st">
             <ClassRecordDialog 
+                teacher={teacher as Doc<'users'>}
                 data={firstQuarterStudents ?? []} 
-                subject={cls ? cls.subject?.name ?? "" : ''} 
-                gradeLevel={cls ? cls.section?.gradeLevel.toString() ?? "" : ''}
+                subject={cls?.subject as Doc<'subjects'> } 
+                section={cls?.section as Doc<'sections'>}
+                appliedGW={appliedGW as Doc<'appliedGradeWeigths'>}
+                assessments={assessments as Doc<'assessments'>[]}
             />
             <DataTable
                 columns={InputGradesCol}
@@ -63,10 +71,13 @@ function InputGrades({sec, clss}:IProps) {
             />
         </TabsContent>
         <TabsContent value="2nd">
-        <ClassRecordDialog 
+            <ClassRecordDialog 
+                teacher={teacher as Doc<'users'>}
                 data={secondQuarterStudents ?? []} 
-                subject={cls ? cls.subject?.name ?? "" : ''} 
-                gradeLevel={cls ? cls.section?.gradeLevel.toString() ?? "" : ''}
+                subject={cls?.subject as Doc<'subjects'> } 
+                section={cls?.section as Doc<'sections'>}
+                appliedGW={appliedGW as Doc<'appliedGradeWeigths'>}
+                assessments={assessments as Doc<'assessments'>[]}
             />
             <DataTable
                 columns={InputGradesCol}
@@ -77,9 +88,12 @@ function InputGrades({sec, clss}:IProps) {
         </TabsContent>
         <TabsContent value="3rd">
             <ClassRecordDialog 
+                teacher={teacher as Doc<'users'>}
                 data={thirdQuarterStudents ?? []} 
-                subject={cls ? cls.subject?.name ?? "" : ''} 
-                gradeLevel={cls ? cls.section?.gradeLevel.toString() ?? "" : ''}
+                subject={cls?.subject as Doc<'subjects'> } 
+                section={cls?.section as Doc<'sections'>}
+                appliedGW={appliedGW as Doc<'appliedGradeWeigths'>}
+                assessments={assessments as Doc<'assessments'>[]}
             />
             <DataTable
                 columns={InputGradesCol}
@@ -90,9 +104,12 @@ function InputGrades({sec, clss}:IProps) {
         </TabsContent>
         <TabsContent value="4th">
             <ClassRecordDialog 
+                teacher={teacher as Doc<'users'>}
                 data={fourthQuarterStudents ?? []} 
-                subject={cls ? cls.subject?.name ?? "" : ''} 
-                gradeLevel={cls ? cls.section?.gradeLevel.toString() ?? "" : ''}
+                subject={cls?.subject as Doc<'subjects'> } 
+                section={cls?.section as Doc<'sections'>}
+                appliedGW={appliedGW as Doc<'appliedGradeWeigths'>}
+                assessments={assessments as Doc<'assessments'>[]}
             />
             <DataTable
                 columns={InputGradesCol}

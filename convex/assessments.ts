@@ -44,6 +44,22 @@ export const getAssessment = query({
     }
 })
 
+export const getAssessmentsBySubject = query({
+    args:{
+        subjectId: v.optional(v.id('subjects'))
+    },
+    handler: async (ctx, args) =>{
+        const teacherId = await getAuthUserId(ctx)
+        if(!teacherId) throw new ConvexError('No teacher Id.')
+        const assessments = await ctx.db.query('assessments')
+            .filter(q => q.eq(q.field('subjectId'), args.subjectId))
+            .filter(q => q.eq(q.field('teacherId'), teacherId))
+            .collect()
+        
+        return assessments
+    }
+})
+
 export const addWrittenWorks = mutation({
     args:{
         type: v.string(), // ww, pp, qe

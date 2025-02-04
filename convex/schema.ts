@@ -162,6 +162,7 @@ export default defineSchema({
     name: v.string(),
     gradeLevel: v.number(),
     subjectCode: v.string(),
+    subjectCategory: v.string(), // core, applied and, specialized
     gradeWeights: v.optional(v.object({
       written: v.number(),
       performance: v.number(),

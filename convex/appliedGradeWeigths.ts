@@ -1,5 +1,5 @@
 import { ConvexError, v } from "convex/values";
-import { mutation } from "./_generated/server";
+import { mutation, query } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
 
 export const create = mutation({
@@ -34,5 +34,20 @@ export const create = mutation({
             })
         }
     return
+    }
+})
+
+export const get = query({
+    args:{
+        subjectId: v.optional(v.id('subjects'))
+    },
+    handler: async(ctx, args) =>{
+        const teacherId = await getAuthUserId(ctx)
+        if(!teacherId) throw new ConvexError('No teacher id.')
+        const appliedGradeWeigths= await ctx.db.query('appliedGradeWeigths')
+        .filter(q=> q.eq(q.field('subjectId'), args.subjectId))
+        .filter(q=> q.eq(q.field('teacherId'), teacherId))
+        .unique()
+        return appliedGradeWeigths
     }
 })

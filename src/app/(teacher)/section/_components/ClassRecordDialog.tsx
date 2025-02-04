@@ -16,36 +16,56 @@ import { useState } from 'react'
 import { CgDanger } from "react-icons/cg";
 import { IoMdPrint } from 'react-icons/io'
 import { StudentsWithClassRecord } from '@/lib/types'
+import { Doc } from '../../../../../convex/_generated/dataModel'
+
+interface ClassRecordDialogProp {
+  teacher: Doc<'users'>,
+  subject: Doc<'subjects'>,
+  section:  Doc<'sections'>,
+  appliedGW: Doc<'appliedGradeWeigths'>,
+  assessments: Doc<'assessments'>[],
+  data: StudentsWithClassRecord[]
+
+}
 
 function ClassRecordDialog({
+  teacher,
   subject,
-  gradeLevel,
+  section,
+  appliedGW,
+  assessments,
   data
-}:{
-  subject: string,
-  gradeLevel: string,
-  data: StudentsWithClassRecord[]
-}) {
-  const [isDialogOpen, setIsDialogOpen ] = useState<boolean>(false)
+}: ClassRecordDialogProp) {
+  const [isDialogOpen, setDialogOpen ] = useState<boolean>(false)
   const [isOpen, setIsOpen ] = useState<boolean>(false)
+
+  const sortedrecords = data.map(s => ({
+    ...s,
+    classRecords: s.classRecords.map(c => ({
+        ...c,
+        written: [...c.written].sort((a, b) => a.assessmentNo - b.assessmentNo),
+        performance: [...c.performance].sort((a, b) => a.assessmentNo - b.assessmentNo),
+        quarterlyExam: [...c.quarterlyExam].sort((a, b) => a.assessmentNo - b.assessmentNo),
+    }))
+  }));
   
   return (
     <div className="text-primary">
-        <Dialog open={isDialogOpen}>
-            <DialogTrigger onClick={()=> setIsDialogOpen(!isDialogOpen)} className='border shadow-md flex justify-center items-center gap-x-3 bg-gray-400 text-white border-gray-100 rounded-md px-2 py-1'>
+        <Dialog open={isDialogOpen} onOpenChange={setDialogOpen}>
+            <DialogTrigger onClick={()=> setDialogOpen(!isDialogOpen)} className='border shadow-md flex justify-center items-center gap-x-3 bg-gray-400 text-white border-gray-100 rounded-md px-2 py-1'>
               <FaEye  className='size-5 text-gray-300'/> Class Record
             </DialogTrigger>
-            <DialogContent className='max-w-full '>
+            <DialogContent className='max-w-full'>
             <DialogHeader className='max-w-full overflow-auto'>
                 <DialogTitle className='text-left text-primary'>Class Record</DialogTitle>
                 <div className=''>
-                  <ClassRecordTemplate subject={subject } gradeLevel={gradeLevel}/>
+                  <ClassRecordTemplate assessments={assessments} appliedGW={appliedGW} teacher={teacher} sortedRecords={sortedrecords} subject={subject } section={section}/>
                 </div>
             </DialogHeader>
             <DialogFooter>
                 <Button variant={'ghost'}>Cancel</Button>
                 <Button variant={'default'} onClick={()=> {
-                  setIsDialogOpen(false)
+                  setDialogOpen(false)
                   setIsOpen(true)
                   }} className='text-white flex gap-x-3'><IoMdPrint />Print</Button>
             </DialogFooter>

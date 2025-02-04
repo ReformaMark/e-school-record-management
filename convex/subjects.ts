@@ -54,4 +54,4 @@ function filterUniqueSubjects(classes : Doc<'classes'>[]): typeof classes {
         seenSubjects.add(cls.subjectId);
         return true;
     });
-  }
+}

@@ -423,6 +423,17 @@ export const getTeacher = query({
     },
 });
 
+export const teacher = query({
+    handler: async (ctx) => {
+        const teacherId = await getAuthUserId((ctx));
+        if (!teacherId) throw new ConvexError("No teacher Id");
+        const teacher = await ctx.db.get(teacherId)
+        if(!teacher) throw new ConvexError("No teacher Found")
+        if (teacher.role !== "teacher") throw new ConvexError("User is not a teacher");
+        return teacher;
+    },
+});
+
 export const getSubjects = query({
     args: {
         subjectIds: v.optional(v.array(v.id("subjects")))
