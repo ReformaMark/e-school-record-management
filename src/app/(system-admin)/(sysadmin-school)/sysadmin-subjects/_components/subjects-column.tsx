@@ -21,19 +21,19 @@ export const SubjectsColumns: ColumnDef<Doc<"subjects">>[] = [
         accessorKey: "subjectCode",
         header: "Subject Code",
     },
-    // {
-    //     accessorKey: "gradeLevel",
-    //     header: "Grade Level",
-    // },
+    {
+        accessorKey: "gradeLevel",
+        header: "Grade Level",
+    },
     {
         accessorKey: "subjectCategory",
         header: "Category",
     },
-    {
-        accessorKey: "isMapeh",
-        header: "Type",
-        cell: ({ row }) => row.original.isMapeh ? "MAPEH" : "Regular"
-    },
+    // {
+    //     accessorKey: "isMapeh",
+    //     header: "Type",
+    //     cell: ({ row }) => row.original.isMapeh ? "MAPEH" : "Regular"
+    // },
     {
         id: "actions",
         cell: function Cell({ row }) {

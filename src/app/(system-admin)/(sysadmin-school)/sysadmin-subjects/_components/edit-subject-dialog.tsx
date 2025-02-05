@@ -1,17 +1,16 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useConvexMutation } from "@convex-dev/react-query";
-import { toast } from "sonner";
-import { Doc } from "../../../../../../convex/_generated/dataModel";
-import { api } from "../../../../../../convex/_generated/api";
-import { SubjectFormData, subjectSchema } from "./add-subjects-card";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { api } from "../../../../../../convex/_generated/api";
+import { Doc } from "../../../../../../convex/_generated/dataModel";
+import { SubjectFormData, subjectSchema } from "./add-subjects-card";
 
 interface EditSubjectDialogProps {
     open: boolean;
@@ -20,50 +19,52 @@ interface EditSubjectDialogProps {
 }
 
 export const EditSubjectDialog = ({ open, onClose, subject }: EditSubjectDialogProps) => {
-    const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<SubjectFormData>({
+    const { register, handleSubmit, setValue, formState: { errors } } = useForm<SubjectFormData>({
         resolver: zodResolver(subjectSchema),
         defaultValues: {
             name: subject.name,
             gradeLevel: subject.gradeLevel,
             subjectCode: subject.subjectCode,
             subjectCategory: subject.subjectCategory as "core" | "applied" | "specialized" | undefined,
-            isMapeh: subject.isMapeh,
-            gradeWeights: subject.isMapeh ? undefined : subject.gradeWeights,
-            mapehWeights: subject.isMapeh ? subject.mapehWeights : undefined
+            gradeWeights: subject.gradeWeights,
+            // isMapeh: subject.isMapeh,
+            // gradeWeights: subject.isMapeh ? undefined : subject.gradeWeights,
+            // mapehWeights: subject.isMapeh ? subject.mapehWeights : undefined
         }
     });
 
     const { mutate: updateSubject, isPending } = useMutation({
         mutationFn: useConvexMutation(api.subjects.update)
     });
-    const isMapeh = watch("isMapeh");
+
+    // const isMapeh = watch("isMapeh");
 
     // Handle MAPEH toggle
-    const handleMapehChange = (checked: boolean) => {
-        setValue("isMapeh", checked);
-        if (checked) {
-            setValue("gradeWeights", undefined);
-            // If switching to MAPEH, initialize mapehWeights if not present
-            if (!watch("mapehWeights")) {
-                setValue("mapehWeights", {
-                    music: { written: 0, performance: 0, exam: 0 },
-                    arts: { written: 0, performance: 0, exam: 0 },
-                    pe: { written: 0, performance: 0, exam: 0 },
-                    health: { written: 0, performance: 0, exam: 0 }
-                });
-            }
-        } else {
-            setValue("mapehWeights", undefined);
-            // If switching to regular subject, initialize gradeWeights if not present
-            if (!watch("gradeWeights")) {
-                setValue("gradeWeights", {
-                    written: 0,
-                    performance: 0,
-                    exam: 0
-                });
-            }
-        }
-    };
+    // const handleMapehChange = (checked: boolean) => {
+    //     setValue("isMapeh", checked);
+    //     if (checked) {
+    //         setValue("gradeWeights", undefined);
+    //         // If switching to MAPEH, initialize mapehWeights if not present
+    //         if (!watch("mapehWeights")) {
+    //             setValue("mapehWeights", {
+    //                 music: { written: 0, performance: 0, exam: 0 },
+    //                 arts: { written: 0, performance: 0, exam: 0 },
+    //                 pe: { written: 0, performance: 0, exam: 0 },
+    //                 health: { written: 0, performance: 0, exam: 0 }
+    //             });
+    //         }
+    //     } else {
+    //         setValue("mapehWeights", undefined);
+    //         // If switching to regular subject, initialize gradeWeights if not present
+    //         if (!watch("gradeWeights")) {
+    //             setValue("gradeWeights", {
+    //                 written: 0,
+    //                 performance: 0,
+    //                 exam: 0
+    //             });
+    //         }
+    //     }
+    // };
 
     const onSubmit = async (data: SubjectFormData) => {
         try {
@@ -73,11 +74,12 @@ export const EditSubjectDialog = ({ open, onClose, subject }: EditSubjectDialogP
                 gradeLevel: data.gradeLevel,
                 subjectCode: data.subjectCode,
                 subjectCategory: data.subjectCategory,
-                isMapeh: data.isMapeh,
-                ...(data.isMapeh
-                    ? { mapehWeights: data.mapehWeights, gradeWeights: undefined }
-                    : { gradeWeights: data.gradeWeights, mapehWeights: undefined }
-                )
+                gradeWeights: data.gradeWeights,
+                // isMapeh: data.isMapeh,
+                // ...(data.isMapeh
+                //     ? { mapehWeights: data.mapehWeights, gradeWeights: undefined }
+                //     : { gradeWeights: data.gradeWeights, mapehWeights: undefined }
+                // )
             };
 
             await updateSubject(submitData);
@@ -89,7 +91,7 @@ export const EditSubjectDialog = ({ open, onClose, subject }: EditSubjectDialogP
         }
     };
 
-    const components = ["music", "arts", "pe", "health"] as const;
+    // const components = ["music", "arts", "pe", "health"] as const;
 
     return (
         <Dialog open={open} onOpenChange={onClose}>
@@ -157,15 +159,15 @@ export const EditSubjectDialog = ({ open, onClose, subject }: EditSubjectDialogP
                         )}
                     </div>
 
-                    <div className="flex items-center space-x-2">
+                    {/* <div className="flex items-center space-x-2">
                         <Switch
                             checked={isMapeh}
                             onCheckedChange={handleMapehChange}
                         />
                         <Label>Is MAPEH Subject</Label>
-                    </div>
+                    </div> */}
 
-                    {isMapeh ? (
+                    {/* {isMapeh ? (
                         <div className="space-y-6">
                             {components.map((component) => (
                                 <div key={component} className="space-y-4">
@@ -220,7 +222,7 @@ export const EditSubjectDialog = ({ open, onClose, subject }: EditSubjectDialogP
                                 </div>
                             ))}
                         </div>
-                    ) : (
+                    ) : ( */}
                         <div className="space-y-4">
                             <Label>Grade Weights (Total must be 100%)</Label>
                             <div className="grid grid-cols-3 gap-4">
@@ -259,7 +261,7 @@ export const EditSubjectDialog = ({ open, onClose, subject }: EditSubjectDialogP
                                 </div>
                             </div>
                         </div>
-                    )}
+                    {/* )} */}
                     <DialogFooter>
                         <Button type="button" variant="outline" onClick={onClose}>
                             Cancel
