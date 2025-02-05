@@ -1,11 +1,10 @@
-import { Metadata } from "next";
-import "@/lib/globals.css";
-import { SystemAdminSidenav } from "./_components/system-admin-sidenav";
-import { SystemAdminNavbar } from "./_components/system-admin-navbar";
 import { Toaster } from "@/components/ui/sonner";
-import { ConvexClientProvider } from "../components/convex-client-provider";
+import "@/lib/globals.css";
 import { ConvexAuthNextjsServerProvider } from "@convex-dev/auth/nextjs/server";
-import { SystemAdminGuard } from "@/components/guards/admin-guard";
+import { Metadata } from "next";
+import { ConvexClientProvider } from "../components/convex-client-provider";
+import { SystemAdminNavbar } from "./_components/system-admin-navbar";
+import { SystemAdminSidenav } from "./_components/system-admin-sidenav";
 
 export const metadata: Metadata = {
     title: "System Admin",
