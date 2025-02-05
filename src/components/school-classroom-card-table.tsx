@@ -1,3 +1,5 @@
+"use client"
+
 import { DataTable } from "@/components/data-table";
 import { Button } from "@/components/ui/button";
 import {
@@ -7,9 +9,13 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import { roomColumns, roomData } from "../../data/room-data";
+import { useQuery } from "convex/react";
+import { api } from "../../convex/_generated/api";
+import { ClassroomColumns, RoomWithTeacher } from "@/app/(system-admin)/(sysadmin-school)/sysadmin-classroom/_components/classroom-columns";
 
 export const SchoolClassroomCardTable = () => {
+    const classroom = useQuery(api.classroom.get)
+
     return (
         <Card
             className="xl:col-span-2"
@@ -30,10 +36,10 @@ export const SchoolClassroomCardTable = () => {
             </CardHeader>
             <CardContent>
                 <DataTable
-                    columns={roomColumns}
-                    data={roomData}
-                    filter="roomNumber"
-                    placeholder="by room number"
+                    columns={ClassroomColumns}
+                    data={(classroom ?? []) as RoomWithTeacher[]}
+                    filter="name"
+                    placeholder="by room name"
                 />
             </CardContent>
         </Card>
