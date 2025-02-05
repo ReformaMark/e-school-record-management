@@ -1,3 +1,6 @@
+"use client"
+
+import { SubjectsColumns } from "@/app/(system-admin)/(sysadmin-school)/sysadmin-subjects/_components/subjects-column";
 import { DataTable } from "@/components/data-table";
 import {
     Card,
@@ -6,9 +9,12 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import { subjectsColumns, subjectsData } from "../../data/subjects-data";
+import { useQuery } from "convex/react";
+import { api } from "../../convex/_generated/api";
 
 export const SchoolSubjectsCardTable = () => {
+    const subjects = useQuery(api.subjects.getSubjects);
+
     return (
         <Card
             className="xl:col-span-2"
@@ -29,10 +35,10 @@ export const SchoolSubjectsCardTable = () => {
             </CardHeader>
             <CardContent>
                 <DataTable
-                    columns={subjectsColumns}
-                    data={subjectsData}
-                    filter="subject"
-                    placeholder="by subject"
+                    columns={SubjectsColumns}
+                    data={subjects ?? []}
+                    filter="name"
+                    placeholder="by subject name"
                 />
             </CardContent>
         </Card>

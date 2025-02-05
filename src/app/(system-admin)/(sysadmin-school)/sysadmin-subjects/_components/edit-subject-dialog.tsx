@@ -1,125 +1,103 @@
-"use client"
-
-import * as z from "zod";
-import { Button } from "@/components/ui/button"
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle
-} from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { useConvexMutation } from "@convex-dev/react-query"
-import { useMutation } from "@tanstack/react-query"
-import { useForm } from "react-hook-form"
-import { toast } from "sonner"
-import { api } from "../../../../../../convex/_generated/api"
-import { zodResolver } from "@hookform/resolvers/zod";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useConvexMutation } from "@convex-dev/react-query";
+import { toast } from "sonner";
+import { Doc } from "../../../../../../convex/_generated/dataModel";
+import { api } from "../../../../../../convex/_generated/api";
+import { SubjectFormData, subjectSchema } from "./add-subjects-card";
+import { useMutation } from "@tanstack/react-query";
 
+interface EditSubjectDialogProps {
+    open: boolean;
+    onClose: () => void;
+    subject: Doc<"subjects">;
+}
 
-const componentSchema = z.object({
-    written: z.number().min(0).max(100),
-    performance: z.number().min(0).max(100),
-    exam: z.number().min(0).max(100).optional()
-}).refine(data => {
-    const total = data.written + data.performance + (data.exam || 0);
-    return total === 100;
-}, "Component weights must total 100%");
-
-const gradeWeightSchema = z.object({
-    written: z.number().min(0).max(100),
-    performance: z.number().min(0).max(100),
-    exam: z.number().min(0).max(100).optional()
-}).refine(data => {
-    const total = data.written + data.performance + (data.exam || 0);
-    return total === 100;
-}, "Component weights must total 100%");
-
-export const subjectSchema = z.object({
-    name: z.string().min(1, "Subject name is required"),
-    gradeLevel: z.coerce.number().min(1, "Grade level is required"),
-    subjectCode: z.string().min(2).max(10),
-    subjectCategory: z.enum(["core", "applied", "specialized"]),
-    isMapeh: z.boolean().default(false),
-    gradeWeights: gradeWeightSchema.optional(),
-    mapehWeights: z.object({
-        music: componentSchema,
-        arts: componentSchema,
-        pe: componentSchema,
-        health: componentSchema
-    }).optional()
-}).superRefine((data, ctx) => {
-    if (data.isMapeh && !data.mapehWeights) {
-        ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: "MAPEH weights are required for MAPEH subjects",
-            path: ["mapehWeights"]
-        });
-    }
-    if (!data.isMapeh && !data.gradeWeights) {
-        ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: "Grade weights are required for non-MAPEH subjects",
-            path: ["gradeWeights"]
-        });
-    }
-});
-
-export type SubjectFormData = z.infer<typeof subjectSchema>;
-
-export const AddSubjectsCard = () => {
-    const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm<SubjectFormData>({
+export const EditSubjectDialog = ({ open, onClose, subject }: EditSubjectDialogProps) => {
+    const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<SubjectFormData>({
         resolver: zodResolver(subjectSchema),
         defaultValues: {
-            isMapeh: false
+            name: subject.name,
+            gradeLevel: subject.gradeLevel,
+            subjectCode: subject.subjectCode,
+            subjectCategory: subject.subjectCategory as "core" | "applied" | "specialized" | undefined,
+            isMapeh: subject.isMapeh,
+            gradeWeights: subject.isMapeh ? undefined : subject.gradeWeights,
+            mapehWeights: subject.isMapeh ? subject.mapehWeights : undefined
         }
     });
 
-    const { mutate: createSubject, isPending } = useMutation({
-        mutationFn: useConvexMutation(api.subjects.create),
-        onSuccess: () => {
-            toast.success("Subject created successfully");
-        },
-        onError: (error) => {
-            toast.error(error.message);
-        }
+    const { mutate: updateSubject, isPending } = useMutation({
+        mutationFn: useConvexMutation(api.subjects.update)
     });
-
     const isMapeh = watch("isMapeh");
 
+    // Handle MAPEH toggle
     const handleMapehChange = (checked: boolean) => {
         setValue("isMapeh", checked);
         if (checked) {
             setValue("gradeWeights", undefined);
+            // If switching to MAPEH, initialize mapehWeights if not present
+            if (!watch("mapehWeights")) {
+                setValue("mapehWeights", {
+                    music: { written: 0, performance: 0, exam: 0 },
+                    arts: { written: 0, performance: 0, exam: 0 },
+                    pe: { written: 0, performance: 0, exam: 0 },
+                    health: { written: 0, performance: 0, exam: 0 }
+                });
+            }
         } else {
             setValue("mapehWeights", undefined);
+            // If switching to regular subject, initialize gradeWeights if not present
+            if (!watch("gradeWeights")) {
+                setValue("gradeWeights", {
+                    written: 0,
+                    performance: 0,
+                    exam: 0
+                });
+            }
         }
     };
 
     const onSubmit = async (data: SubjectFormData) => {
-        // If it's a MAPEH subject, exclude gradeWeights from submission
-        const submitData = isMapeh
-            ? { ...data, gradeWeights: undefined }
-            : { ...data, mapehWeights: undefined };
+        try {
+            const submitData = {
+                id: subject._id,
+                name: data.name,
+                gradeLevel: data.gradeLevel,
+                subjectCode: data.subjectCode,
+                subjectCategory: data.subjectCategory,
+                isMapeh: data.isMapeh,
+                ...(data.isMapeh
+                    ? { mapehWeights: data.mapehWeights, gradeWeights: undefined }
+                    : { gradeWeights: data.gradeWeights, mapehWeights: undefined }
+                )
+            };
 
-        createSubject(submitData);
+            await updateSubject(submitData);
+            toast.success("Subject updated successfully");
+            onClose();
+        } catch (error) {
+            console.error(error);
+            toast.error("Failed to update subject");
+        }
     };
 
     const components = ["music", "arts", "pe", "health"] as const;
 
     return (
-        <Card className="flex flex-col h-fit">
-            <CardHeader>
-                <CardTitle>Add New Subject</CardTitle>
-                <CardDescription>Create a new subject with grade weights</CardDescription>
-            </CardHeader>
-            <form onSubmit={handleSubmit(onSubmit)}>
-                <CardContent className="grid gap-8 mt-7">
+        <Dialog open={open} onOpenChange={onClose}>
+            <DialogContent className="max-w-2xl text-black bg-white">
+                <DialogHeader>
+                    <DialogTitle>Edit Subject</DialogTitle>
+                </DialogHeader>
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-2">
                     <div className="space-y-2">
                         <Label>Subject Name</Label>
                         <Input {...register("name")} />
@@ -138,8 +116,10 @@ export const AddSubjectsCard = () => {
 
                     <div className="space-y-2">
                         <Label>Grade Level</Label>
-                        <Select onValueChange={
-                            (value) => setValue("gradeLevel", parseInt(value))}>
+                        <Select
+                            defaultValue={subject.gradeLevel.toString()}
+                            onValueChange={(value) => setValue("gradeLevel", parseInt(value))}
+                        >
                             <SelectTrigger>
                                 <SelectValue placeholder="Select grade level" />
                             </SelectTrigger>
@@ -159,8 +139,10 @@ export const AddSubjectsCard = () => {
 
                     <div className="space-y-2">
                         <Label>Category</Label>
-                        <Select onValueChange={
-                            (value) => setValue("subjectCategory", value as "core" | "applied" | "specialized")}>
+                        <Select
+                            defaultValue={subject.subjectCategory}
+                            onValueChange={(value) => setValue("subjectCategory", value as "core" | "applied" | "specialized")}
+                        >
                             <SelectTrigger>
                                 <SelectValue placeholder="Select category" />
                             </SelectTrigger>
@@ -278,13 +260,16 @@ export const AddSubjectsCard = () => {
                             </div>
                         </div>
                     )}
-                </CardContent>
-                <CardFooter>
-                    <Button type="submit" disabled={isPending} className="text-white">
-                        {isPending ? "Creating..." : "Create Subject"}
-                    </Button>
-                </CardFooter>
-            </form>
-        </Card>
-    )
-}
+                    <DialogFooter>
+                        <Button type="button" variant="outline" onClick={onClose}>
+                            Cancel
+                        </Button>
+                        <Button type="submit" disabled={isPending} className="text-white">
+                            {isPending ? "Updating..." : "Update Subject"}
+                        </Button>
+                    </DialogFooter>
+                </form>
+            </DialogContent>
+        </Dialog>
+    );
+};

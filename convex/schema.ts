@@ -59,7 +59,7 @@ export default defineSchema({
     withLrn: v.optional(v.string()),
     returning: v.optional(v.string()),
     als: v.optional(v.string()),
-   
+
     //Learner Information
     birthCertificateNo: v.optional(v.string()),
     lrn: v.optional(v.string()),
@@ -95,14 +95,14 @@ export default defineSchema({
       houseNum: v.optional(v.string()),
       completeAddress: v.optional(v.string())
     }),
-   
+
     // Parent/Guardian Info
     fatherFirstName: v.optional(v.string()),
     fatherMiddleName: v.optional(v.string()),
     fatherLastName: v.optional(v.string()),
     fatherContact: v.optional(v.string()),
     motherFirstName: v.optional(v.string()),
-    motherMiddleName:v.optional(v.string()),
+    motherMiddleName: v.optional(v.string()),
     motherLastName: v.optional(v.string()),
     motherContact: v.optional(v.string()),
     guardianFirstName: v.optional(v.string()),
@@ -163,6 +163,29 @@ export default defineSchema({
     gradeLevel: v.number(),
     subjectCode: v.string(),
     subjectCategory: v.optional(v.string()), // core, applied and, specialized
+    isMapeh: v.boolean(), // New field
+    mapehWeights: v.optional(v.object({
+      music: v.object({
+        written: v.number(),
+        performance: v.number(),
+        exam: v.optional(v.number())
+      }),
+      arts: v.object({
+        written: v.number(),
+        performance: v.number(),
+        exam: v.optional(v.number())
+      }),
+      pe: v.object({
+        written: v.number(),
+        performance: v.number(),
+        exam: v.optional(v.number())
+      }),
+      health: v.object({
+        written: v.number(),
+        performance: v.number(),
+        exam: v.optional(v.number())
+      })
+    })),
     gradeWeights: v.optional(v.object({
       written: v.number(),
       performance: v.number(),
@@ -178,7 +201,7 @@ export default defineSchema({
     written: v.number(),
     performance: v.number(),
     exam: v.optional(v.number())
-  }).index('by_teacherId',['teacherId']).index('by_subjectId', ['subjectId']),
+  }).index('by_teacherId', ['teacherId']).index('by_subjectId', ['subjectId']),
 
   schedules: defineTable({
     day: v.string(),
@@ -213,13 +236,13 @@ export default defineSchema({
 
   studentClasses: defineTable({
     studentId: v.id('students'),
-    classId:v.id('classes')
+    classId: v.id('classes')
   }).index('by_sudentId', ['studentId']).index('by_classId', ['classId']),
 
   assessments: defineTable({
     type: v.string(), // ww, pp, qe
     gradeLevel: v.number(),
-    quarter: v.string(), 
+    quarter: v.string(),
     semester: v.optional(v.string()), // for senior high
     assessmentNo: v.number(),
     subjectId: v.id('subjects'),
@@ -256,7 +279,7 @@ export default defineSchema({
   }).index("by_studentId", ["studentId"])
     .index("by_classId", ["classId"]),
 
- 
-  })
 
-  
+})
+
+
