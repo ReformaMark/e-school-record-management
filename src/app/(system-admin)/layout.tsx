@@ -22,17 +22,17 @@ const SystemAdminLayout = ({
             <ConvexClientProvider>
                 <html className="h-full" lang="en">
                     <body className="bg-background relative">
-                        <SystemAdminGuard>
-                            <Toaster theme="light" className="toaster" />
+                        {/* <SystemAdminGuard> */}
+                        <Toaster theme="light" className="toaster" />
 
-                            <SystemAdminNavbar />
+                        <SystemAdminNavbar />
 
-                            <SystemAdminSidenav />
+                        <SystemAdminSidenav />
 
-                            <div className="w-full md:absolute md:right-0 md:top-[80px] md:w-[80%] z-0 pb-4 pt-[96px] md:pt-4">
-                                {children}
-                            </div>
-                        </SystemAdminGuard>
+                        <div className="w-full md:absolute md:right-0 md:top-[80px] md:w-[80%] z-0 pb-4 pt-[96px] md:pt-4">
+                            {children}
+                        </div>
+                        {/* </SystemAdminGuard> */}
                     </body>
                 </html>
             </ConvexClientProvider>

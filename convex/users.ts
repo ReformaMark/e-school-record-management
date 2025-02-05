@@ -47,13 +47,13 @@ export const createUser = mutation({
     handler: async (ctx, args) => {
         try {
             // Only admin can create users
-            const adminId = await getAuthUserId(ctx);
-            if (!adminId) throw new ConvexError("Not authenticated");
+            // const adminId = await getAuthUserId(ctx);
+            // if (!adminId) throw new ConvexError("Not authenticated");
 
-            const admin = await ctx.db.get(adminId);
-            if (!admin || admin.role !== "admin") {
-                throw new ConvexError("Unauthorized - Only admins can create users");
-            }
+            // const admin = await ctx.db.get(adminId);
+            // if (!admin || admin.role !== "admin") {
+            //     throw new ConvexError("Unauthorized - Only admins can create users");
+            // }
 
             // Check if email already exists
             const existingUser = await ctx.db
@@ -118,13 +118,13 @@ export const createTeacher = mutation({
     handler: async (ctx, args) => {
         try {
             // Only admin can create teachers
-            const adminId = await getAuthUserId(ctx);
-            if (!adminId) throw new ConvexError("Not authenticated");
+            // const adminId = await getAuthUserId(ctx);
+            // if (!adminId) throw new ConvexError("Not authenticated");
 
-            const admin = await ctx.db.get(adminId);
-            if (!admin || admin.role !== "admin") {
-                throw new ConvexError("Unauthorized - Only admins can create teachers");
-            }
+            // const admin = await ctx.db.get(adminId);
+            // if (!admin || admin.role !== "admin") {
+            //     throw new ConvexError("Unauthorized - Only admins can create teachers");
+            // }
 
             // Check if email already exists
             const existingUser = await ctx.db
