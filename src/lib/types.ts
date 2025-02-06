@@ -60,7 +60,7 @@ export interface ClassesWithDetails extends Doc<'classes'> {
     subject: Doc<'subjects'> | null,
     teacher: Doc<'users'> | null,
     section: Doc<'sections'>| null,
-    schedule: ScheduleWithRoom,
+    schedules: ScheduleWithRoom[],
     schoolYear: Doc<'schoolYears'> | null,
 }
 

@@ -227,9 +227,11 @@ export default defineSchema({
   //   remarks: v.string()
   // }),
   schedules: defineTable({
-    day: v.array(v.string()), // Mon,Tue,Wed,THu,Fri,Sat, 
+    day: v.string(), // Mon,Tue,Wed,THu,Fri,Sat, 
     schoolPeriodId: v.id('schoolPeriods'), // range ng time
     roomId: v.id('rooms'),
+    teacherId: v.id('users'),
+    classId: v.optional(v.id("classes"))
   }),
 
   schoolPeriods: defineTable({
@@ -247,7 +249,7 @@ export default defineSchema({
     type: v.string(),
     features: v.optional(v.array(v.string())),
     teacherId: v.optional(v.id("users")), // Reference to assigned teacher
-    isActive: v.boolean(),
+    isActive: v.optional(v.boolean()),
     description: v.optional(v.string())
 }).index("by_teacherId", ["teacherId"]),
 

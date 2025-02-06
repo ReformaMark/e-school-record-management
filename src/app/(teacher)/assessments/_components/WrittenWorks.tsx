@@ -2,7 +2,6 @@
 import { DataTable } from '@/components/data-table'
 import { AssessmentColumn } from './AssessmentData'
 import { AssessmentTypes } from '@/lib/types'
-import Loading from '@/app/components/Loading'
 import { AssessmentForm } from './AssessmentForm'
 
 

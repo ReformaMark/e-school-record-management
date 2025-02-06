@@ -23,18 +23,26 @@ export const getTeacherClasses = query({
             const section = await ctx.db.get(c.sectionId)
             const schedule = await ctx.db.get(c.scheduleId)
             if(!schedule) return
-            const schoolPeriod = await ctx.db.get(schedule?.schoolPeriodId)
-            if(!schedule){
-                throw new ConvexError('No Schedule')
-            }
-            const room = await ctx.db.get(schedule?.roomId)
+            const schedules = await ctx.db.query('schedules')
+                .filter(q=> q.eq(q.field('teacherId'), teacher?._id))
+                .filter(q=> q.eq(q.field('classId'), c._id))
+                .collect()
+            const schedWithdetails = await asyncMap(schedules,async(sched)=>{
+               const schoolPeriod = await ctx.db.get(sched.schoolPeriodId)
+               const room =  await ctx.db.get(sched.roomId)
+               return {
+                ...sched,
+                schoolPeriod: schoolPeriod,
+                room: room
+               }
+            })
             const schoolYear = await ctx.db.get(c.schoolYearId)
             return {
                 ...c,
                 subject: subject,
                 teacher: teacher,
                 section: section,
-                schedule: {...schedule, schoolPeriod:schoolPeriod,  room: room},
+                schedules: schedWithdetails,
                 schoolYear: schoolYear,
             }
         })

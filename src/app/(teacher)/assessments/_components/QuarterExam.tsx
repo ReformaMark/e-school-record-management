@@ -3,7 +3,6 @@ import { DataTable } from '@/components/data-table'
 import React from 'react'
 import { AssessmentColumn } from './AssessmentData'
 import { AssessmentTypes } from '@/lib/types'
-import Loading from '@/app/components/Loading'
 import { AssessmentForm } from './AssessmentForm'
 
 interface QuarterExamPropsTypes {

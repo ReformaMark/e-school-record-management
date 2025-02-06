@@ -50,8 +50,27 @@ function Section({params}:{params: {class: string}}) {
           <h1>Section: <span className='font-normal'>{cls?.section?.name}</span></h1>
           <h1>Grade Level: <span className='font-normal'>{cls?.section?.gradeLevel}</span></h1>
           <h1>Subject: <span className='font-normal'>{cls?.subject?.name}</span></h1>
-          <h1>Schedule: <span className='font-normal'>{cls?.schedule.schoolPeriod?.timeRange} - ({cls?.schedule.day && Array.isArray(cls.schedule.day)? cls.schedule.day.map(day => day.slice(0, 3)).join(", "): "No schedule assigned"})</span></h1>
-          <h1>Room: <span className='font-normal'>{cls?.schedule.room?.name}</span></h1>
+          <h1>Schedule: 
+            <span className="font-normal">
+              {cls?.schedules.map((schedule, index) => (
+                <span key={index}>
+                  {schedule.schoolPeriod?.timeRange} ({schedule.day.slice(0, 3)}) 
+                  {index < cls.schedules.length - 1 ? ", " : ""}
+                </span>
+              ))}
+            </span>
+          </h1>
+          <h1>Room: 
+            <span className="font-normal">
+              {cls?.schedules.map((schedule, index) => (
+                <span key={index}>
+                  {schedule.room?.name}
+                  {index < cls.schedules.length - 1 ? ", " : ""}
+                </span>
+              ))}
+            </span>
+          </h1>
+
           <h1>School Year: <span className='font-normal'>{cls?.schoolYear?.sy}</span></h1>
           {(cls?.section?.gradeLevel ?? 0) > 10 && ( 
             <h1>Semester: <span className='font-normal'>{cls?.semester}</span></h1>
@@ -95,7 +114,6 @@ function Section({params}:{params: {class: string}}) {
               <QuarterlyGradesTemplate 
                 teacher='Currently Login Teacher name' 
                 subject={cls?.subject?.name} 
-                // change to dynamic data from db
                 schoolYear={cls?.schoolYear?.sy}
                 gradeAndSection={`${cls?.section?.gradeLevel} - ${cls?.section?.name}`}
               />
