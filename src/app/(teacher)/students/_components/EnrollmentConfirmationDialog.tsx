@@ -21,7 +21,6 @@ export default function EnrollmentConfirmationDialog({
 }: EnrollmentConfirmationDialogProps) {
     const [open, setOpen] = useState<boolean>(false)
     const [isOpen, setIsOpen] = useState<boolean>(false)
-    const [syDialog, setSyDialog] = useState<boolean>(false)
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const [selectedSection, setSelectedSection] = useState<string>()
     const [gradelevel, setGradeLevel ] = useState<string>()
