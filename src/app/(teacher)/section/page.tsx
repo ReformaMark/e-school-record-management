@@ -19,7 +19,7 @@ function SectionPage() {
           <div className=' m-5 grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-10'>
             {classes.map((cl) =>(
               <SectionsCard 
-                key={cl._id}
+                key={cl?._id}
              
                 cls={cl}/>
             ))}

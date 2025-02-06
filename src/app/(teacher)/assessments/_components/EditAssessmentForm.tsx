@@ -66,10 +66,10 @@ export const EditAssessmentForm = ({
 
     const editAssessment = useMutation(api.assessments.editAssessment)
     const {classes} = useClasses()
-    const teacherGradeLevels = Array.from(new Set(classes?.map((cl) => cl.section?.gradeLevel)));
+    const teacherGradeLevels = Array.from(new Set(classes?.map((cl) => cl?.section?.gradeLevel)));
     const gradelevels = teacherGradeLevels.filter(level => level !== undefined)
 
-    const teacherSubjects = Array.from(new Set(classes?.map((cl) => cl.subject?.name)));
+    const teacherSubjects = Array.from(new Set(classes?.map((cl) => cl?.subject?.name)));
     const subjects = useQuery(api.subjects.getSubjects);
     const filteredSubjects = subjects?.filter(subject => 
         subject.gradeLevel === Number(selectedGLevel) && 
