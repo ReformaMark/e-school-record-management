@@ -16,16 +16,16 @@ export const getSubjects = query({
 })
 
 export const getAssignSubjects = query({
-    handler: async (ctx) => {
+    args:{
+        sy: v.optional(v.id('schoolYears'))
+    },
+    handler: async (ctx,args) => {
         const teacherId = await getAuthUserId(ctx)
         if (!teacherId) throw new ConvexError('No Teacher Id found.');
-
-        const sy = await ctx.db.query('schoolYears').order('desc').unique()
-        if (!sy || sy === null) throw new ConvexError('School year not found.');
-
+        if (!args.sy) return []
         const classes = await ctx.db.query('classes')
             .withIndex('by_teacherId')
-            .filter(q => q.eq(q.field('schoolYearId'), sy._id))
+            .filter(q => q.eq(q.field('schoolYearId'), args.sy))
             .collect()
 
         const uniqueClasses = filterUniqueSubjects(classes);
