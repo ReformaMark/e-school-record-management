@@ -49,19 +49,19 @@ const assessmentNumber = [1,2,3,4,5,6,7,8,9,10]
 const quarter = ["1st","2nd","3rd","4th"]
 
 export const EditAssessmentForm = ({
+    type,
     assessment,
-    data,
     id,
 }:{
-    assessment: string,
-    data: AssessmentTypes,
+    type: string,
+    assessment: AssessmentTypes,
     id: Id<'assessments'>
 }) => {
     
     const [ dialogOpen, setDialogOpen ] = useState(false)
-    const [selectedGLevel, setSelectedGLevel] = useState<string>(data.gradeLevel.toString())
-    const [selectedQuarter, setSelectedQuarter] = useState<string>(data.quarter)
-    const [selectedSubjectId, setSelectedSubjectId] = useState<Id<'subjects'> | undefined>(data.subjectId)
+    const [selectedGLevel, setSelectedGLevel] = useState<string>(assessment.gradeLevel.toString())
+    const [selectedQuarter, setSelectedQuarter] = useState<string>(assessment.quarter)
+    const [selectedSubjectId, setSelectedSubjectId] = useState<Id<'subjects'> | undefined>(assessment.subjectId)
     const [isLoading, setIsLoading] = useState<boolean>(false)
 
     const editAssessment = useMutation(api.assessments.editAssessment)
@@ -75,40 +75,39 @@ export const EditAssessmentForm = ({
         subject.gradeLevel === Number(selectedGLevel) && 
         teacherSubjects.includes(subject.name)
     );
-    const getTheHighestAssessmentNo = useQuery(api.assessments.getTheHighestAssessmentNo, {type: assessment, gradeLevel: selectedGLevel, subjectId: selectedSubjectId, quarter: selectedQuarter})
+    const getTheHighestAssessmentNo = useQuery(api.assessments.getTheHighestAssessmentNo, {type: type, gradeLevel: selectedGLevel, subjectId: selectedSubjectId, quarter: selectedQuarter})
     const existingAssessmentNo = getTheHighestAssessmentNo?.assessments.map(assessment => assessment.assessmentNo) ?? [];
 
     const form = useForm<z.infer<typeof AssessmentFormSchema>>({
         resolver: zodResolver(AssessmentFormSchema),
         defaultValues:{
-            type: assessment,
-            gradeLevel: data?.gradeLevel?.toString(),
-            quarter: data?.quarter, 
-            semester: "", // for senior high
-            assessmentNo: data?.assessmentNo ,
-            highestScore: data?.highestScore ,
+            type: type,
+            gradeLevel: assessment?.gradeLevel?.toString(),
+            quarter: assessment?.quarter, 
+            semester: assessment.semester, // for senior high
+            assessmentNo: assessment?.assessmentNo ,
+            highestScore: assessment?.highestScore ,
             classId: [],
-            schoolYear: "",
-            subject: data?.subjectId as string
+            schoolYear: assessment.schoolYear,
+            subject: assessment?.subjectId as string,
+            subComponent: assessment.subComponent,
+            createClassRecords: "yes"
         }
     })
+  
 
 
     function onSubmit(data: z.infer<typeof AssessmentFormSchema>) {
         setIsLoading(true)
-       
+        console.log(data)
         toast.promise(
             editAssessment({
                 id: id,
-                type: assessment,
-                gradeLevel: Number(data.gradeLevel),
-                quarter: data.quarter,
-                semester: data.semester, // for senior high
-                assessmentNo: data.assessmentNo,
+                type: type,
+                assessmentNo: assessment.assessmentNo,
                 highestScore: data.highestScore,
-                classId: [],
-                schoolYear: data.schoolYear,
-                subjectId: data.subject as Id<'subjects'>
+                schoolYear: data.schoolYear as Id<'schoolYears'>,
+               
             }),
             {
                 loading: 'Saving assessment...',
@@ -129,7 +128,7 @@ export const EditAssessmentForm = ({
     }
     return (
         <Dialog onOpenChange={setDialogOpen} open={dialogOpen}>
-            <DialogTrigger className='flex items-center space-x-2'>
+            <DialogTrigger className='flex items-center text-orange-500 space-x-2'>
                 <Edit/>
             </DialogTrigger>
             <DialogContent className='max-w-6xl max-h-screen overflow-auto'>
@@ -137,7 +136,7 @@ export const EditAssessmentForm = ({
                 <Card className="flex flex-col h-fit">
                     <DialogTitle>
                         <CardHeader>
-                            <CardTitle>Edit {assessment}</CardTitle>
+                            <CardTitle>Edit {type}</CardTitle>
                             <CardDescription>
                                 Edit the details of the assessment below.
                             </CardDescription>
@@ -306,9 +305,9 @@ export const EditAssessmentForm = ({
                                 <Button 
                                     variant={'ghost'} 
                                     onClick={()=>{
-                                        setSelectedGLevel(data.gradeLevel.toString())
-                                        setSelectedQuarter(data.quarter)
-                                        setSelectedSubjectId(data.subjectId)
+                                        setSelectedGLevel(assessment.gradeLevel.toString())
+                                        setSelectedQuarter(assessment.quarter)
+                                        setSelectedSubjectId(assessment.subjectId)
                                         setDialogOpen(false)}} 
                                     type="button" 
                                     disabled={isLoading} 
@@ -316,7 +315,7 @@ export const EditAssessmentForm = ({
                                 >
                                     Cancel
                                 </Button>
-                                <Button variant={'default'} type="submit" disabled={isLoading} className="text-white">
+                                <Button type="submit" variant={'default'} disabled={isLoading} className="text-white">
                                     Save
                                 </Button>
                             </CardFooter>

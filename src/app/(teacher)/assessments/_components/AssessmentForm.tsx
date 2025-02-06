@@ -42,6 +42,8 @@ import { Id } from "../../../../../convex/_generated/dataModel"
 import { Input } from "@/components/ui/input"
 import { useClasses } from "../../section/section-data"
 import { ConvexError } from "convex/values"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { Label } from "@/components/ui/label"
 
 const quarter = ["1st","2nd","3rd","4th"]
 const assessmentNumber = [1,2,3,4,5,6,7,8,9,10]
@@ -86,60 +88,74 @@ export const AssessmentForm = ({
             assessmentNo: undefined,
             highestScore: 0,
             classId: [],
-            schoolYear: "",
+            schoolYear: sy?._id,
             subject: "",
             subComponent: undefined,
+            createClassRecords: "yes"
         }
     })
     const getTheHighestAssessmentNo = useQuery(api.assessments.getTheHighestAssessmentNo, {type: assessmment, gradeLevel: selectedGLevel, subjectId: selectedSubjectId, quarter: selectedQuarter, subComponent:subComponent})
     const existingAssessmentNo = getTheHighestAssessmentNo?.assessments.map(assessment => assessment.assessmentNo) ?? [];
-
+    
     function onSubmit(data: z.infer<typeof AssessmentFormSchema>) {
-        setIsLoading(true)
-        toast.promise(addWrittenWorks({
+        setIsLoading(true);
+      
+        toast.promise(
+          addWrittenWorks({
             type: assessmment,
             gradeLevel: Number(data.gradeLevel),
-            quarter: data.quarter, 
+            quarter: data.quarter,
             semester: data.semester, // for senior high
             assessmentNo: data.assessmentNo,
             highestScore: data.highestScore,
             classId: [],
-            schoolYear: data.schoolYear,
-            subjectId: data.subject as Id<'subjects'>,
-            subComponent: subComponent
-        }), {
-            loading: 'Adding new assessment...',
-            success: async() => {
-                setIsLoading(false)
-                await createClassRecords({
-                    gradeLevel: Number(data.gradeLevel),
-                    subjectId: data.subject as Id<'subjects'>,
-                    quarter: data.quarter,
-                    assessmentNo: data.assessmentNo,
-                    type: data.type as string,
-                    score: data.highestScore,
-                    schoolYearId: sy?._id,
-                    subComponent: subComponent
-                })
-                form.reset()
-                setDialogOpen(false)
-                
-                return 'Assessment added successfully.'
+            schoolYear: data.schoolYear as Id<'schoolYears'>,
+            subjectId: data.subject as Id<"subjects">,
+            subComponent: subComponent,
+          }),
+          {
+            loading: "Adding new assessment...",
+            success: async (assessmentId) => {
+            if(data.createClassRecords === 'yes') {
+                try {
+                    await createClassRecords({
+                        gradeLevel: Number(data.gradeLevel),
+                        subjectId: data.subject as Id<"subjects">,
+                        quarter: data.quarter,
+                        assessmentNo: data.assessmentNo,
+                        type: data.type as string,
+                        score: data.highestScore,
+                        schoolYearId: sy?._id,
+                        subComponent: subComponent,
+                        assessmentId, // ✅ Use the returned assessmentId
+                    });
+                } catch (error) {
+                    console.error("Error creating class records:", error);
+                    throw new Error("Failed to create class records.");
+                } finally {
+                    setIsLoading(false); // ✅ Ensure this runs after createClassRecords
+                }
+            }
+              
+                form.reset();
+                setDialogOpen(false);
+                setSelectedGLevel("");
+                setSelectedQuarter("");
+                setSelectedSubjectId(undefined);
+                setSubComponent(undefined);
+                return "Assessment added successfully.";
+           
             },
             error: (error) => {
-                setIsLoading(false);
-                if (error instanceof ConvexError) {
-                    return `Failed to add new assessment: ${error.data}`;
-                }
-                return 'Failed to add new assessment.'
-            }
-        })
-        setDialogOpen(false)
-        setSelectedGLevel("")
-        setSelectedQuarter("")
-        setSelectedSubjectId(undefined)
-        setSubComponent(undefined)
-    }
+              setIsLoading(false);
+              if (error instanceof ConvexError) {
+                return `Failed to add new assessment: ${error.data}`;
+              }
+              return "Failed to add new assessment.";
+            },
+          }
+        );
+      }
 
     return (
         <Dialog open={dialogOpen}>
@@ -337,6 +353,46 @@ export const AssessmentForm = ({
                                             )}
                                          />
                                     </div> 
+                                    <div className="grid col-span-2 gap-2">
+                                        <FormField
+                                            name="createClassRecords"
+                                            control={form.control}
+                                            render={({ field }) => (
+                                                <FormItem className=" flex items-center space-y-3">
+                                                    <FormLabel className='mt-3 text-text text-xs'>Automatically use this assessment to your students?</FormLabel>
+                                                    <FormControl>
+                                                        <RadioGroup 
+                                                            defaultValue="Yes" 
+                                                            className='pl-5 flex gap-x-5'
+                                                            onValueChange={field.onChange}
+                                                        >
+                                                            <FormItem  className="space-x-2">
+                                                                <FormControl>
+                                                                    <RadioGroupItem 
+                                                                        value="Yes" 
+                                                                        id="yes" 
+                                                                       
+                                                                        className='rounded-none' />
+                                                                    
+                                                                </FormControl>
+                                                                <Label htmlFor="Yes">Yes</Label>
+                                                            </FormItem >
+                                                            <FormItem  className="space-x-2">
+                                                                <FormControl>
+                                                                    <RadioGroupItem 
+                                                                        value="No" 
+                                                                        id="no" 
+                                                                      
+                                                                        className='rounded-none' />
+                                                                </FormControl>
+                                                                <Label htmlFor="No">No</Label>
+                                                            </FormItem >
+                                                        </RadioGroup>
+                                                    </FormControl>
+                                                </FormItem>
+                                            )}
+                                        />
+                                        </div>
                                 </div>
                                 
                             </CardContent>

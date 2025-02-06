@@ -10,5 +10,6 @@ export const AssessmentFormSchema = z.object({
     classId: z.array(z.string()).optional(),
     schoolYear: z.string().optional(),
     subject: z.string({ required_error: "Subject is required." }).min(1, { message: "Subject cannot be empty." }),
-    subComponent: z.string().optional()
+    subComponent: z.string().optional(),
+    createClassRecords: z.string()
 })

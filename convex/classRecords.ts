@@ -1,10 +1,12 @@
 import { ConvexError, v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { asyncMap } from "convex-helpers";
-import { getAuthSessionId } from "@convex-dev/auth/server";
+import {  getAuthUserId } from "@convex-dev/auth/server";
+import { Id } from "./_generated/dataModel";
 
 export const create = mutation({
     args:{
+        assessmentId: v.id('assessments'),
         gradeLevel: v.number(),
         subjectId: v.id('subjects'),
         quarter: v.string(),
@@ -15,9 +17,11 @@ export const create = mutation({
         subComponent: v.optional(v.string())
     },
     handler: async(ctx, args) =>{
-        const teacherId = await getAuthSessionId(ctx)
+        const teacherId = await getAuthUserId(ctx)
         if(!teacherId) throw new ConvexError('No teacher Id.')
-        if(!args.schoolYearId) return
+        if(!args.schoolYearId) {
+            return 
+        }
         const classes =  await ctx.db.query('classes')
             .withIndex('by_teacherId')
             .filter(q=> q.eq(q.field('subjectId'), args.subjectId))
@@ -64,6 +68,7 @@ export const create = mutation({
                                     if (work.assessmentNo === args.assessmentNo) {
                                         return {
                                             ...work,
+                                            assessmentId: args.assessmentId,
                                             highestScore: args.score,
                                             score: undefined
                                         };
@@ -75,6 +80,7 @@ export const create = mutation({
                                 updatedWrittenWorks = [
                                     ...existingCR.written,
                                     {
+                                        assessmentId: args.assessmentId,
                                         assessmentNo: args.assessmentNo,
                                         highestScore: args.score,
                                         score: undefined
@@ -86,6 +92,7 @@ export const create = mutation({
                             // Save the updated class record back to the database
                             await ctx.db.patch(hasExistingCR._id, {
                                 written: updatedWrittenWorks,
+                            
                             });
                         }
                     } else if (args.type === "Performance Tasks") {
@@ -115,6 +122,7 @@ export const create = mutation({
                                 updatedPerformanceTasks = [
                                     ...existingCR.performance,
                                     {
+                                        assessmentId: args.assessmentId,
                                         assessmentNo: args.assessmentNo,
                                         highestScore: args.score,
                                         score: undefined
@@ -156,6 +164,7 @@ export const create = mutation({
                                 updatedQuarterlyAssessments = [
                                     ...existingCR.quarterlyExam,
                                     {
+                                        assessmentId: args.assessmentId,
                                         assessmentNo: args.assessmentNo,
                                         highestScore: args.score,
                                         score: undefined
@@ -176,8 +185,11 @@ export const create = mutation({
                     if (args.quarter === '1st' && args.type === 'Written Works') {
                         await ctx.db.insert('classRecords', {
                             studentId: studentId,
+                            teacherId: teacherId,
+                            schoolYear: args.schoolYearId as Id<'schoolYears'>,
                             classId: cls._id,
                             written: [{
+                                assessmentId: args.assessmentId,
                                 assessmentNo: args.assessmentNo,
                                 score: undefined,
                                 highestScore: args.score,
@@ -191,8 +203,11 @@ export const create = mutation({
                         await ctx.db.insert('classRecords', {
                             studentId: studentId,
                             classId: cls._id,
+                            teacherId: teacherId,
+                            schoolYear: args.schoolYearId as Id<'schoolYears'>,
                             written: [],
                             performance: [{
+                                assessmentId: args.assessmentId,
                                 assessmentNo: args.assessmentNo,
                                 score: undefined,
                                 highestScore: args.score,
@@ -204,10 +219,13 @@ export const create = mutation({
                     } else if (args.quarter === '1st' && args.type === 'Quarterly Assessment') {
                         await ctx.db.insert('classRecords', {
                             studentId: studentId,
+                            teacherId: teacherId,
+                            schoolYear: args.schoolYearId as Id<'schoolYears'>,
                             classId: cls._id,
                             written: [],
                             performance: [],
                             quarterlyExam: [{
+                                assessmentId: args.assessmentId,
                                 assessmentNo: args.assessmentNo,
                                 score: undefined,
                                 highestScore: args.score,
@@ -218,8 +236,11 @@ export const create = mutation({
                     } else if (args.quarter === '2nd' && args.type === 'Written Works') {
                         await ctx.db.insert('classRecords', {
                             studentId: studentId,
+                            teacherId: teacherId,
+                            schoolYear: args.schoolYearId as Id<'schoolYears'>,
                             classId: cls._id,
                             written: [{
+                                assessmentId: args.assessmentId,
                                 assessmentNo: args.assessmentNo,
                                 score: undefined,
                                 highestScore: args.score,
@@ -232,9 +253,12 @@ export const create = mutation({
                     } else if (args.quarter === '2nd' && args.type === 'Performance Tasks') {
                         await ctx.db.insert('classRecords', {
                             studentId: studentId,
+                            teacherId: teacherId,
+                            schoolYear: args.schoolYearId as Id<'schoolYears'>,
                             classId: cls._id,
                             written: [],
                             performance: [{
+                                assessmentId: args.assessmentId,
                                 assessmentNo: args.assessmentNo,
                                 score: undefined,
                                 highestScore: args.score,
@@ -246,10 +270,13 @@ export const create = mutation({
                     } else if (args.quarter === '2nd' && args.type === 'Quarterly Assessment') {
                         await ctx.db.insert('classRecords', {
                             studentId: studentId,
+                            teacherId: teacherId,
+                            schoolYear: args.schoolYearId as Id<'schoolYears'>,
                             classId: cls._id,
                             written: [],
                             performance: [],
                             quarterlyExam: [{
+                                assessmentId: args.assessmentId,
                                 assessmentNo: args.assessmentNo,
                                 score: undefined,
                                 highestScore: args.score,
@@ -260,8 +287,11 @@ export const create = mutation({
                     } else if (args.quarter === '3rd' && args.type === 'Written Works') {
                         await ctx.db.insert('classRecords', {
                             studentId: studentId,
+                            teacherId: teacherId,
+                            schoolYear: args.schoolYearId as Id<'schoolYears'>,
                             classId: cls._id,
                             written: [{
+                                assessmentId: args.assessmentId,
                                 assessmentNo: args.assessmentNo,
                                 score: undefined,
                                 highestScore: args.score,
@@ -274,9 +304,12 @@ export const create = mutation({
                     } else if (args.quarter === '3rd' && args.type === 'Performance Tasks') {
                         await ctx.db.insert('classRecords', {
                             studentId: studentId,
+                            teacherId: teacherId,
+                            schoolYear: args.schoolYearId as Id<'schoolYears'>,
                             classId: cls._id,
                             written: [],
                             performance: [{
+                                assessmentId: args.assessmentId,
                                 assessmentNo: args.assessmentNo,
                                 score: undefined,
                                 highestScore: args.score,
@@ -288,10 +321,13 @@ export const create = mutation({
                     } else if (args.quarter === '3rd' && args.type === 'Quarterly Assessment') {
                         await ctx.db.insert('classRecords', {
                             studentId: studentId,
+                            teacherId: teacherId,
+                            schoolYear: args.schoolYearId as Id<'schoolYears'>,
                             classId: cls._id,
                             written: [],
                             performance: [],
                             quarterlyExam: [{
+                                assessmentId: args.assessmentId,
                                 assessmentNo: args.assessmentNo,
                                 score: undefined,
                                 highestScore: args.score,
@@ -302,8 +338,11 @@ export const create = mutation({
                     } else if (args.quarter === '4th' && args.type === 'Written Works') {
                         await ctx.db.insert('classRecords', {
                             studentId: studentId,
+                            teacherId: teacherId,
+                            schoolYear: args.schoolYearId as Id<'schoolYears'>,
                             classId: cls._id,
                             written: [{
+                                assessmentId: args.assessmentId,
                                 assessmentNo: args.assessmentNo,
                                 score: undefined,
                                 highestScore: args.score,
@@ -316,9 +355,12 @@ export const create = mutation({
                     } else if (args.quarter === '4th' && args.type === 'Performance Tasks') {
                         await ctx.db.insert('classRecords', {
                             studentId: studentId,
+                            teacherId: teacherId,
+                            schoolYear: args.schoolYearId as Id<'schoolYears'>,
                             classId: cls._id,
                             written: [],
                             performance: [{
+                                assessmentId: args.assessmentId,
                                 assessmentNo: args.assessmentNo,
                                 score: undefined,
                                 highestScore: args.score,
@@ -330,10 +372,13 @@ export const create = mutation({
                     } else if (args.quarter === '4th' && args.type === 'Quarterly Assessment') {
                         await ctx.db.insert('classRecords', {
                             studentId: studentId,
+                            teacherId: teacherId,
+                            schoolYear: args.schoolYearId as Id<'schoolYears'>,
                             classId: cls._id,
                             written: [],
                             performance: [],
                             quarterlyExam: [{
+                                assessmentId: args.assessmentId,
                                 assessmentNo: args.assessmentNo,
                                 score: undefined,
                                 highestScore: args.score,

@@ -5,14 +5,20 @@ import { AssessmentTypes } from "@/lib/types";
 import { asyncMap } from "convex-helpers";
 
 export const getAssessments = query({
-
-    handler: async(ctx) =>{
+    args: {
+        sy: v.optional(v.id('schoolYears'))
+    },
+    handler: async(ctx, args) =>{
         const teacherId = await getAuthUserId(ctx)
         if(!teacherId){
             throw new ConvexError('No Teacher Id.')
         }
+        if(!args.sy){
+           return
+        }
         const assessments = await ctx.db.query('assessments')
             .filter(q => q.eq(q.field("teacherId"), teacherId))
+            .filter(q => q.eq(q.field("schoolYear"), args.sy))
             .collect()
 
         const assessmentsData = await asyncMap(assessments, async(assessment) => {
@@ -69,7 +75,7 @@ export const addWrittenWorks = mutation({
         assessmentNo: v.number(),
         highestScore: v.number(),
         classId: v.array(v.id('classes')),
-        schoolYear: v.optional(v.string()),
+        schoolYear: v.optional(v.id('schoolYears')),
         subjectId: v.id('subjects'),
         subComponent: v.optional(v.string())
     },
@@ -91,7 +97,7 @@ export const addWrittenWorks = mutation({
             }
         }
        
-        const ww = await ctx.db.insert('assessments', {
+        const assessment = await ctx.db.insert('assessments', {
             type: args.type,
             teacherId: teacherId,
             gradeLevel: args.gradeLevel,
@@ -104,7 +110,7 @@ export const addWrittenWorks = mutation({
             subjectId: args.subjectId,
             subComponent: args.subComponent
         })
-        return
+        return assessment
     }
 })
 
@@ -159,15 +165,11 @@ export const getTheHighestAssessmentNo = query({
 export const editAssessment = mutation({
     args:{
         id: v.id('assessments'),
-        type: v.string(), // ww, pp, qe
-        gradeLevel: v.number(),
-        quarter: v.string(), 
-        semester: v.optional(v.string()), // for senior high
-        assessmentNo: v.number(),
+        schoolYear: v.id(('schoolYears')),
         highestScore: v.number(),
-        classId: v.array(v.id('classes')),
-        schoolYear: v.optional(v.string()),
-        subjectId: v.id('subjects')
+        type: v.string(),
+        assessmentNo: v.number()
+        
     },
     handler: async(ctx, args) =>{
         const teacherId = await getAuthUserId(ctx)
@@ -175,38 +177,65 @@ export const editAssessment = mutation({
             throw new ConvexError('No teacher Id.')
         }
 
-        const assessments = await ctx.db.query('assessments')
-        .filter(q => q.eq(q.field('teacherId'), teacherId))
-        .filter(q => q.eq(q.field('type'), args.type))
-        .filter(q => q.eq(q.field('gradeLevel'), args.gradeLevel))
-        .filter(q => q.eq(q.field('quarter'), args.quarter))
-        .filter(q => q.eq(q.field('assessmentNo'), args.assessmentNo))
-        .first()
-    
-        if(assessments){
-            throw new ConvexError('Assessment already exists.')
+        const assessment = await ctx.db.get(args.id)
+      
+        if(!assessment){
+            throw new ConvexError('No Assessment found.')
         }
 
-        const ww = await ctx.db.patch(args.id, {
-            type: args.type,
-            teacherId: teacherId,
-            gradeLevel: args.gradeLevel,
-            semester: args.semester,
-            assessmentNo: args.assessmentNo,
+        await ctx.db.patch(args.id, {
             highestScore: args.highestScore,
-            classId: args.classId,
-            quarter: args.quarter,
-            schoolYear: args.schoolYear,
-            subjectId: args.subjectId
         })
-        return
+
+        const classRecords = await ctx.db.query('classRecords')
+        .filter(q => q.eq(q.field('teacherId'), teacherId))
+        .filter(q => q.eq(q.field('schoolYear'), args.schoolYear))
+        .collect()
+
+       
+        const fieldToUpdate =
+        args.type === "Written Works"
+          ? "written"
+          : args.type === "Performance Tasks"
+          ? "performance"
+          : args.type === "Quarterly Assessment"
+          ? "quarterlyExam"
+          : null;
+
+        if (!fieldToUpdate) {
+        throw new Error("Invalid type provided.");
+        }
+
+        const filteredCR = classRecords.filter(record => 
+            record[fieldToUpdate].some(item => item.assessmentId === args.id)
+        );
+
+
+        return await asyncMap(filteredCR, async(c) => {
+            
+            const updatedField = c[fieldToUpdate].map((entry)=> {
+                return entry.assessmentId === args.id
+                ? { ...entry, highestScore: args.highestScore }
+                : entry
+                });
+                
+                
+                await ctx.db.patch(c._id, {
+                    [fieldToUpdate]: updatedField,
+                });
+
+                return { success: true, updatedCount: classRecords.length };
+            })
+      
     }
 })
 
 
 export const deleteAssessment = mutation({
     args:{
-        id: v.id('assessments')
+        id: v.id('assessments'),
+        type: v.string(),
+        sy: v.optional(v.id('schoolYears'))
     },
     handler: async(ctx, args) =>{
         const teacherId = await getAuthUserId(ctx)
@@ -217,6 +246,38 @@ export const deleteAssessment = mutation({
         if(!assessment){
             throw new ConvexError('Assessment not found.')
         }
+        if(!args.sy){
+            return
+        }
+
+        const fieldToUpdate =
+        args.type === "Written Works"
+          ? "written"
+          : args.type === "Performance Tasks"
+          ? "performance"
+          : args.type === "Quarterly Assessment"
+          ? "quarterlyExam"
+          : null;
+
+        if (!fieldToUpdate) {
+            throw new Error("Invalid type provided.");
+        }
+
+        const classRecords = await ctx.db.query('classRecords')
+        .filter(q => q.eq(q.field('teacherId'), teacherId))
+        .filter(q => q.eq(q.field('schoolYear'), args.sy))
+        .collect()
+
+        const filteredCR = classRecords.filter(record => 
+            record[fieldToUpdate].some(item => item.assessmentId === args.id)
+          );
+          
+        await asyncMap(filteredCR, async(record)=>{
+            await ctx.db.patch(record._id, {
+                [fieldToUpdate]: []
+            })
+        })
+
         await ctx.db.delete(args.id)
         return
     }})

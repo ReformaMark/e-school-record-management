@@ -18,7 +18,7 @@ interface IProps {
 function InputGrades({clss}:IProps) {
     const students = useQuery(api.classRecords.get, {classId: clss?._id})
     const teacher = useQuery(api.users.teacher)
-   const [selectedSubComponent, setSelectedSubComponent] = useState<string>()
+    const [selectedSubComponent, setSelectedSubComponent] = useState<string>()
     const isMAPEH = clss.subject?.name.toLocaleUpperCase() === 'MAPEH'
     const studentsWithClassRecord = students?.sort((a, b) => (a?.lastName ?? '').localeCompare(b?.lastName ?? ''));
   
@@ -49,14 +49,17 @@ function InputGrades({clss}:IProps) {
     <div className='text-primary'>
         <Tabs defaultValue="1st" className="w-full">
         {isMAPEH ? (
-            <div className="flex justify-between items-center">
-                <TabsList>
+            <div className="grid grid-cols-3 ">
+                <div className="">
+
+                <TabsList className='flex flex-row justify-start w-fit'>
                     <TabsTrigger value="1st">1st</TabsTrigger>
                     <TabsTrigger value="2nd">2nd</TabsTrigger>
                     <TabsTrigger value="3rd">3rd</TabsTrigger>
                     <TabsTrigger value="4th">4th</TabsTrigger>
                 </TabsList>
-                    <div className="">
+                </div>
+                <div className="col-span-1">
                     <Select defaultValue={'Music'} onValueChange={(value)=>{setSelectedSubComponent(value)}}>
                         <SelectTrigger className='w-40'>
                             <SelectValue placeholder="Select component" />
@@ -99,15 +102,16 @@ function InputGrades({clss}:IProps) {
             />
         </TabsContent>
         <TabsContent value="2nd">
-            <ClassRecordDialog 
-                teacher={teacher as Doc<'users'>}
-                data={secondQuarterStudents ?? []} 
-                subject={clss?.subject as Doc<'subjects'> } 
-                section={clss?.section as Doc<'sections'>}
-                appliedGW={appliedGW as Doc<'appliedGradeWeigths'>}
-                assessments={assessments as Doc<'assessments'>[]}
-                subComponent={selectedSubComponent}
-            />
+            
+                <ClassRecordDialog 
+                    teacher={teacher as Doc<'users'>}
+                    data={secondQuarterStudents ?? []} 
+                    subject={clss?.subject as Doc<'subjects'> } 
+                    section={clss?.section as Doc<'sections'>}
+                    appliedGW={appliedGW as Doc<'appliedGradeWeigths'>}
+                    assessments={assessments as Doc<'assessments'>[]}
+                    subComponent={selectedSubComponent}
+                />
             <DataTable
                 columns={InputGradesCol}
                 data={secondQuarterStudents ?? []}
@@ -116,6 +120,7 @@ function InputGrades({clss}:IProps) {
             />
         </TabsContent>
         <TabsContent value="3rd">
+          
             <ClassRecordDialog 
                 teacher={teacher as Doc<'users'>}
                 data={thirdQuarterStudents ?? []} 
@@ -133,15 +138,16 @@ function InputGrades({clss}:IProps) {
             />
         </TabsContent>
         <TabsContent value="4th">
-            <ClassRecordDialog 
-                teacher={teacher as Doc<'users'>}
-                data={fourthQuarterStudents ?? []} 
-                subject={clss?.subject as Doc<'subjects'> } 
-                section={clss?.section as Doc<'sections'>}
-                appliedGW={appliedGW as Doc<'appliedGradeWeigths'>}
-                assessments={assessments as Doc<'assessments'>[]}
-                subComponent={selectedSubComponent}
-            />
+            
+                <ClassRecordDialog 
+                    teacher={teacher as Doc<'users'>}
+                    data={fourthQuarterStudents ?? []} 
+                    subject={clss?.subject as Doc<'subjects'> } 
+                    section={clss?.section as Doc<'sections'>}
+                    appliedGW={appliedGW as Doc<'appliedGradeWeigths'>}
+                    assessments={assessments as Doc<'assessments'>[]}
+                    subComponent={selectedSubComponent}
+                />
             <DataTable
                 columns={InputGradesCol}
                 data={fourthQuarterStudents ?? []}

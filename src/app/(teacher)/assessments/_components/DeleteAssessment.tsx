@@ -25,7 +25,7 @@ function DeleteAssessment({id, assessment}: DeleteAssessmentProps) {
     const deleteAssesment = useMutation(api.assessments.deleteAssessment)
     const handleDelete = async () => {
         setIsLoading(true)
-        toast.promise(deleteAssesment({id}),{
+        toast.promise(deleteAssesment({id, type: assessment.type, sy: assessment.schoolYear}),{
             loading: 'Deleting Assessment...',
             success: 'Assessment Deleted',
             error: 'Failed to delete Assessment :('

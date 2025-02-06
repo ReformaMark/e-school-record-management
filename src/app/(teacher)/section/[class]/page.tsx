@@ -4,18 +4,7 @@ import React from 'react'
 import { useClasses } from '../section-data'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import QuarterlyGradesTemplate from '@/app/components/QuarterlyGradesTemplate'
-import { Button, buttonVariants } from '@/components/ui/button'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-import { FaRegSave } from 'react-icons/fa'
-
+import {  buttonVariants } from '@/components/ui/button'
 import { ChevronLeft } from 'lucide-react'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
@@ -24,7 +13,6 @@ import { DataTable } from '@/components/data-table'
 import { forRemedial, studentMasterList, summerClassStatus } from '../_components/studentData'
 import NeedsImprovement from '../_components/NeedsImprovement'
 import InputGrades from '../_components/InputGrades'
-import SeniorHighInputGrades from '../_components/SeniorHighInputGrades'
 import Loading from '@/app/components/Loading'
 import { useQuery } from 'convex/react'
 import { api } from '../../../../../convex/_generated/api'
@@ -44,7 +32,7 @@ function Section({params}:{params: {class: string}}) {
 
   return (
     <div className='bg-white text-primary md:m-5 min-h-screen max-w-full shadow-md p-5 space-y-5'>
-      <div className="w-full flex items-center justify-between">
+      <div className="w-full flex items-center justify-start">
         <Link
           href="/section"
           className={cn("h-7 w-7", buttonVariants({
@@ -54,22 +42,7 @@ function Section({params}:{params: {class: string}}) {
           <ChevronLeft className="h-4 w-4" />
           <span className="sr-only">Back</span>
         </Link>
-        <Dialog>
-            <DialogTrigger disabled className='border shadow-md flex justify-center items-center gap-x-3 disabled:bg-blue-200 bg-blue-600 text-white border-gray-100 rounded-md px-2 py-1'>
-            <FaRegSave />Submit Grades</DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Submit Grades?</DialogTitle>
-                <DialogDescription>
-                  Once you submit the grades to students adviser you can no longer edit the grades.
-                </DialogDescription>
-              </DialogHeader>
-              <DialogFooter>
-                <Button variant={'ghost'}>No</Button>
-                <Button  variant={'default'}>Yes</Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+       
       </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 font-bold text-sm">
@@ -80,12 +53,10 @@ function Section({params}:{params: {class: string}}) {
           <h1>Schedule: <span className='font-normal'>{cls?.schedule.startTime} - {cls?.schedule.endTime} - ( {cls?.schedule.day} )</span></h1>
           <h1>Room: <span className='font-normal'>{cls?.schedule.room?.name}</span></h1>
           <h1>School Year: <span className='font-normal'>{cls?.schoolYear?.sy}</span></h1>
-          {cls?.section?.gradeLevel === 11 && ( 
-            <h1><span className='font-normal'>Current Semester: 1st</span></h1>
+          {(cls?.section?.gradeLevel ?? 0) > 10 && ( 
+            <h1>Semester: <span className='font-normal'>{cls?.semester}</span></h1>
           )}
-          {cls?.section?.gradeLevel === 12 && ( 
-            <h1><span className='font-normal'>Current Semester: 1st</span></h1>
-          )}
+
         </div>
        
         <Tabs defaultValue={"students"} className="w-full relative  space-y-5 mt-5 shadow-md ">
@@ -113,12 +84,7 @@ function Section({params}:{params: {class: string}}) {
 
           {/* Class Record*/}
           <TabsContent value="class-record" className=''>
-            {cls && cls.section?.gradeLevel === 11 || cls?.section?.gradeLevel === 12 ? (
-            
-              <SeniorHighInputGrades clss={cls as ClassesWithDetails} sec={cls?.section ? cls.section.name : ""}/>
-            ) : (
               <InputGrades clss={cls as ClassesWithDetails}/>
-            )}
           </TabsContent>
 
           {/* Grade summary */}

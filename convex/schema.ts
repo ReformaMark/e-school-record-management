@@ -156,6 +156,7 @@ export default defineSchema({
     sectionId: v.id('sections'),
     scheduleId: v.id('schedules'),
     schoolYearId: v.id('schoolYears'),
+    semester: v.optional(v.string()) // 1st or 2nd
   }).index('by_teacherId', ['teacherId']),
 
   subjects: defineTable({
@@ -163,7 +164,7 @@ export default defineSchema({
     gradeLevel: v.number(),
     subjectCode: v.string(),
     subjectCategory: v.optional(v.string()), // core, applied and, specialized
-    isMapeh: v.boolean(), // New field
+    isMapeh: v.optional(v.boolean()), // New field
     mapehWeights: v.optional(v.object({
       music: v.object({
         written: v.number(),
@@ -184,7 +185,7 @@ export default defineSchema({
         written: v.number(),
         performance: v.number(),
         exam: v.optional(v.number())
-      })
+      }) 
     })),
     gradeWeights: v.optional(v.object({
       written: v.number(),
@@ -203,6 +204,27 @@ export default defineSchema({
     exam: v.optional(v.number())
   }).index('by_teacherId', ['teacherId']).index('by_subjectId', ['subjectId']),
 
+  quarterlyGrades: defineTable({
+    studentId: v.id('students'),
+    gradeLevel: v.number(),
+    classId: v.id('classes'),
+    teacherId: v.id('users'),
+    quarter: v.string(),
+    quarterlyGrade: v.number(), // score
+    needsIntervention: v.boolean(),
+    // if the student participate in an intervention
+    interventionGrade: v.optional(v.number()),
+    interventionUsed: v.optional(v.string()), // ex. Big book, General remarks
+    interventionRemarks: v.optional(v.string()) // ex. “Math 9 2nd competency big book with sample activities. Will check the progress of the student through checking the answers of the big book activities.”
+  }),
+
+  // gradeSummary: defineTable({
+  //   section: v.id('sections'),
+  //   teacherId: v.id('users'),
+  //   subject: v.id('subjetcs'),
+  //   track: v.string(),
+  //   remarks: v.string()
+  // }),
   schedules: defineTable({
     day: v.string(),
     startTime: v.string(),
@@ -249,7 +271,7 @@ export default defineSchema({
     highestScore: v.number(),
     teacherId: v.id("users"),
     classId: v.array(v.id('classes')),
-    schoolYear: v.optional(v.string()),
+    schoolYear: v.optional(v.id('schoolYears')),
     subComponent: v.optional(v.string())
   }).index("by_classId", ["classId"])
     .index("by_teacherId", ["teacherId"])
@@ -259,25 +281,30 @@ export default defineSchema({
   classRecords: defineTable({
     studentId: v.id('students'),
     classId: v.id('classes'),
+    teacherId: v.id('users'),
     written: v.array(v.object({
       assessmentNo: v.number(),
+      assessmentId: v.id('assessments'),
       score: v.optional(v.number()),
       highestScore: v.number(),
     })),
     performance: v.array(v.object({
       assessmentNo: v.number(),
+      assessmentId: v.id('assessments'),
       score: v.optional(v.number()),
       highestScore: v.number(),
     })),
     quarterlyExam: v.array(v.object({
       assessmentNo: v.number(),
+      assessmentId: v.id('assessments'),
       score: v.optional(v.number()),
       highestScore: v.number(),
     })),
     subComponent: v.optional(v.string()), // Music, arts, PE, Health
     quarter: v.string(),
+    schoolYear: v.id('schoolYears')
   }).index("by_studentId", ["studentId"])
-    .index("by_classId", ["classId"]),
+    .index("by_classId", ["classId"])
 
 
 })

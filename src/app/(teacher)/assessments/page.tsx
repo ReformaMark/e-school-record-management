@@ -4,7 +4,6 @@ import WrittenWorks from './_components/WrittenWorks'
 import PerformanceTask from './_components/PerformanceTask'
 import QuarterExam from './_components/QuarterExam'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { useAssessments } from './_components/AssessmentData'
 import {
     Card,
     CardContent,
@@ -12,9 +11,12 @@ import {
 import AssignSubjects from './_components/AssignSubjects'
 import { useQuery } from 'convex/react'
 import { api } from '../../../../convex/_generated/api'
+import { AssessmentTypes } from '@/lib/types'
 
 function AssessmentPage() {
-    const {data} = useAssessments()
+    const schoolYears = useQuery(api.schoolYear.get)
+    const latestSY = schoolYears ? schoolYears[0]._id : undefined
+    const data = useQuery(api.assessments.getAssessments, {sy: latestSY})
     const getAssignSubjects = useQuery(api.subjects.getAssignSubjects)
   return (
     
@@ -42,13 +44,13 @@ function AssessmentPage() {
                         </TabsList>
                         
                             <TabsContent value="ww" className='w-full'>
-                                <WrittenWorks assessments={data}/>
+                                <WrittenWorks assessments={data as AssessmentTypes[]}/>
                             </TabsContent>
                             <TabsContent value="pt" className='w-full'>
-                                <PerformanceTask assessments={data}/>
+                                <PerformanceTask assessments={data as AssessmentTypes[]}/>
                             </TabsContent>
                             <TabsContent value="qe" className='w-full'>
-                                <QuarterExam assessments={data}/>
+                                <QuarterExam assessments={data as AssessmentTypes[]}/>
                             </TabsContent>
                     
                     </Tabs>

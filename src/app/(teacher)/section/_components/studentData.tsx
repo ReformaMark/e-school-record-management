@@ -19,7 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import {  FaInfoCircle, FaUserEdit } from "react-icons/fa";
+import {  FaInfoCircle, FaRegSave, FaUserEdit } from "react-icons/fa";
 import {
   Dialog,
   DialogContent,
@@ -37,6 +37,7 @@ import { StudentsWithClassRecord, StudentsWithEnrollMentTypes } from "@/lib/type
 import PerformanceTaskDialog from "./PerformanceTaskDialog";
 import WrittenWorksDialog from "./WrittenWorksDialog";
 import QuarterlyAssessmentDialog from "./QuarterlyExamDialog";
+import SubmitGradesDialog from "./SubmitGradesDialog";
 
 
 type Student = {
@@ -877,7 +878,7 @@ export const InputGradesCol: ColumnDef<StudentsWithClassRecord>[] = [
  
         <div className="">
           {classRecord.length < 1 ? (
-            <h1>-</h1>
+            <h1>Not set</h1>
           ) : (
 
             <p>{recordWithScore.length.toString()} out of {classRecord.length.toString()}</p>
@@ -906,7 +907,7 @@ export const InputGradesCol: ColumnDef<StudentsWithClassRecord>[] = [
  
         <div className="">
           {classRecord.length < 1 ? (
-            <h1>-</h1>
+            <h1>Not set</h1>
           ) : (
 
             <p>{recordWithScore.length.toString()} out of {classRecord.length.toString()}</p>
@@ -935,7 +936,7 @@ export const InputGradesCol: ColumnDef<StudentsWithClassRecord>[] = [
  
         <div className="">
           {classRecord.length < 1 ? (
-            <h1>-</h1>
+            <h1>Not set</h1>
           ) : (
 
             <p>{recordWithScore.length.toString()} out of {classRecord.length.toString()}</p>
@@ -950,7 +951,7 @@ export const InputGradesCol: ColumnDef<StudentsWithClassRecord>[] = [
       const [isWWOpen, setIsWWOpen] = useState<boolean>(false)
       const [isPTOpen, setIsPTOpen] = useState<boolean>(false)
       const [isQAOpen, setIsQAOpen] = useState<boolean>(false)
-     
+      
       // const [isOSOpen, setIsOSOpen] = useState<boolean>(false)
       const [isOpen, setIsOpen ] = useState<boolean>(false)
       const student = row.original
@@ -993,6 +994,14 @@ export const InputGradesCol: ColumnDef<StudentsWithClassRecord>[] = [
       const openQA = ()=> {
         setIsQAOpen(!isQAOpen)
       }
+
+      const allScoresDefined = (student: StudentsWithClassRecord): boolean => {
+          return student.classRecords.every(classRecord =>
+              classRecord.quarterlyExam.every(exam => exam.score !== undefined)
+            )
+        };
+        
+      const hasExamScore = allScoresDefined(student)
       return (
         <div className="text-primary">
           <DropdownMenu>
@@ -1005,14 +1014,20 @@ export const InputGradesCol: ColumnDef<StudentsWithClassRecord>[] = [
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Input</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={openWW}>
+              <DropdownMenuItem disabled={writtenWorks.length < 1 ? true : false} onClick={openWW}>
                 Written Works
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={openPT}>
-                Performance Tasks</DropdownMenuItem>
-                <DropdownMenuItem onClick={openQA}>
-                  Quarterly Assessment</DropdownMenuItem>
-              
+              <DropdownMenuItem disabled={performanceTasks.length < 1 ? true : false} onClick={openPT}>
+                Performance Tasks
+              </DropdownMenuItem>
+              <DropdownMenuItem disabled={quarterExams.length < 1 ? true : false} onClick={openQA}>
+                Quarterly Assessment
+              </DropdownMenuItem>
+              <DropdownMenuItem disabled={quarterExams.length < 1 ? true : false} onClick={openQA}>
+                <Button disabled={hasExamScore} className='border shadow-md flex justify-center items-center gap-x-3 disabled:bg-blue-200 bg-blue-600 disabled:text-gray-500 text-white border-gray-100 rounded-md px-2 py-1'>
+                       <FaRegSave />Submit Grades
+                </Button>
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
 
@@ -1034,6 +1049,7 @@ export const InputGradesCol: ColumnDef<StudentsWithClassRecord>[] = [
           setIsQAOpen={setIsQAOpen}
           name={studentName}
        />
+      <SubmitGradesDialog/>
 
         <Dialog open={isOpen}>
             <DialogContent className=''>

@@ -1,21 +1,9 @@
 'use client'
 import { ColumnDef } from "@tanstack/react-table";
-import { useQuery } from "convex/react";
-import { api } from "../../../../../convex/_generated/api";
 import { AssessmentTypes } from "@/lib/types";
 import { EditAssessmentForm } from "./EditAssessmentForm";
 import DeleteAssessment from "./DeleteAssessment";
-
-
-export const useAssessments = () =>{
-    const data = useQuery(api.assessments.getAssessments)
-     const isLoading = data === undefined
-     return {
-         data,
-         isLoading,
-     }
-}
-
+import ApplyAssessment from "./ApplyAssessment";
 
 export const AssessmentColumn: ColumnDef<AssessmentTypes>[] = [
  
@@ -42,8 +30,10 @@ export const AssessmentColumn: ColumnDef<AssessmentTypes>[] = [
           const assessment = row.original
           return (
             <div className="flex items-center justify-center gap-x-2">
-              <EditAssessmentForm data={assessment} assessment={assessment.type} id={assessment._id}/>
+              <ApplyAssessment  assessment={assessment} id={assessment._id}/>
+              <EditAssessmentForm assessment={assessment} type={assessment.type} id={assessment._id}/>
               <DeleteAssessment assessment={assessment} id={assessment._id}/>
+             
             </div>
           )
         },

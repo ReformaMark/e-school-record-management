@@ -24,7 +24,7 @@ function QuarterExam({assessments}: QuarterExamPropsTypes) {
              columns={AssessmentColumn}
              data={quarterlyAssessments}
              filter='assessmentNo'
-             placeholder='Seach for Quarterly Assessment Number'
+             placeholder='by Assessment No'
             />
           ): (
             <Loading/>
