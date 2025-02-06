@@ -14,16 +14,57 @@ import { Label } from "@/components/ui/label"
 import {
     Select,
     SelectContent,
-    SelectGroup,
     SelectItem,
-    SelectLabel,
     SelectTrigger,
     SelectValue
 } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
-import { roomTypes } from "../../../../../../data/room-data"
+import { useConvexMutation } from "@convex-dev/react-query"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useMutation } from "@tanstack/react-query"
+import { useQuery } from "convex/react"
+import { useForm } from "react-hook-form"
+import { toast } from "sonner"
+import { z } from "zod"
+import { api } from "../../../../../../convex/_generated/api"
+
+export const roomTypes = ["REGULAR", "LABORATORY", "COMPUTER_LAB"] as const;
+
+export const roomSchema = z.object({
+    name: z.string().min(1, "Room name is required"),
+    capacity: z.coerce.number().min(1, "Capacity must be at least 1"),
+    type: z.enum(["REGULAR", "LABORATORY", "COMPUTER_LAB"]),
+    teacherId: z.string().min(1, "Teacher is required"),
+    description: z.string().optional(),
+    features: z.array(z.string()).optional()
+});
+
+export type RoomFormData = z.infer<typeof roomSchema>;
 
 export const AddClassRoomCard = () => {
+    const teachers = useQuery(api.classroom.getTeachers);
+    const { register, handleSubmit, setValue, formState: { errors } } = useForm<RoomFormData>({
+        resolver: zodResolver(roomSchema)
+    });
+
+    const { mutate: createRoom, isPending } = useMutation({
+        mutationFn: useConvexMutation(api.classroom.create),
+        onSuccess: () => {
+            toast.success("Classroom created successfully");
+        },
+        onError: (error) => {
+            toast.error(error.message);
+        }
+    });
+
+    const handleTeacherSelect = (teacherId: string) => {
+        const selectedTeacher = teachers?.find(t => t._id === teacherId);
+        if (selectedTeacher) {
+            setValue("teacherId", teacherId);
+            setValue("name", `Room ${selectedTeacher.lastName}`);
+        }
+    };
+
     return (
         <Card className="flex flex-col h-fit">
             <CardHeader>
@@ -32,64 +73,75 @@ export const AddClassRoomCard = () => {
                     Fill out the form to add a room
                 </CardDescription>
             </CardHeader>
-            <CardContent className="grid gap-8 mt-7">
-                <div className="grid gap-2">
-                    <Label htmlFor="roomName">Room Name</Label>
-                    <Input
-                        id="roomName"
-                        type="text"
-                        placeholder="Note: Adviser's lastname is the room name"
-                        className="w-full"
-                    />
-                </div>
-
-                <div className="grid gap-2">
-                    <Label htmlFor="est-capacity" className="font-semibold">Est.Capacity</Label>
-                    <Input
-                        id="est-capacity"
-                        type="text"
-                        placeholder="Ex: 20-30"
-                        className="w-full"
-                    />
-                </div>
-
-                <div className="grid gap-2">
-                    <Label htmlFor="roomType" className="font-semibold">Room Type</Label>
-                    <Select>
-                        <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select a room type" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectGroup>
-                                <SelectLabel>Room Type</SelectLabel>
-                                {roomTypes.map((roomType) => (
-                                    <SelectItem
-                                        key={roomType}
-                                        value={roomType}
-                                    >
-                                        {roomType}
+            <form onSubmit={
+                // @ts-expect-error slight type mismatch, teacherId in zod is string but expects Id users no errors will happen here
+                handleSubmit(data => createRoom(data))}>
+                <CardContent className="grid gap-8 mt-7">
+                    <div className="grid gap-2">
+                        <Label>Assign Teacher</Label>
+                        <Select onValueChange={handleTeacherSelect}>
+                            <SelectTrigger>
+                                <SelectValue placeholder="Select teacher" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {teachers?.map(teacher => (
+                                    <SelectItem key={teacher._id} value={teacher._id}>
+                                        {teacher.lastName}, {teacher.firstName}
                                     </SelectItem>
                                 ))}
-                            </SelectGroup>
-                        </SelectContent>
-                    </Select>
-                </div>
+                            </SelectContent>
+                        </Select>
+                        {errors.teacherId && (
+                            <p className="text-sm text-red-500">{errors.teacherId.message}</p>
+                        )}
+                    </div>
 
-                <div className="grid gap-2">
-                    <Label htmlFor="room-features" className="font-semibold">Room Features (Optional)</Label>
-                    <Textarea
-                        id="room-features"
-                        placeholder="Room description / information"
-                        className="w-full"
-                    />
-                </div>
+                    <div className="grid gap-2">
+                        <Label>Room Name</Label>
+                        <Input {...register("name")} disabled />
+                        {errors.name && (
+                            <p className="text-sm text-red-500">{errors.name.message}</p>
+                        )}
+                    </div>
 
-            </CardContent>
-            <CardFooter className="mt-auto">
-                <Button className="text-white">
-                    Add
-                </Button>
-            </CardFooter>
+                    <div className="grid gap-2">
+                        <Label>Room Type</Label>
+                        <Select onValueChange={(value) => setValue("type", value as typeof roomTypes[number])}>
+                            <SelectTrigger>
+                                <SelectValue placeholder="Select room type" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {roomTypes.map((type) => (
+                                    <SelectItem key={type} value={type}>
+                                        {type.replace("_", " ")}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                        {errors.type && (
+                            <p className="text-sm text-red-500">{errors.type.message}</p>
+                        )}
+                    </div>
+
+                    <div className="grid gap-2">
+                        <Label>Capacity</Label>
+                        <Input type="number" {...register("capacity")} />
+                        {errors.capacity && (
+                            <p className="text-sm text-red-500">{errors.capacity.message}</p>
+                        )}
+                    </div>
+
+                    <div className="grid gap-2">
+                        <Label>Description (Optional)</Label>
+                        <Textarea {...register("description")} />
+                    </div>
+                </CardContent>
+                <CardFooter>
+                    <Button type="submit" disabled={isPending} className="text-white">
+                        {isPending ? "Creating..." : "Create Classroom"}
+                    </Button>
+                </CardFooter>
+            </form>
         </Card>
     )
 }

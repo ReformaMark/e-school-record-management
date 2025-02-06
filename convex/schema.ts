@@ -164,34 +164,35 @@ export default defineSchema({
     gradeLevel: v.number(),
     subjectCode: v.string(),
     subjectCategory: v.optional(v.string()), // core, applied and, specialized
-    isMapeh: v.optional(v.boolean()), // New field
-    mapehWeights: v.optional(v.object({
-      music: v.object({
-        written: v.number(),
-        performance: v.number(),
-        exam: v.optional(v.number())
-      }),
-      arts: v.object({
-        written: v.number(),
-        performance: v.number(),
-        exam: v.optional(v.number())
-      }),
-      pe: v.object({
-        written: v.number(),
-        performance: v.number(),
-        exam: v.optional(v.number())
-      }),
-      health: v.object({
-        written: v.number(),
-        performance: v.number(),
-        exam: v.optional(v.number())
-      }) 
-    })),
+   
     gradeWeights: v.optional(v.object({
       written: v.number(),
       performance: v.number(),
       exam: v.optional(v.number())
     }))
+    // isMapeh: v.boolean(), // New field
+    // mapehWeights: v.optional(v.object({
+    //   music: v.object({
+    //     written: v.number(),
+    //     performance: v.number(),
+    //     exam: v.optional(v.number())
+    //   }),
+    //   arts: v.object({
+    //     written: v.number(),
+    //     performance: v.number(),
+    //     exam: v.optional(v.number())
+    //   }),
+    //   pe: v.object({
+    //     written: v.number(),
+    //     performance: v.number(),
+    //     exam: v.optional(v.number())
+    //   }),
+    //   health: v.object({
+    //     written: v.number(),
+    //     performance: v.number(),
+    //     exam: v.optional(v.number())
+    //   })
+    // })),
     // applicableGradeLevels: v.array(v.number()),
   }),
 
@@ -245,8 +246,11 @@ export default defineSchema({
     name: v.string(),
     capacity: v.number(),
     type: v.string(),
-    features: v.array(v.string()),
-  }),
+    features: v.optional(v.array(v.string())),
+    teacherId: v.optional(v.id("users")), // Reference to assigned teacher
+    isActive: v.boolean(),
+    description: v.optional(v.string())
+}).index("by_teacherId", ["teacherId"]),
 
   schoolYears: defineTable({
     startDate: v.string(),

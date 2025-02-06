@@ -1,7 +1,6 @@
 "use client"
 
-import * as z from "zod";
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import {
     Card,
     CardContent,
@@ -9,32 +8,32 @@ import {
     CardFooter,
     CardHeader,
     CardTitle
-} from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { useConvexMutation } from "@convex-dev/react-query"
-import { useMutation } from "@tanstack/react-query"
-import { useForm } from "react-hook-form"
-import { toast } from "sonner"
-import { api } from "../../../../../../convex/_generated/api"
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useConvexMutation } from "@convex-dev/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Switch } from "@/components/ui/switch";
+import { useMutation } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import * as z from "zod";
+import { api } from "../../../../../../convex/_generated/api";
 
 
-const componentSchema = z.object({
-    written: z.number().min(0).max(100),
-    performance: z.number().min(0).max(100),
-    exam: z.number().min(0).max(100).optional()
-}).refine(data => {
-    const total = data.written + data.performance + (data.exam || 0);
-    return total === 100;
-}, "Component weights must total 100%");
+// const componentSchema = z.object({
+//     written: z.number().min(0).max(100),
+//     performance: z.number().min(0).max(100),
+//     exam: z.number().min(0).max(100).optional()
+// }).refine(data => {
+//     const total = data.written + data.performance + (data.exam || 0);
+//     return total === 100;
+// }, "Component weights must total 100%");
 
 const gradeWeightSchema = z.object({
     written: z.number().min(0).max(100),
     performance: z.number().min(0).max(100),
-    exam: z.number().min(0).max(100).optional()
+    exam: z.number().min(0).max(100).optional(),
 }).refine(data => {
     const total = data.written + data.performance + (data.exam || 0);
     return total === 100;
@@ -45,39 +44,40 @@ export const subjectSchema = z.object({
     gradeLevel: z.coerce.number().min(1, "Grade level is required"),
     subjectCode: z.string().min(2).max(10),
     subjectCategory: z.enum(["core", "applied", "specialized"]),
-    isMapeh: z.boolean().default(false),
-    gradeWeights: gradeWeightSchema.optional(),
-    mapehWeights: z.object({
-        music: componentSchema,
-        arts: componentSchema,
-        pe: componentSchema,
-        health: componentSchema
-    }).optional()
-}).superRefine((data, ctx) => {
-    if (data.isMapeh && !data.mapehWeights) {
-        ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: "MAPEH weights are required for MAPEH subjects",
-            path: ["mapehWeights"]
-        });
-    }
-    if (!data.isMapeh && !data.gradeWeights) {
-        ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: "Grade weights are required for non-MAPEH subjects",
-            path: ["gradeWeights"]
-        });
-    }
-});
+    gradeWeights: gradeWeightSchema,
+    // isMapeh: z.boolean().default(false),
+    // mapehWeights: z.object({
+    //     music: componentSchema,
+    //     arts: componentSchema,
+    //     pe: componentSchema,
+    //     health: componentSchema
+    // }).optional()
+})
+// .superRefine((data, ctx) => {
+//     if (data.isMapeh && !data.mapehWeights) {
+//         ctx.addIssue({
+//             code: z.ZodIssueCode.custom,
+//             message: "MAPEH weights are required for MAPEH subjects",
+//             path: ["mapehWeights"]
+//         });
+//     }
+//     if (!data.isMapeh && !data.gradeWeights) {
+//         ctx.addIssue({
+//             code: z.ZodIssueCode.custom,
+//             message: "Grade weights are required for non-MAPEH subjects",
+//             path: ["gradeWeights"]
+//         });
+//     }
+// });
 
 export type SubjectFormData = z.infer<typeof subjectSchema>;
 
 export const AddSubjectsCard = () => {
-    const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm<SubjectFormData>({
+    const { register, handleSubmit, setValue, formState: { errors } } = useForm<SubjectFormData>({
         resolver: zodResolver(subjectSchema),
-        defaultValues: {
-            isMapeh: false
-        }
+        // defaultValues: {
+        //     isMapeh: false
+        // }
     });
 
     const { mutate: createSubject, isPending } = useMutation({
@@ -90,27 +90,28 @@ export const AddSubjectsCard = () => {
         }
     });
 
-    const isMapeh = watch("isMapeh");
+    // const isMapeh = watch("isMapeh");
 
-    const handleMapehChange = (checked: boolean) => {
-        setValue("isMapeh", checked);
-        if (checked) {
-            setValue("gradeWeights", undefined);
-        } else {
-            setValue("mapehWeights", undefined);
-        }
-    };
+    // const handleMapehChange = (checked: boolean) => {
+    //     setValue("isMapeh", checked);
+    //     if (checked) {
+    //         setValue("gradeWeights", undefined);
+    //     } else {
+    //         setValue("mapehWeights", undefined);
+    //     }
+    // };
 
     const onSubmit = async (data: SubjectFormData) => {
         // If it's a MAPEH subject, exclude gradeWeights from submission
-        const submitData = isMapeh
-            ? { ...data, gradeWeights: undefined }
-            : { ...data, mapehWeights: undefined };
+        // const submitData = isMapeh
+        //     ? { ...data, gradeWeights: undefined }
+        //     : { ...data, mapehWeights: undefined };
 
-        createSubject(submitData);
+
+        createSubject(data);
     };
 
-    const components = ["music", "arts", "pe", "health"] as const;
+    // const components = ["music", "arts", "pe", "health"] as const;
 
     return (
         <Card className="flex flex-col h-fit">
@@ -175,15 +176,15 @@ export const AddSubjectsCard = () => {
                         )}
                     </div>
 
-                    <div className="flex items-center space-x-2">
+                    {/* <div className="flex items-center space-x-2">
                         <Switch
                             checked={isMapeh}
                             onCheckedChange={handleMapehChange}
                         />
                         <Label>Is MAPEH Subject</Label>
-                    </div>
+                    </div> */}
 
-                    {isMapeh ? (
+                    {/* {isMapeh ? (
                         <div className="space-y-6">
                             {components.map((component) => (
                                 <div key={component} className="space-y-4">
@@ -238,46 +239,46 @@ export const AddSubjectsCard = () => {
                                 </div>
                             ))}
                         </div>
-                    ) : (
-                        <div className="space-y-4">
-                            <Label>Grade Weights (Total must be 100%)</Label>
-                            <div className="grid grid-cols-3 gap-4">
-                                <div>
-                                    <Label>Written</Label>
-                                    <Input
-                                        type="number"
-                                        placeholder="20%"
-                                        {...register("gradeWeights.written", { valueAsNumber: true })}
-                                    />
-                                    {errors?.gradeWeights?.written && (
-                                        <p className="text-sm text-red-500">{errors.gradeWeights.written.message}</p>
-                                    )}
-                                </div>
-                                <div>
-                                    <Label>Performance</Label>
-                                    <Input
-                                        type="number"
-                                        placeholder="50%"
-                                        {...register("gradeWeights.performance", { valueAsNumber: true })}
-                                    />
-                                    {errors?.gradeWeights?.performance && (
-                                        <p className="text-sm text-red-500">{errors.gradeWeights.performance.message}</p>
-                                    )}
-                                </div>
-                                <div>
-                                    <Label>Exam</Label>
-                                    <Input
-                                        type="number"
-                                        placeholder="30%"
-                                        {...register("gradeWeights.exam", { valueAsNumber: true })}
-                                    />
-                                    {errors?.gradeWeights?.exam && (
-                                        <p className="text-sm text-red-500">{errors.gradeWeights.exam.message}</p>
-                                    )}
-                                </div>
+                    ) : ( */}
+                    <div className="space-y-4">
+                        <Label>Grade Weights (Total must be 100%)</Label>
+                        <div className="grid grid-cols-3 gap-4">
+                            <div>
+                                <Label>Written</Label>
+                                <Input
+                                    type="number"
+                                    placeholder="20%"
+                                    {...register("gradeWeights.written", { valueAsNumber: true })}
+                                />
+                                {errors?.gradeWeights?.written && (
+                                    <p className="text-sm text-red-500">{errors.gradeWeights.written.message}</p>
+                                )}
+                            </div>
+                            <div>
+                                <Label>Performance</Label>
+                                <Input
+                                    type="number"
+                                    placeholder="50%"
+                                    {...register("gradeWeights.performance", { valueAsNumber: true })}
+                                />
+                                {errors?.gradeWeights?.performance && (
+                                    <p className="text-sm text-red-500">{errors.gradeWeights.performance.message}</p>
+                                )}
+                            </div>
+                            <div>
+                                <Label>Exam</Label>
+                                <Input
+                                    type="number"
+                                    placeholder="30%"
+                                    {...register("gradeWeights.exam", { valueAsNumber: true })}
+                                />
+                                {errors?.gradeWeights?.exam && (
+                                    <p className="text-sm text-red-500">{errors.gradeWeights.exam.message}</p>
+                                )}
                             </div>
                         </div>
-                    )}
+                    </div>
+                    {/* )} */}
                 </CardContent>
                 <CardFooter>
                     <Button type="submit" disabled={isPending} className="text-white">

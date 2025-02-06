@@ -12,9 +12,11 @@ interface GradeWeightsDialogProps {
 export const GradeWeightsDialog = ({ open, onClose, subject }: GradeWeightsDialogProps) => {
     if (!subject) return null;
 
-    const { isMapeh, mapehWeights, gradeWeights, name } = subject;
+    const {
+        // isMapeh, mapehWeights,
+        gradeWeights, name } = subject;
 
-    const components = ["music", "arts", "pe", "health"] as const;
+    // const components = ["music", "arts", "pe", "health"] as const;
 
     return (
         <Dialog open={open} onOpenChange={onClose}>
@@ -23,7 +25,7 @@ export const GradeWeightsDialog = ({ open, onClose, subject }: GradeWeightsDialo
                     <DialogTitle>Grade Weights - {name}</DialogTitle>
                 </DialogHeader>
                 <ScrollArea className="max-h-[600px] pr-4">
-                    {isMapeh && mapehWeights ? (
+                    {/* {isMapeh && mapehWeights ? (
                         <div className="grid grid-cols-2 gap-4">
                             {components.map((component) => (
                                 <Card key={component}>
@@ -50,28 +52,28 @@ export const GradeWeightsDialog = ({ open, onClose, subject }: GradeWeightsDialo
                                 </Card>
                             ))}
                         </div>
-                    ) : (
-                        <Card>
-                            <CardContent className="pt-6">
-                                <div className="space-y-2 text-sm">
-                                    <div className="flex justify-between">
-                                        <span>Written:</span>
-                                        <span className="font-medium">{gradeWeights?.written}%</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span>Performance:</span>
-                                        <span className="font-medium">{gradeWeights?.performance}%</span>
-                                    </div>
-                                    {gradeWeights?.exam && (
-                                        <div className="flex justify-between">
-                                            <span>Exam:</span>
-                                            <span className="font-medium">{gradeWeights.exam}%</span>
-                                        </div>
-                                    )}
+                    ) : ( */}
+                    <Card>
+                        <CardContent className="pt-6">
+                            <div className="space-y-2 text-sm">
+                                <div className="flex justify-between">
+                                    <span>Written:</span>
+                                    <span className="font-medium">{gradeWeights?.written}%</span>
                                 </div>
-                            </CardContent>
-                        </Card>
-                    )}
+                                <div className="flex justify-between">
+                                    <span>Performance:</span>
+                                    <span className="font-medium">{gradeWeights?.performance}%</span>
+                                </div>
+                                {gradeWeights?.exam && (
+                                    <div className="flex justify-between">
+                                        <span>Exam:</span>
+                                        <span className="font-medium">{gradeWeights.exam}%</span>
+                                    </div>
+                                )}
+                            </div>
+                        </CardContent>
+                    </Card>
+                    {/* )} */}
                 </ScrollArea>
             </DialogContent>
         </Dialog>

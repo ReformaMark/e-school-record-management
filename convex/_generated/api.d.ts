@@ -19,6 +19,7 @@ import type * as assessments from "../assessments.js";
 import type * as auth from "../auth.js";
 import type * as classes from "../classes.js";
 import type * as classRecords from "../classRecords.js";
+import type * as classroom from "../classroom.js";
 import type * as enrollments from "../enrollments.js";
 import type * as files from "../files.js";
 import type * as gradeLevel from "../gradeLevel.js";
@@ -45,6 +46,7 @@ declare const fullApi: ApiFromModules<{
   auth: typeof auth;
   classes: typeof classes;
   classRecords: typeof classRecords;
+  classroom: typeof classroom;
   enrollments: typeof enrollments;
   files: typeof files;
   gradeLevel: typeof gradeLevel;

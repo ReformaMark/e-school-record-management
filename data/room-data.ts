@@ -16,30 +16,30 @@ export const roomData = [
     },
 ]
 
-export const roomTypes = [
-    "Classroom",
-    "Computer Laboratory",
-    "Office",
-    "Auditorium",
-    "Library",
-    "Cafeteria",
-]
+// export const roomTypes = [
+//     "Classroom",
+//     "Computer Laboratory",
+//     "Office",
+//     "Auditorium",
+//     "Library",
+//     "Cafeteria",
+// ]
 
-export const roomColumns = [
-    {
-        accessorKey: "roomName",
-        header: "Room Name",
-    },
-    {
-        accessorKey: "estimatedCapacity",
-        header: "Estimated Capacity",
-    },
-    {
-        accessorKey: "roomType",
-        header: "Room Type",
-    },
-    {
-        accessorKey: "roomFeatures",
-        header: "Room Features",
-    },
-]
+// export const roomColumns = [
+//     {
+//         accessorKey: "roomName",
+//         header: "Room Name",
+//     },
+//     {
+//         accessorKey: "estimatedCapacity",
+//         header: "Estimated Capacity",
+//     },
+//     {
+//         accessorKey: "roomType",
+//         header: "Room Type",
+//     },
+//     {
+//         accessorKey: "roomFeatures",
+//         header: "Room Features",
+//     },
+// ]
