@@ -29,7 +29,7 @@ export default function EnrollmentConfirmationDialog({
     const schoolYear = useQuery(api.schoolYear.get)
     const addEnrollment = useMutation(api.enrollments.addEnrollment)
 
-    const latestSY = schoolYear?.find(item => item.sy === student.schoolYear)
+    const latestSY = schoolYear ? schoolYear[0] : undefined
 
     //get the secctions of the grade level
     const sections = useQuery(api.sections.getSectionsUsingGradeLevel, {gradeLevel: gradelevel})
