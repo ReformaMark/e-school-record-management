@@ -1006,6 +1006,10 @@ export const InputGradesCol: ColumnDef<StudentsWithClassRecord>[] = [
 
       const subjectId = student.classRecords.length > 0 ? student.classRecords[0].cLass.subjectId : undefined
 
+      const isSubmitted = student.classRecords.length > 0 ? student.classRecords[0].isSubmitted ? true : false : true
+
+      const isDisabled = isSubmitted === true || hasExamScore === false ? true : false
+
       return (
         <div className="text-primary">
           <DropdownMenu>
@@ -1027,7 +1031,7 @@ export const InputGradesCol: ColumnDef<StudentsWithClassRecord>[] = [
               <DropdownMenuItem disabled={quarterExams.length < 1 ? true : false} onClick={openQA}>
                 Quarterly Assessment
               </DropdownMenuItem>
-              <DropdownMenuItem disabled={!hasExamScore} onClick={()=> setIsSGOpen(true)}>
+              <DropdownMenuItem disabled={!isDisabled} onClick={()=> setIsSGOpen(true)}>
                 <Button  className='border shadow-md flex justify-center items-center gap-x-3 disabled:bg-blue-200 bg-blue-600 disabled:text-gray-500 text-white border-gray-100 rounded-md px-2 py-1'>
                   <FaRegSave />Submit Grades
                 </Button>

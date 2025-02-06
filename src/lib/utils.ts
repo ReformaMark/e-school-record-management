@@ -2,6 +2,7 @@ import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 import { setDate } from "date-fns"
 import { transmutationTable3, transmutationTableJRHigh2, transmutationTableSHS2, transmutationTableSHSCore2 } from "../../data/transmutation-data"
+import { QuarterlyGrades } from "./types"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -119,4 +120,26 @@ export function formatQuarter(quarter: string): string {
   const suffix = quarterNumber >= 1 && quarterNumber <= 3 ? suffixes[quarterNumber - 1] : "th";
 
   return `${quarterNumber}${suffix}`;
+}
+
+export const getQuarterlyGrades = (grades: QuarterlyGrades[] | undefined, quarter?: string) => {
+  if(!grades){
+    return ""
+  }
+  if (quarter) {
+    // If a specific quarter is provided, return only that quarter's grade
+    return grades?.find(g => g.quarter === quarter)?.quarterlyGrade ?? "";
+  }
+}
+
+export const getAverageForShs = (num1: number | string, num2: number | string): number | string => {
+  if (typeof num1 === "string" || typeof num2 === "string") {
+    return ""; // Return an empty string if either input is a string
+  }
+  
+  return (num1 + num2) / 2;
+};
+
+export const remarks = (average: number | string) =>{
+  return typeof average === "string" ? "" : average <= 74 ? "Failed" : "Passed"
 }

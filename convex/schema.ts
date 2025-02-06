@@ -156,7 +156,8 @@ export default defineSchema({
     sectionId: v.id('sections'),
     scheduleId: v.id('schedules'),
     schoolYearId: v.id('schoolYears'),
-    semester: v.optional(v.string()) // 1st or 2nd
+    semester: v.optional(v.string()), // 1st or 2nd
+    track: v.optional(v.string()), // STEM, ABM, HUMSS etc. for senior high
   }).index('by_teacherId', ['teacherId']),
 
   subjects: defineTable({
@@ -213,6 +214,7 @@ export default defineSchema({
     quarter: v.string(),
     quarterlyGrade: v.number(), // score
     needsIntervention: v.boolean(),
+    subComponent: v.optional(v.string()), // components of mapeh
     // if the student participate in an intervention
     interventionGrade: v.optional(v.number()),
     interventionUsed: v.optional(v.string()), // ex. Big book, General remarks

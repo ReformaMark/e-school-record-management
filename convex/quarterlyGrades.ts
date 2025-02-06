@@ -1,6 +1,7 @@
 import { ConvexError, v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
+import { asyncMap } from "convex-helpers";
 
 export const create = mutation({
     args:{
@@ -40,22 +41,40 @@ export const create = mutation({
 
 export const get = query({
     args:{
-        studentId: v.id('students'),
-        gradeLevel: v.number(),
+        gradeLevel: v.optional(v.number()),
         classId: v.id('classes'),
-        quarter: v.string(),
     },
     handler: async(ctx, args) =>{
         const teacherId = await getAuthUserId(ctx)
         if(!teacherId) throw new ConvexError('No teacher id')
+        if(!args.gradeLevel) return [];
 
+        const cls = await ctx.db.get(args.classId)
+        if(!cls) return []
+        const section = await ctx.db.get(cls?.sectionId)
+        if(!section) return []
         const quarterlyGrades = await ctx.db.query('quarterlyGrades')
-        .filter(q => q.eq(q.field('studentId'), args.studentId))
         .filter(q => q.eq(q.field('gradeLevel'), args.gradeLevel))
         .filter(q => q.eq(q.field('classId'), args.classId))
-        .filter(q => q.eq(q.field('quarter'), args.quarter))
-        .collect()
+        .filter(q => q.eq(q.field('teacherId'), teacherId))
+        .collect();
+      
+      const studentWithQG = await asyncMap(section.students, async (studentId) => {
+        const student = await ctx.db.get(studentId);
+        if (!student) return null; // Return null instead of []
+      
+        const filteredQG = quarterlyGrades.filter(q => q.studentId === studentId);
+      
+        return {
+          ...student,
+          quarterlyGrades: filteredQG
+        };
+      });
+      
+      // Remove null values (students not found)
+      const filteredStudentWithQG = studentWithQG.filter(Boolean);
 
-        return quarterlyGrades
+
+        return filteredStudentWithQG
     }
 })

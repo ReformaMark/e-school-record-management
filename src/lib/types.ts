@@ -82,3 +82,5 @@ export interface StudentsWithClassRecord extends Doc<"students">{
 export interface SubjectsWithAppliedGradeWeihts extends Doc<'subjects'>{
     appliedGradeWeights: Doc<'appliedGradeWeigths'> | null
 }
+
+export type QuarterlyGrades = Doc<"quarterlyGrades">
