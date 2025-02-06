@@ -26,7 +26,7 @@ function PerformanceTask({assessments}: QuarterExamPropsTypes) {
                     placeholder='by Assessment No'
                 />
             ): (
-                <Loading/>
+                <div className="text-gray-500 text-sm text-center py-4">No assigned subject yet.</div>
             )}
           
       </div>

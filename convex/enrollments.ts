@@ -16,6 +16,10 @@ export const addEnrollment = mutation({
         
         if (!userId) throw new ConvexError("Not authenticated");
 
+        await ctx.db.patch(args.studentId, { 
+            enrollmentStatus: "Enrolled"
+        })
+
         await ctx.db.insert('enrollments', {
             studentId: args.studentId,
             sectionId: args.sectionId,

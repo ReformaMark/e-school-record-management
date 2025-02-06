@@ -119,7 +119,7 @@ export default defineSchema({
 
     // For Returning Student
     lastGradeLevelCompleted: v.optional(v.string()),
-    lastSYCompleted: v.optional(v.string()),
+    lastSYCompleted: v.optional(v.string()), 
     lastSchoolAttended: v.optional(v.string()),
     schoolId: v.optional(v.string()),
 

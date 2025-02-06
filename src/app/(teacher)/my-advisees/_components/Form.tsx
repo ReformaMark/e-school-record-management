@@ -52,6 +52,7 @@ function EnrollmentForm({onClose}: {onClose: () => void}) {
             indigenousCommunity: "",
             fourPS: "No",
             fourPSIdNumber: "",
+            enrollmentStatus: "Can Enroll",
 
             //formstep 2
             currentAddress:{
@@ -422,6 +423,7 @@ function EnrollmentForm({onClose}: {onClose: () => void}) {
                                 <FormLabel>Learning Reference Number</FormLabel>
                                 <FormControl>
                                 <Input 
+                                    type='number'
                                     placeholder="" 
                                     {...field} 
                                     value={withLrn === "No" ? "" : field.value}

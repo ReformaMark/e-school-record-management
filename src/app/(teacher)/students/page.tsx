@@ -29,7 +29,7 @@ function StudentsPage() {
             <main className="space-y-4">
                 <div className="flex items-center">
                     <div className="hidden md:flex   ml-auto items-center gap-2">
-                        <DropdownMenu>
+                        {/* <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Button variant="outline" size="sm" className="h-7 gap-1">
                                     <ListFilterIcon className="h-3.5 w-3.5" />
@@ -51,13 +51,13 @@ function StudentsPage() {
                                     Failed
                                 </DropdownMenuCheckboxItem>
                             </DropdownMenuContent>
-                        </DropdownMenu>
-                        <Button size="sm" variant="outline" className="h-7 gap-1">
+                        </DropdownMenu> */}
+                        {/* <Button size="sm" variant="outline" className="h-7 gap-1">
                             <File className="h-3.5 w-3.5" />
                             <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
                                 Export
                             </span>
-                        </Button>
+                        </Button> */}
                         <EnrollmentDialog />
                     </div>
                 </div>

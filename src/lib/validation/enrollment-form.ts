@@ -82,17 +82,18 @@ export const EnrollmentFormSchema = z.object({
     lastSYCompleted: z.string().optional(),
     lastSchoolAttended: z.string().optional(),
     schoolId: z.string().optional(),
+    enrollmentStatus: z.string(),
 
     semester: z.string().optional(),
     strand: z.string().optional(),
     track: z.string().optional(),
 
 }).superRefine((data, ctx) => {
-    if (data.withLrn !== 'No' && data.lrn && data.lrn.length !== 11) {
+    if (data.withLrn !== 'No' && data.lrn && data.lrn.length !== 12) {
         ctx.addIssue({
             path: ['lrn'],
             code: "custom",
-            message: 'Learning Reference Number must be 11 characters long.',
+            message: 'Learning Reference Number must be 12 characters long.',
         });
     }
     if (data.withLrn === 'Yes' && !data.lrn) {

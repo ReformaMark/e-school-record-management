@@ -73,6 +73,7 @@ export const createStudent = mutation({
             section: v.optional(v.id('sections')),
             schoolYear: v.string(),
             gradeLevelToEnroll: v.optional(v.string()),
+            enrollmentStatus: v.optional(v.string()),
         
             // For Returning Student
             lastGradeLevelCompleted: v.optional(v.string()),
