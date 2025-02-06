@@ -953,6 +953,7 @@ export const InputGradesCol: ColumnDef<StudentsWithClassRecord>[] = [
       const [isQAOpen, setIsQAOpen] = useState<boolean>(false)
       const [isSGOpen, setIsSGOpen] = useState<boolean>(false)
       const [isOpen, setIsOpen ] = useState<boolean>(false)
+      const [transmutedGrade, setTransmutedGrade ] = useState<number>(0)
       const student = row.original
       const studentName = `${student.lastName}, ${student.firstName}`
 
@@ -1008,8 +1009,7 @@ export const InputGradesCol: ColumnDef<StudentsWithClassRecord>[] = [
 
       const isSubmitted = student.classRecords.length > 0 ? student.classRecords[0].isSubmitted ? true : false : true
 
-      const isDisabled = isSubmitted === true || hasExamScore === false ? true : false
-
+      const isDisabled = isSubmitted || !hasExamScore;
       return (
         <div className="text-primary">
           <DropdownMenu>
@@ -1022,20 +1022,27 @@ export const InputGradesCol: ColumnDef<StudentsWithClassRecord>[] = [
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Input</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem disabled={writtenWorks.length < 1 ? true : false} onClick={openWW}>
+              <DropdownMenuItem disabled={writtenWorks.length < 1 ? true : false || isSubmitted} onClick={openWW}>
                 Written Works
               </DropdownMenuItem>
-              <DropdownMenuItem disabled={performanceTasks.length < 1 ? true : false} onClick={openPT}>
+              <DropdownMenuItem disabled={performanceTasks.length < 1 ? true : false || isSubmitted} onClick={openPT}>
                 Performance Tasks
               </DropdownMenuItem>
-              <DropdownMenuItem disabled={quarterExams.length < 1 ? true : false} onClick={openQA}>
+              <DropdownMenuItem disabled={quarterExams.length < 1 ? true : false || isSubmitted} onClick={openQA}>
                 Quarterly Assessment
               </DropdownMenuItem>
-              <DropdownMenuItem disabled={!isDisabled} onClick={()=> setIsSGOpen(true)}>
-                <Button  className='border shadow-md flex justify-center items-center gap-x-3 disabled:bg-blue-200 bg-blue-600 disabled:text-gray-500 text-white border-gray-100 rounded-md px-2 py-1'>
-                  <FaRegSave />Submit Grades
-                </Button>
-              </DropdownMenuItem>
+              {isSubmitted ? (
+                <DropdownMenuLabel>Grade: {transmutedGrade}</DropdownMenuLabel>
+              ):(
+                <DropdownMenuItem disabled={isDisabled} onClick={()=> setIsSGOpen(true)}>
+                  <Button disabled={isDisabled}  className='border shadow-md flex justify-center items-center gap-x-3 disabled:bg-blue-200 bg-blue-600 disabled:text-gray-500 text-white border-gray-100 rounded-md px-2 py-1'>
+                    <FaRegSave />Submit Grades
+                  </Button>
+                </DropdownMenuItem>
+              )}
+              
+           
+             
             </DropdownMenuContent>
           </DropdownMenu>
 
@@ -1062,6 +1069,7 @@ export const InputGradesCol: ColumnDef<StudentsWithClassRecord>[] = [
           setIsSGOpen={setIsSGOpen}
           studentsWithDetails={student}
           subjectId={subjectId}
+          setTransmutedGrade={setTransmutedGrade}
         />
 
         <Dialog open={isOpen}>

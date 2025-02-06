@@ -2,9 +2,9 @@ import React from 'react'
 import { Doc } from '../../../convex/_generated/dataModel';
 import { useQuery } from 'convex/react';
 import { api } from '../../../convex/_generated/api';
-import { ClassesWithDetails, QuarterlyGrades } from '@/lib/types';
+import { ClassesWithDetails } from '@/lib/types';
 import { getAverageForShs, getQuarterlyGrades, remarks } from '@/lib/utils';
-
+ 
 function FinalGradeSHSTemplate({
     section,
     subject,

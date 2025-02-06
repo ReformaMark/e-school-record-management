@@ -1,7 +1,7 @@
 'use client'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { calculateInitialGrade, calculatePercentageScore, calculateTotalScore, calculateWeightedScore, convertToTransmutedGrade } from '@/lib/utils';
 import { StudentsWithClassRecord } from '@/lib/types';
 import { useMutation, useQuery } from 'convex/react';
@@ -14,16 +14,13 @@ interface SubmitGradesDialogProps {
   setIsSGOpen: (value:boolean) => void;
   studentsWithDetails: StudentsWithClassRecord
   subjectId: Id<"subjects"> | undefined
+  setTransmutedGrade: (value: number) => void;
 }
 
-function SubmitGradesDialog({isSGOpen, setIsSGOpen ,studentsWithDetails, subjectId}: SubmitGradesDialogProps) {
+function SubmitGradesDialog({isSGOpen, setIsSGOpen ,studentsWithDetails, subjectId, setTransmutedGrade}: SubmitGradesDialogProps) {
 
   const submitQuarterlyGrade =  useMutation(api.quarterlyGrades.create)
   const appliedGW = useQuery(api.appliedGradeWeigths.get, {subjectId})
-
-  if(studentsWithDetails.classRecords.length < 1){
-    return <></>
-  }
 
   const classRecord = studentsWithDetails.classRecords[0]
   const subject = studentsWithDetails.classRecords[0].cLass.subject
@@ -56,6 +53,9 @@ function SubmitGradesDialog({isSGOpen, setIsSGOpen ,studentsWithDetails, subject
     subject?.subjectCategory?.toLowerCase()
   )
 
+  useEffect(()=>{
+    setTransmutedGrade(transmutedGrade)
+  },[])
   const needsIntervention = transmutedGrade <= 74
 
   function handleSubmit (){

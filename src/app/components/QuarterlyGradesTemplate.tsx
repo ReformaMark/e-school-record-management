@@ -1,28 +1,37 @@
 'use client'
 import React from 'react'
-import { studentsData } from '../../../data/students-data'
-import EditableHeader from './EditableHeader'
+import { Doc } from '../../../convex/_generated/dataModel'
+import { ClassesWithDetails } from '@/lib/types'
+import { useQuery } from 'convex/react'
+import { api } from '../../../convex/_generated/api'
+import { getAverageForJrh, getQuarterlyGrades, remarks } from '@/lib/utils'
 
 function QuarterlyGradesTemplate({
-    gradeAndSection,
-    subject,
-    teacher,
-    schoolYear,
-}:{
-    gradeAndSection?: string,
-    subject?: string,
-    teacher?: string,
-    schoolYear?: string,
-}) {
-    //fetch students that are assigned to the teache that are currently logs in
-    //inlcude there grades
-    const males = studentsData
-                .filter((student) => student.gender === 'Male')
-                .sort((a, b) => a.lastName.localeCompare(b.lastName));
+    section,
+   
+    cls
+   }:{
+    section: Doc<'sections'>
 
-    const females = studentsData
-                .filter((student) => student.gender === 'Female')
-                .sort((a, b) => a.lastName.localeCompare(b.lastName));
+    cls: ClassesWithDetails
+   }) {
+    const studentQuarterlyGrades = useQuery(api.quarterlyGrades.get,{
+        gradeLevel: section?.gradeLevel,
+        classId: cls._id
+    })
+    const schoolYear =  cls.schoolYear?.sy
+    const subjectName = cls.subject?.name
+    const males = studentQuarterlyGrades
+        ?.filter(student => student?.sex?.toLowerCase() === 'male')
+        .sort((a, b) => (a?.lastName && b?.lastName ? a.lastName.localeCompare(b.lastName) : 0));
+  
+    const females = studentQuarterlyGrades
+        ?.filter(student => student?.sex?.toLowerCase() === 'female')
+        .sort((a, b) => (a?.lastName && b?.lastName ? a.lastName.localeCompare(b.lastName) : 0));
+        const teacherName = `${cls.teacher?.firstName} ${cls.teacher?.middleName} ${cls.teacher?.lastName}`
+
+        const gradeAndSection = `${section?.gradeLevel} - ${section?.name}`
+
   return (
     <div className='w-[1000px] md:w-full overflow-y-auto'>
         <h1 className='text-center font-semibold'>Summary of Quarterly Grades</h1>
@@ -39,24 +48,24 @@ function QuarterlyGradesTemplate({
                         <h1 className='w-[40%] p-2 uppercase text-xs  border-collapse border border-black'>SCHOOL YEAR: {schoolYear}</h1>
                     </div>
                     <div className="w-full flex col-span-2">
-                        <h1 className='w-[60%] p-2 uppercase text-xs  border-collapse border border-black'>TEACHER: {teacher}</h1>
-                        <h1 className='w-[40%] p-2 uppercase text-xs  border-collapse border border-black'>SUBJECT: {subject}</h1>
+                        <h1 className='w-[60%] p-2 uppercase text-xs  border-collapse border border-black'>TEACHER: {teacherName}</h1>
+                        <h1 className='w-[40%] p-2 uppercase text-xs  border-collapse border border-black'>SUBJECT: {subjectName}</h1>
                     </div>
                     <div className="w-full flex col-span-2">
                         <div className='text-xs  text-center w-2/12  border-collapse border border-black'>
-                            <h1 className=''>{subject}</h1> 
+                            <h1 className=''>{subjectName}</h1> 
                            <h1>1st Quarter</h1> 
                         </div>
                         <div className='text-xs text-center w-2/12  border-collapse border border-black'>
-                            <h1 className=''>{subject}</h1> 
+                            <h1 className=''>{subjectName}</h1> 
                            <h1>2nd Quarter</h1> 
                         </div>
                         <div className='text-xs text-center w-2/12  border-collapse border border-black'>
-                            <h1 className=''>{subject}</h1> 
+                            <h1 className=''>{subjectName}</h1> 
                            <h1>3rd Quarter</h1> 
                         </div>
                         <div className='text-xs text-center w-2/12  border-collapse border border-black'>
-                            <h1 className=''>{subject}</h1> 
+                            <h1 className=''>{subjectName}</h1> 
                            <h1>4th Quarter</h1> 
                         </div>
                         <div className='text-xs text-center w-2/12  border-collapse border border-black'>
@@ -104,22 +113,47 @@ function QuarterlyGradesTemplate({
                
             </div>
             {/* map all males alphabeteically */}
-            {males.map((male, index)=>(
-                <div key={male.id} className="flex border-collapse font-semibold hover:bg-gray-200">
+            {males?.map((student, index)=>(
+                <div key={student?._id} className="flex border-collapse font-semibold hover:bg-gray-200">
                    <div className="w-[3%] border-collapse text-center text-sm h-auto border border-black">{index + 1}</div>
                 
                    <h1 className="w-[32%] border-collapse h-auto flex justify-start px-3 text-sm items-center border border-black">
-                    {male.lastName}, {male.firstName} {male.middleName}</h1>
+                    {student?.lastName}, {student?.firstName} {student?.middleName}</h1>
                    
                    <div className="w-[65%] font-semibold border-collapse h-auto grid grid-cols-2 border border-black">
                       
                        <div className="w-full flex col-span-2">
-                           <EditableHeader/>
-                           <EditableHeader/>
-                           <EditableHeader/>
-                           <EditableHeader/>
-                           <EditableHeader/>
-                           <EditableHeader/>
+                        <h1 className='text-xs text-center w-2/12 border-collapse border border-black'>
+                            {getQuarterlyGrades(student?.quarterlyGrades, "1st")}
+                        </h1>
+                        <h1 className='text-xs text-center w-2/12 border-collapse border border-black'>
+                            {getQuarterlyGrades(student?.quarterlyGrades, "2nd")}
+                        </h1>
+                        <h1 className='text-xs text-center w-2/12 border-collapse border border-black'>
+                            {getQuarterlyGrades(student?.quarterlyGrades, "3rd")}
+                        </h1>
+                        <h1 className='text-xs text-center w-2/12 border-collapse border border-black'>
+                            {getQuarterlyGrades(student?.quarterlyGrades, "4th")}
+                        </h1>
+                        <h1 className='text-xs text-center w-2/12 border-collapse border border-black'>
+                        { getAverageForJrh(
+                                    getQuarterlyGrades(student?.quarterlyGrades, "1st"),
+                                    getQuarterlyGrades(student?.quarterlyGrades, "2nd"),
+                                    getQuarterlyGrades(student?.quarterlyGrades, "3rd"),
+                                    getQuarterlyGrades(student?.quarterlyGrades, "4th")
+                                
+                        )}
+                        </h1>
+                        <h1 className='text-xs text-center w-2/12 border-collapse border border-black'>
+                            {remarks(
+                                getAverageForJrh(
+                                    getQuarterlyGrades(student?.quarterlyGrades, "1st"),
+                                    getQuarterlyGrades(student?.quarterlyGrades, "2nd"),
+                                    getQuarterlyGrades(student?.quarterlyGrades, "3rd"),
+                                    getQuarterlyGrades(student?.quarterlyGrades, "4th")
+                                )
+                            )}
+                        </h1>
                            
                        </div>
                    </div>
@@ -158,25 +192,47 @@ function QuarterlyGradesTemplate({
                 </div>
                
             </div>
-             {females.map((female, index)=>(
-                <div key={female.id} className="flex border-collapse font-semibold  hover:bg-gray-200">
+             {females?.map((student, index)=>(
+                <div key={student?._id} className="flex border-collapse font-semibold  hover:bg-gray-200">
                    <div className="w-[3%] text-center text-sm border-collapse h-auto border border-black">{index + 1}</div>
                 
                    <h1 className="w-[32%] border-collapse h-auto flex justify-start px-3 text-sm items-center border border-black">
-                    {female.lastName}, {female.firstName} {female.middleName}</h1>
+                    {student?.lastName}, {student?.firstName} {student?.middleName}</h1>
                    
-                   <div className="w-[65%] font-semibold border-collapse h-auto grid grid-cols-2 border border-black">
+                    <div className="w-[65%] font-semibold border-collapse h-auto grid grid-cols-2 border border-black">
                       
                        <div className="w-full flex col-span-2">
-                        {/* put the grades value of each student on each editable header using 
-                            inputValue={theActualValue}
-                        */}
-                           <EditableHeader/>
-                           <EditableHeader/>
-                           <EditableHeader/>
-                           <EditableHeader/>
-                           <EditableHeader/>
-                           <EditableHeader/>
+                        <h1 className='text-xs text-center w-2/12 border-collapse border border-black'>
+                            {getQuarterlyGrades(student?.quarterlyGrades, "1st")}
+                        </h1>
+                        <h1 className='text-xs text-center w-2/12 border-collapse border border-black'>
+                            {getQuarterlyGrades(student?.quarterlyGrades, "2nd")}
+                        </h1>
+                        <h1 className='text-xs text-center w-2/12 border-collapse border border-black'>
+                            {getQuarterlyGrades(student?.quarterlyGrades, "3rd")}
+                        </h1>
+                        <h1 className='text-xs text-center w-2/12 border-collapse border border-black'>
+                            {getQuarterlyGrades(student?.quarterlyGrades, "4th")}
+                        </h1>
+                        <h1 className='text-xs text-center w-2/12 border-collapse border border-black'>
+                        { getAverageForJrh(
+                                    getQuarterlyGrades(student?.quarterlyGrades, "1st"),
+                                    getQuarterlyGrades(student?.quarterlyGrades, "2nd"),
+                                    getQuarterlyGrades(student?.quarterlyGrades, "3rd"),
+                                    getQuarterlyGrades(student?.quarterlyGrades, "4th")
+                                
+                        )}
+                        </h1>
+                        <h1 className='text-xs text-center w-2/12 border-collapse border border-black'>
+                            {remarks(
+                                getAverageForJrh(
+                                    getQuarterlyGrades(student?.quarterlyGrades, "1st"),
+                                    getQuarterlyGrades(student?.quarterlyGrades, "2nd"),
+                                    getQuarterlyGrades(student?.quarterlyGrades, "3rd"),
+                                    getQuarterlyGrades(student?.quarterlyGrades, "4th")
+                                )
+                            )}
+                        </h1>
                            
                        </div>
                    </div>

@@ -110,13 +110,8 @@ function Section({params}:{params: {class: string}}) {
           <TabsContent value="grades-summary" className='min-h-screen max-w-full overflow-y-auto border-2 border-gray-300'>
             {cls && cls.section?.gradeLevel === 11 || cls?.section?.gradeLevel === 12 ? (
               <FinalGradeSHSTemplate cls={cls as ClassesWithDetails} section={cls.section} subject={cls.subject}/>
-            ) :(
-              <QuarterlyGradesTemplate 
-                teacher='Currently Login Teacher name' 
-                subject={cls?.subject?.name} 
-                schoolYear={cls?.schoolYear?.sy}
-                gradeAndSection={`${cls?.section?.gradeLevel} - ${cls?.section?.name}`}
-              />
+            ) : cls && cls.section !== null && (
+              <QuarterlyGradesTemplate cls={cls as ClassesWithDetails} section={cls.section}/>
 
             )}
           </TabsContent>
