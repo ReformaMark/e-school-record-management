@@ -68,8 +68,14 @@ export interface AssessmentTypes extends Doc<"assessments"> {
     subject: Doc<'subjects'> | null
 }
 
+interface ClassessWithSubjects extends Doc<'classes'>{
+    subject: Doc<'subjects'> | null
+}
+interface CLassRecordsWithClassTypes extends Doc<'classRecords'>{
+    cLass: ClassessWithSubjects
+}
 export interface StudentsWithClassRecord extends Doc<"students">{
-    classRecords: Doc<"classRecords">[],
+    classRecords: CLassRecordsWithClassTypes[],
     sectionDoc: Doc<'sections'>
 }
 

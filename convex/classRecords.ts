@@ -413,11 +413,24 @@ export const get = query({
                 .filter(q=>q.eq(q.field('classId'), cls._id))
                 .collect();
 
-       
+            const classRecordWIthSubject = await asyncMap(classRecords, async(c)=>{
+                const cls = await ctx.db.get(c.classId)
+                if(!cls) return
+                const subject = await ctx.db.get(cls?.subjectId)
+                return {
+                    ...c,
+                    cLass:{
+                        ...cls,
+                        subject: subject
+                    }
+                }
+            })
+
+            const classRWithS = classRecordWIthSubject.filter((c)=> c !== undefined)
             return {
                 ...student,
                 sectionDoc: section,
-                classRecords: classRecords,
+                classRecords: classRWithS,
             };
         });
         const filteredStudents = students.filter(student => student !== null);

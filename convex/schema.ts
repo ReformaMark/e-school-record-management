@@ -307,7 +307,8 @@ export default defineSchema({
     })),
     subComponent: v.optional(v.string()), // Music, arts, PE, Health
     quarter: v.string(),
-    schoolYear: v.id('schoolYears')
+    schoolYear: v.id('schoolYears'),
+    isSubmitted: v.optional(v.boolean()) // determine if the quarterly grades has been recorded on the quarterLyGrades table
   }).index("by_studentId", ["studentId"])
     .index("by_classId", ["classId"])
 

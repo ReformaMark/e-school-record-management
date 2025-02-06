@@ -44,6 +44,10 @@ export const get = query({
     handler: async(ctx, args) =>{
         const teacherId = await getAuthUserId(ctx)
         if(!teacherId) throw new ConvexError('No teacher id.')
+
+
+        if(!args.subjectId) return 
+
         const appliedGradeWeigths= await ctx.db.query('appliedGradeWeigths')
         .filter(q=> q.eq(q.field('subjectId'), args.subjectId))
         .filter(q=> q.eq(q.field('teacherId'), teacherId))

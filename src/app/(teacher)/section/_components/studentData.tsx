@@ -951,12 +951,11 @@ export const InputGradesCol: ColumnDef<StudentsWithClassRecord>[] = [
       const [isWWOpen, setIsWWOpen] = useState<boolean>(false)
       const [isPTOpen, setIsPTOpen] = useState<boolean>(false)
       const [isQAOpen, setIsQAOpen] = useState<boolean>(false)
-      
-      // const [isOSOpen, setIsOSOpen] = useState<boolean>(false)
+      const [isSGOpen, setIsSGOpen] = useState<boolean>(false)
       const [isOpen, setIsOpen ] = useState<boolean>(false)
       const student = row.original
       const studentName = `${student.lastName}, ${student.firstName}`
-      
+
       const quarterExams = student.classRecords.flatMap(c => {
         return c.quarterlyExam.map(qe => {
           return {
@@ -996,12 +995,17 @@ export const InputGradesCol: ColumnDef<StudentsWithClassRecord>[] = [
       }
 
       const allScoresDefined = (student: StudentsWithClassRecord): boolean => {
-          return student.classRecords.every(classRecord =>
-              classRecord.quarterlyExam.every(exam => exam.score !== undefined)
-            )
-        };
-        
+        return (
+          Array.isArray(student.classRecords) && // Ensure classRecords is an array
+          student.classRecords.length > 0 && // Ensure it's not empty
+          Array.isArray(student.classRecords[0].quarterlyExam) && // Ensure quarterlyExam is an array
+          student.classRecords[0].quarterlyExam.every(exam => exam.score !== undefined) // Check scores
+        );
+      };
       const hasExamScore = allScoresDefined(student)
+
+      const subjectId = student.classRecords.length > 0 ? student.classRecords[0].cLass.subjectId : undefined
+
       return (
         <div className="text-primary">
           <DropdownMenu>
@@ -1023,9 +1027,9 @@ export const InputGradesCol: ColumnDef<StudentsWithClassRecord>[] = [
               <DropdownMenuItem disabled={quarterExams.length < 1 ? true : false} onClick={openQA}>
                 Quarterly Assessment
               </DropdownMenuItem>
-              <DropdownMenuItem disabled={quarterExams.length < 1 ? true : false} onClick={openQA}>
-                <Button disabled={hasExamScore} className='border shadow-md flex justify-center items-center gap-x-3 disabled:bg-blue-200 bg-blue-600 disabled:text-gray-500 text-white border-gray-100 rounded-md px-2 py-1'>
-                       <FaRegSave />Submit Grades
+              <DropdownMenuItem disabled={!hasExamScore} onClick={()=> setIsSGOpen(true)}>
+                <Button  className='border shadow-md flex justify-center items-center gap-x-3 disabled:bg-blue-200 bg-blue-600 disabled:text-gray-500 text-white border-gray-100 rounded-md px-2 py-1'>
+                  <FaRegSave />Submit Grades
                 </Button>
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -1049,7 +1053,12 @@ export const InputGradesCol: ColumnDef<StudentsWithClassRecord>[] = [
           setIsQAOpen={setIsQAOpen}
           name={studentName}
        />
-      <SubmitGradesDialog/>
+        <SubmitGradesDialog
+          isSGOpen={isSGOpen}
+          setIsSGOpen={setIsSGOpen}
+          studentsWithDetails={student}
+          subjectId={subjectId}
+        />
 
         <Dialog open={isOpen}>
             <DialogContent className=''>
