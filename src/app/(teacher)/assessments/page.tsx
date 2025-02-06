@@ -15,7 +15,7 @@ import { AssessmentTypes } from '@/lib/types'
 
 function AssessmentPage() {
     const schoolYears = useQuery(api.schoolYear.get)
-    const latestSY = schoolYears ? schoolYears[0]._id : undefined
+    const latestSY = schoolYears && schoolYears?.length > 0 ? schoolYears[0]._id : undefined
     const data = useQuery(api.assessments.getAssessments, {sy: latestSY})
     const getAssignSubjects = useQuery(api.subjects.getAssignSubjects)
   return (
