@@ -227,9 +227,8 @@ export default defineSchema({
   //   remarks: v.string()
   // }),
   schedules: defineTable({
-    day: v.string(),
-    startTime: v.string(),
-    endTime: v.string(),
+    day: v.array(v.string()), // Mon,Tue,Wed,THu,Fri,Sat, 
+    schoolPeriodId: v.id('schoolPeriods'), // range ng time
     roomId: v.id('rooms'),
   }),
 

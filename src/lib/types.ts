@@ -53,6 +53,7 @@ export interface StudentsWithEnrollMentTypes extends Doc<"students">{
 }
 
 export interface ScheduleWithRoom extends Doc<'schedules'>{
+    schoolPeriod: Doc<'schoolPeriods'> | null,
     room: Doc<'rooms'> | null
 }
 export interface ClassesWithDetails extends Doc<'classes'> {

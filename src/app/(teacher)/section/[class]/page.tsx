@@ -9,7 +9,7 @@ import { ChevronLeft } from 'lucide-react'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
 import FinalGradeSHSTemplate from '@/app/components/FinalGradeSHSTemplate'
-import { DataTable } from '@/components/data-table'
+import { DataTable } from '@/components/data-table' 
 import { forRemedial, studentMasterList, summerClassStatus } from '../_components/studentData'
 import NeedsImprovement from '../_components/NeedsImprovement'
 import InputGrades from '../_components/InputGrades'
@@ -22,7 +22,7 @@ function Section({params}:{params: {class: string}}) {
   const classId = params.class;
   const {isLoading, classes} = useClasses()
   //section === class
-  const cls = classes?.find((section) => section._id === classId);
+  const cls = classes?.find((section) => section?._id === classId);
   
   const studentInMasterlist = useQuery(api.students.studentsInMasterList, {classId: cls?._id })
  
@@ -50,7 +50,7 @@ function Section({params}:{params: {class: string}}) {
           <h1>Section: <span className='font-normal'>{cls?.section?.name}</span></h1>
           <h1>Grade Level: <span className='font-normal'>{cls?.section?.gradeLevel}</span></h1>
           <h1>Subject: <span className='font-normal'>{cls?.subject?.name}</span></h1>
-          <h1>Schedule: <span className='font-normal'>{cls?.schedule.startTime} - {cls?.schedule.endTime} - ( {cls?.schedule.day} )</span></h1>
+          <h1>Schedule: <span className='font-normal'>{cls?.schedule.schoolPeriod?.timeRange} - ({cls?.schedule.day && Array.isArray(cls.schedule.day)? cls.schedule.day.map(day => day.slice(0, 3)).join(", "): "No schedule assigned"})</span></h1>
           <h1>Room: <span className='font-normal'>{cls?.schedule.room?.name}</span></h1>
           <h1>School Year: <span className='font-normal'>{cls?.schoolYear?.sy}</span></h1>
           {(cls?.section?.gradeLevel ?? 0) > 10 && ( 

@@ -22,6 +22,8 @@ export const getTeacherClasses = query({
             const teacher = await ctx.db.get(c.teacherId)
             const section = await ctx.db.get(c.sectionId)
             const schedule = await ctx.db.get(c.scheduleId)
+            if(!schedule) return
+            const schoolPeriod = await ctx.db.get(schedule?.schoolPeriodId)
             if(!schedule){
                 throw new ConvexError('No Schedule')
             }
@@ -32,7 +34,7 @@ export const getTeacherClasses = query({
                 subject: subject,
                 teacher: teacher,
                 section: section,
-                schedule: {...schedule, room: room},
+                schedule: {...schedule, schoolPeriod:schoolPeriod,  room: room},
                 schoolYear: schoolYear,
             }
         })

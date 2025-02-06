@@ -33,7 +33,9 @@ export default function EnrollmentConfirmationDialog({
 
     //get the secctions of the grade level
     const sections = useQuery(api.sections.getSectionsUsingGradeLevel, {gradeLevel: gradelevel})
-
+    console.log(student._id)
+    console.log(selectedSection)
+    console.log(latestSY)
     const handleEnroll = () =>{
         setIsLoading(true)
         if(!student._id){
@@ -46,6 +48,7 @@ export default function EnrollmentConfirmationDialog({
             return
         }
 
+   
         toast.promise(addStudentToSection({studentId: student._id, sectionId: selectedSection as Id<'sections'>}), {
             loading: "Enrolling student...",
             success: async() => {
@@ -117,7 +120,7 @@ export default function EnrollmentConfirmationDialog({
                     Section?
                 </DialogTitle> 
                 <div className="text-text">
-                    <Select onValueChange={setSelectedSection}>
+                    <Select onValueChange={(value)=> setSelectedSection(value)}>
                         <SelectTrigger className='bg-white'>
                             <SelectValue placeholder="Select section" />
                         </SelectTrigger>
