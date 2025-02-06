@@ -21,6 +21,7 @@ export default function EnrollmentConfirmationDialog({
 }: EnrollmentConfirmationDialogProps) {
     const [open, setOpen] = useState<boolean>(false)
     const [isOpen, setIsOpen] = useState<boolean>(false)
+    const [syDialog, setSyDialog] = useState<boolean>(false)
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const [selectedSection, setSelectedSection] = useState<string>()
     const [gradelevel, setGradeLevel ] = useState<string>()
@@ -45,6 +46,8 @@ export default function EnrollmentConfirmationDialog({
             return
         }
         if(!latestSY){
+            toast.error("Please make sure a school year has already been created.");
+            setIsLoading(false)
             return
         }
 
@@ -146,6 +149,8 @@ export default function EnrollmentConfirmationDialog({
                 </DialogFooter>
             </DialogContent>
         </Dialog>
+
+        
     </div>
   )
 }
