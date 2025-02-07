@@ -12,7 +12,11 @@ import { useConfirm } from "@/hooks/use-confirm";
 import { toast } from "sonner";
 import { EditSubjectDialog } from "./edit-subject-dialog";
 
-export const SubjectsColumns: ColumnDef<Doc<"subjects">>[] = [
+type SubjectWithGradeLevel = Doc<"subjects"> & {
+    gradeLevel?: Doc<"gradeLevels"> | null;
+};
+
+export const SubjectsColumns: ColumnDef<SubjectWithGradeLevel>[] = [
     {
         accessorKey: "name",
         header: "Subject Name",
@@ -24,6 +28,10 @@ export const SubjectsColumns: ColumnDef<Doc<"subjects">>[] = [
     {
         accessorKey: "gradeLevel",
         header: "Grade Level",
+        cell: ({ row }) => {
+            const gradeLevel = row.original.gradeLevel;
+            return gradeLevel ? `${gradeLevel.level}` : "Not assigned";
+        }
     },
     {
         accessorKey: "subjectCategory",

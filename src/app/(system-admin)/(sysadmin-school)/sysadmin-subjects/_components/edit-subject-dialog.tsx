@@ -9,8 +9,9 @@ import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { api } from "../../../../../../convex/_generated/api";
-import { Doc } from "../../../../../../convex/_generated/dataModel";
+import { Doc, Id } from "../../../../../../convex/_generated/dataModel";
 import { SubjectFormData, subjectSchema } from "./add-subjects-card";
+import { useQuery } from "convex/react";
 
 interface EditSubjectDialogProps {
     open: boolean;
@@ -19,14 +20,16 @@ interface EditSubjectDialogProps {
 }
 
 export const EditSubjectDialog = ({ open, onClose, subject }: EditSubjectDialogProps) => {
+    const gradeLevels = useQuery(api.gradeLevel.get)
+
     const { register, handleSubmit, setValue, formState: { errors } } = useForm<SubjectFormData>({
         resolver: zodResolver(subjectSchema),
         defaultValues: {
             name: subject.name,
-            gradeLevel: subject.gradeLevel,
+            gradeLevelId: subject.gradeLevelId,
             subjectCode: subject.subjectCode,
             subjectCategory: subject.subjectCategory as "core" | "applied" | "specialized" | undefined,
-            gradeWeights: subject.gradeWeights,
+            gradeWeights: subject.gradeWeights
             // isMapeh: subject.isMapeh,
             // gradeWeights: subject.isMapeh ? undefined : subject.gradeWeights,
             // mapehWeights: subject.isMapeh ? subject.mapehWeights : undefined
@@ -71,7 +74,7 @@ export const EditSubjectDialog = ({ open, onClose, subject }: EditSubjectDialogP
             const submitData = {
                 id: subject._id,
                 name: data.name,
-                gradeLevel: data.gradeLevel,
+                gradeLevelId: data.gradeLevelId as Id<"gradeLevels">,
                 subjectCode: data.subjectCode,
                 subjectCategory: data.subjectCategory,
                 gradeWeights: data.gradeWeights,
@@ -119,23 +122,25 @@ export const EditSubjectDialog = ({ open, onClose, subject }: EditSubjectDialogP
                     <div className="space-y-2">
                         <Label>Grade Level</Label>
                         <Select
-                            defaultValue={subject.gradeLevel.toString()}
-                            onValueChange={(value) => setValue("gradeLevel", parseInt(value))}
+                            defaultValue={subject.gradeLevelId}
+                            onValueChange={(value) => setValue("gradeLevelId", value)}
                         >
                             <SelectTrigger>
-                                <SelectValue placeholder="Select grade level" />
+                                <SelectValue placeholder="Select Grade Level" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="7">Grade 7</SelectItem>
-                                <SelectItem value="8">Grade 8</SelectItem>
-                                <SelectItem value="9">Grade 9</SelectItem>
-                                <SelectItem value="10">Grade 10</SelectItem>
-                                <SelectItem value="11">Grade 11</SelectItem>
-                                <SelectItem value="12">Grade 12</SelectItem>
+                                {gradeLevels?.map((grade) => (
+                                    <SelectItem
+                                        key={grade._id}
+                                        value={grade._id}
+                                    >
+                                        {grade.level}
+                                    </SelectItem>
+                                ))}
                             </SelectContent>
                         </Select>
-                        {errors.gradeLevel && (
-                            <p className="text-sm text-red-500">{errors.gradeLevel.message}</p>
+                        {errors.gradeLevelId && (
+                            <p className="text-sm text-red-500">{errors.gradeLevelId.message}</p>
                         )}
                     </div>
 
@@ -223,44 +228,44 @@ export const EditSubjectDialog = ({ open, onClose, subject }: EditSubjectDialogP
                             ))}
                         </div>
                     ) : ( */}
-                        <div className="space-y-4">
-                            <Label>Grade Weights (Total must be 100%)</Label>
-                            <div className="grid grid-cols-3 gap-4">
-                                <div>
-                                    <Label>Written</Label>
-                                    <Input
-                                        type="number"
-                                        placeholder="20%"
-                                        {...register("gradeWeights.written", { valueAsNumber: true })}
-                                    />
-                                    {errors?.gradeWeights?.written && (
-                                        <p className="text-sm text-red-500">{errors.gradeWeights.written.message}</p>
-                                    )}
-                                </div>
-                                <div>
-                                    <Label>Performance</Label>
-                                    <Input
-                                        type="number"
-                                        placeholder="50%"
-                                        {...register("gradeWeights.performance", { valueAsNumber: true })}
-                                    />
-                                    {errors?.gradeWeights?.performance && (
-                                        <p className="text-sm text-red-500">{errors.gradeWeights.performance.message}</p>
-                                    )}
-                                </div>
-                                <div>
-                                    <Label>Exam</Label>
-                                    <Input
-                                        type="number"
-                                        placeholder="30%"
-                                        {...register("gradeWeights.exam", { valueAsNumber: true })}
-                                    />
-                                    {errors?.gradeWeights?.exam && (
-                                        <p className="text-sm text-red-500">{errors.gradeWeights.exam.message}</p>
-                                    )}
-                                </div>
+                    <div className="space-y-4">
+                        <Label>Grade Weights (Total must be 100%)</Label>
+                        <div className="grid grid-cols-3 gap-4">
+                            <div>
+                                <Label>Written</Label>
+                                <Input
+                                    type="number"
+                                    placeholder="20%"
+                                    {...register("gradeWeights.written", { valueAsNumber: true })}
+                                />
+                                {errors?.gradeWeights?.written && (
+                                    <p className="text-sm text-red-500">{errors.gradeWeights.written.message}</p>
+                                )}
+                            </div>
+                            <div>
+                                <Label>Performance</Label>
+                                <Input
+                                    type="number"
+                                    placeholder="50%"
+                                    {...register("gradeWeights.performance", { valueAsNumber: true })}
+                                />
+                                {errors?.gradeWeights?.performance && (
+                                    <p className="text-sm text-red-500">{errors.gradeWeights.performance.message}</p>
+                                )}
+                            </div>
+                            <div>
+                                <Label>Exam</Label>
+                                <Input
+                                    type="number"
+                                    placeholder="30%"
+                                    {...register("gradeWeights.exam", { valueAsNumber: true })}
+                                />
+                                {errors?.gradeWeights?.exam && (
+                                    <p className="text-sm text-red-500">{errors.gradeWeights.exam.message}</p>
+                                )}
                             </div>
                         </div>
+                    </div>
                     {/* )} */}
                     <DialogFooter>
                         <Button type="button" variant="outline" onClick={onClose}>

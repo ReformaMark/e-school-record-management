@@ -12,6 +12,7 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { FileIcon, ListFilterIcon, PlusCircleIcon } from "lucide-react";
 import Link from "next/link";
+
 const SystemAdminSectionsPage = () => {
     return (
         // <div className="flex min-h-screen w-full flex-col">

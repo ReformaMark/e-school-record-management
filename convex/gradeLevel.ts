@@ -111,7 +111,7 @@ export const get = query({
 
         return await ctx.db
             .query("gradeLevels")
-            .order("desc")
+            .order("asc")
             .collect()
     }
 })

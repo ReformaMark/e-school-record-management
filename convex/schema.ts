@@ -119,7 +119,7 @@ export default defineSchema({
 
     // For Returning Student
     lastGradeLevelCompleted: v.optional(v.string()),
-    lastSYCompleted: v.optional(v.string()), 
+    lastSYCompleted: v.optional(v.string()),
     lastSchoolAttended: v.optional(v.string()),
     schoolId: v.optional(v.string()),
 
@@ -142,7 +142,7 @@ export default defineSchema({
 
   sections: defineTable({
     name: v.string(),
-    gradeLevel: v.number(),
+    gradeLevelId: v.id("gradeLevels"),
     advisorId: v.id('users'), // references teacher in users table
     roomId: v.optional(v.id('rooms')),
     schoolYearId: v.id('schoolYears'),
@@ -162,10 +162,10 @@ export default defineSchema({
 
   subjects: defineTable({
     name: v.string(),
-    gradeLevel: v.number(),
+    gradeLevelId: v.id("gradeLevels"),
     subjectCode: v.string(),
     subjectCategory: v.optional(v.string()), // core, applied and, specialized
-   
+
     gradeWeights: v.optional(v.object({
       written: v.number(),
       performance: v.number(),
@@ -253,7 +253,7 @@ export default defineSchema({
     teacherId: v.optional(v.id("users")), // Reference to assigned teacher
     isActive: v.optional(v.boolean()),
     description: v.optional(v.string())
-}).index("by_teacherId", ["teacherId"]),
+  }).index("by_teacherId", ["teacherId"]),
 
   schoolYears: defineTable({
     startDate: v.string(),

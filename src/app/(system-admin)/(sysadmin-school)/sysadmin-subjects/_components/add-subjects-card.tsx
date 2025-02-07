@@ -19,6 +19,8 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
 import { api } from "../../../../../../convex/_generated/api";
+import { useQuery } from "convex/react";
+import { Id } from "../../../../../../convex/_generated/dataModel";
 
 
 // const componentSchema = z.object({
@@ -41,7 +43,7 @@ const gradeWeightSchema = z.object({
 
 export const subjectSchema = z.object({
     name: z.string().min(1, "Subject name is required"),
-    gradeLevel: z.coerce.number().min(1, "Grade level is required"),
+    gradeLevelId: z.string().min(1, "Grade level is required"),
     subjectCode: z.string().min(2).max(10),
     subjectCategory: z.enum(["core", "applied", "specialized"]),
     gradeWeights: gradeWeightSchema,
@@ -79,6 +81,7 @@ export const AddSubjectsCard = () => {
         //     isMapeh: false
         // }
     });
+    const gradeLevels = useQuery(api.gradeLevel.get);
 
     const { mutate: createSubject, isPending } = useMutation({
         mutationFn: useConvexMutation(api.subjects.create),
@@ -108,7 +111,10 @@ export const AddSubjectsCard = () => {
         //     : { ...data, mapehWeights: undefined };
 
 
-        createSubject(data);
+        createSubject({
+            ...data,
+            gradeLevelId: data.gradeLevelId as Id<"gradeLevels">
+        });
     };
 
     // const components = ["music", "arts", "pe", "health"] as const;
@@ -139,22 +145,23 @@ export const AddSubjectsCard = () => {
 
                     <div className="space-y-2">
                         <Label>Grade Level</Label>
-                        <Select onValueChange={
-                            (value) => setValue("gradeLevel", parseInt(value))}>
+                        <Select onValueChange={(value) => setValue("gradeLevelId", value)}>
                             <SelectTrigger>
-                                <SelectValue placeholder="Select grade level" />
+                                <SelectValue placeholder="Select Grade Level" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="7">Grade 7</SelectItem>
-                                <SelectItem value="8">Grade 8</SelectItem>
-                                <SelectItem value="9">Grade 9</SelectItem>
-                                <SelectItem value="10">Grade 10</SelectItem>
-                                <SelectItem value="11">Grade 11</SelectItem>
-                                <SelectItem value="12">Grade 12</SelectItem>
+                                {gradeLevels?.map((grade) => (
+                                    <SelectItem
+                                        key={grade._id}
+                                        value={grade._id}
+                                    >
+                                        {grade.level}
+                                    </SelectItem>
+                                ))}
                             </SelectContent>
                         </Select>
-                        {errors.gradeLevel && (
-                            <p className="text-sm text-red-500">{errors.gradeLevel.message}</p>
+                        {errors.gradeLevelId && (
+                            <p className="text-sm text-red-500">{errors.gradeLevelId.message}</p>
                         )}
                     </div>
 

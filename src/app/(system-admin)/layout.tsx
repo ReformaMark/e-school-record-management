@@ -8,7 +8,7 @@ import { SystemAdminSidenav } from "./_components/system-admin-sidenav";
 import { SystemAdminGuard } from "@/components/guards/admin-guard";
 
 export const metadata: Metadata = {
-    title: "System Admin",
+    title: "ERMS-admin",
     description: "System Admin Page",
 };
 

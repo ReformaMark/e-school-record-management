@@ -16,10 +16,10 @@ export const getSubjects = query({
 })
 
 export const getAssignSubjects = query({
-    args:{
+    args: {
         sy: v.optional(v.id('schoolYears'))
     },
-    handler: async (ctx,args) => {
+    handler: async (ctx, args) => {
         const teacherId = await getAuthUserId(ctx)
         if (!teacherId) throw new ConvexError('No Teacher Id found.');
         if (!args.sy) return []
@@ -75,7 +75,7 @@ export const create = mutation({
         name: v.string(),
         subjectCode: v.string(),
         subjectCategory: v.union(v.literal("core"), v.literal("applied"), v.literal("specialized")),
-        gradeLevel: v.number(),
+        gradeLevelId: v.id("gradeLevels"),
         gradeWeights: v.optional(v.object({
             written: v.number(),
             performance: v.number(),
@@ -140,7 +140,7 @@ export const create = mutation({
         //         }
         //     }
         // } else
-         if (args.gradeWeights) {
+        if (args.gradeWeights) {
             // Validate regular subject weights
             const total = args.gradeWeights.written +
                 args.gradeWeights.performance +
@@ -155,7 +155,7 @@ export const create = mutation({
         return await ctx.db.insert("subjects", {
             name: args.name,
             subjectCode: args.subjectCode,
-            gradeLevel: args.gradeLevel,
+            gradeLevelId: args.gradeLevelId,
             subjectCategory: args.subjectCategory,
             gradeWeights: args.gradeWeights,
             // isMapeh: args.isMapeh,
@@ -175,7 +175,7 @@ export const update = mutation({
         id: v.id("subjects"),
         name: v.string(),
         subjectCode: v.string(),
-        gradeLevel: v.number(),
+        gradeLevelId: v.id("gradeLevels"),
         subjectCategory: v.union(
             v.literal("core"),
             v.literal("applied"),
@@ -229,5 +229,28 @@ export const remove = mutation({
     },
     handler: async (ctx, args) => {
         return await ctx.db.delete(args.id);
+    }
+});
+
+export const getSubjectWithGradeLevel = query({
+    handler: async (ctx) => {
+        const subjects = await ctx.db
+            .query("subjects")
+            .collect();
+
+        // Fetch grade level for each subject
+        const subjectsWithGradeLevel = await Promise.all(
+            subjects.map(async (subject) => {
+                const gradeLevel = subject.gradeLevelId
+                    ? await ctx.db.get(subject.gradeLevelId)
+                    : null;
+                return {
+                    ...subject,
+                    gradeLevel
+                };
+            })
+        );
+
+        return subjectsWithGradeLevel;
     }
 });

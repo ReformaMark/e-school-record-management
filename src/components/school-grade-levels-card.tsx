@@ -61,9 +61,10 @@ export const SchoolGradeLevelsCardTable = ({
             remove({
                 gradeLevelId,
             })
+
+            toast.success("Grade level removed")
         }
 
-        toast.success("Grade level removed")
     }
 
     const handleEdit = (gradeLevelId: Id<"gradeLevels">, level: string) => {

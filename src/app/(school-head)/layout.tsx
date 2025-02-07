@@ -8,7 +8,7 @@ import { ConvexAuthNextjsServerProvider } from "@convex-dev/auth/nextjs/server";
 import { ConvexClientProvider } from "../components/convex-client-provider";
 
 export const metadata: Metadata = {
-    title: "System Admin",
+    title: "ERMS-school head",
     description: "System Admin Page",
 };
 
