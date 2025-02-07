@@ -18,7 +18,7 @@ interface IProps {
 function InputGrades({clss}:IProps) {
     const students = useQuery(api.classRecords.get, {classId: clss?._id})
     const teacher = useQuery(api.users.teacher)
-    const [selectedSubComponent, setSelectedSubComponent] = useState<string>()
+    const [selectedSubComponent, setSelectedSubComponent] = useState<string>("Music")
     const isMAPEH = clss.subject?.name.toLocaleUpperCase() === 'MAPEH'
     const studentsWithClassRecord = students?.sort((a, b) => (a?.lastName ?? '').localeCompare(b?.lastName ?? ''));
   

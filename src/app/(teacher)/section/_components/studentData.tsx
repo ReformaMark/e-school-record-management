@@ -823,7 +823,7 @@ export const studentMasterList: ColumnDef<StudentsWithEnrollMentTypes>[] = [
       const enrollmentDate = row.original.enrollment.dateEnrolled
 
       return (
-        <h1>{enrollmentDate}</h1>
+        <h1>{enrollmentDate ? enrollmentDate : ""}</h1>
       )
     },
    },
@@ -953,7 +953,7 @@ export const InputGradesCol: ColumnDef<StudentsWithClassRecord>[] = [
       const [isQAOpen, setIsQAOpen] = useState<boolean>(false)
       const [isSGOpen, setIsSGOpen] = useState<boolean>(false)
       const [isOpen, setIsOpen ] = useState<boolean>(false)
-      const [transmutedGrade, setTransmutedGrade ] = useState<number>(0)
+     
       const student = row.original
       const studentName = `${student.lastName}, ${student.firstName}`
 
@@ -1031,16 +1031,18 @@ export const InputGradesCol: ColumnDef<StudentsWithClassRecord>[] = [
               <DropdownMenuItem disabled={quarterExams.length < 1 ? true : false || isSubmitted} onClick={openQA}>
                 Quarterly Assessment
               </DropdownMenuItem>
-              {isSubmitted ? (
-                <DropdownMenuLabel>Grade: {transmutedGrade}</DropdownMenuLabel>
-              ):(
+             
                 <DropdownMenuItem disabled={isDisabled} onClick={()=> setIsSGOpen(true)}>
-                  <Button disabled={isDisabled}  className='border shadow-md flex justify-center items-center gap-x-3 disabled:bg-blue-200 bg-blue-600 disabled:text-gray-500 text-white border-gray-100 rounded-md px-2 py-1'>
-                    <FaRegSave />Submit Grades
+                  <Button
+                    disabled={isDisabled}
+                    className="border shadow-md flex justify-center items-center gap-x-3 disabled:bg-blue-200 bg-blue-600 disabled:text-gray-500 text-white border-gray-100 rounded-md px-2 py-1"
+                  >
+                    <FaRegSave />
+                    Submit Grades
                   </Button>
+                  
                 </DropdownMenuItem>
-              )}
-              
+           
            
              
             </DropdownMenuContent>
@@ -1063,14 +1065,14 @@ export const InputGradesCol: ColumnDef<StudentsWithClassRecord>[] = [
           isQAOpen={isQAOpen}
           setIsQAOpen={setIsQAOpen}
           name={studentName}
+
        />
-        <SubmitGradesDialog
-          isSGOpen={isSGOpen}
-          setIsSGOpen={setIsSGOpen}
-          studentsWithDetails={student}
-          subjectId={subjectId}
-          setTransmutedGrade={setTransmutedGrade}
-        />
+      <SubmitGradesDialog
+        isSGOpen={isSGOpen}
+        setIsSGOpen={setIsSGOpen}
+        studentsWithDetails={student}
+        subjectId={subjectId}
+      />
 
         <Dialog open={isOpen}>
             <DialogContent className=''>

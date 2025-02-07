@@ -2,7 +2,7 @@ import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 import { setDate } from "date-fns"
 import { transmutationTable3, transmutationTableJRHigh2, transmutationTableSHS2, transmutationTableSHSCore2 } from "../../data/transmutation-data"
-import { QuarterlyGrades } from "./types"
+import { QuarterlyGrades, StudentsWithQuarterlyGrades } from "./types"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -157,3 +157,29 @@ export const getAverageForJrh = (
 export const remarks = (average: number | string) =>{
   return typeof average === "string" ? "" : average <= 74 ? "Failed" : "Passed"
 }
+
+export const filterStudentsBySubComponent = (
+  students: StudentsWithQuarterlyGrades[], 
+  sex: "male" | "female", 
+  subComponent: string
+) => {
+  return students
+    ?.filter(student => 
+      student?.sex?.toLowerCase() === sex && 
+      student?.quarterlyGrades.some(qg => qg.subComponent?.toLowerCase() === subComponent.toLowerCase())
+    )
+    .sort((a, b) => (a?.lastName && b?.lastName ? a.lastName.localeCompare(b.lastName) : 0));
+};
+
+export const getQuarterlyGradeScore = (
+  quarterlyGrades: QuarterlyGrades[],
+  quarter: string,
+  subComponent: string
+): number | string => {
+  const grade = quarterlyGrades.find(
+    (qg) => qg.quarter === quarter && qg.subComponent === subComponent
+  );
+
+  return grade ? grade.quarterlyGrade : ""; // Return score if found, otherwise null
+};
+

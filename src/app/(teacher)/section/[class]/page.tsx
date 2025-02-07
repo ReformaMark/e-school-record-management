@@ -17,6 +17,7 @@ import Loading from '@/app/components/Loading'
 import { useQuery } from 'convex/react'
 import { api } from '../../../../../convex/_generated/api'
 import { ClassesWithDetails, StudentsWithEnrollMentTypes } from '@/lib/types'
+import MapehQuarterlyGradesTab from '../_components/MapehQuarterlyGradesTab'
 
 function Section({params}:{params: {class: string}}) {
   const classId = params.class;
@@ -110,9 +111,11 @@ function Section({params}:{params: {class: string}}) {
           <TabsContent value="grades-summary" className='min-h-screen max-w-full overflow-y-auto border-2 border-gray-300'>
             {cls && cls.section?.gradeLevel === 11 || cls?.section?.gradeLevel === 12 ? (
               <FinalGradeSHSTemplate cls={cls as ClassesWithDetails} section={cls.section} subject={cls.subject}/>
-            ) : cls && cls.section !== null && (
+            ) : cls && cls.section !== null && cls.subject?.name?.toUpperCase() !== "MAPEH" ? (
               <QuarterlyGradesTemplate cls={cls as ClassesWithDetails} section={cls.section}/>
 
+            ) : cls && cls.section !== null && (
+              <MapehQuarterlyGradesTab cls={cls as ClassesWithDetails} section={cls?.section}/>
             )}
           </TabsContent>
 
