@@ -4,7 +4,14 @@ import { useQuery } from 'convex/react';
 import { api } from '../../../convex/_generated/api';
 import { ClassesWithDetails } from '@/lib/types';
 import { getAverageForShs, getQuarterlyGrades, remarks } from '@/lib/utils';
- 
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+  } from "@/components/ui/tooltip"
+import { Badge } from '@/components/ui/badge';
+import { Label } from '@/components/ui/label';
 function FinalGradeSHSTemplate({
     section,
     subject,
@@ -98,17 +105,65 @@ function FinalGradeSHSTemplate({
              <div className='w-[75%] '>
                  <div className="flex w-full h-full">
                  <h1 className="w-[34%] flex justify-center items-center text-center uppercase border border-collapse border-black">
-                        {getQuarterlyGrades(student?.quarterlyGrades, "1st")}
+                        {student.quarterlyGrades.length >= 1 ? student.quarterlyGrades[0].interventionGrade ? (
+                              <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <h1 className='text-red-500'>{student.quarterlyGrades[0].interventionGrade}</h1>
+                                </TooltipTrigger>
+                                <TooltipContent className='max-w-2xl bg-white p-5 space-y-2 shadow-md'>
+                                    <Label className='font-semibold'>Used intervention(s)</Label>
+                                    <div className="flex items-center justify-center flex-wrap gap-2">
+                                    {student.quarterlyGrades[0].interventionUsed?.map((intUsed, index)=>(
+                                        <Badge key={index + intUsed} className='text-white text-xs'>{intUsed}</Badge>
+                                    ))}
+                                    </div>
+                                    <div className="mt-2">
+
+                                        <Label className='font-semibold'>Remarks</Label>
+                                        <p>{student.quarterlyGrades[0].interventionRemarks}</p>
+                                    </div>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                        ) : (getQuarterlyGrades(student?.quarterlyGrades, "1st")?? 0) : getQuarterlyGrades(student?.quarterlyGrades, "1st")}
                      </h1>
                      <h1 className="w-[34%] flex justify-center items-center text-center uppercase border border-collapse border-black">
-                        {getQuarterlyGrades(student?.quarterlyGrades, "2nd")}
+                        {student.quarterlyGrades.length >= 2 ? student.quarterlyGrades[1].interventionGrade ? (
+                              <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <h1 className='text-red-500'>{student.quarterlyGrades[1].interventionGrade}</h1>
+                                </TooltipTrigger>
+                                <TooltipContent className='max-w-2xl bg-white p-5 space-y-2 shadow-md'>
+                                    <Label className='font-semibold'>Used intervention(s)</Label>
+                                    <div className="flex items-center justify-center flex-wrap gap-2">
+                                    {student.quarterlyGrades[0].interventionUsed?.map((intUsed, index)=>(
+                                        <Badge key={index + intUsed} className='text-white text-xs'>{intUsed}</Badge>
+                                    ))}
+                                    </div>
+                                    <div className="mt-2">
+
+                                        <Label className='font-semibold'>Remarks</Label>
+                                        <p>{student.quarterlyGrades[0].interventionRemarks}</p>
+                                    </div>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                        ) : (getQuarterlyGrades(student?.quarterlyGrades, "2nd")?? 0) : getQuarterlyGrades(student?.quarterlyGrades, "2nd")}
                      </h1>
                      <h1 className="w-[18%] font-semibold text-xs py-2 flex justify-center items-center text-center uppercase border border-collapse border-black">
-                        {getAverageForShs((getQuarterlyGrades(student?.quarterlyGrades, "1st")?? 0),(getQuarterlyGrades(student?.quarterlyGrades, "2nd") ?? 0))}
+                        {getAverageForShs(
+                           student.quarterlyGrades.length >= 1 ? (student.quarterlyGrades[0].interventionGrade ?? (getQuarterlyGrades(student?.quarterlyGrades, "1st")?? 0)) : (getQuarterlyGrades(student?.quarterlyGrades, "1st")?? 0),
+                           student.quarterlyGrades.length >= 2 ? (student.quarterlyGrades[1].interventionGrade ?? (getQuarterlyGrades(student?.quarterlyGrades, "2nd")?? 0)) : (getQuarterlyGrades(student?.quarterlyGrades, "2nd") ?? 0)
+                        )}
                      </h1>
                      <h1 className="w-[14%] flex justify-center items-center uppercase border border-collapse text-center border-black">
                          {remarks(
-                            getAverageForShs((getQuarterlyGrades(student?.quarterlyGrades, "1st")?? 0),(getQuarterlyGrades(student?.quarterlyGrades, "2nd") ?? 0)),
+                            getAverageForShs(
+                                student.quarterlyGrades.length >= 1 ? (student.quarterlyGrades[0].interventionGrade ?? (getQuarterlyGrades(student?.quarterlyGrades, "1st")?? 0)) :(getQuarterlyGrades(student?.quarterlyGrades, "1st")?? 0),
+                                student.quarterlyGrades.length >= 2 ? (student.quarterlyGrades[1].interventionGrade ?? (getQuarterlyGrades(student?.quarterlyGrades, "2nd")?? 0)) :(getQuarterlyGrades(student?.quarterlyGrades, "2nd") ?? 0)
+                            ),
                          )}
                      </h1>
                  </div>
@@ -148,18 +203,66 @@ function FinalGradeSHSTemplate({
  
              <div className='w-[75%] '>
                  <div className="flex w-full h-full">
-                     <h1 className="w-[34%] flex justify-center items-center text-center uppercase border border-collapse border-black">
-                        {getQuarterlyGrades(student?.quarterlyGrades, "1st")}
+                 <h1 className="w-[34%] flex justify-center items-center text-center uppercase border border-collapse border-black">
+                        {student.quarterlyGrades.length >= 1 ? student.quarterlyGrades[0].interventionGrade ? (
+                              <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <h1 className='text-red-500'>{student.quarterlyGrades[0].interventionGrade}</h1>
+                                </TooltipTrigger>
+                                <TooltipContent className='max-w-2xl bg-white p-5 space-y-2 shadow-md'>
+                                    <Label className='font-semibold'>Used intervention(s)</Label>
+                                    <div className="flex items-center justify-center flex-wrap gap-2">
+                                    {student.quarterlyGrades[0].interventionUsed?.map((intUsed, index)=>(
+                                        <Badge key={index + intUsed} className='text-white text-xs'>{intUsed}</Badge>
+                                    ))}
+                                    </div>
+                                    <div className="mt-2">
+
+                                        <Label className='font-semibold'>Remarks</Label>
+                                        <p>{student.quarterlyGrades[0].interventionRemarks}</p>
+                                    </div>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                        ) : (getQuarterlyGrades(student?.quarterlyGrades, "1st")?? 0) : getQuarterlyGrades(student?.quarterlyGrades, "1st")}
                      </h1>
                      <h1 className="w-[34%] flex justify-center items-center text-center uppercase border border-collapse border-black">
-                        {getQuarterlyGrades(student?.quarterlyGrades, "2nd")}
+                        {student.quarterlyGrades.length >= 2 ? student.quarterlyGrades[1].interventionGrade ? (
+                              <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <h1 className='text-red-500'>{student.quarterlyGrades[1].interventionGrade}</h1>
+                                </TooltipTrigger>
+                                <TooltipContent className='max-w-2xl bg-white p-5 space-y-2 shadow-md'>
+                                    <Label className='font-semibold'>Used intervention(s)</Label>
+                                    <div className="flex items-center justify-center flex-wrap gap-2">
+                                    {student.quarterlyGrades[0].interventionUsed?.map((intUsed, index)=>(
+                                        <Badge key={index + intUsed} className='text-white text-xs'>{intUsed}</Badge>
+                                    ))}
+                                    </div>
+                                    <div className="mt-2">
+
+                                        <Label className='font-semibold'>Remarks</Label>
+                                        <p>{student.quarterlyGrades[0].interventionRemarks}</p>
+                                    </div>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                        ) : (getQuarterlyGrades(student?.quarterlyGrades, "2nd")?? 0) : getQuarterlyGrades(student?.quarterlyGrades, "2nd")}
                      </h1>
                      <h1 className="w-[18%] font-semibold text-xs py-2 flex justify-center items-center text-center uppercase border border-collapse border-black">
-                        {getAverageForShs((getQuarterlyGrades(student?.quarterlyGrades, "1st")?? 0),(getQuarterlyGrades(student?.quarterlyGrades, "2nd") ?? 0))}
+                        {getAverageForShs(
+                           student.quarterlyGrades.length >= 1 ? (student.quarterlyGrades[0].interventionGrade ?? (getQuarterlyGrades(student?.quarterlyGrades, "1st")?? 0)) : (getQuarterlyGrades(student?.quarterlyGrades, "1st")?? 0),
+                           student.quarterlyGrades.length >= 2 ? (student.quarterlyGrades[1].interventionGrade ?? (getQuarterlyGrades(student?.quarterlyGrades, "2nd")?? 0)) : (getQuarterlyGrades(student?.quarterlyGrades, "2nd") ?? 0)
+                        )}
                      </h1>
                      <h1 className="w-[14%] flex justify-center items-center uppercase border border-collapse text-center border-black">
                          {remarks(
-                            getAverageForShs((getQuarterlyGrades(student?.quarterlyGrades, "1st")?? 0),(getQuarterlyGrades(student?.quarterlyGrades, "2nd") ?? 0)),
+                            getAverageForShs(
+                                student.quarterlyGrades.length >= 1 ? (student.quarterlyGrades[0].interventionGrade ?? (getQuarterlyGrades(student?.quarterlyGrades, "1st")?? 0)) :(getQuarterlyGrades(student?.quarterlyGrades, "1st")?? 0),
+                                student.quarterlyGrades.length >= 2 ? (student.quarterlyGrades[1].interventionGrade ?? (getQuarterlyGrades(student?.quarterlyGrades, "2nd")?? 0)) :(getQuarterlyGrades(student?.quarterlyGrades, "2nd") ?? 0)
+                            ),
                          )}
                      </h1>
                  </div>

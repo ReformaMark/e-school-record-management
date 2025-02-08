@@ -33,11 +33,13 @@ import { Input } from "@/components/ui/input";
 import { CgDanger } from "react-icons/cg";
 import Link from "next/link";
 import { Label } from "@/components/ui/label";
-import { StudentsWithClassRecord, StudentsWithEnrollMentTypes } from "@/lib/types";
+import { StudentsWithClassRecord, StudentsWithEnrollMentTypes, StudentsWithQuarterlyGrade } from "@/lib/types";
 import PerformanceTaskDialog from "./PerformanceTaskDialog";
 import WrittenWorksDialog from "./WrittenWorksDialog";
 import QuarterlyAssessmentDialog from "./QuarterlyExamDialog";
 import SubmitGradesDialog from "./SubmitGradesDialog";
+import InterventionDialog from "./InterventionDialog";
+import { Badge } from "@/components/ui/badge";
 
 
 type Student = {
@@ -1161,132 +1163,88 @@ export const forImprovements = [
 
 
 
-export const forImprovementsColumns: ColumnDef<StudentIntervention>[] = [
-  { accessorKey: "fullName", header: "Full Name" },
-  { accessorKey: "attendancePercentage", header: "Attendance %" },
-  { accessorKey: "quarterlyGrade", header: "Quarterly Grade " },
-  {
-    id: "suggestedInterventions",
-    header: "Suggested invterventions",
+export const forImprovementsColumns: ColumnDef<StudentsWithQuarterlyGrade>[] = [
+  { id: "fullName",
+    accessorFn: (row) => {
+      const { firstName, middleName, lastName } = row;
+      return `${firstName} ${middleName ? middleName + ' ' : ''}${lastName}`;
+    },
+    header: "Full Name",
     cell: ({ row }) => {
-      const interventions = row.original.suggestedInterventions
+      const  { firstName, middleName, lastName } = row.original
+     const fullName = `${firstName} ${middleName ? middleName + ' ' : ''}${lastName}`
      
       return (
         <div className="flex items-center gap-x-3">
-            <Select>
-              <SelectTrigger defaultValue={interventions[0]} className="">
-                <SelectValue defaultValue={interventions[0]}  placeholder="Select Interventions" />
-              </SelectTrigger>
-              <SelectContent>
-                {interventions.map((intervention) => (
-                  <SelectItem key={intervention} value={intervention}>{intervention}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {/* <FaCheck className="cursor-pointer"/> */}
+          <h1>{fullName}</h1>
+        </div>
+      )
+    }
+   },
+  { accessorKey: "quarterlyGrade", header: "Quarterly Grade ",
+    cell: ({ row }) => {
+      const student = row.original
+      const quarterlyGrade = student.quarterlyGrade
+     
+      return (
+        <div className="flex items-center gap-x-3 ">
+         {quarterlyGrade?.quarterlyGrade}
         </div>
       )
     }
   },
-  { accessorKey: "status", header: "Status" },
+  {
+    id: "interventions",
+    header: "Intervention details",
+    cell: ({ row }) => {
+      const interventionUsed = row.original.quarterlyGrade?.interventionUsed
+      const modifiedGrade = row.original.quarterlyGrade?.interventionGrade
+      const modGrade = modifiedGrade ?? "No modified grade"
+      const remarks = row.original.quarterlyGrade?.interventionRemarks
+      const remarksValue = remarks ?? "No remarks"
+
+
+      return (
+        <div className="flex flex-col items-start text-sm gap-y-3">
+          <div className="text-left space-y-2 space-x-2">
+            {interventionUsed ? interventionUsed.map((i, index)=> (
+              <Badge key={i + index} className="capitalize text-xs text-white">{i}</Badge>
+            )): (
+             <p>No interventions used</p> 
+            )}
+            
+          </div>
+        
+          <h1 className="font-semibold">Modified Grade : <span className="font-normal">{modGrade} {modifiedGrade && modifiedGrade <= 74 ? (<span className="text-red-500 ml-2">Failed</span>) : ( <span className="ml-2 text-green-500">Passed</span>)}</span> </h1>
+          <div className="">
+          <p className="w-3/4">
+            <span className="font-semibold">{interventionUsed ? interventionUsed.length > 1 ? "General Remarks -" : interventionUsed && interventionUsed.length === 1 && `${interventionUsed[0]} - ` : ""}</span>
+            <span className="">{remarksValue} </span>
+          </p>
+
+          </div>
+        </div>
+      )
+    }
+  },
+
   {
     id: "action",
     header: "",
-    cell: ({ row }) => {
-      type statusType = "Under Interverntion" | "Not Cooperating" | "Passed"  
-  
+    cell: ({ row }) => {  
       const [open, setOpen ] = useState<boolean>(false)
-      const [, setStatus ] = useState<statusType>("Under Interverntion")
-
-      const stat = row.original.status
-      const openUpdateStatus = () =>{
-        setOpen(true)
-      }
+    
+      const student = row.original
+      const quarterlyGrade = student.quarterlyGrade
+      const usedIntervention = quarterlyGrade?.interventionUsed
       return (
         <div className="">
-          <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Action</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={openUpdateStatus}>
-              Update Status
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-
-        <Dialog open={open}>
-          <DialogContent className=' max-h-screen overflow-auto text-primary'>
-          <DialogHeader>
-              <DialogTitle>
-                Student Intervention Status
-              </DialogTitle>
-              
-          </DialogHeader>
-            <div className="space-y-2 text-primary">
-              {stat === 'Passed' && (
-                <div className="">
-                  <h1>Status: {stat}</h1>
-                  <div className="grid grid-cols-2 gap-x-5">
-                    <div className="">
-                      <Label htmlFor="QG">Quarterly Grade</Label>
-                      <Input 
-                        type="number" 
-                        name="QG"
-                        value={row.original.quarterlyGrade}
-                        readOnly
-                        />
-                    </div>
-                    <div className="">
-                      <Label htmlFor="newQuarterlyGrade">New Quarterly Grade</Label>
-                      <Input 
-                        type="number" 
-                        name="newQuarterlyGrade"
-                        />
-                    </div>
-                  </div>
-                </div>
-              )}
-              {stat === 'Under Intervention' && (
-                <div className="">
-                    <label className="text-sm font-medium">Status</label>
-                    <Select  onValueChange={(value: statusType) => {setStatus(value)}}>
-                        <SelectTrigger>
-                            <SelectValue  placeholder="Select status" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="Passed">Passed</SelectItem>
-                            <SelectItem value="Not Cooperating">Not Cooperating</SelectItem>
-                        </SelectContent>
-                    </Select>
-                </div>
-              )}
-              {stat === 'Not Cooperating' &&(
-                <div className="">
-                  <h1>Status: {stat}</h1>
-                  <p>This student is not cooperating to the teacher intervention.</p>
-                </div>
-              )}
-              </div>
-          <DialogFooter>
-            {stat === 'Passed' && (
-              <Button variant={'default'} onClick={()=> setOpen(!open)} className="text-white">Submit Grade</Button>
-            )}
-            {stat === 'Not Cooperating' && (
-              <Button variant={'default'} onClick={()=> setOpen(!open)} className="text-white">Okay</Button>
-            )}
-            {stat === 'Under Intervention' && (
-              <Button variant={'default'} onClick={()=> setOpen(!open)} className="text-white">Save</Button>
-            )}
-          </DialogFooter>
-          </DialogContent>
-        
-        </Dialog>
+          <InterventionDialog 
+            quarterlyGrade={quarterlyGrade} 
+            open={open} 
+            setOpen={setOpen}
+            usedIntervention={usedIntervention ?? []}
+          />
 
       </div>
       )

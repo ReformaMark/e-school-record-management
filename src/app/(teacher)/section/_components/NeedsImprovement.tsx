@@ -1,31 +1,92 @@
+'use client'
 import React from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { DataTable } from '@/components/data-table'
-import { forImprovements, forImprovementsColumns } from './studentData'
+import { forImprovementsColumns } from './studentData'
+import { useQuery } from 'convex/react'
+import { api } from '../../../../../convex/_generated/api'
+import { Doc } from '../../../../../convex/_generated/dataModel'
+import { ClassesWithDetails, StudentsWithQuarterlyGrades } from '@/lib/types'
 
-function NeedsImprovement() {
+function NeedsImprovement({
+    section,
+    cls
+}: { 
+    section: Doc<'sections'>  
+    cls: ClassesWithDetails
+}) {
+    const studentNeedsIntervention = useQuery(api.quarterlyGrades.needIntervention, {
+        gradeLevel: section?.gradeLevel,
+        classId: cls._id,
+        needsIntervention: true
+    })
+
+    const getUniqueQuarterlyGrades = (
+        quarter: string,
+        studentNeedsIntervention: StudentsWithQuarterlyGrades[]
+      ) => {
+        const filteredGrades = studentNeedsIntervention.map((student) => {
+
+            const quarterlyGrade = student.quarterlyGrades.find(grade => grade.quarter === quarter)
+
+            if(quarterlyGrade === undefined) return null
+
+            return {
+                ...student,
+                quarterlyGrade: quarterlyGrade
+            }
+        });
+
+        const removeNull = filteredGrades.filter(g => g !== null)
+        return removeNull;
+      };
+      
+      const firstQuarterIntervention = getUniqueQuarterlyGrades("1st", studentNeedsIntervention ?? []);
+      const secondQuarterIntervention = getUniqueQuarterlyGrades("2nd", studentNeedsIntervention ?? []);
+      const thirdQuarterIntervention = getUniqueQuarterlyGrades("3rd", studentNeedsIntervention ?? []);
+      const fourthQuarterIntervention = getUniqueQuarterlyGrades("4th", studentNeedsIntervention ?? []);
   return (
     <div>
-        <Tabs>
-            <TabsList defaultValue='1st' className='space-x-3'>
-                <TabsTrigger value='1st'>1st</TabsTrigger>
-                <TabsTrigger value='2nd'>2nd</TabsTrigger>
-                <TabsTrigger value='3rd'>3rd</TabsTrigger>
-                <TabsTrigger value='4th'>4th</TabsTrigger>
+        <Tabs defaultValue='1st' className='w-full'>
+            <TabsList  className='space-x-3'>
+                <TabsTrigger value='1st'  className='font-medium text-xs md:text-md shadow-md border-b-2 data-[state=active]:border-b-primary data-[state=active]:text-primary' >1st</TabsTrigger>
+                <TabsTrigger value='2nd' className='font-medium text-xs md:text-md shadow-md border-b-2 data-[state=active]:border-b-primary data-[state=active]:text-primary' >2nd</TabsTrigger>
+                <TabsTrigger value='3rd' className='font-medium text-xs md:text-md shadow-md border-b-2 data-[state=active]:border-b-primary data-[state=active]:text-primary' >3rd</TabsTrigger>
+                <TabsTrigger value='4th' className='font-medium text-xs md:text-md shadow-md border-b-2 data-[state=active]:border-b-primary data-[state=active]:text-primary' >4th</TabsTrigger>
             </TabsList>
             <TabsContent value="1st">
                 <DataTable
-                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                    //@ts-expect-error
+                
                     columns={forImprovementsColumns}
-                    data={forImprovements}
-                    filter='fullName'
-                    placeholder='by Full name'
+                    data={firstQuarterIntervention ?? []}
+                    filter='fullName' 
+                    placeholder='by name'
                 />
             </TabsContent>
-            <TabsContent value="2nd"></TabsContent>
-            <TabsContent value="3rd"></TabsContent>
-            <TabsContent value="4th"></TabsContent>
+            <TabsContent value="2nd">
+                <DataTable
+                    columns={forImprovementsColumns}
+                    data={secondQuarterIntervention ?? []}
+                    filter='fullName' 
+                    placeholder='by name'
+                />
+            </TabsContent>
+            <TabsContent value="3rd">
+                <DataTable
+                    columns={forImprovementsColumns}
+                    data={thirdQuarterIntervention ?? []}
+                    filter='fullName' 
+                    placeholder='by name'
+                />
+            </TabsContent>
+            <TabsContent value="4th">
+                <DataTable
+                    columns={forImprovementsColumns}
+                    data={fourthQuarterIntervention ?? []}
+                    filter='fullName' 
+                    placeholder='by name'
+                />
+            </TabsContent>
         </Tabs>
     </div>
   )

@@ -120,7 +120,10 @@ function Section({params}:{params: {class: string}}) {
           </TabsContent>
 
           <TabsContent value="intervention" className="">
-            <NeedsImprovement/>
+            {cls && cls.section !== null && (
+              <NeedsImprovement  cls={cls as ClassesWithDetails} section={cls?.section}/>
+
+            )}
           </TabsContent>
           <TabsContent value="remedial-class" className="">
             <DataTable 

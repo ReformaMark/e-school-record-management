@@ -6,7 +6,7 @@ import { useQuery } from 'convex/react'
 import { api } from '../../../convex/_generated/api'
 import { getAverageForJrh, getQuarterlyGrades, remarks } from '@/lib/utils'
 
-function QuarterlyGradesTemplate({
+function QuarterlyGradesTemplate({ 
     section,
    
     cls
@@ -17,7 +17,8 @@ function QuarterlyGradesTemplate({
    }) {
     const studentQuarterlyGrades = useQuery(api.quarterlyGrades.get,{
         gradeLevel: section?.gradeLevel,
-        classId: cls._id
+        classId: cls._id,
+        needsIntervention: true
     })
     const schoolYear =  cls.schoolYear?.sy
     const subjectName = cls.subject?.name

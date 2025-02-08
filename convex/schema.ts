@@ -217,8 +217,13 @@ export default defineSchema({
     subComponent: v.optional(v.string()), // components of mapeh
     // if the student participate in an intervention
     interventionGrade: v.optional(v.number()),
-    interventionUsed: v.optional(v.string()), // ex. Big book, General remarks
+    interventionUsed: v.optional(v.array(v.string())), // ex. Big book, General remarks
     interventionRemarks: v.optional(v.string()) // ex. “Math 9 2nd competency big book with sample activities. Will check the progress of the student through checking the answers of the big book activities.”
+  }),
+
+  interventions: defineTable({
+    name: v.string(),
+    description: v.optional(v.string())
   }),
 
   // gradeSummary: defineTable({

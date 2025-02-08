@@ -58,6 +58,7 @@ export const get = query({
     args:{
         gradeLevel: v.optional(v.number()),
         classId: v.id('classes'),
+        needsIntervention: v.optional(v.boolean())
     },
     handler: async(ctx, args) =>{
         const teacherId = await getAuthUserId(ctx)
@@ -68,14 +69,12 @@ export const get = query({
         if(!cls) return []
         const section = await ctx.db.get(cls?.sectionId)
         if(!section) return []
-        console.log(args.gradeLevel)
-        console.log(args.classId)
+        
         const quarterlyGrades = await ctx.db.query('quarterlyGrades')
         .filter(q => q.eq(q.field('gradeLevel'), args.gradeLevel))
         .filter(q => q.eq(q.field('classId'), args.classId))
         .filter(q => q.eq(q.field('teacherId'), teacherId))
         .collect();
-        console.log(quarterlyGrades)
       
       const studentWithQG = await asyncMap(section.students, async (studentId) => {
         const student = await ctx.db.get(studentId);
@@ -94,5 +93,64 @@ export const get = query({
 
 
         return filteredStudentWithQG
+    }
+})
+export const needIntervention = query({
+    args:{
+        gradeLevel: v.optional(v.number()),
+        classId: v.id('classes'),
+        needsIntervention: v.boolean(),
+    },
+    handler: async(ctx, args) =>{
+        const teacherId = await getAuthUserId(ctx)
+        if(!teacherId) throw new ConvexError('No teacher id')
+
+        const cls = await ctx.db.get(args.classId)
+        if(!cls) return []
+        const section = await ctx.db.get(cls?.sectionId)
+        if(!section) return []
+        
+        const quarterlyGrades = await ctx.db.query('quarterlyGrades')
+        .filter(q => q.eq(q.field('gradeLevel'), args.gradeLevel))
+        .filter(q => q.eq(q.field('classId'), args.classId))
+        .filter(q => q.eq(q.field('teacherId'), teacherId))
+        .filter(q => q.eq(q.field('needsIntervention'), true))
+        .collect();
+
+      const studentWithQG = await asyncMap(section.students, async (studentId) => {
+        const student = await ctx.db.get(studentId);
+        if (!student) return null; // Return null instead of []
+      
+        const filteredQG = quarterlyGrades.filter(q => q.studentId === studentId);
+
+        if(filteredQG.length < 1) return null
+      
+        return {
+          ...student,
+          quarterlyGrades: filteredQG
+        };
+      });
+      
+      // Remove null values (students not found)
+      const filteredStudentWithQG = studentWithQG.filter(s => s !== null);
+        return filteredStudentWithQG
+    }
+})
+
+
+export const saveRemarks = mutation({
+    args: {
+        id: v.optional(v.id('quarterlyGrades')),
+        remarks: v.string(),
+        interventionUsed: v.array(v.string()),
+        interventionGrade: v.number()
+    },
+    handler: async(ctx, args) => {
+        if(!args.id) throw new ConvexError('No quarterlyGrades Id');
+        await ctx.db.patch(args.id,{
+            interventionRemarks: args.remarks,
+            interventionGrade: args.interventionGrade,
+            interventionUsed: args.interventionUsed
+        })
     }
 })
