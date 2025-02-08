@@ -28,7 +28,7 @@ export const AddScheduleCard = () => {
     const rooms = useQuery(api.classroom.get);
     const periods = useQuery(api.schoolPeriod.get);
 
-    const { register, handleSubmit, setValue, reset, formState: { errors } } = useForm<ScheduleFormData>({
+    const { handleSubmit, setValue, reset, formState: { errors } } = useForm<ScheduleFormData>({
         resolver: zodResolver(scheduleSchema)
     });
 

@@ -48,7 +48,7 @@ export const ScheduleColumns: ColumnDef<ScheduleWithDetails>[] = [
     },
     {
         id: "actions",
-        cell: ({ row }) => {
+        cell: function Cell({ row }) {
             const [showEdit, setShowEdit] = useState(false);
             const removeSchedule = useMutation(api.schedules.remove);
             const [ConfirmDialog, confirm] = useConfirm(
@@ -63,6 +63,7 @@ export const ScheduleColumns: ColumnDef<ScheduleWithDetails>[] = [
                         await removeSchedule({ id: row.original._id });
                         toast.success("Schedule deleted successfully");
                     } catch (error) {
+                        console.error(error)
                         toast.error("Failed to delete schedule");
                     }
                 }

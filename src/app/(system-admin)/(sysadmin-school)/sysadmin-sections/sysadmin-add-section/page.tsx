@@ -16,45 +16,23 @@ import {
     SelectTrigger,
     SelectValue
 } from "@/components/ui/select";
-
-
-import {
-    ChevronLeft,
-    MinusIcon,
-    PlusIcon
-} from "lucide-react";
-
 import { cn } from "@/lib/utils";
 import { useConvexMutation } from "@convex-dev/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { useQuery } from "convex/react";
+import {
+    ChevronLeft,
+    MinusIcon,
+    PlusIcon
+} from "lucide-react";
 import Link from "next/link";
+import { useEffect } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { z } from "zod";
 import { api } from "../../../../../../convex/_generated/api";
 import { Id } from "../../../../../../convex/_generated/dataModel";
-import { DevTool } from "@hookform/devtools";
-import { useEffect } from "react";
-
-const classScheduleSchema = z.object({
-    subjectId: z.string().min(1, "Subject is required"),
-    teacherId: z.string().min(1, "Teacher is required"),
-    scheduleId: z.string().min(1, "Schedule is required"),
-    semester: z.string().optional(),
-    track: z.string().optional()
-});
-
-export const sectionSchema = z.object({
-    name: z.string().min(1, "Section name is required"),
-    gradeLevelId: z.string().min(1, "Grade level is required"),
-    advisorId: z.string().min(1, "Advisor is required"),
-    schoolYearId: z.string().min(1, "School year is required"),
-    classes: z.array(classScheduleSchema).min(1, "At least one class is required")
-});
-
-export type SectionFormData = z.infer<typeof sectionSchema>;
+import { SectionFormData, sectionSchema } from "@/lib/validation/add-section-zod";
 
 const SystemAdminAddSectionPage = () => {
     const { register, control, handleSubmit, setValue, watch, reset, formState: { errors } } = useForm<SectionFormData>({
@@ -379,7 +357,6 @@ const SystemAdminAddSectionPage = () => {
                     </div>
                 </form>
             </main>
-            <DevTool control={control} />
         </div>
     )
 }
