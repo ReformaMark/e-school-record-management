@@ -24,6 +24,7 @@ import type * as enrollments from "../enrollments.js";
 import type * as files from "../files.js";
 import type * as gradeLevel from "../gradeLevel.js";
 import type * as http from "../http.js";
+import type * as interventions from "../interventions.js";
 import type * as quarterlyGrades from "../quarterlyGrades.js";
 import type * as schoolPeriod from "../schoolPeriod.js";
 import type * as schoolYear from "../schoolYear.js";
@@ -52,6 +53,7 @@ declare const fullApi: ApiFromModules<{
   files: typeof files;
   gradeLevel: typeof gradeLevel;
   http: typeof http;
+  interventions: typeof interventions;
   quarterlyGrades: typeof quarterlyGrades;
   schoolPeriod: typeof schoolPeriod;
   schoolYear: typeof schoolYear;

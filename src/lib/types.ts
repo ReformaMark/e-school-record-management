@@ -88,3 +88,6 @@ export type QuarterlyGrades = Doc<"quarterlyGrades">
 export interface StudentsWithQuarterlyGrades extends Doc<'students'>{
     quarterlyGrades: QuarterlyGrades[]
 }
+export interface StudentsWithQuarterlyGrade extends Doc<'students'>{
+    quarterlyGrade: QuarterlyGrades | undefined
+}
