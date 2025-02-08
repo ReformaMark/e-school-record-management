@@ -12,11 +12,9 @@ import { Label } from "@/components/ui/label";
 import {
     Select,
     SelectContent,
-    SelectGroup,
     SelectItem,
-    SelectLabel,
     SelectTrigger,
-    SelectValue,
+    SelectValue
 } from "@/components/ui/select";
 
 
@@ -26,50 +24,57 @@ import {
     PlusIcon
 } from "lucide-react";
 
-import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
-import Link from "next/link";
-import { useState } from "react";
-import { toast } from "sonner";
-import { schoolPeriodData } from "../../../../../../data/school-period-data";
-import { z } from "zod";
-import { useFieldArray, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useQuery } from "convex/react";
-import { api } from "../../../../../../convex/_generated/api";
-import { useMutation } from "@tanstack/react-query";
 import { useConvexMutation } from "@convex-dev/react-query";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
+import { useQuery } from "convex/react";
+import Link from "next/link";
+import { useFieldArray, useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
+import { api } from "../../../../../../convex/_generated/api";
 import { Id } from "../../../../../../convex/_generated/dataModel";
+import { DevTool } from "@hookform/devtools";
+import { useEffect } from "react";
 
-const classSchema = z.object({
-    subjectId: z.string(),
-    teacherId: z.string(),
-    scheduleId: z.string(),
+const classScheduleSchema = z.object({
+    subjectId: z.string().min(1, "Subject is required"),
+    teacherId: z.string().min(1, "Teacher is required"),
+    scheduleId: z.string().min(1, "Schedule is required"),
     semester: z.string().optional(),
     track: z.string().optional()
 });
 
-const sectionSchema = z.object({
+export const sectionSchema = z.object({
     name: z.string().min(1, "Section name is required"),
     gradeLevelId: z.string().min(1, "Grade level is required"),
     advisorId: z.string().min(1, "Advisor is required"),
     schoolYearId: z.string().min(1, "School year is required"),
-    classes: z.array(classSchema).min(1, "At least one class is required")
+    classes: z.array(classScheduleSchema).min(1, "At least one class is required")
 });
 
 export type SectionFormData = z.infer<typeof sectionSchema>;
 
 const SystemAdminAddSectionPage = () => {
-    const { register, control, handleSubmit, setValue, formState: { errors } } = useForm<SectionFormData>({
+    const { register, control, handleSubmit, setValue, watch, formState: { errors } } = useForm<SectionFormData>({
         resolver: zodResolver(sectionSchema),
         defaultValues: {
+            name: "",
+            gradeLevelId: "",
+            advisorId: "",
+            schoolYearId: "",
             classes: [{
-                subjectId: "" as unknown as Id<"subjects">,
-                teacherId: "" as unknown as Id<"users">,
-                scheduleId: "" as unknown as Id<"schedules">,
+                subjectId: "",
+                teacherId: "",
+                scheduleId: "",
+                semester: "",
+                track: ""
             }]
         }
     });
+
+    const formValues = watch()
 
     const { fields, append, remove } = useFieldArray({
         control,
@@ -80,25 +85,7 @@ const SystemAdminAddSectionPage = () => {
     const subjects = useQuery(api.subjects.getSubjects);
     const schoolYears = useQuery(api.schoolYear.get);
     const gradeLevels = useQuery(api.gradeLevel.get);
-    //   const schedules = useQuery(api.schedules.getAvailableSchedules);
-
-    const [selectCount, setSelectCount] = useState<number>(1);
-
-    const addSubjectTeacher = () => {
-        if (selectCount >= 5) {
-            toast.error("Cannot add more than 5 subject teachers")
-        } else {
-            setSelectCount(selectCount + 1);
-        }
-    }
-
-    const removeSubjectTeacher = () => {
-        if (selectCount <= 1) {
-            toast.error("Cannot remove less than 1 subject teacher")
-        } else {
-            setSelectCount(selectCount - 1);
-        }
-    }
+    const schedules = useQuery(api.schedules.get);
 
     const { mutate: createSection, isPending } = useMutation({
         mutationFn: useConvexMutation(api.sections.create),
@@ -110,7 +97,31 @@ const SystemAdminAddSectionPage = () => {
         }
     });
 
+    useEffect(() => {
+        const advisorId = watch('advisorId');
+        if (advisorId && fields.length > 0) {
+            setValue(`classes.0.teacherId`, advisorId);
+
+            const firstTeacherSelect = document.querySelector(`[name="classes.0.teacherId"]`);
+            if (firstTeacherSelect) {
+                firstTeacherSelect.setAttribute('disabled', 'true');
+            }
+        }
+    }, [watch('advisorId'), fields.length, setValue]);
+
+    const handleAddClass = () => {
+        append({
+            subjectId: "",
+            teacherId: fields.length === 0 ? formValues.advisorId : "", // Set advisor for first class
+            scheduleId: "",
+            semester: "",
+            track: ""
+        });
+    };
+
     const onSubmit = (data: SectionFormData) => {
+        console.log("Form Data:", data);
+
         createSection({
             ...data,
             advisorId: data.advisorId as Id<"users">,
@@ -122,8 +133,8 @@ const SystemAdminAddSectionPage = () => {
                 teacherId: cls.teacherId as Id<"users">,
                 scheduleId: cls.scheduleId as Id<"schedules">
             }))
-        })
-    }
+        });
+    };
 
     return (
         <div className="container mx-auto p-4">
@@ -249,17 +260,19 @@ const SystemAdminAddSectionPage = () => {
                                 <Card>
                                     <CardHeader>
                                         <CardTitle>Class Schedule</CardTitle>
-                                        <CardDescription>Add subjects and teachers for this section</CardDescription>
+                                        <CardDescription>Add subjects and their schedules</CardDescription>
                                     </CardHeader>
                                     <CardContent>
                                         <div className="space-y-6">
                                             {fields.map((field, index) => (
-                                                <div key={field.id} className="grid gap-4 lg:grid-cols-3">
+                                                <div key={field.id} className="grid gap-4 lg:grid-cols-4">
                                                     <div className="grid gap-2">
                                                         <Label>Subject</Label>
-                                                        <Select onValueChange={(value) => setValue(`classes.${index}.subjectId`, value)}>
+                                                        <Select
+                                                            onValueChange={(value) => setValue(`classes.${index}.subjectId`, value)}
+                                                        >
                                                             <SelectTrigger>
-                                                                <SelectValue placeholder="Select subject" />
+                                                                <SelectValue placeholder={index === 0 ? "Adviser's subject" : "Select subject"} />
                                                             </SelectTrigger>
                                                             <SelectContent>
                                                                 {subjects?.map((subject) => (
@@ -275,10 +288,16 @@ const SystemAdminAddSectionPage = () => {
                                                     </div>
 
                                                     <div className="grid gap-2">
-                                                        <Label>Teacher</Label>
-                                                        <Select onValueChange={(value) => setValue(`classes.${index}.teacherId`, value)}>
+                                                        <Label>{index === 0 ? "Adviser" : "Teacher"}</Label>
+                                                        <Select
+                                                            onValueChange={(value) => setValue(`classes.${index}.teacherId`, value)}
+                                                            defaultValue={index === 0 ? formValues.advisorId : undefined}
+                                                            disabled={index === 0} // Disable for advisor's class
+                                                        >
                                                             <SelectTrigger>
-                                                                <SelectValue placeholder="Select teacher" />
+                                                                <SelectValue
+                                                                    placeholder={index === 0 ? "Adviser will teach this subject" : "Select teacher"}
+                                                                />
                                                             </SelectTrigger>
                                                             <SelectContent>
                                                                 {teachers?.map((teacher) => (
@@ -289,7 +308,32 @@ const SystemAdminAddSectionPage = () => {
                                                             </SelectContent>
                                                         </Select>
                                                         {errors.classes?.[index]?.teacherId && (
-                                                            <p className="text-sm text-red-500">{errors.classes[index].teacherId.message}</p>
+                                                            <p className="text-sm text-red-500">
+                                                                {errors.classes[index].teacherId.message}
+                                                            </p>
+                                                        )}
+                                                    </div>
+
+                                                    <div className="grid gap-2">
+                                                        <Label>{index === 0 ? "Adviser's Schedule" : "Schedule"}</Label>
+                                                        <Select
+                                                            onValueChange={(value) => setValue(`classes.${index}.scheduleId`, value)}
+                                                        >
+                                                            <SelectTrigger>
+                                                                <SelectValue placeholder="Select schedule" />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                {schedules?.map((schedule) => (
+                                                                    <SelectItem key={schedule._id} value={schedule._id}>
+                                                                        {schedule.day} - {schedule.period?.timeRange}
+                                                                    </SelectItem>
+                                                                ))}
+                                                            </SelectContent>
+                                                        </Select>
+                                                        {errors.classes?.[index]?.scheduleId && (
+                                                            <p className="text-sm text-red-500">
+                                                                {errors.classes[index].scheduleId.message}
+                                                            </p>
                                                         )}
                                                     </div>
 
@@ -311,7 +355,7 @@ const SystemAdminAddSectionPage = () => {
                                             <Button
                                                 type="button"
                                                 variant="outline"
-                                                onClick={() => append({ subjectId: "", teacherId: "", scheduleId: "" })}
+                                                onClick={handleAddClass}
                                             >
                                                 <PlusIcon className="h-4 w-4 mr-2" />
                                                 Add Class
@@ -334,6 +378,7 @@ const SystemAdminAddSectionPage = () => {
                     </div>
                 </form>
             </main>
+            <DevTool control={control} />
         </div>
     )
 }

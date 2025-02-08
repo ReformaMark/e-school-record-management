@@ -49,7 +49,6 @@ export const create = mutation({
         gradeLevelId: v.id("gradeLevels"),
         advisorId: v.id("users"),
         schoolYearId: v.id("schoolYears"),
-        // roomId: v.optional(v.id("rooms")),
         classes: v.array(v.object({
             subjectId: v.id("subjects"),
             teacherId: v.id("users"),
@@ -69,7 +68,6 @@ export const create = mutation({
             gradeLevelId: args.gradeLevelId,
             advisorId: args.advisorId,
             schoolYearId: args.schoolYearId,
-            // roomId: args.roomId,
             isActive: true,
             students: []
         });

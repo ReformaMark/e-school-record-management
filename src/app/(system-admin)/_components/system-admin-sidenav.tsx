@@ -82,6 +82,13 @@ export const SystemAdminSidenav = () => {
                     </Link>
 
                     <Link
+                        href="/sysadmin-school-schedule"
+                        className={`${pathname === '/sysadmin-school-schedule' ? "bg-background/50 text-white" : "bg-transparent"} text-white flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}
+                    >
+                        Schedules
+                    </Link>
+
+                    <Link
                         href="/sysadmin-classroom"
                         className={`${pathname === '/sysadmin-classroom' ? "bg-background/50 text-white" : "bg-transparent"} text-white flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}
                     >
