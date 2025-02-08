@@ -405,6 +405,7 @@ export const get = query({
         if (!cls) return null;
         const section = await ctx.db.get(cls.sectionId);
         if (!section) return null;
+        const gradeLevel = await ctx.db.get(section.gradeLevelId)
         const students = await asyncMap(section?.students, async (studentId) => {
             const student = await ctx.db.get(studentId);
             if(!student) return null
@@ -429,7 +430,10 @@ export const get = query({
             const classRWithS = classRecordWIthSubject.filter((c)=> c !== undefined)
             return {
                 ...student,
-                sectionDoc: section,
+                sectionDoc: {
+                    ...section,
+                    gradeLevel: gradeLevel
+                },
                 classRecords: classRWithS,
             };
         });

@@ -6,6 +6,7 @@ import { useClasses } from './section-data'
 
 import SectionsCard from './_components/SectionsCard'
 import Loading from '@/app/components/Loading'
+import { ClassesWithDetails } from '@/lib/types'
 
 
 function SectionPage() {
@@ -21,7 +22,7 @@ function SectionPage() {
               <SectionsCard 
                 key={cl?._id}
              
-                cls={cl}/>
+                cls={cl as ClassesWithDetails}/>
             ))}
           </div>
         ) :(

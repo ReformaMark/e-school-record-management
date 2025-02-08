@@ -1,7 +1,6 @@
 'use client'
 import React from 'react'
-import { Doc } from '../../../convex/_generated/dataModel'
-import { ClassesWithDetails } from '@/lib/types'
+import { ClassesWithDetails, SectionWithGradeLevel } from '@/lib/types'
 import { useQuery } from 'convex/react'
 import { api } from '../../../convex/_generated/api'
 import { getAverageForJrh, getQuarterlyGrades, remarks } from '@/lib/utils'
@@ -11,12 +10,12 @@ function QuarterlyGradesTemplate({
    
     cls
    }:{
-    section: Doc<'sections'>
+    section: SectionWithGradeLevel
 
     cls: ClassesWithDetails
    }) {
     const studentQuarterlyGrades = useQuery(api.quarterlyGrades.get,{
-        gradeLevel: section?.gradeLevel,
+        gradeLevel: Number(section?.gradeLevel?.level),
         classId: cls._id,
         needsIntervention: true
     })

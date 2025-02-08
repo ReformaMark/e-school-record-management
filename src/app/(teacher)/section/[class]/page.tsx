@@ -16,8 +16,9 @@ import InputGrades from '../_components/InputGrades'
 import Loading from '@/app/components/Loading'
 import { useQuery } from 'convex/react'
 import { api } from '../../../../../convex/_generated/api'
-import { ClassesWithDetails, StudentsWithEnrollMentTypes } from '@/lib/types'
+import { ClassesWithDetails, SectionWithGradeLevel, StudentsWithEnrollMentTypes } from '@/lib/types'
 import MapehQuarterlyGradesTab from '../_components/MapehQuarterlyGradesTab'
+import { Doc } from '../../../../../convex/_generated/dataModel'
 
 function Section({params}:{params: {class: string}}) {
   const classId = params.class;
@@ -49,7 +50,7 @@ function Section({params}:{params: {class: string}}) {
         <div className="grid grid-cols-1 md:grid-cols-2 font-bold text-sm">
           
           <h1>Section: <span className='font-normal'>{cls?.section?.name}</span></h1>
-          <h1>Grade Level: <span className='font-normal'>{cls?.section?.gradeLevel}</span></h1>
+          <h1>Grade Level: <span className='font-normal'>{cls?.section?.gradeLevel?.level}</span></h1>
           <h1>Subject: <span className='font-normal'>{cls?.subject?.name}</span></h1>
           <h1>Schedule: 
             <span className="font-normal">
@@ -73,7 +74,7 @@ function Section({params}:{params: {class: string}}) {
           </h1>
 
           <h1>School Year: <span className='font-normal'>{cls?.schoolYear?.sy}</span></h1>
-          {(cls?.section?.gradeLevel ?? 0) > 10 && ( 
+          {(Number(cls?.section?.gradeLevel?.level) ?? 0) > 10 && ( 
             <h1>Semester: <span className='font-normal'>{cls?.semester}</span></h1>
           )}
 
@@ -109,8 +110,8 @@ function Section({params}:{params: {class: string}}) {
 
           {/* Grade summary */}
           <TabsContent value="grades-summary" className='min-h-screen max-w-full overflow-y-auto border-2 border-gray-300'>
-            {cls && cls.section?.gradeLevel === 11 || cls?.section?.gradeLevel === 12 ? (
-              <FinalGradeSHSTemplate cls={cls as ClassesWithDetails} section={cls.section} subject={cls.subject}/>
+            {cls && Number(cls.section?.gradeLevel?.level) === 11 || Number(cls?.section?.gradeLevel?.level) === 12 ? (
+              <FinalGradeSHSTemplate cls={cls as ClassesWithDetails} section={cls?.section as SectionWithGradeLevel} subject={cls?.subject as Doc<'subjects'>}/>
             ) : cls && cls.section !== null && cls.subject?.name?.toUpperCase() !== "MAPEH" ? (
               <QuarterlyGradesTemplate cls={cls as ClassesWithDetails} section={cls.section}/>
 

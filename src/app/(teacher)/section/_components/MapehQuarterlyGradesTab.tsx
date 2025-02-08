@@ -1,7 +1,6 @@
 'use client'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Doc } from '../../../../../convex/_generated/dataModel';
-import { ClassesWithDetails } from '@/lib/types';
+import { ClassesWithDetails, SectionWithGradeLevel } from '@/lib/types';
 import { useQuery } from 'convex/react';
 import { api } from '../../../../../convex/_generated/api';
 import MapehQuarterlyGradesTemplate from "./MapehQuarterlyGradesTemplate";
@@ -11,12 +10,12 @@ function MapehQuarterlyGradesTab({
         section,
         cls
     }:{
-        section: Doc<'sections'>
+        section: SectionWithGradeLevel
         cls: ClassesWithDetails
     }) {
         
         const studentQuarterlyGrades = useQuery(api.quarterlyGrades.get,{
-            gradeLevel: cls?.section?.gradeLevel,
+            gradeLevel: Number(cls?.section?.gradeLevel?.level),
             classId: cls._id
         })
  
@@ -25,7 +24,7 @@ function MapehQuarterlyGradesTab({
 
         const teacherName = `${cls.teacher?.firstName} ${cls.teacher?.middleName} ${cls.teacher?.lastName}`
 
-        const gradeAndSection = `${section?.gradeLevel} - ${section?.name}`
+        const gradeAndSection = `${section?.gradeLevel?.level} - ${section?.name}`
     
   return (
          <Tabs defaultValue="1st" className="w-full">

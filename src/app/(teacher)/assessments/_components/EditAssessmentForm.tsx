@@ -66,13 +66,13 @@ export const EditAssessmentForm = ({
 
     const editAssessment = useMutation(api.assessments.editAssessment)
     const {classes} = useClasses()
-    const teacherGradeLevels = Array.from(new Set(classes?.map((cl) => cl?.section?.gradeLevel)));
+    const teacherGradeLevels = Array.from(new Set(classes?.map((cl) => cl?.section?.gradeLevel?.level)));
     const gradelevels = teacherGradeLevels.filter(level => level !== undefined)
 
     const teacherSubjects = Array.from(new Set(classes?.map((cl) => cl?.subject?.name)));
     const subjects = useQuery(api.subjects.getSubjects);
     const filteredSubjects = subjects?.filter(subject => 
-        subject.gradeLevel === Number(selectedGLevel) && 
+        subject.gradeLevel?.level === selectedGLevel && 
         teacherSubjects.includes(subject.name)
     );
     const getTheHighestAssessmentNo = useQuery(api.assessments.getTheHighestAssessmentNo, {type: type, gradeLevel: selectedGLevel, subjectId: selectedSubjectId, quarter: selectedQuarter})
@@ -168,7 +168,7 @@ export const EditAssessmentForm = ({
                                                         </SelectTrigger>
                                                         <SelectContent>
                                                             {gradelevels.map((level) => (
-                                                                <SelectItem key={`${level}`} value={level.toString()}>{level}</SelectItem>
+                                                                <SelectItem key={`${level}`} value={level}>{level}</SelectItem>
                                                             ))}
                                                         </SelectContent>
                                                     </Select>

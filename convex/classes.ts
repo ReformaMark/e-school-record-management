@@ -21,6 +21,8 @@ export const getTeacherClasses = query({
             const subject = await ctx.db.get(c.subjectId)
             const teacher = await ctx.db.get(c.teacherId)
             const section = await ctx.db.get(c.sectionId)
+            if(!section) return
+            const gradeLevel = await ctx.db.get(section?.gradeLevelId)
             const schedule = await ctx.db.get(c.scheduleId)
             if(!schedule) return
             const schedules = await ctx.db.query('schedules')
@@ -39,9 +41,15 @@ export const getTeacherClasses = query({
             const schoolYear = await ctx.db.get(c.schoolYearId)
             return {
                 ...c,
-                subject: subject,
+                subject: {
+                    ...subject,
+                    gradeLevel: gradeLevel
+                },
                 teacher: teacher,
-                section: section,
+                section: {
+                    ...section,
+                    gradeLevel: gradeLevel
+                },
                 schedules: schedWithdetails,
                 schoolYear: schoolYear,
             }

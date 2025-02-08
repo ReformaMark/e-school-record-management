@@ -15,7 +15,7 @@ import ClassRecordTemplate from './ClassRecordTemplate'
 import { useState } from 'react'
 import { CgDanger } from "react-icons/cg";
 import { IoMdPrint } from 'react-icons/io'
-import { StudentsWithClassRecord } from '@/lib/types'
+import { SectionWithGradeLevel, StudentsWithClassRecord, SubjectWithGradeLevel } from '@/lib/types'
 import { Doc } from '../../../../../convex/_generated/dataModel'
 import { useReactToPrint } from "react-to-print";
 import { useRef } from "react";
@@ -23,8 +23,8 @@ import { useRef } from "react";
 
 interface ClassRecordDialogProp {
   teacher: Doc<'users'>,
-  subject: Doc<'subjects'>,
-  section:  Doc<'sections'>,
+  subject: SubjectWithGradeLevel,
+  section: SectionWithGradeLevel,
   appliedGW: Doc<'appliedGradeWeigths'>,
   assessments: Doc<'assessments'>[],
   data: StudentsWithClassRecord[]
@@ -58,7 +58,7 @@ function ClassRecordDialog({
   };
 
   const subjectName = subComponent ? subComponent : subject.name
-  const sectionName = `${section.gradeLevel}-${section.name}`
+  const sectionName = `${section.gradeLevel?.level}-${section.name}`
 
   const handlePrint = useReactToPrint({
     documentTitle: `${subjectName}-${sectionName} Class record`,

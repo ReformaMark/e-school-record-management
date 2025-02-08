@@ -9,8 +9,9 @@ export const getSectionsUsingGradeLevel = query({
         if (!args.gradeLevel) {
             return []
         }
+        const gradeLevel = await ctx.db.query('gradeLevels').filter(q=> q.eq(q.field('level'), args.gradeLevel)).unique()
         const sections = await ctx.db.query('sections')
-            .filter(q => q.eq(q.field('gradeLevel'), Number(args.gradeLevel)))
+            .filter(q => q.eq(q.field('gradeLevelId'), gradeLevel?._id))
             .filter(q => q.eq(q.field('isActive'), true))
             .order('desc')
             .collect()

@@ -1,14 +1,14 @@
 'use client'
 import React from 'react'
-import { StudentsWithClassRecord } from '@/lib/types';
+import { SectionWithGradeLevel, StudentsWithClassRecord, SubjectWithGradeLevel } from '@/lib/types';
 import { Doc } from '../../../../../convex/_generated/dataModel';
 import { calculateInitialGrade, calculatePercentageScore, calculateTotalScore, calculateWeightedScore, convertToTransmutedGrade, formatQuarter } from '@/lib/utils';
 
 interface ClassRecordTemplateProps {
     sortedRecords: StudentsWithClassRecord[],
-    subject: Doc<'subjects'>,
+    subject: SubjectWithGradeLevel,
     teacher: Doc<'users'>,
-    section: Doc<'sections'>,
+    section: SectionWithGradeLevel,
     appliedGW: Doc<'appliedGradeWeigths'>
     assessments: Doc<'assessments'>[],
     subComponent: string | undefined
@@ -80,7 +80,7 @@ function ClassRecordTemplate({
 
     const teacherFullName = `${teacher.firstName} ${teacher.middleName ? teacher.middleName : ""} ${teacher.lastName}`
     const quarter = sortedRecords[0].classRecords.length < 1 ? "1" : sortedRecords[0].classRecords[0].quarter
-    const gradeAndSection = `${section.gradeLevel} - ${section.name}`
+    const gradeAndSection = `${section.gradeLevel?.level} - ${section.name}`
     const subjectName = subComponent ? subComponent : subject.name
 
     const writtenAssessments = assessments.filter( a => a.type === "Written Works").filter(a => a.quarter === quarter).sort((a,b)=> a.assessmentNo - b.assessmentNo)
@@ -287,7 +287,7 @@ function ClassRecordTemplate({
                             calculateWeightedScore(calculatePercentageScore(calculateTotalScore(male.classRecords[0]?.performance), totalPerformance ?? 0), performanceWeight?? 0),
                             calculateWeightedScore(calculatePercentageScore(calculateTotalScore(male.classRecords[0]?.quarterlyExam), totalQE ?? 0), examWeight?? 0)
                         ),
-                        section?.gradeLevel,
+                        Number(section?.gradeLevel?.level),
                         appliedGW?.learningMode,
                         subject?.subjectCategory?.toLowerCase()
                     )}
@@ -382,7 +382,7 @@ function ClassRecordTemplate({
                             calculateWeightedScore(calculatePercentageScore(calculateTotalScore(female.classRecords[0]?.performance), totalPerformance ?? 0), performanceWeight?? 0),
                             calculateWeightedScore(calculatePercentageScore(calculateTotalScore(female.classRecords[0]?.quarterlyExam), totalQE ?? 0), examWeight?? 0)
                         ),
-                        section?.gradeLevel,
+                        Number(section?.gradeLevel?.level),
                         appliedGW?.learningMode,
                         subject?.subjectCategory?.toLowerCase()
                     )}

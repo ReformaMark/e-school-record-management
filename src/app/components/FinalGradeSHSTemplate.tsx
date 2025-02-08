@@ -2,7 +2,7 @@ import React from 'react'
 import { Doc } from '../../../convex/_generated/dataModel';
 import { useQuery } from 'convex/react';
 import { api } from '../../../convex/_generated/api';
-import { ClassesWithDetails } from '@/lib/types';
+import { ClassesWithDetails, SectionWithGradeLevel } from '@/lib/types';
 import { getAverageForShs, getQuarterlyGrades, remarks } from '@/lib/utils';
 import {
     Tooltip,
@@ -17,13 +17,13 @@ function FinalGradeSHSTemplate({
     subject,
     cls
 }:{
-    section: Doc<'sections'>
+    section: SectionWithGradeLevel
     subject: Doc<'subjects'> | null
     cls: ClassesWithDetails
 }) {
 
     const studentQuarterlyGrades = useQuery(api.quarterlyGrades.get,{
-        gradeLevel: section.gradeLevel,
+        gradeLevel: Number(section.gradeLevel?.level),
         classId: cls._id
     })
     
@@ -47,7 +47,7 @@ function FinalGradeSHSTemplate({
 
             <div className='w-[75%]'>
                 <div className="border border-collapse border-black flex items-center">
-                    <h1 className='uppercase w-[60%] h-full px-2 text-sm font-semibold '>Grade & Section: {section.gradeLevel} - {section.name}</h1>
+                    <h1 className='uppercase w-[60%] h-full px-2 text-sm font-semibold '>Grade & Section: {section.gradeLevel?.level} - {section.name}</h1>
                     <div className="w-[40%]">
                         <h1 className='uppercase border border-collapse py-1 px-2 border-black h-full text-sm font-semibold'>Semester: {cls.semester}</h1>
                         <h1 className='uppercase border border-collapse border-b-0 py-1 pl-2 border-black h-full text-sm font-semibold'>Subject: {subject?.name}</h1>

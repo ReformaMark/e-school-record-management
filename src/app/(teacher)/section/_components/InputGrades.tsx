@@ -4,7 +4,7 @@ import { InputGradesCol } from './studentData'
 import { DataTable } from '@/components/data-table';
 import ClassRecordDialog from './ClassRecordDialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { ClassesWithDetails } from '@/lib/types';
+import { ClassesWithDetails, SectionWithGradeLevel, SubjectWithGradeLevel } from '@/lib/types';
 import { useQuery } from 'convex/react';
 import { api } from '../../../../../convex/_generated/api';
 import { Doc } from '../../../../../convex/_generated/dataModel';
@@ -88,8 +88,8 @@ function InputGrades({clss}:IProps) {
             <ClassRecordDialog 
                 teacher={teacher as Doc<'users'>}
                 data={firstQuarterStudents ?? []} 
-                subject={clss?.subject as Doc<'subjects'> } 
-                section={clss?.section as Doc<'sections'>}
+                subject={clss?.subject as SubjectWithGradeLevel } 
+                section={clss?.section as SectionWithGradeLevel}
                 appliedGW={appliedGW as Doc<'appliedGradeWeigths'>}
                 assessments={assessments as Doc<'assessments'>[]}
                 subComponent={selectedSubComponent}
@@ -106,8 +106,8 @@ function InputGrades({clss}:IProps) {
                 <ClassRecordDialog 
                     teacher={teacher as Doc<'users'>}
                     data={secondQuarterStudents ?? []} 
-                    subject={clss?.subject as Doc<'subjects'> } 
-                    section={clss?.section as Doc<'sections'>}
+                    subject={clss?.subject as SubjectWithGradeLevel } 
+                    section={clss?.section as SectionWithGradeLevel}
                     appliedGW={appliedGW as Doc<'appliedGradeWeigths'>}
                     assessments={assessments as Doc<'assessments'>[]}
                     subComponent={selectedSubComponent}
@@ -124,8 +124,8 @@ function InputGrades({clss}:IProps) {
             <ClassRecordDialog 
                 teacher={teacher as Doc<'users'>}
                 data={thirdQuarterStudents ?? []} 
-                subject={clss?.subject as Doc<'subjects'> } 
-                section={clss?.section as Doc<'sections'>}
+                subject={clss?.subject as SubjectWithGradeLevel } 
+                section={clss?.section as SectionWithGradeLevel}
                 appliedGW={appliedGW as Doc<'appliedGradeWeigths'>}
                 assessments={assessments as Doc<'assessments'>[]}
                 subComponent={selectedSubComponent}
@@ -142,8 +142,8 @@ function InputGrades({clss}:IProps) {
                 <ClassRecordDialog 
                     teacher={teacher as Doc<'users'>}
                     data={fourthQuarterStudents ?? []} 
-                    subject={clss?.subject as Doc<'subjects'> } 
-                    section={clss?.section as Doc<'sections'>}
+                    subject={clss?.subject as SubjectWithGradeLevel } 
+                    section={clss?.section as SectionWithGradeLevel}
                     appliedGW={appliedGW as Doc<'appliedGradeWeigths'>}
                     assessments={assessments as Doc<'assessments'>[]}
                     subComponent={selectedSubComponent}

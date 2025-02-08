@@ -57,11 +57,18 @@ export interface ScheduleWithRoom extends Doc<'schedules'>{
     room: Doc<'rooms'> | null
 }
 export interface ClassesWithDetails extends Doc<'classes'> {
-    subject: Doc<'subjects'> | null,
+    subject: SubjectWithGradeLevel | null,
     teacher: Doc<'users'> | null,
-    section: Doc<'sections'>| null,
+    section: SectionWithGradeLevel | null,
     schedules: ScheduleWithRoom[],
     schoolYear: Doc<'schoolYears'> | null,
+}
+
+export interface SectionWithGradeLevel extends Doc<'sections'>{
+    gradeLevel: Doc<'gradeLevels'> | null
+}
+export interface SubjectWithGradeLevel extends Doc<'subjects'>{
+    gradeLevel: Doc<'gradeLevels'> | null
 }
 
 export interface AssessmentTypes extends Doc<"assessments"> {
@@ -76,7 +83,7 @@ interface CLassRecordsWithClassTypes extends Doc<'classRecords'>{
 }
 export interface StudentsWithClassRecord extends Doc<"students">{
     classRecords: CLassRecordsWithClassTypes[],
-    sectionDoc: Doc<'sections'>
+    sectionDoc: SectionWithGradeLevel | null
 }
 
 export interface SubjectsWithAppliedGradeWeihts extends Doc<'subjects'>{

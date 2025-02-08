@@ -31,11 +31,8 @@ export default function EnrollmentConfirmationDialog({
 
     const latestSY = schoolYear ? schoolYear[0] : undefined
 
-    //get the secctions of the grade level
+    //get the sections of the grade level
     const sections = useQuery(api.sections.getSectionsUsingGradeLevel, {gradeLevel: gradelevel})
-    console.log(student._id)
-    console.log(selectedSection)
-    console.log(latestSY)
     const handleEnroll = () =>{
         setIsLoading(true)
         if(!student._id){

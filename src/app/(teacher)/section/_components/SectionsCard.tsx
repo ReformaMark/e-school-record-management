@@ -14,7 +14,7 @@ function SectionsCard({
     <div className='bg-white rounded-md shadow-md flex flex-col justify-between'>
         <div className={`flex justify-between text-white shadow-md px-5 py-1 bg-primary-foreground text-lg font-semibold`}>
             <h1>{cls?.section?.name}</h1>
-            <h1>Grade {cls?.section?.gradeLevel.toString()}</h1>
+            <h1>Grade {cls?.section?.gradeLevel?.level}</h1>
         </div>
         <div className="p-5 text-sm">
             <h3>Subject: <span className="font-medium text-sm">{cls?.subject?.name || "N/A"}</span></h3>

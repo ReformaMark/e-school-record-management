@@ -50,7 +50,7 @@ function SubmitGradesDialog({isSGOpen, setIsSGOpen ,studentsWithDetails, subject
         calculateWeightedScore(calculatePercentageScore(calculateTotalScore(performance), totalPerformance ?? 0), performanceWeight?? 0),
         calculateWeightedScore(calculatePercentageScore(calculateTotalScore(quarterlyExam), totalQE ?? 0), examWeight?? 0)
     ),
-    section?.gradeLevel,
+    Number(section?.gradeLevel?.level),
     learningMode,
     subject?.subjectCategory?.toLowerCase()
   )
@@ -60,7 +60,7 @@ function SubmitGradesDialog({isSGOpen, setIsSGOpen ,studentsWithDetails, subject
   function handleSubmit (){
     toast.promise(submitQuarterlyGrade({
       studentId: studentsWithDetails._id,
-      gradeLevel: classRecord.cLass.subject?.gradeLevel ?? section.gradeLevel,
+      gradeLevel: Number(section?.gradeLevel?.level),
       classId: classRecord.classId,
       quarter: classRecord.quarter,
       quarterlyGrade: transmutedGrade, // score

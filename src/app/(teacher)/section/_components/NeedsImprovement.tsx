@@ -5,18 +5,17 @@ import { DataTable } from '@/components/data-table'
 import { forImprovementsColumns } from './studentData'
 import { useQuery } from 'convex/react'
 import { api } from '../../../../../convex/_generated/api'
-import { Doc } from '../../../../../convex/_generated/dataModel'
-import { ClassesWithDetails, StudentsWithQuarterlyGrades } from '@/lib/types'
+import { ClassesWithDetails, SectionWithGradeLevel, StudentsWithQuarterlyGrades } from '@/lib/types'
 
 function NeedsImprovement({
     section,
     cls
 }: { 
-    section: Doc<'sections'>  
+    section: SectionWithGradeLevel
     cls: ClassesWithDetails
 }) {
     const studentNeedsIntervention = useQuery(api.quarterlyGrades.needIntervention, {
-        gradeLevel: section?.gradeLevel,
+        gradeLevel: Number(section?.gradeLevel?.level),
         classId: cls._id,
         needsIntervention: true
     })

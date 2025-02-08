@@ -68,13 +68,13 @@ export const AssessmentForm = ({
     const subject = useQuery(api.subjects.getSubject, {subjectId: selectedSubjectId})
 
     const sy = schoolYears && schoolYears[0] 
-    const teacherGradeLevels = Array.from(new Set(classes?.map((cl) => cl?.subject?.gradeLevel)));
-    const gradelevels = teacherGradeLevels.filter(level => level !== undefined).sort((a,b)=> a - b)
+    const teacherGradeLevels = Array.from(new Set(classes?.map((cl) => cl?.subject?.gradeLevel?.level)));
+    const gradelevels = teacherGradeLevels.filter(level => level !== undefined).sort((a,b)=> Number(a) - Number(b))
 
     const teacherSubjects = Array.from(new Set(classes?.map((cl) => cl?.subject?.name)));
     const subjects = useQuery(api.subjects.getSubjects);
     const filteredSubjects = subjects?.filter(subject => 
-        subject.gradeLevel === Number(selectedGLevel) && 
+        subject.gradeLevel?.level === selectedGLevel && 
         teacherSubjects.includes(subject.name)
     )
 
