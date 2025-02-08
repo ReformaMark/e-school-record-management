@@ -57,7 +57,7 @@ export const sectionSchema = z.object({
 export type SectionFormData = z.infer<typeof sectionSchema>;
 
 const SystemAdminAddSectionPage = () => {
-    const { register, control, handleSubmit, setValue, watch, formState: { errors } } = useForm<SectionFormData>({
+    const { register, control, handleSubmit, setValue, watch, reset, formState: { errors } } = useForm<SectionFormData>({
         resolver: zodResolver(sectionSchema),
         defaultValues: {
             name: "",
@@ -91,6 +91,7 @@ const SystemAdminAddSectionPage = () => {
         mutationFn: useConvexMutation(api.sections.create),
         onSuccess: () => {
             toast.success("Section created successfully");
+            reset();
         },
         onError: (error) => {
             toast.error(error.message);
