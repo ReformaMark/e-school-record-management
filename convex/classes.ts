@@ -23,8 +23,7 @@ export const getTeacherClasses = query({
             const section = await ctx.db.get(c.sectionId)
             if(!section) return
             const gradeLevel = await ctx.db.get(section?.gradeLevelId)
-            const schedule = await ctx.db.get(c.scheduleId)
-            if(!schedule) return
+          
             const schedules = await ctx.db.query('schedules')
                 .filter(q=> q.eq(q.field('teacherId'), teacher?._id))
                 .filter(q=> q.eq(q.field('classId'), c._id))

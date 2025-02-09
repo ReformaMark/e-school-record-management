@@ -3,7 +3,6 @@ import { z } from "zod";
 const classScheduleSchema = z.object({
     subjectId: z.string().min(1, "Subject is required"),
     teacherId: z.string().min(1, "Teacher is required"),
-    scheduleId: z.string().min(1, "Schedule is required"),
     semester: z.string().optional(),
     track: z.string().optional()
 });

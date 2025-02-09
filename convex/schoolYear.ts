@@ -7,6 +7,7 @@ export const create = mutation({
         batchName: v.string(),
         startDate: v.string(),
         endDate: v.string(),
+        sy: v.string()
     },
     handler: async (ctx, args) => {
         const userId = await getAuthUserId(ctx);

@@ -53,7 +53,6 @@ export const create = mutation({
         classes: v.array(v.object({
             subjectId: v.id("subjects"),
             teacherId: v.id("users"),
-            scheduleId: v.id("schedules"),
             semester: v.optional(v.string()),
             track: v.optional(v.string())
         }))
@@ -76,6 +75,7 @@ export const create = mutation({
         const classPromises = args.classes.map(classData =>
             ctx.db.insert("classes", {
                 ...classData,
+                scheduleId: [],
                 sectionId,
                 schoolYearId: args.schoolYearId
             })
@@ -96,6 +96,8 @@ export const getSections = query({
 
         return Promise.all(sections.map(async (section) => {
             const advisor = await ctx.db.get(section.advisorId);
+            const sy = await ctx.db.get(section.schoolYearId);
+            const gradeLevel = await ctx.db.get(section.gradeLevelId);
             const classes = await ctx.db
                 .query("classes")
                 .filter(q => q.eq(q.field("sectionId"), section._id))
@@ -104,19 +106,27 @@ export const getSections = query({
             const classesWithDetails = await Promise.all(classes.map(async (classItem) => {
                 const teacher = await ctx.db.get(classItem.teacherId);
                 const subject = await ctx.db.get(classItem.subjectId);
-                const schedule = await ctx.db.get(classItem.scheduleId);
+                const schedule = await await Promise.all(classItem.scheduleId.map(async (scheduleId) => { 
+                    const schedId = await ctx.db.get(scheduleId)
+                    
+                    return schedId
+                }))
+
+                const removeNullSched = schedule.filter(sched => sched !== null)
 
                 return {
                     ...classItem,
                     teacher,
                     subject,
-                    schedule
+                    schedule: removeNullSched
                 };
             }));
 
             return {
                 ...section,
                 advisor,
+                gradeLevel,
+                schoolYear: sy,
                 classes: classesWithDetails
             };
         }));

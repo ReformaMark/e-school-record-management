@@ -22,6 +22,7 @@ import { Doc, Id } from "../../../../../../convex/_generated/dataModel";
 import { useMutation } from "convex/react";
 import { toast } from "sonner";
 import { useState } from "react";
+import { MultiSelect } from "@/components/ui/multi-select";
 
 interface EditScheduleDialogProps {
     open: boolean;
@@ -34,17 +35,23 @@ export const EditScheduleDialog = ({ open, onClose, schedule }: EditScheduleDial
     const rooms = useQuery(api.classroom.get);
     const periods = useQuery(api.schoolPeriod.get);
     const updateSchedule = useMutation(api.schedules.update);
-
+    const classes = useQuery(api.classes.getTeacherClasses)
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [formData, setFormData] = useState({
         day: schedule.day,
         schoolPeriodId: schedule.schoolPeriodId,
         roomId: schedule.roomId,
-        teacherId: schedule.teacherId
+        teacherId: schedule.teacherId,
+        classId: schedule.classId
     });
 
     const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-
+    const selectDays = days.map((d) =>{
+        return {
+            label: d,
+            value: d
+        }
+    })
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsSubmitting(true);
@@ -73,9 +80,24 @@ export const EditScheduleDialog = ({ open, onClose, schedule }: EditScheduleDial
                     <DialogTitle>Edit Schedule</DialogTitle>
                 </DialogHeader>
                 <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="space-y-2">
+                        <Label>Class</Label>
+                        <Select onValueChange={(value) => setFormData(prev => ({ ...prev, classId: value as Id<'classes'> }))}>
+                            <SelectTrigger>
+                                <SelectValue placeholder="Select day" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {classes?.map((c) => (
+                                    <SelectItem key={c?._id} value={c?._id as Id<'classes'>}>
+                                        {c?.section.name} - {c?.subject.name}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
                     <div className="space-y-2">
                         <Label>Day</Label>
-                        <Select
+                        {/* <Select
                             name="day"
                             defaultValue={schedule.day}
                             onValueChange={(value) => setFormData(prev => ({ ...prev, day: value }))}
@@ -90,7 +112,14 @@ export const EditScheduleDialog = ({ open, onClose, schedule }: EditScheduleDial
                                     </SelectItem>
                                 ))}
                             </SelectContent>
-                        </Select>
+                        </Select> */}
+                        <MultiSelect
+                            options={selectDays}
+                            onValueChange={(value) => setFormData(prev => ({ ...prev, day: value }))}
+                            placeholder="Select Day(s)"
+                            variant="default"
+                            className='bg-white'
+                        />
                     </div>
 
                     <div className="space-y-2">

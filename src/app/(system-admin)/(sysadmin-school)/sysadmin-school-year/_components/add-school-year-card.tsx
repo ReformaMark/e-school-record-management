@@ -48,6 +48,7 @@ export const AddSchoolYearCard = () => {
                 batchName,
                 startDate: new Date(dateRange.from.getTime() - dateRange.from.getTimezoneOffset() * 60000).toISOString().split('T')[0],
                 endDate: new Date(dateRange.to.getTime() - dateRange.to.getTimezoneOffset() * 60000).toISOString().split('T')[0],
+                sy: `${new Date(dateRange.from).getFullYear()}-${new Date(dateRange.to).getFullYear()}`
             })
         }
     }

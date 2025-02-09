@@ -64,6 +64,18 @@ export interface ClassesWithDetails extends Doc<'classes'> {
     schoolYear: Doc<'schoolYears'> | null,
 }
 
+export interface SectionWithDetails extends Doc<'sections'> {
+    advisor: Doc<'users'> | null,
+    classes: ClassessWithTeacherSubSched[],
+    schoolYear: Doc<'schoolYears'> | null,
+    gradeLevel: Doc<'gradeLevels'> | null
+}
+
+interface ClassessWithTeacherSubSched extends Doc<'classes'> {
+    teacher: Doc<'users'> | null,
+    subject: Doc<'subjects'> | null
+    schedule: Doc<'schedules'>[]
+}
 export interface SectionWithGradeLevel extends Doc<'sections'>{
     gradeLevel: Doc<'gradeLevels'> | null
 }

@@ -154,10 +154,10 @@ export default defineSchema({
     subjectId: v.id('subjects'),
     teacherId: v.id('users'), // references teacher in users table
     sectionId: v.id('sections'),
-    scheduleId: v.id('schedules'), 
     schoolYearId: v.id('schoolYears'),
     semester: v.optional(v.string()), // 1st or 2nd
-    track: v.optional(v.string()), // STEM, ABM, HUMSS etc. for senior high
+    track: v.optional(v.string()), // core subject (All Track),Academic Track (except Immersion)  ,Work Immersion/ Culminating Activity (for Academic Track) , TVL/ Sports/ Arts and Design Track
+
   }).index('by_teacherId', ['teacherId']),
 
   subjects: defineTable({
@@ -234,11 +234,11 @@ export default defineSchema({
   //   remarks: v.string()
   // }),
   schedules: defineTable({
-    day: v.string(), // Mon,Tue,Wed,THu,Fri,Sat, 
+    day: v.array(v.string()), // Mon,Tue,Wed,THu,Fri,Sat, 
     schoolPeriodId: v.id('schoolPeriods'), // range ng time
     roomId: v.id('rooms'),
     teacherId: v.id('users'),
-    classId: v.optional(v.id("classes"))
+    classId: v.id("classes")
   }),
 
   schoolPeriods: defineTable({

@@ -52,30 +52,21 @@ function Section({params}:{params: {class: string}}) {
           <h1>Section: <span className='font-normal'>{cls?.section?.name}</span></h1>
           <h1>Grade Level: <span className='font-normal'>{cls?.section?.gradeLevel?.level}</span></h1>
           <h1>Subject: <span className='font-normal'>{cls?.subject?.name}</span></h1>
-          <h1>Schedule: 
-            <span className="font-normal">
-              {cls?.schedules.map((schedule, index) => (
-                <span key={index}>
-                  {schedule.schoolPeriod?.timeRange} ({schedule.day.slice(0, 3)}) 
-                  {index < cls.schedules.length - 1 ? ", " : ""}
-                </span>
-              ))}
-            </span>
-          </h1>
-          <h1>Room: 
-            <span className="font-normal">
-              {cls?.schedules.map((schedule, index) => (
-                <span key={index}>
-                  {schedule.room?.name}
-                  {index < cls.schedules.length - 1 ? ", " : ""}
-                </span>
-              ))}
-            </span>
-          </h1>
 
           <h1>School Year: <span className='font-normal'>{cls?.schoolYear?.sy}</span></h1>
           {(Number(cls?.section?.gradeLevel?.level) ?? 0) > 10 && ( 
             <h1>Semester: <span className='font-normal'>{cls?.semester}</span></h1>
+          )}
+           {cls && cls?.schedules?.length > 0 ? (
+              cls.schedules.map((schedule, index) => (
+              <div key={index} className=" ">
+                <h3 className=''>Day: <span className="font-medium text-sm">{schedule.day.join(',')}</span></h3>
+                <h3>Time: <span className="font-medium text-sm">{schedule.schoolPeriod?.timeRange}</span></h3>
+                <h3>Room: <span className="font-medium text-sm">{schedule.room?.name  || "No assigned room"}</span></h3>
+              </div>
+              ))
+          ) : (
+              <h3 className="text-gray-500">No schedule assigned</h3>
           )}
 
         </div>

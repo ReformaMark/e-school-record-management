@@ -3,10 +3,11 @@ import { mutation, query } from "./_generated/server";
 
 export const create = mutation({
   args: {
-    day: v.string(),
+    day: v.array(v.string()),
     schoolPeriodId: v.id("schoolPeriods"),
     roomId: v.id("rooms"),
-    teacherId: v.id("users")
+    teacherId: v.id("users"),
+    classId: v.id("classes")
   },
   handler: async (ctx, args) => {
     // Validate if schedule already exists
@@ -78,9 +79,7 @@ export const getAvailableSchedules = query({
       query = query.filter(q => q.eq(q.field("teacherId"), args.teacherId));
     }
 
-    if (args.day) {
-      query = query.filter(q => q.eq(q.field("day"), args.day));
-    }
+    
 
     const schedules = await query.collect();
 
@@ -115,7 +114,7 @@ export const remove = mutation({
 export const update = mutation({
   args: {
     id: v.id("schedules"),
-    day: v.string(),
+    day: v.array(v.string()),
     schoolPeriodId: v.id("schoolPeriods"),
     roomId: v.id("rooms"),
     teacherId: v.id("users")

@@ -1,4 +1,8 @@
 "use client"
+import { SectionWithDetails } from "@/lib/types"
+import { ColumnDef } from "@tanstack/react-table"
+import { PlusCircle } from "lucide-react"
+import Link from "next/link"
 
 export const sectionData = [
     {
@@ -189,27 +193,82 @@ export const sectionData = [
     },
 ]
 
-export const sectionColumns = [
+export const sectionColumns: ColumnDef<SectionWithDetails>[] = [
     {
         accessorKey: "sectionName",
         header: "Section Name",
+        cell: ({ row }) => {
+            const sectionName = row.original.name
+              return (
+                <div>
+                 {sectionName}
+                </div>
+              )
+            }
     },
     {
         accessorKey: "gradeLevel",
         header: "Grade Level",
+        cell: ({ row }) => {
+            const gradeLevel = row.original.gradeLevel?.level
+              return (
+                <div>
+                 {gradeLevel}
+                </div>
+              )
+            }
     },
     {
         accessorKey: "roomNumber",
         header: "Room No.",
+        cell: ({ row }) => {
+            const schoolYear = row.original.schoolYear?.sy
+              return (
+                <div>
+                 {schoolYear}
+                </div>
+              )
+            }
     },
     {
+        id: "schoolYear",
         accessorKey: "schoolYear",
         header: "School Year",
+        cell: ({ row }) => {
+          const schoolYear = row.original.schoolYear?.sy
+            return (
+              <div>
+               {schoolYear}
+              </div>
+            )
+          }
     },
     {
         accessorKey: "adviser",
         header: "Adviser",
         // @ts-ignore
-        cell: ({ row }) => row.original.adviser.name,
+        cell: ({ row }) => {
+         const fullName = `${row.original.advisor?.firstName} ${row.original.advisor?.middleName} ${row.original.advisor?.lastName}`
+        
+            return (
+            <div className="">
+                {fullName}
+            </div>
+            )
+        }
+    },
+    {
+        accessorKey: "adviser",
+        header: "Adviser",
+        // @ts-ignore
+        cell: ({ row }) => {
+            
+        
+            return (
+            <div className="">
+                <Link href={"/sysadmin-sections/sysadmin-add-class"}> <PlusCircle/> Add Class</Link>
+            </div>
+            )
+        }
     },
 ]

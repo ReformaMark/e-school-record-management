@@ -45,7 +45,6 @@ const SystemAdminAddSectionPage = () => {
             classes: [{
                 subjectId: "",
                 teacherId: "",
-                scheduleId: "",
                 semester: "",
                 track: ""
             }]
@@ -63,7 +62,6 @@ const SystemAdminAddSectionPage = () => {
     const subjects = useQuery(api.subjects.getSubjects);
     const schoolYears = useQuery(api.schoolYear.get);
     const gradeLevels = useQuery(api.gradeLevel.get);
-    const schedules = useQuery(api.schedules.get);
 
     const { mutate: createSection, isPending } = useMutation({
         mutationFn: useConvexMutation(api.sections.create),
@@ -92,7 +90,6 @@ const SystemAdminAddSectionPage = () => {
         append({
             subjectId: "",
             teacherId: fields.length === 0 ? formValues.advisorId : "", // Set advisor for first class
-            scheduleId: "",
             semester: "",
             track: ""
         });
@@ -110,7 +107,6 @@ const SystemAdminAddSectionPage = () => {
                 ...cls,
                 subjectId: cls.subjectId as Id<"subjects">,
                 teacherId: cls.teacherId as Id<"users">,
-                scheduleId: cls.scheduleId as Id<"schedules">
             }))
         });
     };
@@ -292,30 +288,6 @@ const SystemAdminAddSectionPage = () => {
                                                             </p>
                                                         )}
                                                     </div>
-
-                                                    <div className="grid gap-2">
-                                                        <Label>{index === 0 ? "Adviser's Schedule" : "Schedule"}</Label>
-                                                        <Select
-                                                            onValueChange={(value) => setValue(`classes.${index}.scheduleId`, value)}
-                                                        >
-                                                            <SelectTrigger>
-                                                                <SelectValue placeholder="Select schedule" />
-                                                            </SelectTrigger>
-                                                            <SelectContent>
-                                                                {schedules?.map((schedule) => (
-                                                                    <SelectItem key={schedule._id} value={schedule._id}>
-                                                                        {schedule.day} - {schedule.period?.timeRange}
-                                                                    </SelectItem>
-                                                                ))}
-                                                            </SelectContent>
-                                                        </Select>
-                                                        {errors.classes?.[index]?.scheduleId && (
-                                                            <p className="text-sm text-red-500">
-                                                                {errors.classes[index].scheduleId.message}
-                                                            </p>
-                                                        )}
-                                                    </div>
-
                                                     {index > 0 && (
                                                         <Button
                                                             type="button"
