@@ -72,7 +72,7 @@ export default function MapehQuarterlyGradesTemplate({
                             </div>
                             <div className='text-xs text-center w-[20%]  border-collapse border border-black'>
                                 <h1 className=''>{subjectName}</h1> 
-                                <h1 className="uppercase">{quarter} Quarterly Grade</h1> 
+                                <h1 className="uppercase">{quarter} Quarter Grade</h1> 
                             </div>
                         </div>
                     </div>
