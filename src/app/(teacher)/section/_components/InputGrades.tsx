@@ -24,14 +24,16 @@ function InputGrades({clss}:IProps) {
   
     const appliedGW = useQuery(api.appliedGradeWeigths.get, {subjectId: clss?.subjectId })
     const assessments = useQuery(api.assessments.getAssessmentsBySubject, {subjectId: clss?.subjectId })
-  
 
+  
     const filterByQuarter = (quarter: string, subComponent?: string) => {
         if(isMAPEH){
-            return studentsWithClassRecord?.map(student => ({
+            const filter = studentsWithClassRecord?.map(student => ({
                 ...student,
                 classRecords: student.classRecords.filter(classRecord => classRecord.quarter === quarter && classRecord.subComponent === subComponent)
             }));
+         
+            return filter
         }
         return studentsWithClassRecord?.map(student => ({
             ...student,
@@ -40,6 +42,7 @@ function InputGrades({clss}:IProps) {
     };
 
     const firstQuarterStudents = isMAPEH ?filterByQuarter("1st", selectedSubComponent) : filterByQuarter("1st") ;
+   
     const secondQuarterStudents = isMAPEH ?filterByQuarter("2nd", selectedSubComponent) : filterByQuarter("2nd") ;
     const thirdQuarterStudents = isMAPEH ?filterByQuarter("3rd", selectedSubComponent) : filterByQuarter("3rd") ;
     const fourthQuarterStudents = isMAPEH ?filterByQuarter("4th", selectedSubComponent) : filterByQuarter("4th") ;
@@ -47,16 +50,16 @@ function InputGrades({clss}:IProps) {
 
   return (
     <div className='text-primary'>
-        <Tabs defaultValue="1st" className="w-full">
+        <Tabs defaultValue="1st" className="w-full shadow-none">
         {isMAPEH ? (
             <div className="grid grid-cols-3 ">
                 <div className="">
 
-                <TabsList className='flex flex-row justify-start w-fit'>
-                    <TabsTrigger value="1st">1st</TabsTrigger>
-                    <TabsTrigger value="2nd">2nd</TabsTrigger>
-                    <TabsTrigger value="3rd">3rd</TabsTrigger>
-                    <TabsTrigger value="4th">4th</TabsTrigger>
+                <TabsList className='space-x-3 bg-transparent'>
+                    <TabsTrigger value="1st" className='font-medium text-xs md:text-md shadow-md border-b-2 data-[state=active]:border-b-primary data-[state=active]:text-primary'>1st</TabsTrigger>
+                    <TabsTrigger value="2nd" className='font-medium text-xs md:text-md shadow-md border-b-2 data-[state=active]:border-b-primary data-[state=active]:text-primary'>2nd</TabsTrigger>
+                    <TabsTrigger value="3rd" className='font-medium text-xs md:text-md shadow-md border-b-2 data-[state=active]:border-b-primary data-[state=active]:text-primary'>3rd</TabsTrigger>
+                    <TabsTrigger value="4th" className='font-medium text-xs md:text-md shadow-md border-b-2 data-[state=active]:border-b-primary data-[state=active]:text-primary'>4th</TabsTrigger>
                 </TabsList>
                 </div>
                 <div className="col-span-1">
@@ -85,6 +88,8 @@ function InputGrades({clss}:IProps) {
               
   
         <TabsContent value="1st">
+            <div className="flex justify-end">
+
             <ClassRecordDialog 
                 teacher={teacher as Doc<'users'>}
                 data={firstQuarterStudents ?? []} 
@@ -93,7 +98,8 @@ function InputGrades({clss}:IProps) {
                 appliedGW={appliedGW as Doc<'appliedGradeWeigths'>}
                 assessments={assessments as Doc<'assessments'>[]}
                 subComponent={selectedSubComponent}
-            />
+                />
+            </div>
             <DataTable
                 columns={InputGradesCol}
                 data={firstQuarterStudents ?? []}
@@ -102,7 +108,7 @@ function InputGrades({clss}:IProps) {
             />
         </TabsContent>
         <TabsContent value="2nd">
-            
+            <div className="flex justify-end">
                 <ClassRecordDialog 
                     teacher={teacher as Doc<'users'>}
                     data={secondQuarterStudents ?? []} 
@@ -112,6 +118,7 @@ function InputGrades({clss}:IProps) {
                     assessments={assessments as Doc<'assessments'>[]}
                     subComponent={selectedSubComponent}
                 />
+            </div>
             <DataTable
                 columns={InputGradesCol}
                 data={secondQuarterStudents ?? []}
@@ -120,7 +127,7 @@ function InputGrades({clss}:IProps) {
             />
         </TabsContent>
         <TabsContent value="3rd">
-          
+            <div className="flex justify-end">
             <ClassRecordDialog 
                 teacher={teacher as Doc<'users'>}
                 data={thirdQuarterStudents ?? []} 
@@ -130,6 +137,7 @@ function InputGrades({clss}:IProps) {
                 assessments={assessments as Doc<'assessments'>[]}
                 subComponent={selectedSubComponent}
             />
+            </div>
             <DataTable
                 columns={InputGradesCol}
                 data={thirdQuarterStudents ?? []}
@@ -138,7 +146,7 @@ function InputGrades({clss}:IProps) {
             />
         </TabsContent>
         <TabsContent value="4th">
-            
+            <div className="flex justify-end">
                 <ClassRecordDialog 
                     teacher={teacher as Doc<'users'>}
                     data={fourthQuarterStudents ?? []} 
@@ -148,6 +156,7 @@ function InputGrades({clss}:IProps) {
                     assessments={assessments as Doc<'assessments'>[]}
                     subComponent={selectedSubComponent}
                 />
+            </div>
             <DataTable
                 columns={InputGradesCol}
                 data={fourthQuarterStudents ?? []}

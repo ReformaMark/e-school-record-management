@@ -70,7 +70,7 @@ export const create = mutation({
                                             ...work,
                                             assessmentId: args.assessmentId,
                                             highestScore: args.score,
-                                            score: undefined
+                                            score: work.score
                                         };
                                     }
                                     return work;
@@ -111,7 +111,7 @@ export const create = mutation({
                                         return {
                                             ...task,
                                             highestScore: args.score,
-                                            score: undefined
+                                            score: task.score
                                             // Add other fields to update here
                                         };
                                     }
@@ -152,7 +152,7 @@ export const create = mutation({
                                     if (assessment.assessmentNo === args.assessmentNo) {
                                         return {
                                             ...assessment,
-                                            score: undefined,
+                                            score: assessment.score,
                                             highestScore:  args.score
                                             // Add other fields to update here
                                         };

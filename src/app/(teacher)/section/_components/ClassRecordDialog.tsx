@@ -45,7 +45,7 @@ function ClassRecordDialog({
   const componentRef = useRef(null);
   const sortedrecords = data.map(s => ({
     ...s,
-    classRecords: s.classRecords.map(c => ({
+    classRecords: s.classRecords.map(c => ({ 
         ...c,
         written: [...c.written].sort((a, b) => a.assessmentNo - b.assessmentNo),
         performance: [...c.performance].sort((a, b) => a.assessmentNo - b.assessmentNo),
@@ -79,7 +79,7 @@ function ClassRecordDialog({
                 </div>
             </DialogHeader>
             <DialogFooter>
-                <Button variant={'ghost'}>Cancel</Button>
+                <Button onClick={()=> setDialogOpen(false)} variant={'ghost'}>Cancel</Button>
                 <Button variant={'default'} onClick={()=> {handlePrint(reactToPrintContent)}} className='text-white flex gap-x-3'><IoMdPrint />Print</Button>
             </DialogFooter>
             </DialogContent>

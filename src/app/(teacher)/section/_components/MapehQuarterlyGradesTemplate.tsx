@@ -1,7 +1,10 @@
 'use client'
 
+import { Badge } from "@/components/ui/badge";
+import { Label } from "@/components/ui/label";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { StudentsWithQuarterlyGrades } from "@/lib/types"
-import { getAverageForJrh, getQuarterlyGradeScore } from "@/lib/utils";
+import { getAverageForJrh, getInterventionRemakrs, getQuarterlyGrade, getQuarterlyGradeScore } from "@/lib/utils";
 
 export default function MapehQuarterlyGradesTemplate({
     gradeAndSection,
@@ -115,16 +118,100 @@ export default function MapehQuarterlyGradesTemplate({
                             
                             <div className="w-full flex col-span-2">
                             <h1 className='text-xs text-center w-[20%] border-collapse border border-black'>
-                                {getQuarterlyGradeScore(student?.quarterlyGrades, quarter, "Music")}
+                            {student.quarterlyGrades.length >= 1 ? (
+                                <TooltipProvider>
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                    <h1 className='text-red-500'>{getQuarterlyGrade(student?.quarterlyGrades, quarter, "Music") }</h1>
+                                    </TooltipTrigger>
+                                    <TooltipContent className='max-w-2xl bg-white p-5 space-y-2 shadow-md'>
+                                        <Label className='font-semibold'>Intervention Method(s)</Label>
+                                        <div className="flex items-center justify-center flex-wrap gap-2">
+                                        {student.quarterlyGrades[0].interventionUsed?.map((intUsed, index)=>(
+                                            <Badge key={index + intUsed} className='text-white text-xs'>{intUsed}</Badge>
+                                        ))}
+                                        </div>
+                                        <div className="mt-2">
+
+                                            <Label className='font-semibold'>Remarks</Label>
+                                            <p>{getInterventionRemakrs(student?.quarterlyGrades, quarter, "Music")}</p>
+                                        </div>
+                                    </TooltipContent>
+                                </Tooltip>
+                                </TooltipProvider> 
+                            ) : getQuarterlyGradeScore(student?.quarterlyGrades, quarter, "Music")}
                             </h1>
                             <h1 className='text-xs text-center w-[20%] border-collapse border border-black'>
-                                {getQuarterlyGradeScore(student?.quarterlyGrades, quarter, "Arts")}
+                            {student.quarterlyGrades.length >= 1 ? (
+                                <TooltipProvider>
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                    <h1 className='text-red-500'>{getQuarterlyGrade(student?.quarterlyGrades, quarter, "Arts") }</h1>
+                                    </TooltipTrigger>
+                                    <TooltipContent className='max-w-2xl bg-white p-5 space-y-2 shadow-md'>
+                                        <Label className='font-semibold'>Intervention Method(s)</Label>
+                                        <div className="flex items-center justify-center flex-wrap gap-2">
+                                        {student.quarterlyGrades[0].interventionUsed?.map((intUsed, index)=>(
+                                            <Badge key={index + intUsed} className='text-white text-xs'>{intUsed}</Badge>
+                                        ))}
+                                        </div>
+                                        <div className="mt-2">
+
+                                            <Label className='font-semibold'>Remarks</Label>
+                                            <p>{getInterventionRemakrs(student?.quarterlyGrades, quarter, "Arts")}</p>
+                                        </div>
+                                    </TooltipContent>
+                                </Tooltip>
+                                </TooltipProvider> 
+                            ) : getQuarterlyGradeScore(student?.quarterlyGrades, quarter, "Arts")}
                             </h1>
                             <h1 className='text-xs text-center w-[20%] border-collapse border border-black'>
-                                {getQuarterlyGradeScore(student?.quarterlyGrades, quarter, "Physical Education")}
+                            {student.quarterlyGrades.length >= 1 ? (
+                                <TooltipProvider>
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                    <h1 className='text-red-500'>{getQuarterlyGrade(student?.quarterlyGrades, quarter, "Physical Education") }</h1>
+                                    </TooltipTrigger>
+                                    <TooltipContent className='max-w-2xl bg-white p-5 space-y-2 shadow-md'>
+                                        <Label className='font-semibold'>Intervention Method(s)</Label>
+                                        <div className="flex items-center justify-center flex-wrap gap-2">
+                                        {student.quarterlyGrades[0].interventionUsed?.map((intUsed, index)=>(
+                                            <Badge key={index + intUsed} className='text-white text-xs'>{intUsed}</Badge>
+                                        ))}
+                                        </div>
+                                        <div className="mt-2">
+
+                                            <Label className='font-semibold'>Remarks</Label>
+                                            <p>{getInterventionRemakrs(student?.quarterlyGrades, quarter, "Physical Education")}</p>
+                                        </div>
+                                    </TooltipContent>
+                                </Tooltip>
+                                </TooltipProvider> 
+                            ) : getQuarterlyGradeScore(student?.quarterlyGrades, quarter, "Physical Education")}
                             </h1>
                             <h1 className='text-xs text-center w-[20%] border-collapse border border-black'>
-                                {getQuarterlyGradeScore(student?.quarterlyGrades, quarter, "Health")}
+                            {student.quarterlyGrades.length >= 1 ? (
+                                <TooltipProvider>
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                    <h1 className='text-red-500'>{getQuarterlyGrade(student?.quarterlyGrades, quarter, "Health") }</h1>
+                                    </TooltipTrigger>
+                                    <TooltipContent className='max-w-2xl bg-white p-5 space-y-2 shadow-md'>
+                                        <Label className='font-semibold'>Intervention Method(s)</Label>
+                                        <div className="flex items-center justify-center flex-wrap gap-2">
+                                        {student.quarterlyGrades[0].interventionUsed?.map((intUsed, index)=>(
+                                            <Badge key={index + intUsed} className='text-white text-xs'>{intUsed}</Badge>
+                                        ))}
+                                        </div>
+                                        <div className="mt-2">
+
+                                            <Label className='font-semibold'>Remarks</Label>
+                                            <p>{getInterventionRemakrs(student?.quarterlyGrades, quarter, "Health")}</p>
+                                        </div>
+                                    </TooltipContent>
+                                </Tooltip>
+                                </TooltipProvider> 
+                            ) : getQuarterlyGradeScore(student?.quarterlyGrades, quarter, "Health")}
                             </h1>
                             <h1 className='text-xs text-center w-[20%] border-collapse border border-black'>
                             { getAverageForJrh(
@@ -169,7 +256,9 @@ export default function MapehQuarterlyGradesTemplate({
                 
                 </div>
 
-                {females?.map((student, index)=>(
+                {females?.map((student, index)=>{
+                    console.log(student.quarterlyGrades)
+                    return (
                     <div key={student?._id} className="flex border-collapse font-semibold hover:bg-gray-200">
                         <div className="w-[3%] border-collapse text-center text-sm h-auto border border-black">{index + 1}</div>
                     
@@ -180,29 +269,115 @@ export default function MapehQuarterlyGradesTemplate({
                             
                             <div className="w-full flex col-span-2">
                             <h1 className='text-xs text-center w-[20%] border-collapse border border-black'>
-                                {getQuarterlyGradeScore(student?.quarterlyGrades, quarter, "Music")}
+                            {student.quarterlyGrades.length >= 1 ? (
+                                <TooltipProvider>
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                    <h1 className='text-red-500'>{getQuarterlyGrade(student?.quarterlyGrades, quarter, "Music") }</h1>
+                                    </TooltipTrigger>
+                                    <TooltipContent className='max-w-2xl bg-white p-5 space-y-2 shadow-md'>
+                                        <Label className='font-semibold'>Intervention Method(s)</Label>
+                                        <div className="flex items-center justify-center flex-wrap gap-2">
+                                        {student.quarterlyGrades[0].interventionUsed?.map((intUsed, index)=>(
+                                            <Badge key={index + intUsed} className='text-white text-xs'>{intUsed}</Badge>
+                                        ))}
+                                        </div>
+                                        <div className="mt-2">
+
+                                            <Label className='font-semibold'>Remarks</Label>
+                                            <p>{getInterventionRemakrs(student?.quarterlyGrades, quarter, "Music")}</p>
+                                        </div>
+                                    </TooltipContent>
+                                </Tooltip>
+                                </TooltipProvider> 
+                            ) : getQuarterlyGradeScore(student?.quarterlyGrades, quarter, "Music")}
                             </h1>
                             <h1 className='text-xs text-center w-[20%] border-collapse border border-black'>
-                                {getQuarterlyGradeScore(student?.quarterlyGrades, quarter, "Arts")}
+                            {student.quarterlyGrades.length >= 1 ? student.quarterlyGrades[0].interventionGrade ? (
+                                <TooltipProvider>
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                    <h1 className='text-red-500'>{student.quarterlyGrades[0].subComponent === "Arts" && student.quarterlyGrades[0].interventionGrade}</h1>
+                                    </TooltipTrigger>
+                                    <TooltipContent className='max-w-2xl bg-white p-5 space-y-2 shadow-md'>
+                                        <Label className='font-semibold'>Intervention Method(s)</Label>
+                                        <div className="flex items-center justify-center flex-wrap gap-2">
+                                        {student.quarterlyGrades[0].interventionUsed?.map((intUsed, index)=>(
+                                            <Badge key={index + intUsed} className='text-white text-xs'>{intUsed}</Badge>
+                                        ))}
+                                        </div>
+                                        <div className="mt-2">
+
+                                            <Label className='font-semibold'>Remarks</Label>
+                                            <p>{student.quarterlyGrades[0].interventionRemarks}</p>
+                                        </div>
+                                    </TooltipContent>
+                                </Tooltip>
+                                </TooltipProvider>
+                            ) : (getQuarterlyGradeScore(student?.quarterlyGrades, quarter, "Arts")?? 0) :getQuarterlyGradeScore(student?.quarterlyGrades, quarter, "Arts")}
                             </h1>
                             <h1 className='text-xs text-center w-[20%] border-collapse border border-black'>
-                                {getQuarterlyGradeScore(student?.quarterlyGrades, quarter, "Physical Education")}
+                            {student.quarterlyGrades.length >= 1 ? student.quarterlyGrades[0].interventionGrade ? (
+                                <TooltipProvider>
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                    <h1 className='text-red-500'>{student.quarterlyGrades[0].subComponent === "Physical Education" && student.quarterlyGrades[0].interventionGrade}</h1>
+                                    </TooltipTrigger>
+                                    <TooltipContent className='max-w-2xl bg-white p-5 space-y-2 shadow-md'>
+                                        <Label className='font-semibold'>Intervention Method(s)</Label>
+                                        <div className="flex items-center justify-center flex-wrap gap-2">
+                                        {student.quarterlyGrades[0].interventionUsed?.map((intUsed, index)=>(
+                                            <Badge key={index + intUsed} className='text-white text-xs'>{intUsed}</Badge>
+                                        ))}
+                                        </div>
+                                        <div className="mt-2">
+
+                                            <Label className='font-semibold'>Remarks</Label>
+                                            <p>{student.quarterlyGrades[0].interventionRemarks}</p>
+                                        </div>
+                                    </TooltipContent>
+                                </Tooltip>
+                                </TooltipProvider>
+                            ) : (getQuarterlyGradeScore(student?.quarterlyGrades, quarter, "Physical Education")?? 0) :getQuarterlyGradeScore(student?.quarterlyGrades, quarter, "Physical Education")}
+                              
                             </h1>
                             <h1 className='text-xs text-center w-[20%] border-collapse border border-black'>
-                                {getQuarterlyGradeScore(student?.quarterlyGrades, quarter, "Health")}
+                            {student.quarterlyGrades.length >= 1 ? student.quarterlyGrades[0].interventionGrade ? (
+                                <TooltipProvider>
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                    <h1 className='text-red-500'>{student.quarterlyGrades[0].subComponent === "Health" && student.quarterlyGrades[0].interventionGrade}</h1>
+                                    </TooltipTrigger>
+                                    <TooltipContent className='max-w-2xl bg-white p-5 space-y-2 shadow-md'>
+                                        <Label className='font-semibold'>Intervention Method(s)</Label>
+                                        <div className="flex items-center justify-center flex-wrap gap-2">
+                                        {student.quarterlyGrades[0].interventionUsed?.map((intUsed, index)=>(
+                                            <Badge key={index + intUsed} className='text-white text-xs'>{intUsed}</Badge>
+                                        ))}
+                                        </div>
+                                        <div className="mt-2">
+
+                                            <Label className='font-semibold'>Remarks</Label>
+                                            <p>{student.quarterlyGrades[0].interventionRemarks}</p>
+                                        </div>
+                                    </TooltipContent>
+                                </Tooltip>
+                                </TooltipProvider>
+                            ) : (getQuarterlyGradeScore(student?.quarterlyGrades, quarter, "Health")?? 0) :getQuarterlyGradeScore(student?.quarterlyGrades, quarter, "Health")}
+                              
                             </h1>
                             <h1 className='text-xs text-center w-[20%] border-collapse border border-black'>
                             { getAverageForJrh(
-                                getQuarterlyGradeScore(student?.quarterlyGrades, quarter, "Music"),
-                                getQuarterlyGradeScore(student?.quarterlyGrades, quarter, "Arts"),
-                                getQuarterlyGradeScore(student?.quarterlyGrades, quarter, "Physical Education"),
-                                getQuarterlyGradeScore(student?.quarterlyGrades, quarter, "Health")
+                                getQuarterlyGradeScore(student?.quarterlyGrades, quarter, "Music")?? 0,
+                                getQuarterlyGradeScore(student?.quarterlyGrades, quarter, "Arts")?? 0,
+                                getQuarterlyGradeScore(student?.quarterlyGrades, quarter, "Physical Education")?? 0,
+                                getQuarterlyGradeScore(student?.quarterlyGrades, quarter, "Health")?? 0
                             )}
                             </h1>
                             </div>
                         </div>
                     </div>
-                ))}
+                )})}
 
             </div>
         </div>

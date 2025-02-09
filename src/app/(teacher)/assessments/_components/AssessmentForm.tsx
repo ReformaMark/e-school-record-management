@@ -282,7 +282,7 @@ export const AssessmentForm = ({
                                                                 <SelectValue placeholder="Select a Subject " />
                                                             </SelectTrigger>
                                                             <SelectContent>
-                                                            {["Music"," Arts", "Physical Education", "Health"].map((s)=>(
+                                                            {["Music","Arts", "Physical Education", "Health"].map((s)=>(
                                                                 <SelectItem key={s} value={s} >{s}</SelectItem>
                                                             ))}
                                                             </SelectContent>

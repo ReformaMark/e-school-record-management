@@ -39,6 +39,8 @@ function NeedsImprovement({
         const removeNull = filteredGrades.filter(g => g !== null)
         return removeNull;
       };
+
+      const semester = cls.semester
       
       const firstQuarterIntervention = getUniqueQuarterlyGrades("1st", studentNeedsIntervention ?? []);
       const secondQuarterIntervention = getUniqueQuarterlyGrades("2nd", studentNeedsIntervention ?? []);
@@ -47,11 +49,25 @@ function NeedsImprovement({
   return (
     <div>
         <Tabs defaultValue='1st' className='w-full'>
-            <TabsList  className='space-x-3'>
-                <TabsTrigger value='1st'  className='font-medium text-xs md:text-md shadow-md border-b-2 data-[state=active]:border-b-primary data-[state=active]:text-primary' >1st</TabsTrigger>
-                <TabsTrigger value='2nd' className='font-medium text-xs md:text-md shadow-md border-b-2 data-[state=active]:border-b-primary data-[state=active]:text-primary' >2nd</TabsTrigger>
+            <TabsList  className='space-x-3 bg-transparent'>
+            {semester ? semester === "1st" ? (
+                <>
+                  <TabsTrigger value='1st'  className='font-medium text-xs md:text-md shadow-md border-b-2 data-[state=active]:border-b-primary data-[state=active]:text-primary' >1st</TabsTrigger>
+                  <TabsTrigger value='2nd' className='font-medium text-xs md:text-md shadow-md border-b-2 data-[state=active]:border-b-primary data-[state=active]:text-primary' >2nd</TabsTrigger>  
+                </>
+            ): (
+                <>
                 <TabsTrigger value='3rd' className='font-medium text-xs md:text-md shadow-md border-b-2 data-[state=active]:border-b-primary data-[state=active]:text-primary' >3rd</TabsTrigger>
                 <TabsTrigger value='4th' className='font-medium text-xs md:text-md shadow-md border-b-2 data-[state=active]:border-b-primary data-[state=active]:text-primary' >4th</TabsTrigger>
+                </>
+            ): (
+                <>
+                    <TabsTrigger value='1st'  className='font-medium text-xs md:text-md shadow-md border-b-2 data-[state=active]:border-b-primary data-[state=active]:text-primary' >1st</TabsTrigger>
+                    <TabsTrigger value='2nd' className='font-medium text-xs md:text-md shadow-md border-b-2 data-[state=active]:border-b-primary data-[state=active]:text-primary' >2nd</TabsTrigger>
+                    <TabsTrigger value='3rd' className='font-medium text-xs md:text-md shadow-md border-b-2 data-[state=active]:border-b-primary data-[state=active]:text-primary' >3rd</TabsTrigger>
+                    <TabsTrigger value='4th' className='font-medium text-xs md:text-md shadow-md border-b-2 data-[state=active]:border-b-primary data-[state=active]:text-primary' >4th</TabsTrigger>
+                </>
+            )}
             </TabsList>
             <TabsContent value="1st">
                 <DataTable

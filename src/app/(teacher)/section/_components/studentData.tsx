@@ -786,7 +786,17 @@ export const studentMasterList: ColumnDef<StudentsWithEnrollMentTypes>[] = [
   {  
     id: "lastName",
     header: "Last Name",
-    accessorKey: "lastName",
+    accessorFn: (row) => {
+      const { lastName, firstName, middleName, extensionName } = row;
+    
+      // Construct the full name including optional middle and extension names
+      return [
+        firstName, 
+        middleName, 
+        lastName, 
+        extensionName
+      ].filter(Boolean).join(" ");
+    },
     cell: ({ row }) => {
       const lastName = row.original.lastName
 
@@ -800,10 +810,10 @@ export const studentMasterList: ColumnDef<StudentsWithEnrollMentTypes>[] = [
     header: "First Name",
     accessorKey: "firstName",
     cell: ({ row }) => {
-      const middleName = row.original.middleName
+      const firstName = row.original.firstName
 
       return (
-        <h1 className="capitalize">{middleName ? middleName : '-'}</h1>
+        <h1 className="capitalize">{firstName ? firstName : '-'}</h1>
       )
     },
   },
@@ -850,6 +860,17 @@ export const InputGradesCol: ColumnDef<StudentsWithClassRecord>[] = [
   },
   {
     id: "fullName",
+    accessorFn: (row) => {
+      const { lastName, firstName, middleName, extensionName } = row;
+    
+      // Construct the full name including optional middle and extension names
+      return [
+        firstName, 
+        middleName, 
+        lastName, 
+        extensionName
+      ].filter(Boolean).join(" ");
+    },
     header: "Name",
     cell: ({ row }) => {
       const student = row.original
@@ -1166,8 +1187,15 @@ export const forImprovements = [
 export const forImprovementsColumns: ColumnDef<StudentsWithQuarterlyGrade>[] = [
   { id: "fullName",
     accessorFn: (row) => {
-      const { firstName, middleName, lastName } = row;
-      return `${firstName} ${middleName ? middleName + ' ' : ''}${lastName}`;
+      const { lastName, firstName, middleName, extensionName } = row;
+    
+      // Construct the full name including optional middle and extension names
+      return [
+        firstName, 
+        middleName, 
+        lastName, 
+        extensionName
+      ].filter(Boolean).join(" ");
     },
     header: "Full Name",
     cell: ({ row }) => {
@@ -1215,9 +1243,9 @@ export const forImprovementsColumns: ColumnDef<StudentsWithQuarterlyGrade>[] = [
             
           </div>
         
-          <h1 className="font-semibold">Modified Grade : <span className="font-normal">{modGrade} {modifiedGrade && modifiedGrade <= 74 ? (<span className="text-red-500 ml-2">Failed</span>) : ( <span className="ml-2 text-green-500">Passed</span>)}</span> </h1>
+          <h1 className="font-semibold">Modified Grade : <span className="font-normal">{modGrade} {modifiedGrade ? modifiedGrade <= 74 ? (<span className="text-red-500 ml-2">Failed</span>) : ( <span className="ml-2 text-green-500">Passed</span>) : ""}</span> </h1>
           <div className="">
-          <p className="w-3/4">
+          <p className="">
             <span className="font-semibold">{interventionUsed ? interventionUsed.length > 1 ? "General Remarks -" : interventionUsed && interventionUsed.length === 1 && `${interventionUsed[0]} - ` : ""}</span>
             <span className="">{remarksValue} </span>
           </p>

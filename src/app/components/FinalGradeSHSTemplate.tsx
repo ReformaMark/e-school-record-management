@@ -98,7 +98,7 @@ function FinalGradeSHSTemplate({
         { males && males.map((student, index)=>(
              <div key={student?._id} className='flex text-sm font-semibold max-w-full'>
              <div className='w-[25%] flex items-center'>
-                <h1 className='w-[10%] flex justify-center items-center border border-collapse border-black'>{index + 1}</h1>
+                <h1 className='w-[10%] flex justify-center items-center border border-collapse h-full border-black'>{index + 1}</h1>
                  <h1 className='uppercase w-full h-full text-xs  flex justify-start items-center border border-collapse border-black'>{student?.lastName}, {student?.firstName} {student?.middleName}</h1>
              </div>
  
@@ -136,16 +136,16 @@ function FinalGradeSHSTemplate({
                                   <h1 className='text-red-500'>{student.quarterlyGrades[1].interventionGrade}</h1>
                                 </TooltipTrigger>
                                 <TooltipContent className='max-w-2xl bg-white p-5 space-y-2 shadow-md'>
-                                    <Label className='font-semibold'>Used intervention(s)</Label>
+                                    <Label className='font-semibold'>Intervention Method(s)</Label>
                                     <div className="flex items-center justify-center flex-wrap gap-2">
-                                    {student.quarterlyGrades[0].interventionUsed?.map((intUsed, index)=>(
+                                    {student.quarterlyGrades[1].interventionUsed?.map((intUsed, index)=>(
                                         <Badge key={index + intUsed} className='text-white text-xs'>{intUsed}</Badge>
                                     ))}
                                     </div>
                                     <div className="mt-2">
 
                                         <Label className='font-semibold'>Remarks</Label>
-                                        <p>{student.quarterlyGrades[0].interventionRemarks}</p>
+                                        <p>{student.quarterlyGrades[1].interventionRemarks}</p>
                                     </div>
                                 </TooltipContent>
                               </Tooltip>
@@ -197,8 +197,8 @@ function FinalGradeSHSTemplate({
         { females && females.map((student, index)=>(
              <div key={student?._id} className='flex text-sm font-semibold max-w-full'>
              <div className='w-[25%] flex items-center'>
-                <h1 className='w-[10%] flex justify-center items-center border border-collapse border-black'>{index + 1}</h1>
-                 <h1 className='uppercase w-full h-full text-xs  flex justify-start items-center border border-collapse border-black'>{student?.lastName}, {student?.firstName} {student?.middleName}</h1>
+                <h1 className='w-[10%] flex justify-center items-center border border-collapse h-full border-black'>{index + 1}</h1>
+                 <h1 className='uppercase w-full h-full text-xs  flex justify-start items-center border border-collapse px-2 border-black'>{student?.lastName}, {student?.firstName} {student?.middleName}</h1>
              </div>
  
              <div className='w-[75%] '>
@@ -211,7 +211,7 @@ function FinalGradeSHSTemplate({
                                   <h1 className='text-red-500'>{student.quarterlyGrades[0].interventionGrade}</h1>
                                 </TooltipTrigger>
                                 <TooltipContent className='max-w-2xl bg-white p-5 space-y-2 shadow-md'>
-                                    <Label className='font-semibold'>Used intervention(s)</Label>
+                                    <Label className='font-semibold'>Intervention Method(s)</Label>
                                     <div className="flex items-center justify-center flex-wrap gap-2">
                                     {student.quarterlyGrades[0].interventionUsed?.map((intUsed, index)=>(
                                         <Badge key={index + intUsed} className='text-white text-xs'>{intUsed}</Badge>
@@ -237,7 +237,7 @@ function FinalGradeSHSTemplate({
                                 <TooltipContent className='max-w-2xl bg-white p-5 space-y-2 shadow-md'>
                                     <Label className='font-semibold'>Used intervention(s)</Label>
                                     <div className="flex items-center justify-center flex-wrap gap-2">
-                                    {student.quarterlyGrades[0].interventionUsed?.map((intUsed, index)=>(
+                                    {student.quarterlyGrades[1].interventionUsed?.map((intUsed, index)=>(
                                         <Badge key={index + intUsed} className='text-white text-xs'>{intUsed}</Badge>
                                     ))}
                                     </div>

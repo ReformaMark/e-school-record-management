@@ -154,7 +154,7 @@ export default defineSchema({
     subjectId: v.id('subjects'),
     teacherId: v.id('users'), // references teacher in users table
     sectionId: v.id('sections'),
-    scheduleId: v.id('schedules'),
+    scheduleId: v.id('schedules'), 
     schoolYearId: v.id('schoolYears'),
     semester: v.optional(v.string()), // 1st or 2nd
     track: v.optional(v.string()), // STEM, ABM, HUMSS etc. for senior high
@@ -162,7 +162,7 @@ export default defineSchema({
 
   subjects: defineTable({
     name: v.string(),
-    gradeLevelId: v.id("gradeLevels"),
+    gradeLevelId:v.id("gradeLevels"),
     subjectCode: v.string(),
     subjectCategory: v.optional(v.string()), // core, applied and, specialized
 

@@ -151,7 +151,7 @@ export const getAverageForJrh = (
   if (typeof num1 === "undefined" || typeof num2 === "undefined" || typeof num3 === "undefined" || typeof num4 === "undefined") {
     return ""; // Return an empty string if either input is a string
   }
-  return Math.round((num1 + num2 + num3 + num4) / 2);
+  return Math.round((num1 + num2 + num3 + num4) / 4);
 };
 
 export const remarks = (average: number | string) =>{
@@ -180,6 +180,28 @@ export const getQuarterlyGradeScore = (
     (qg) => qg.quarter === quarter && qg.subComponent === subComponent
   );
 
-  return grade ? grade.quarterlyGrade : ""; // Return score if found, otherwise null
+  return grade ? grade.interventionGrade ? grade.interventionGrade: grade.quarterlyGrade : ""; // Return score if found, otherwise null
+};
+export const getInterventionRemakrs = (
+  quarterlyGrades: QuarterlyGrades[],
+  quarter: string,
+  subComponent: string
+): number | string => {
+  const grade = quarterlyGrades.find(
+    (qg) => qg.quarter === quarter && qg.subComponent === subComponent
+  );
+
+  return grade ? grade.interventionRemarks ? grade.interventionRemarks : "" : ""; // Return score if found, otherwise null
+};
+export const getQuarterlyGrade = (
+  quarterlyGrades: QuarterlyGrades[],
+  quarter: string,
+  subComponent: string
+) => {
+  const grade = quarterlyGrades.find(
+    (qg) => qg.quarter === quarter && qg.subComponent === subComponent
+  );
+
+  return grade?.interventionGrade; // Return score if found, otherwise null
 };
 

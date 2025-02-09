@@ -92,25 +92,69 @@ export const addWrittenWorks = mutation({
             .filter(q => q.eq(q.field('gradeLevel'), args.gradeLevel))
             .filter(q => q.eq(q.field('subjectId'), args.subjectId))
             .collect()
-            if(quarterLyAssemessments.length > 0){
-                throw new ConvexError('Quarterly Assessment already exists.')
+            if(args.subComponent){
+                const hasQA = await ctx.db.query('assessments')
+                .filter(q => q.eq(q.field('type'), args.type))
+                .filter(q => q.eq(q.field('quarter'), args.quarter))
+                .filter(q => q.eq(q.field('gradeLevel'), args.gradeLevel))
+                .filter(q => q.eq(q.field('subjectId'), args.subjectId))
+                .filter(q => q.eq(q.field('subComponent'), args.subComponent))
+                .unique()
+
+                if(hasQA) {
+                    throw new ConvexError('Quarterly Assessment already exists.')
+                } else {
+                    const assessment = await ctx.db.insert('assessments', {
+                        type: args.type,
+                        teacherId: teacherId,
+                        gradeLevel: args.gradeLevel,
+                        semester: args.semester,
+                        assessmentNo: args.assessmentNo,
+                        highestScore: args.highestScore,
+                        classId: args.classId,
+                        quarter: args.quarter,
+                        schoolYear: args.schoolYear,
+                        subjectId: args.subjectId,
+                        subComponent: args.subComponent
+                    })
+                    return assessment
+                }
+            } else {
+                if(quarterLyAssemessments.length > 0){
+                    throw new ConvexError('Quarterly Assessment already exists.')
+                } else {
+                    const assessment = await ctx.db.insert('assessments', {
+                        type: args.type,
+                        teacherId: teacherId,
+                        gradeLevel: args.gradeLevel,
+                        semester: args.semester,
+                        assessmentNo: args.assessmentNo,
+                        highestScore: args.highestScore,
+                        classId: args.classId,
+                        quarter: args.quarter,
+                        schoolYear: args.schoolYear,
+                        subjectId: args.subjectId,
+                        subComponent: args.subComponent
+                    })
+                    return assessment
+                }
             }
+        } else {
+            const assessment = await ctx.db.insert('assessments', {
+                type: args.type,
+                teacherId: teacherId,
+                gradeLevel: args.gradeLevel,
+                semester: args.semester,
+                assessmentNo: args.assessmentNo,
+                highestScore: args.highestScore,
+                classId: args.classId,
+                quarter: args.quarter,
+                schoolYear: args.schoolYear,
+                subjectId: args.subjectId,
+                subComponent: args.subComponent
+            })
+            return assessment
         }
-       
-        const assessment = await ctx.db.insert('assessments', {
-            type: args.type,
-            teacherId: teacherId,
-            gradeLevel: args.gradeLevel,
-            semester: args.semester,
-            assessmentNo: args.assessmentNo,
-            highestScore: args.highestScore,
-            classId: args.classId,
-            quarter: args.quarter,
-            schoolYear: args.schoolYear,
-            subjectId: args.subjectId,
-            subComponent: args.subComponent
-        })
-        return assessment
     }
 })
 

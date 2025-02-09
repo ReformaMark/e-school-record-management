@@ -27,7 +27,7 @@ function MapehQuarterlyGradesTab({
         const gradeAndSection = `${section?.gradeLevel?.level} - ${section?.name}`
     
   return (
-         <Tabs defaultValue="1st" className="w-full">
+         <Tabs defaultValue="1st" className="w-full shadow-none border-none">
             <TabsList className='flex flex-row justify-start w-fit'>
                 <TabsTrigger value="1st">1st</TabsTrigger>
                 <TabsTrigger value="2nd">2nd</TabsTrigger>

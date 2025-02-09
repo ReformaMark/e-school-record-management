@@ -80,7 +80,7 @@ function Section({params}:{params: {class: string}}) {
 
         </div>
        
-        <Tabs defaultValue={"students"} className="w-full relative  space-y-5 mt-5 shadow-md ">
+        <Tabs defaultValue={"students"} className="w-full relative  space-y-5 mt-5  shadow-none">
           {/* <h1 className='text-xs text-foreground font-semibold'>Select tab to show: </h1> */}
           <TabsList className='w-fit grid grid-cols-3 md:block'> 
             <TabsTrigger value="students" className='font-medium text-xs md:text-md shadow-md border-b-2 data-[state=active]:border-b-primary data-[state=active]:text-primary' ><span className=''>Master List</span> </TabsTrigger>
@@ -99,17 +99,17 @@ function Section({params}:{params: {class: string}}) {
             columns={studentMasterList}
             data={studentInMasterlist as StudentsWithEnrollMentTypes[]}
             filter='lastName'
-            placeholder="students by LRN"
+            placeholder="students by name"
            />
           </TabsContent>
 
           {/* Class Record*/}
-          <TabsContent value="class-record" className=''>
+          <TabsContent value="class-record" className='border-2 p-5'>
               <InputGrades clss={cls as ClassesWithDetails}/>
           </TabsContent>
 
           {/* Grade summary */}
-          <TabsContent value="grades-summary" className='min-h-screen max-w-full overflow-y-auto border-2 border-gray-300'>
+          <TabsContent value="grades-summary" className='min-h-screen border-2 p-5 '>
             {cls && Number(cls.section?.gradeLevel?.level) === 11 || Number(cls?.section?.gradeLevel?.level) === 12 ? (
               <FinalGradeSHSTemplate cls={cls as ClassesWithDetails} section={cls?.section as SectionWithGradeLevel} subject={cls?.subject as Doc<'subjects'>}/>
             ) : cls && cls.section !== null && cls.subject?.name?.toUpperCase() !== "MAPEH" ? (
@@ -120,7 +120,7 @@ function Section({params}:{params: {class: string}}) {
             )}
           </TabsContent>
 
-          <TabsContent value="intervention" className="">
+          <TabsContent value="intervention" className="min-h-screen border-2 p-5">
             {cls && cls.section !== null && (
               <NeedsImprovement  cls={cls as ClassesWithDetails} section={cls?.section}/>
 

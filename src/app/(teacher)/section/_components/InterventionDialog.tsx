@@ -12,6 +12,11 @@ import { toast } from 'sonner'
 import { api } from '../../../../../convex/_generated/api'
 import { Button } from '@/components/ui/button'
 import { Id } from '../../../../../convex/_generated/dataModel'
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import { z } from 'zod'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { InterventionFormSchema } from '@/lib/validation/intervention-form'
 interface InterventionDialogProp {
     open: boolean,
     setOpen: (value: boolean) => void,
@@ -29,75 +34,121 @@ function InterventionDialog({quarterlyGrade, open, setOpen, usedIntervention}: I
         
       }
     }) : []
-    const [selectedInterventions, setSelectedInterventions] = useState<string[]>(usedIntervention);
     const remarksValue = quarterlyGrade?.interventionRemarks ?? ""
-    const [inputRemarks, setInputRemarks] = useState<string>(remarksValue);
-    const modifiedG = quarterlyGrade?.interventionGrade?.toString() ?? ""
-    const [modifiedGrade, setModifiedGrade] = useState<string>(modifiedG);
-    const handleSaveRemarks = () =>{
-        toast.promise(saveInterventionStats({
-          id: quarterlyGrade?._id,
-          remarks: inputRemarks,
-          interventionUsed: selectedInterventions as Id<'interventions'>[],
-          interventionGrade: Number(modifiedGrade)
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const modifiedG = quarterlyGrade?.interventionGrade
+  
 
-        }),{
+     const form = useForm<z.infer<typeof InterventionFormSchema>>({
+            resolver: zodResolver(InterventionFormSchema),
+            defaultValues:{
+              remarks: remarksValue,
+              interventionUsed: usedIntervention,
+              interventionGrade: modifiedG,
+            }
+        })
+
+      function onSubmit(data: z.infer<typeof InterventionFormSchema>) {
+        setIsLoading(true);
+        toast.promise(
+          saveInterventionStats({
+          id: quarterlyGrade?._id,
+          remarks: data.remarks,
+          interventionUsed: data.interventionUsed,
+          interventionGrade: data.interventionGrade
+          }),{
             loading: "Saving Interventions details",
             success: "Interventions details save successfully. :)",
             error: "Failed to save Interventions details. :(",
-        })
+        });
 
+        setIsLoading(false)
         setOpen(false)
-    }
+
+      }
   return (
     <Dialog open={open}>
     <DialogTrigger onClick={() =>setOpen(true)}>
       <Pencil/>
     </DialogTrigger>
-    <DialogContent className=' max-h-screen max-w-4xl overflow-auto text-primary'>
+    <DialogContent className=' max-h-screen max-w-4xl overflow-auto text-primary space-y-2 gap-y-2'>
+    <Form {...form}> 
+    <form onSubmit={form.handleSubmit(onSubmit)}>
     <DialogHeader>
         <DialogTitle>
           Student Intervention Information
         </DialogTitle>
     </DialogHeader>
-       <div className="">
-        <Label className={"font-semibold"}>Intervention Used</Label>
-          <MultiSelect
-            options={interventionNames}
-            onValueChange={setSelectedInterventions}
-            defaultValue={selectedInterventions}
-            placeholder="Select Interventions"
-            variant="default"
-            className='bg-white'
-          />
-       </div>
-       <div className="">
-            <Label className={"font-semibold"} htmlFor="remarks">Remarks</Label>
-            <Textarea 
+    <div className="my-5">
+      <FormField
+        name="interventionUsed"
+        control={form.control}
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Intervention Methods<span className='text-red-700'>*</span></FormLabel>
+            <FormControl>
+              <MultiSelect
+                options={interventionNames}
+                onValueChange={field.onChange}
+                defaultValue={usedIntervention}
+                placeholder="Select Intervention Methods"
+                variant="default"
+                className='bg-white'
+              />
+            </FormControl>
+            <FormMessage/>
+        </FormItem>
+      )}/>
+    </div>
+    <div className="mb-5">
+      <FormField
+        name="remarks"
+        control={form.control}
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Remarks<span className='text-red-700'>*</span></FormLabel>
+            <FormControl>
+              <Textarea 
                 id="remarks"
                 placeholder="Type your remarks here." 
-                value={inputRemarks} 
-                onChange={(e) => setInputRemarks(e.target.value)} 
+                value={field.value} 
+                onChange={field.onChange} 
                 required
                 className='bg-white h-36'
-            />
-        </div>
-         <div className="">
-            <Label className={"font-semibold"} htmlFor="modifiedGrade">Modified Grade</Label>
+              />
+            </FormControl>
+            <FormMessage/>
+        </FormItem>
+      )}/>
+    </div>
+    <div className="mb-5">
+      <FormField
+        name="interventionGrade"
+        control={form.control}
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Modified Grade<span className='text-red-700'>*</span></FormLabel>
+            <FormControl>
             <Input 
-                type='number'
-                id="modifiedGrade"
-                onChange={(e)=>{setModifiedGrade(e.target.value)}}
-                min={quarterlyGrade?.quarterlyGrade}
-                value={modifiedGrade}
-                required
-                className='bg-white '
+              type='number'
+              id="modifiedGrade"
+              onChange={field.onChange}
+              min={quarterlyGrade?.quarterlyGrade}
+              value={field.value}
+              required
+              className='bg-white '
             />
-        </div>
+            </FormControl>
+            <FormMessage/>
+        </FormItem>
+      )}/>
+    </div>
     <DialogFooter>
-        <Button onClick={()=> setOpen(false)} variant={'outline'} className='text-primary'>Cancel</Button>
-        <Button onClick={handleSaveRemarks} className='text-white w-32'>Save</Button>
+        <Button onClick={()=> setOpen(false)} type='button' variant={'outline'} className='text-primary'>Cancel</Button>
+        <Button type='submit' className='text-white w-32'>Save</Button>
     </DialogFooter>
+    </form>
+    </Form>
     </DialogContent>
   
   </Dialog>
