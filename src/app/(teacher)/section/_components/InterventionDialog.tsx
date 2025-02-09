@@ -1,7 +1,6 @@
 'use client'
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { MultiSelect } from '@/components/ui/multi-select'
 import { Textarea } from '@/components/ui/textarea'
 import { QuarterlyGrades } from '@/lib/types'
@@ -11,7 +10,6 @@ import React, { useState } from 'react'
 import { toast } from 'sonner'
 import { api } from '../../../../../convex/_generated/api'
 import { Button } from '@/components/ui/button'
-import { Id } from '../../../../../convex/_generated/dataModel'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
@@ -145,7 +143,7 @@ function InterventionDialog({quarterlyGrade, open, setOpen, usedIntervention}: I
     </div>
     <DialogFooter>
         <Button onClick={()=> setOpen(false)} type='button' variant={'outline'} className='text-primary'>Cancel</Button>
-        <Button type='submit' className='text-white w-32'>Save</Button>
+        <Button type='submit' disabled={isLoading} className='text-white w-32'>Save</Button>
     </DialogFooter>
     </form>
     </Form>
