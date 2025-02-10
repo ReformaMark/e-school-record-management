@@ -105,8 +105,6 @@ export const SectionForm = ({ isEditing = false, section }: SectionFormProps) =>
         { label: "Arts and Design Track", value: "arts" }
     ];
 
-    const formValues = watch()
-
     useEffect(() => {
         if (isEditing && section) {
 

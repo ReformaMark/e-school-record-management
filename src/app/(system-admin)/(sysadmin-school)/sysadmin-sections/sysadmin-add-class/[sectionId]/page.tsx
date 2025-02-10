@@ -4,15 +4,15 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useQuery } from "convex/react";
-import { useParams, useSearchParams, useRouter } from "next/navigation";
-import { useState } from "react";
-import { toast } from "sonner";
-import { api } from "../../../../../../../convex/_generated/api";
 import { useConvexMutation } from "@convex-dev/react-query";
 import { useMutation } from "@tanstack/react-query";
-import { Id } from "../../../../../../../convex/_generated/dataModel";
+import { useQuery } from "convex/react";
+import { useParams, useRouter } from "next/navigation";
+import { useState } from "react";
 import { BiLeftArrow } from "react-icons/bi";
+import { toast } from "sonner";
+import { api } from "../../../../../../../convex/_generated/api";
+import { Id } from "../../../../../../../convex/_generated/dataModel";
 
 const AddClassToSectionPage = () => {
     const params = useParams();

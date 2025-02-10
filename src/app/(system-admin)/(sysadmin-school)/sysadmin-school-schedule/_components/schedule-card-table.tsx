@@ -22,13 +22,13 @@ import {
 
 export const ScheduleCardTable = () => {
     const [selectedDay, setSelectedDay] = useState<string>("all");
-    const schedules = useQuery(api.schedules.get);
+    const schedules = useQuery(api.schedules.get) as { day: string }[] | undefined;
 
     const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
     // Update the filtering logic
     const filteredSchedules = selectedDay !== "all"
-        ? schedules?.filter(schedule => schedule.day === selectedDay)
+        ? schedules?.filter((schedule: { day: string }) => schedule.day === selectedDay)
         : schedules;
 
     return (
@@ -62,6 +62,7 @@ export const ScheduleCardTable = () => {
             <CardContent>
                 <DataTable
                     columns={ScheduleColumns}
+                    // @ts-expect-error slight type issue
                     data={filteredSchedules ?? []}
                     filter="teacher"
                     placeholder="Filter by teacher..."

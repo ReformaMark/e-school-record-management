@@ -20,11 +20,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { DataTable } from "@/components/data-table";
+import { useQuery } from "convex/react";
 import { File, ListFilterIcon } from "lucide-react";
 import Link from "next/link";
-import { teacherColumns, teachersData } from "../../../../data/teachers-data";
-import { useQuery } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
+import { teacherColumns } from "../../../../data/teachers-data";
 
 // Column definitions for the DataTable
 
