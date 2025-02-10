@@ -14,8 +14,6 @@ import { sectionColumns } from "../../data/section-data";
 export const SchoolSectionCardTable = () => {
     const sections = useQuery(api.sections.getSections)
 
-    console.log(sections)
-
     return (
         <Card>
             <CardHeader>

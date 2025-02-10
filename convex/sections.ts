@@ -161,3 +161,42 @@ export const getSections = query({
         }));
     }
 });
+
+export const addClassToSection = mutation({
+    args: {
+        sectionId: v.id("sections"),
+        subjectId: v.id("subjects"),
+        teacherId: v.id("users"),
+        semester: v.optional(v.string()),
+        track: v.optional(v.string()),
+    },
+    handler: async (ctx, args) => {
+        const section = await ctx.db.get(args.sectionId)
+        if (!section || !section.isActive) {
+            throw new ConvexError("Invalid or inactive section")
+        }
+
+        const teacher = await ctx.db.get(args.teacherId);
+        if (!teacher || teacher.role !== "teacher") {
+            throw new ConvexError("Invalid teacher selected");
+        }
+
+        const gradeLevel = await ctx.db.get(section.gradeLevelId);
+        const isSHS = gradeLevel?.level.includes("11") || gradeLevel?.level.includes("12");
+
+        if (isSHS && (!args.semester || !args.track)) {
+            throw new ConvexError("Semester and Track are required for Senior High School");
+        }
+
+        const classId = await ctx.db.insert("classes", {
+            subjectId: args.subjectId,
+            teacherId: args.teacherId,
+            sectionId: args.sectionId,
+            schoolYearId: section.schoolYearId,
+            semester: isSHS ? args.semester : undefined,
+            track: isSHS ? args.track : undefined
+        });
+
+        return classId;
+    }
+})

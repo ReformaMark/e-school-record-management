@@ -304,7 +304,7 @@ export const sectionColumns: ColumnDef<SectionWithDetails>[] = [
             return (
                 <div className="">
                     <Link
-                        href={`/sysadmin-sections/sysadmin-add-class?sectionId=${row.original._id}`}
+                        href={`/sysadmin-sections/sysadmin-add-class/${row.original._id}`}
                         className="flex flex-row gap-1 items-center"
                     >
                         <PlusCircle className="w-4 h-4" /> Add Class

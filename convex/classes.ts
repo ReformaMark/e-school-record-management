@@ -1,6 +1,6 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { query } from "./_generated/server";
-import { ConvexError } from "convex/values";
+import { ConvexError, v } from "convex/values";
 import { asyncMap } from "convex-helpers";
 
 
@@ -57,3 +57,13 @@ export const getTeacherClasses = query({
         return classWithDetails
     }
 })
+
+export const getClassesBySection = query({
+    args: { sectionId: v.id("sections") },
+    handler: async (ctx, args) => {
+        return await ctx.db
+            .query("classes")
+            .filter(q => q.eq(q.field("sectionId"), args.sectionId))
+            .collect();
+    }
+});
