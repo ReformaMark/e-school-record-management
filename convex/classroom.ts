@@ -8,7 +8,9 @@ export const create = mutation({
         type: v.string(),
         features: v.optional(v.array(v.string())),
         teacherId: v.id("users"),
-        description: v.optional(v.string())
+        description: v.optional(v.string()),
+        gradeLevel: v.optional(v.string()),
+        track: v.optional(v.string()),
     },
     handler: async (ctx, args) => {
 
@@ -29,7 +31,12 @@ export const create = mutation({
         }
 
         return await ctx.db.insert("rooms", {
-            ...args,
+            capacity: args.capacity,
+            name: args.name,
+            type: args.type,
+            description: args.description,
+            features: args.features,
+            teacherId: args.teacherId,
             isActive: true
         });
     }
@@ -39,6 +46,7 @@ export const get = query({
     handler: async (ctx) => {
         const rooms = await ctx.db
             .query("rooms")
+            .order("desc")
             .collect();
 
         const roomsWithTeachers = await Promise.all(
@@ -76,29 +84,29 @@ export const remove = mutation({
 
 export const update = mutation({
     args: {
-      id: v.id("rooms"),
-      name: v.string(),
-      capacity: v.number(),
-      type: v.string(),
-      features: v.optional(v.array(v.string())),
-      teacherId: v.id("users"),
-      description: v.optional(v.string())
+        id: v.id("rooms"),
+        name: v.string(),
+        capacity: v.number(),
+        type: v.string(),
+        features: v.optional(v.array(v.string())),
+        teacherId: v.id("users"),
+        description: v.optional(v.string())
     },
     handler: async (ctx, args) => {
-      const { id, ...updates } = args;
-      
-      // Validate if room exists
-      const room = await ctx.db.get(id);
-      if (!room) {
-        throw new ConvexError("Room not found");
-      }
-  
-      // Validate if teacher exists
-      const teacher = await ctx.db.get(args.teacherId);
-      if (!teacher) {
-        throw new ConvexError("Teacher not found");
-      }
-  
-      return await ctx.db.patch(id, updates);
+        const { id, ...updates } = args;
+
+        // Validate if room exists
+        const room = await ctx.db.get(id);
+        if (!room) {
+            throw new ConvexError("Room not found");
+        }
+
+        // Validate if teacher exists
+        const teacher = await ctx.db.get(args.teacherId);
+        if (!teacher) {
+            throw new ConvexError("Teacher not found");
+        }
+
+        return await ctx.db.patch(id, updates);
     }
-  });
+});

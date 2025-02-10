@@ -27,6 +27,7 @@ import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { z } from "zod"
 import { api } from "../../../../../../convex/_generated/api"
+import { trackOptions } from "@/lib/constants"
 
 export const roomTypes = ["REGULAR", "LABORATORY", "COMPUTER_LAB"] as const;
 
@@ -36,14 +37,18 @@ export const roomSchema = z.object({
     type: z.enum(["REGULAR", "LABORATORY", "COMPUTER_LAB"]),
     teacherId: z.string().min(1, "Teacher is required"),
     description: z.string().optional(),
-    features: z.array(z.string()).optional()
+    features: z.array(z.string()).optional(),
+    gradeLevel: z.string().min(1, "Grade level is required").optional(),
+    track: z.enum(["core", "academic", "immersion", "tvl", "sports", "arts"]).optional(),
 });
 
 export type RoomFormData = z.infer<typeof roomSchema>;
 
 export const AddClassRoomCard = () => {
     const teachers = useQuery(api.classroom.getTeachers);
-    const { register, handleSubmit, setValue, formState: { errors } } = useForm<RoomFormData>({
+    const gradeLevels = useQuery(api.gradeLevel.get);
+
+    const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm<RoomFormData>({
         resolver: zodResolver(roomSchema)
     });
 
@@ -61,9 +66,28 @@ export const AddClassRoomCard = () => {
         const selectedTeacher = teachers?.find(t => t._id === teacherId);
         if (selectedTeacher) {
             setValue("teacherId", teacherId);
-            setValue("name", `Room ${selectedTeacher.lastName}`);
+            setValue("name", `${selectedTeacher.lastName}'s Room`);
         }
     };
+
+    const handleGradeLevelSelect = (level: string) => {
+        const teacher = teachers?.find(t => t._id === watch("teacherId"));
+        if (teacher) {
+            setValue("gradeLevel", level);
+            setValue("name", `${level}-${teacher.lastName}`);
+        }
+    };
+
+    const handleTrackSelect = (track: "core" | "academic" | "immersion" | "tvl" | "sports" | "arts") => {
+        const teacher = teachers?.find(t => t._id === watch("teacherId"));
+        const gradeLevel = watch("gradeLevel");
+
+        if (teacher && (gradeLevel?.startsWith("Grade 11") || gradeLevel?.startsWith("Grade 12"))) {
+            setValue("name", `${gradeLevel}-${track}-${teacher.lastName}`);
+        }
+    };
+
+    console.log(watch())
 
     return (
         <Card className="flex flex-col h-fit">
@@ -95,6 +119,43 @@ export const AddClassRoomCard = () => {
                             <p className="text-sm text-red-500">{errors.teacherId.message}</p>
                         )}
                     </div>
+
+                    <div className="grid gap-2">
+                        <Label>Grade Level</Label>
+                        <Select onValueChange={handleGradeLevelSelect}>
+                            <SelectTrigger>
+                                <SelectValue placeholder="Select grade level" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {gradeLevels?.map((grade) => (
+                                    <SelectItem key={grade._id} value={grade.level}>
+                                        {grade.level}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                        {errors.gradeLevel && (
+                            <p className="text-sm text-red-500">{errors.gradeLevel.message}</p>
+                        )}
+                    </div>
+
+                    {(watch("gradeLevel")?.startsWith("Grade 11") || watch("gradeLevel")?.startsWith("Grade 12")) && (
+                        <div className="grid gap-2">
+                            <Label>Track</Label>
+                            <Select onValueChange={handleTrackSelect}>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Select track" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {trackOptions.map((track) => (
+                                        <SelectItem key={track.value} value={track.value}>
+                                            {track.label}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    )}
 
                     <div className="grid gap-2">
                         <Label>Room Name</Label>

@@ -69,7 +69,7 @@ export const EditRoomDialog = ({ open, onClose, room }: EditRoomDialogProps) => 
 
     return (
         <Dialog open={open} onOpenChange={onClose}>
-            <DialogContent>
+            <DialogContent className="text-black bg-white">
                 <DialogHeader>
                     <DialogTitle>Edit Room</DialogTitle>
                 </DialogHeader>
