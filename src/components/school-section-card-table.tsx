@@ -7,14 +7,15 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import { sectionColumns, sectionData } from "../../data/section-data";
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
-import { SectionWithDetails } from "@/lib/types";
+import { sectionColumns } from "../../data/section-data";
 
 export const SchoolSectionCardTable = () => {
     const sections = useQuery(api.sections.getSections)
+
     console.log(sections)
+
     return (
         <Card>
             <CardHeader>
@@ -24,11 +25,11 @@ export const SchoolSectionCardTable = () => {
             <CardContent>
                 {sections && (
                     <DataTable
-                    columns={sectionColumns}
-                    data={sections}
-                    filter="sectionName"
-                    placeholder="by section name"
-                /> 
+                        columns={sectionColumns}
+                        data={sections}
+                        filter="name"
+                        placeholder="by section name"
+                    />
                 )}
                 {/* <DataTable
                     columns={sectionColumns}

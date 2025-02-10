@@ -1,8 +1,47 @@
 "use client"
-import { SectionWithDetails } from "@/lib/types"
 import { ColumnDef } from "@tanstack/react-table"
 import { PlusCircle } from "lucide-react"
 import Link from "next/link"
+import { Doc, Id } from "../convex/_generated/dataModel"
+
+interface ClassessWithTeacherSubSched extends Doc<'classes'> {
+    teacher: Doc<'users'> | null,
+    subject: Doc<'subjects'> | null,
+    schedule: {
+        _id: Id<"schedules">,
+        _creationTime: number,
+        day: string[],
+        classId: string,
+        roomId: string,
+        schoolPeriodId: Id<"schoolPeriods">,
+        teacherId: string,
+        period: {
+            _id: Id<"schoolPeriods">,
+            _creationTime: number,
+            period: string,
+            timeRange: string
+        } | null
+    } | null
+}
+
+export interface SectionWithDetails extends Doc<'sections'> {
+    advisor: Doc<'users'> | null,
+    classes: ClassessWithTeacherSubSched[],
+    schoolYear: {
+        _id: Id<"schoolYears">,
+        _creationTime: number,
+        batchName: string,
+        endDate: string,
+        startDate: string,
+        sy?: string
+    } | null,
+    gradeLevel: {
+        _id: Id<"gradeLevels">,
+        _creationTime: number,
+        level: string
+    } | null,
+    students: Id<"students">[]
+}
 
 export const sectionData = [
     {
@@ -195,80 +234,83 @@ export const sectionData = [
 
 export const sectionColumns: ColumnDef<SectionWithDetails>[] = [
     {
-        accessorKey: "sectionName",
+        accessorKey: "name",
         header: "Section Name",
         cell: ({ row }) => {
             const sectionName = row.original.name
-              return (
+            return (
                 <div>
-                 {sectionName}
+                    {sectionName}
                 </div>
-              )
-            }
+            )
+        }
     },
     {
         accessorKey: "gradeLevel",
         header: "Grade Level",
         cell: ({ row }) => {
             const gradeLevel = row.original.gradeLevel?.level
-              return (
+            return (
                 <div>
-                 {gradeLevel}
+                    {gradeLevel}
                 </div>
-              )
-            }
+            )
+        }
+    },
+    {
+        accessorKey: "classes",
+        header: "Classes Count",
+        cell: ({ row }) => {
+            return <div>{row.original.classes.length}</div>;
+        }
     },
     {
         accessorKey: "roomNumber",
         header: "Room No.",
         cell: ({ row }) => {
             const schoolYear = row.original.schoolYear?.sy
-              return (
+            return (
                 <div>
-                 {schoolYear}
+                    {schoolYear}
                 </div>
-              )
-            }
+            )
+        }
     },
     {
         id: "schoolYear",
         accessorKey: "schoolYear",
         header: "School Year",
         cell: ({ row }) => {
-          const schoolYear = row.original.schoolYear?.sy
-            return (
-              <div>
-               {schoolYear}
-              </div>
-            )
-          }
-    },
-    {
-        accessorKey: "adviser",
-        header: "Adviser",
-        // @ts-ignore
-        cell: ({ row }) => {
-         const fullName = `${row.original.advisor?.firstName} ${row.original.advisor?.middleName} ${row.original.advisor?.lastName}`
-        
-            return (
-            <div className="">
-                {fullName}
-            </div>
-            )
+            const schoolYear = row.original.schoolYear?.sy ?? 'Not set';
+            return <div>{schoolYear}</div>;
         }
     },
     {
-        accessorKey: "adviser",
+        accessorKey: "advisor",
         header: "Adviser",
-        // @ts-ignore
         cell: ({ row }) => {
-            
-        
+            const advisor = row.original.advisor;
+            const fullName = advisor
+                ? `${advisor.firstName} ${advisor.middleName || ''} ${advisor.lastName}`.trim()
+                : 'No advisor assigned';
+
+            return <div>{fullName}</div>;
+        }
+    },
+    {
+        id: "actions",
+        header: "Actions",
+        cell: ({ row }) => {
             return (
-            <div className="">
-                <Link href={"/sysadmin-sections/sysadmin-add-class"}> <PlusCircle/> Add Class</Link>
-            </div>
-            )
+                <div className="">
+                    <Link
+                        href={`/sysadmin-sections/sysadmin-add-class?sectionId=${row.original._id}`}
+                        className="flex flex-row gap-1 items-center"
+                    >
+                        <PlusCircle className="w-4 h-4" /> Add Class
+                    </Link>
+                </div>
+            );
         }
     },
 ]

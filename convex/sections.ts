@@ -9,7 +9,7 @@ export const getSectionsUsingGradeLevel = query({
         if (!args.gradeLevel) {
             return []
         }
-        const gradeLevel = await ctx.db.query('gradeLevels').filter(q=> q.eq(q.field('level'), args.gradeLevel)).unique()
+        const gradeLevel = await ctx.db.query('gradeLevels').filter(q => q.eq(q.field('level'), args.gradeLevel)).unique()
         const sections = await ctx.db.query('sections')
             .filter(q => q.eq(q.field('gradeLevelId'), gradeLevel?._id))
             .filter(q => q.eq(q.field('isActive'), true))
@@ -75,7 +75,7 @@ export const create = mutation({
         const classPromises = args.classes.map(classData =>
             ctx.db.insert("classes", {
                 ...classData,
-                scheduleId: [],
+                // scheduleId: [],
                 sectionId,
                 schoolYearId: args.schoolYearId
             })
@@ -106,19 +106,32 @@ export const getSections = query({
             const classesWithDetails = await Promise.all(classes.map(async (classItem) => {
                 const teacher = await ctx.db.get(classItem.teacherId);
                 const subject = await ctx.db.get(classItem.subjectId);
-                const schedule = await await Promise.all(classItem.scheduleId.map(async (scheduleId) => { 
-                    const schedId = await ctx.db.get(scheduleId)
-                    
-                    return schedId
-                }))
+                // const schedule = await await Promise.all(classItem.scheduleId.map(async (scheduleId) => { 
+                //     const schedId = await ctx.db.get(scheduleId)
 
-                const removeNullSched = schedule.filter(sched => sched !== null)
+                //     return schedId
+                // }))
+
+                // const removeNullSched = schedule.filter(sched => sched !== null)
+
+                const schedule = await ctx.db
+                    .query("schedules")
+                    .filter(q => q.eq(q.field("classId"), classItem._id))
+                    .first();
+
+                let periodDetails = null;
+                if (schedule) {
+                    periodDetails = await ctx.db.get(schedule.schoolPeriodId);
+                }
 
                 return {
                     ...classItem,
                     teacher,
                     subject,
-                    schedule: removeNullSched
+                    schedule: schedule ? {
+                        ...schedule,
+                        period: periodDetails
+                    } : null
                 };
             }));
 
