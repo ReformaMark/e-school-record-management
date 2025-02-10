@@ -51,12 +51,12 @@ import {
 } from "lucide-react";
 
 import { Textarea } from "@/components/ui/textarea";
-import { PrincipalFormData } from "@/lib/types";
+import { PrincipalFormData, SchoolHeadType } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 
 const SystemAdminHandlePrincipalPage = () => {
-    const createPrincipal = useMutation(api.users.createPrincipal);
+    const createPrincipal = useMutation(api.users.createSchoolHead);
     const [isLoading, setIsLoading] = useState(false);
     const router = useRouter();
     const [imageStorageId, setImageStorageId] = useState<string | undefined>();
@@ -69,7 +69,8 @@ const SystemAdminHandlePrincipalPage = () => {
         setValue
     } = useForm<PrincipalFormData>({
         defaultValues: {
-            gender: ''
+            gender: '',
+            schoolHeadType: 'junior-high' // default value
         }
     });
 
@@ -96,15 +97,15 @@ const SystemAdminHandlePrincipalPage = () => {
         setValue('barangay', '');
         setCities([]);
         setBarangays([]);
-        
+
         const isNCRSelected = regionCode === '130000000';
         setIsNCR(isNCRSelected);
-        
+
         const selectedRegion = regions.find(r => r.code === regionCode);
         if (selectedRegion) {
             setValue('region', selectedRegion.name);
         }
-        
+
         if (isNCRSelected) {
             setValue('province', 'Metro Manila');
             const cityData = await fetchCities('130000000');
@@ -119,24 +120,24 @@ const SystemAdminHandlePrincipalPage = () => {
         setValue('city', '');
         setValue('barangay', '');
         setBarangays([]);
-        
+
         const selectedProvince = provinces.find(p => p.code === provinceCode);
         if (selectedProvince) {
             setValue('province', selectedProvince.name);
         }
-        
+
         const cityData = await fetchCities(provinceCode);
         setCities(cityData);
     };
 
     const handleCityChange = async (cityCode: string) => {
         setValue('barangay', '');
-        
+
         const selectedCity = cities.find(c => c.code === cityCode);
         if (selectedCity) {
             setValue('city', selectedCity.name);
         }
-        
+
         const barangayData = await fetchBarangays(cityCode);
         setBarangays(barangayData);
     };
@@ -179,6 +180,7 @@ const SystemAdminHandlePrincipalPage = () => {
                 houseNumber: data.houseNumber,
                 postalCode: data.postalCode,
                 imageStorageId: imageStorageId,
+                schoolHeadType: data.schoolHeadType,
             });
 
             toast.success("Principal created successfully");
@@ -344,17 +346,17 @@ const SystemAdminHandlePrincipalPage = () => {
                                                     id="birthDate"
                                                     type="date"
                                                     className="w-full"
-                                                    {...register("birthDate", { 
+                                                    {...register("birthDate", {
                                                         required: "Birth date is required",
                                                         validate: (value) => {
                                                             if (!value) return "Birth date is required";
-                                                            
+
                                                             const birthDate = new Date(value);
                                                             const today = new Date();
                                                             let age = today.getFullYear() - birthDate.getFullYear();
-                                                            
+
                                                             if (
-                                                                today.getMonth() < birthDate.getMonth() || 
+                                                                today.getMonth() < birthDate.getMonth() ||
                                                                 (today.getMonth() === birthDate.getMonth() && today.getDate() < birthDate.getDate())
                                                             ) {
                                                                 age--;
@@ -372,7 +374,7 @@ const SystemAdminHandlePrincipalPage = () => {
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                 <div className="grid gap-3">
                                                     <Label htmlFor="gender">Gender <span className="text-red-500">*</span></Label>
-                                                    <Select 
+                                                    <Select
                                                         onValueChange={(value) => setValue("gender", value)}
                                                         {...register("gender", { required: "Gender is required" })}
                                                     >
@@ -406,6 +408,7 @@ const SystemAdminHandlePrincipalPage = () => {
                                             </div>
 
                                             <div className="grid gap-3">
+
                                                 <Label htmlFor="description">Description (Optional)</Label>
                                                 <Textarea
                                                     id="description"
@@ -413,7 +416,29 @@ const SystemAdminHandlePrincipalPage = () => {
                                                     className="min-h-32"
                                                     {...register("description")}
                                                 />
+
+                                                <Label htmlFor="schoolHeadType">School Head Level <span className="text-red-500">*</span></Label>
+                                                <Select
+                                                    onValueChange={(value: SchoolHeadType) => setValue("schoolHeadType", value)}
+                                                    value={watch("schoolHeadType")}
+                                                >
+                                                    <SelectTrigger>
+                                                        <SelectValue placeholder="Select school head type" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectGroup>
+                                                            <SelectLabel>School Head Level</SelectLabel>
+                                                            <SelectItem value="junior-high">Junior High School Head</SelectItem>
+                                                            <SelectItem value="senior-high">Senior High School Head</SelectItem>
+                                                        </SelectGroup>
+                                                    </SelectContent>
+                                                </Select>
+                                                {errors.schoolHeadType && (
+                                                    <p className="text-sm text-red-500">{errors.schoolHeadType.message}</p>
+                                                )}
                                             </div>
+
+                                            {/* ... rest of the fields ... */}
                                         </div>
                                     </CardContent>
                                 </Card>
@@ -448,9 +473,9 @@ const SystemAdminHandlePrincipalPage = () => {
                                                 <div className="grid gap-3">
                                                     <Label htmlFor="province">Province</Label>
                                                     {isNCR ? (
-                                                        <Input 
-                                                            value="Metro Manila" 
-                                                            disabled 
+                                                        <Input
+                                                            value="Metro Manila"
+                                                            disabled
                                                             className="bg-muted"
                                                         />
                                                     ) : (

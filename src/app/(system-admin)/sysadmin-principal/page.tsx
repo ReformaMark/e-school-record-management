@@ -12,47 +12,192 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Card } from "@/components/ui/card";
 import { useQuery } from "convex/react";
-import { Award, Book, Calendar, Mail, MapPin, Phone, Users } from "lucide-react";
+import { Award, Book, Mail, MapPin, Phone } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { api } from "../../../../convex/_generated/api";
+import { cn } from "@/lib/utils";
 
 const SystemAdminPrincipalPage = () => {
     const principals = useQuery(api.admin.fetchPrincipals);
-    const currentPrincipal = principals?.find(p => p.isActive);
-
-    const storageUrl = useQuery(api.files.getStorageUrl, 
-        currentPrincipal?.imageStorageId ? { storageId: currentPrincipal.imageStorageId } : "skip"
+    const activeJHPrincipal = principals?.find(p =>
+        p.isActive && p.schoolHeadType === "junior-high"
+    );
+    const activeSHPrincipal = principals?.find(p =>
+        p.isActive && p.schoolHeadType === "senior-high"
     );
 
-    if (!currentPrincipal) {
+    const jhPrincipalImageUrl = useQuery(
+        api.files.getStorageUrl,
+        activeJHPrincipal?.imageStorageId
+            ? { storageId: activeJHPrincipal.imageStorageId }
+            : "skip"
+    );
+    const shPrincipalImageUrl = useQuery(
+        api.files.getStorageUrl,
+        activeSHPrincipal?.imageStorageId
+            ? { storageId: activeSHPrincipal.imageStorageId }
+            : "skip"
+    );
+
+    const renderPrincipalCard = (principal: typeof activeJHPrincipal, imageUrl: string | undefined) => {
+        if (!principal) return null;
+
+        const fullName = `${principal.firstName} ${principal.middleName ? `${principal.middleName} ` : ''}${principal.lastName}`;
+        const isJH = principal.schoolHeadType === "junior-high";
+
+        return (
+            <div className="space-y-6 mb-9">
+                <Card className={cn(
+                    "bg-white shadow-lg rounded-lg overflow-hidden border-l-4",
+                    isJH ? "border-l-blue-600" : "border-l-green-600"
+                )}>
+                    <div className="md:flex flex-col md:flex-row">
+                        {/* Header for mobile */}
+                        <div className="bg-gradient-to-r p-4 md:hidden text-center
+                            from-gray-50 to-gray-100">
+                            <Badge variant={isJH ? "default" : "secondary"}
+                                className={cn(
+                                    "text-sm md:text-base px-4 py-1",
+                                    isJH ? "bg-blue-600 hover:bg-blue-600" : "bg-green-600 hover:bg-green-600",
+                                    "text-white"
+                                )}
+                            >
+                                {isJH ? "Junior High" : "Senior High"} School Head
+                            </Badge>
+                        </div>
+
+                        <div className="md:shrink-0 p-6 flex items-center justify-center 
+                            bg-gradient-to-b from-gray-50 to-gray-100">
+                            {imageUrl ? (
+                                <div className={cn(
+                                    "rounded-full p-1",
+                                    isJH ? "bg-blue-100" : "bg-green-100"
+                                )}>
+                                    <Image
+                                        src={imageUrl}
+                                        alt={fullName}
+                                        width={120}
+                                        height={120}
+                                        className="rounded-full border-4 border-white shadow-lg"
+                                    />
+                                </div>
+                            ) : (
+                                <div className={cn(
+                                    "rounded-full p-1",
+                                    isJH ? "bg-blue-100" : "bg-green-100"
+                                )}>
+                                    <Avatar className="h-[120px] w-[120px] border-4 border-white shadow-lg">
+                                        <AvatarFallback className={cn(
+                                            isJH ? "bg-blue-50" : "bg-green-50",
+                                            isJH ? "text-blue-600" : "text-green-600"
+                                        )}>
+                                            {principal.firstName[0]}
+                                            {principal.lastName[0]}
+                                        </AvatarFallback>
+                                    </Avatar>
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="p-8 flex-1">
+                            {/* Badge for desktop */}
+                            <Badge variant={isJH ? "default" : "secondary"}
+                                className={cn(
+                                    "mb-2 hidden md:inline-flex text-sm md:text-base px-4 py-1",
+                                    isJH ? "bg-blue-600 hover:bg-blue-600" : "bg-green-600 hover:bg-green-600",
+                                    "text-white"
+                                )}
+                            >
+                                {isJH ? "Junior High" : "Senior High"} School Head
+                            </Badge>
+                            <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-4">{fullName}</h2>
+                            <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2">
+                                <div className="flex items-center gap-2 text-gray-600">
+                                    <Mail className="h-4 w-4" />
+                                    <span className="text-sm md:text-base truncate">{principal.email}</span>
+                                </div>
+                                <div className="flex items-center gap-2 text-gray-600">
+                                    <Phone className="h-4 w-4" />
+                                    <span className="text-sm md:text-base">{principal.contactNumber}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </Card>
+
+                <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2">
+                    <Card className={cn(
+                        "p-6 border-t-4",
+                        isJH ? "border-t-blue-600" : "border-t-green-600"
+                    )}>
+                        <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                            <MapPin className="h-5 w-5 text-[#099443]" />
+                            Contact Information
+                        </h3>
+                        <div className="space-y-3 text-gray-600">
+                            {principal.houseNumber && principal.street && (
+                                <p>{principal.houseNumber} {principal.street}</p>
+                            )}
+                            {principal.barangay && <p>Barangay {principal.barangay}</p>}
+                            {principal.city && <p>{principal.city}</p>}
+                            {principal.province && <p>{principal.province}</p>}
+                            {principal.region && <p>{principal.region}</p>}
+                            {principal.postalCode && <p>Postal Code: {principal.postalCode}</p>}
+                        </div>
+                    </Card>
+
+                    <Card className={cn(
+                        "p-6 border-t-4",
+                        isJH ? "border-t-blue-600" : "border-t-green-600"
+                    )}>
+                        <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                            <Award className="h-5 w-5 text-[#099443]" />
+                            Responsibilities
+                        </h3>
+                        <div className="space-y-2">
+                            <p className="text-gray-600">• Oversees academic programs and curriculum implementation</p>
+                            <p className="text-gray-600">• Manages teaching and non-teaching staff</p>
+                            <p className="text-gray-600">• Ensures compliance with DepEd guidelines</p>
+                            <p className="text-gray-600">• Coordinates with stakeholders and community</p>
+                        </div>
+                    </Card>
+                </div>
+
+                {principal.description && (
+                    <Card className={cn(
+                        "p-6 border-t-4",
+                        isJH ? "border-t-blue-600" : "border-t-green-600"
+                    )}>
+                        <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                            <Book className="h-5 w-5 text-[#099443]" />
+                            About
+                        </h3>
+                        <p className="text-gray-600">{principal.description}</p>
+                    </Card>
+                )}
+            </div>
+        );
+    };
+
+    if (!activeJHPrincipal && !activeSHPrincipal) {
         return (
             <div className="container mx-auto p-4">
                 <Breadcrumb className="hidden md:flex">
-                    <BreadcrumbList>
-                        <BreadcrumbItem>
-                            <BreadcrumbLink asChild>
-                                <Link href="/sysadmin">Dashboard</Link>
-                            </BreadcrumbLink>
-                        </BreadcrumbItem>
-                        <BreadcrumbSeparator />
-                        <BreadcrumbItem>
-                            <BreadcrumbPage>Current School Head Principal</BreadcrumbPage>
-                        </BreadcrumbItem>
-                    </BreadcrumbList>
+                    {/* ... existing breadcrumb ... */}
                 </Breadcrumb>
 
                 <div className="max-w-4xl mx-auto mt-8">
                     <Card className="p-6">
-                        <h2 className="text-xl font-semibold">No Active Principal</h2>
-                        <p className="text-muted-foreground mt-2">There is currently no active school head principal.</p>
+                        <h2 className="text-xl font-semibold">No Active School Heads</h2>
+                        <p className="text-muted-foreground mt-2">
+                            There are currently no active school heads for either Junior or Senior High.
+                        </p>
                     </Card>
                 </div>
             </div>
         );
     }
-
-    const fullName = `${currentPrincipal.firstName} ${currentPrincipal.middleName ? `${currentPrincipal.middleName} ` : ''}${currentPrincipal.lastName}`;
 
     return (
         <div className="container mx-auto p-4">
@@ -65,123 +210,36 @@ const SystemAdminPrincipalPage = () => {
                     </BreadcrumbItem>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
-                        <BreadcrumbPage>Current School Head Principal</BreadcrumbPage>
+                        <BreadcrumbPage>Current School Head</BreadcrumbPage>
                     </BreadcrumbItem>
                 </BreadcrumbList>
             </Breadcrumb>
 
             <div className="max-w-4xl mx-auto">
-                <Card className="bg-white shadow-lg rounded-lg overflow-hidden">
-                    <div className="md:flex">
-                        <div className="md:flex-shrink-0">
-                            {storageUrl ? (
-                                <Image
-                                    className="h-48 w-full object-cover md:h-full md:w-48"
-                                    width={200}
-                                    height={200}
-                                    src={storageUrl}
-                                    alt={fullName}
-                                />
-                            ) : (
-                                <Avatar className="h-48 w-full md:h-full md:w-48">
-                                    <AvatarFallback className="text-4xl">
-                                        {currentPrincipal.firstName[0]}{currentPrincipal.lastName[0]}
-                                    </AvatarFallback>
-                                </Avatar>
-                            )}
-                        </div>
-                        <div className="p-8">
-                            <div className="uppercase tracking-wide text-sm text-[#099443] font-semibold">School Head Principal</div>
-                            <h1 className="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">
-                                {fullName}
-                            </h1>
-                            <p className="mt-2 text-xl text-gray-500">{currentPrincipal.description || "School Head Principal"}</p>
-                            <div className="mt-4 flex flex-wrap gap-2">
-                                <Badge variant="secondary" className="bg-[#e6f7ed] text-[#099443]">School Head</Badge>
-                                {currentPrincipal.gender && (
-                                    <Badge variant="secondary" className="bg-[#e6f7ed] text-[#099443] capitalize">{currentPrincipal.gender}</Badge>
-                                )}
-                                <Badge variant="secondary" className="bg-[#e6f7ed] text-[#099443]">
-                                    {currentPrincipal.isActive ? "Active" : "Inactive"}
-                                </Badge>
-                            </div>
-                        </div>
-                    </div>
-                </Card>
+                {activeJHPrincipal && (
+                    <>
+                        {renderPrincipalCard(activeJHPrincipal, jhPrincipalImageUrl as string | undefined)}
+                    </>
+                )}
 
-                <div className="mt-8 grid gap-6 md:grid-cols-2">
-                    <Card className="bg-white p-6">
-                        <h2 className="text-xl font-semibold text-gray-900 mb-4">Contact Information</h2>
-                        <div className="space-y-3">
-                            <div className="flex items-center">
-                                <Mail className="h-5 w-5 text-[#099443] mr-2" />
-                                <span>{currentPrincipal.email}</span>
-                            </div>
-                            <div className="flex items-center">
-                                <Phone className="h-5 w-5 text-[#099443] mr-2" />
-                                <span>{currentPrincipal.contactNumber}</span>
-                            </div>
-                            {[
-                                currentPrincipal.houseNumber,
-                                currentPrincipal.street,
-                                currentPrincipal.barangay,
-                                currentPrincipal.city,
-                                currentPrincipal.province,
-                                currentPrincipal.region,
-                                currentPrincipal.postalCode
-                            ].some(Boolean) && (
-                                <div className="flex items-start">
-                                    <MapPin className="h-5 w-5 text-[#099443] mr-2 mt-1" />
-                                    <span>
-                                        {[
-                                            currentPrincipal.houseNumber,
-                                            currentPrincipal.street,
-                                            currentPrincipal.barangay,
-                                            currentPrincipal.city,
-                                            currentPrincipal.province,
-                                            currentPrincipal.region,
-                                            currentPrincipal.postalCode
-                                        ].filter(Boolean).join(', ')}
-                                    </span>
-                                </div>
-                            )}
-                            <div className="flex items-center">
-                                <Calendar className="h-5 w-5 text-[#099443] mr-2" />
-                                <span>Birth Date: {new Date(currentPrincipal.birthDate).toLocaleDateString()}</span>
-                            </div>
-                        </div>
-                    </Card>
+                {activeSHPrincipal && (
+                    <>
+                        {renderPrincipalCard(activeSHPrincipal, shPrincipalImageUrl as string | undefined)}
+                    </>
+                )}
 
-                    <Card className="bg-white p-6">
-                        <h2 className="text-xl font-semibold text-gray-900 mb-4">Key Responsibilities</h2>
-                        <ul className="space-y-3">
-                            <li className="flex items-start">
-                                <Award className="h-5 w-5 text-[#099443] mr-2 mt-1" />
-                                <span>Overall management of school operations</span>
-                            </li>
-                            <li className="flex items-start">
-                                <Book className="h-5 w-5 text-[#099443] mr-2 mt-1" />
-                                <span>Curriculum development and oversight</span>
-                            </li>
-                            <li className="flex items-start">
-                                <Users className="h-5 w-5 text-[#099443] mr-2 mt-1" />
-                                <span>Staff and student leadership</span>
-                            </li>
-                        </ul>
-                    </Card>
-                </div>
-
-                {currentPrincipal.description && (
+                {(!activeJHPrincipal || !activeSHPrincipal) && (
                     <Card className="bg-white p-6 mt-8">
-                        <h2 className="text-xl font-semibold text-gray-900 mb-4">About {fullName}</h2>
-                        <p className="text-gray-600 mb-4">
-                            {currentPrincipal.description}
+                        <h2 className="text-xl font-semibold text-gray-900 mb-4">Notice</h2>
+                        <p className="text-gray-600">
+                            {!activeJHPrincipal && "No active Junior High School Head. "}
+                            {!activeSHPrincipal && "No active Senior High School Head."}
                         </p>
                     </Card>
                 )}
             </div>
         </div>
-    )
+    );
 }
 
 export default SystemAdminPrincipalPage;

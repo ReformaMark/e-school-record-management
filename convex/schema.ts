@@ -23,6 +23,10 @@ export default defineSchema({
       v.literal("staff")
     ),
     isActive: v.optional(v.boolean()),
+    schoolHeadType: v.optional(v.union(
+      v.literal("junior-high"),
+      v.literal("senior-high")
+    )),
 
     // Address
     region: v.optional(v.string()),
@@ -161,7 +165,7 @@ export default defineSchema({
 
   subjects: defineTable({
     name: v.string(),
-    gradeLevelId:v.id("gradeLevels"),
+    gradeLevelId: v.id("gradeLevels"),
     subjectCode: v.string(),
     subjectCategory: v.optional(v.string()), // core, applied and, specialized
 

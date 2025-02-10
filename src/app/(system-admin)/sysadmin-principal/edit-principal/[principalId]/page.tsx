@@ -28,7 +28,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { Barangay, City, fetchBarangays, fetchCities, fetchProvinces, fetchRegions, Province, Region } from "@/lib/address-api";
-import { PrincipalFormData } from "@/lib/types";
+import { PrincipalFormData, SchoolHeadType } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { useMutation, useQuery } from "convex/react";
 import { ChevronLeft } from "lucide-react";
@@ -46,7 +46,7 @@ const SystemAdminEditPrincipalPage = () => {
     const params = useParams();
     const principalId = params.principalId as Id<"users">;
     const router = useRouter();
-    
+
     const principal = useQuery(api.users.getUser, { id: principalId });
     const updatePrincipal = useMutation(api.users.updateUser);
     const [isLoading, setIsLoading] = useState(false);
@@ -85,7 +85,8 @@ const SystemAdminEditPrincipalPage = () => {
                 barangay: principal.barangay || "",
                 street: principal.street || "",
                 houseNumber: principal.houseNumber || "",
-                postalCode: principal.postalCode || ""
+                postalCode: principal.postalCode || "",
+                schoolHeadType: principal.schoolHeadType || "junior-high",
             });
         }
     }, [principal, reset]);
@@ -103,15 +104,15 @@ const SystemAdminEditPrincipalPage = () => {
         setValue('barangay', '');
         setCities([]);
         setBarangays([]);
-        
+
         const isNCRSelected = regionCode === '130000000';
         setIsNCR(isNCRSelected);
-        
+
         const selectedRegion = regions.find(r => r.code === regionCode);
         if (selectedRegion) {
             setValue('region', selectedRegion.name);
         }
-        
+
         if (isNCRSelected) {
             setValue('province', 'Metro Manila');
             const cityData = await fetchCities('130000000');
@@ -125,16 +126,16 @@ const SystemAdminEditPrincipalPage = () => {
     const handleProvinceChange = async (provinceCode: string) => {
         setValue('city', '');
         setValue('barangay', '');
-        
+
         const selectedProvince = provinces.find(p => p.code === provinceCode);
         if (selectedProvince) {
             setValue('province', selectedProvince.name);
         }
-        
-        const regionCode = regions.find(r => 
+
+        const regionCode = regions.find(r =>
             r.name === watch('region')
         )?.code;
-        
+
         if (regionCode) {
             const cityData = await fetchCities(regionCode);
             setCities(cityData);
@@ -143,7 +144,7 @@ const SystemAdminEditPrincipalPage = () => {
 
     const handleCityChange = async (cityCode: string) => {
         setValue('barangay', '');
-        
+
         const selectedCity = cities.find(c => c.code === cityCode);
         if (selectedCity) {
             setValue('city', selectedCity.name);
@@ -151,7 +152,7 @@ const SystemAdminEditPrincipalPage = () => {
                 setValue('postalCode', selectedCity.postalCode);
             }
         }
-        
+
         try {
             const barangayData = await fetchBarangays(cityCode);
             setBarangays(barangayData);
@@ -188,13 +189,14 @@ const SystemAdminEditPrincipalPage = () => {
                 houseNumber: data.houseNumber,
                 postalCode: data.postalCode,
                 imageStorageId: imageStorageId,
-                isActive: true
+                isActive: true,
+                schoolHeadType: data.schoolHeadType,
             });
 
-            toast.success("Principal updated successfully");
+            toast.success("School Head updated successfully");
             router.push("/sysadmin-principal/list");
         } catch (error) {
-            toast.error("Failed to update principal: " + (error as Error).message);
+            toast.error("Failed to update school head: " + (error as Error).message);
         } finally {
             setIsLoading(false);
         }
@@ -335,7 +337,7 @@ const SystemAdminEditPrincipalPage = () => {
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                 <div className="grid gap-3">
                                                     <Label htmlFor="gender">Gender <span className="text-red-500">*</span></Label>
-                                                    <Select 
+                                                    <Select
                                                         defaultValue={principal.gender}
                                                         onValueChange={(value) => setValue("gender", value)}
                                                     >
@@ -374,6 +376,28 @@ const SystemAdminEditPrincipalPage = () => {
                                                     {...register("description")}
                                                 />
                                             </div>
+
+                                            <div className="grid gap-3">
+                                                <Label htmlFor="schoolHeadType">School Head Type <span className="text-red-500">*</span></Label>
+                                                <Select
+                                                    defaultValue={principal.schoolHeadType}
+                                                    onValueChange={(value: SchoolHeadType) => setValue("schoolHeadType", value)}
+                                                >
+                                                    <SelectTrigger className="w-full">
+                                                        <SelectValue placeholder="Select school head type" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectGroup>
+                                                            <SelectLabel>School Head Type</SelectLabel>
+                                                            <SelectItem value="junior-high">Junior High School Head</SelectItem>
+                                                            <SelectItem value="senior-high">Senior High School Head</SelectItem>
+                                                        </SelectGroup>
+                                                    </SelectContent>
+                                                </Select>
+                                                {errors.schoolHeadType && (
+                                                    <p className="text-red-500">{errors.schoolHeadType.message}</p>
+                                                )}
+                                            </div>
                                         </div>
                                     </CardContent>
                                 </Card>
@@ -388,7 +412,7 @@ const SystemAdminEditPrincipalPage = () => {
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                 <div className="grid gap-3">
                                                     <Label htmlFor="region">Region (Optional)</Label>
-                                                    <Select 
+                                                    <Select
                                                         onValueChange={(value) => {
                                                             setValue('region', value);
                                                             handleRegionChange(value);
@@ -413,9 +437,9 @@ const SystemAdminEditPrincipalPage = () => {
                                                 <div className="grid gap-3">
                                                     <Label htmlFor="province">Province (Optional)</Label>
                                                     {isNCR ? (
-                                                        <Input 
-                                                            value="Metro Manila" 
-                                                            disabled 
+                                                        <Input
+                                                            value="Metro Manila"
+                                                            disabled
                                                             className="bg-muted"
                                                             {...register("province")}
                                                         />

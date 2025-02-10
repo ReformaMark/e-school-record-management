@@ -1,5 +1,7 @@
 import { Doc } from "../../convex/_generated/dataModel";
 
+export type SchoolHeadType = "junior-high" | "senior-high";
+
 export interface AdminFormData {
     email: string;
     password: string;
@@ -44,6 +46,7 @@ export interface PrincipalFormData {
     houseNumber?: string;
     postalCode?: string;
     imageStorageId?: string;
+    schoolHeadType: SchoolHeadType;
 }
 
 export type StudentTypes = Doc<"students">

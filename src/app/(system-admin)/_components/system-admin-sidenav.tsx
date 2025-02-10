@@ -26,21 +26,21 @@ export const SystemAdminSidenav = () => {
                 </Link>
 
                 <SidebarSection
-                    label="Principal"
+                    label="School Head"
                     icon={FaUserTie}
                 >
                     <Link
                         href="/sysadmin-principal"
                         className={`${pathname === '/sysadmin-principal' ? "bg-background/50 text-white" : "bg-transparent"} text-white flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}
                     >
-                        Current Principal
+                        Current School Head
                     </Link>
 
                     <Link
                         href="/sysadmin-principal/list"
                         className={`${pathname === '/sysadmin-principal/list' ? "bg-background/50 text-white" : "bg-transparent"} text-white flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}
                     >
-                        List of All Principal
+                        List of All School Head
                     </Link>
 
                 </SidebarSection>

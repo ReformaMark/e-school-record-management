@@ -16,6 +16,7 @@ import {
     SelectTrigger,
     SelectValue
 } from "@/components/ui/select";
+import { SectionWithDetails } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { SectionFormData, sectionSchema } from "@/lib/validation/add-section-zod";
 import { useConvexMutation } from "@convex-dev/react-query";
@@ -28,13 +29,12 @@ import {
     PlusIcon
 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { api } from "../../../../../../convex/_generated/api";
-import { Doc, Id } from "../../../../../../convex/_generated/dataModel";
-import { useRouter } from "next/navigation";
-import { SectionWithDetails } from "@/lib/types";
+import { Id } from "../../../../../../convex/_generated/dataModel";
 
 interface SectionFormProps {
     isEditing?: boolean;

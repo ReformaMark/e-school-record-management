@@ -14,7 +14,9 @@ const EditSectionPage = () => {
 
     if (!section) return <div>Loading...</div>;
 
-    return <SectionForm isEditing={true} section={section} />;
+    return <SectionForm isEditing={true}
+        // @ts-expect-error slight type issue
+        section={section} />;
 };
 
 export default EditSectionPage;

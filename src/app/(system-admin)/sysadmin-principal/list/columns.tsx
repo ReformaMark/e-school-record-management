@@ -15,6 +15,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { SchoolHeadType } from "@/lib/types"
 import { cn } from "@/lib/utils"
 import { ColumnDef } from "@tanstack/react-table"
 import { MoreHorizontal } from "lucide-react"
@@ -39,6 +40,7 @@ export type Principal = {
     street?: string
     houseNumber?: string
     postalCode?: string
+    schoolHeadType: SchoolHeadType;
 }
 
 const ActionCell = ({ principal }: { principal: Principal }) => {
@@ -57,7 +59,7 @@ const ActionCell = ({ principal }: { principal: Principal }) => {
     //                 adminId: principal._id as Id<"users">,
     //                 isActive: !principal.isActive
     //             })
-                
+
     //             toast.success(`Successfully ${principal.isActive ? "deactivated" : "activated"} ${principal.firstName} ${principal.lastName}`)
     //         } catch {
     //             toast.error("Failed to update principal status")
@@ -116,7 +118,7 @@ const ActionCell = ({ principal }: { principal: Principal }) => {
                                 </div>
                                 <div className="grid grid-cols-4 items-center gap-4">
                                     <p className="text-sm font-semibold text-muted-foreground">Status</p>
-                                    <p className={cn("col-span-3 text-base font-medium", 
+                                    <p className={cn("col-span-3 text-base font-medium",
                                         principal.isActive ? "text-green-600" : "text-red-600"
                                     )}>
                                         {principal.isActive ? "Active" : "Inactive"}
@@ -171,6 +173,18 @@ export const principalColumns: ColumnDef<Principal>[] = [
     {
         accessorKey: "email",
         header: "Email"
+    },
+    {
+        accessorKey: "schoolHeadType",
+        header: "School Level",
+        cell: ({ row }) => {
+            const type = row.original.schoolHeadType;
+            return type ? (
+                <div className="capitalize">
+                    {type === "junior-high" ? "Junior High" : "Senior High"}
+                </div>
+            ) : "Not specified";
+        }
     },
     {
         accessorKey: "isActive",

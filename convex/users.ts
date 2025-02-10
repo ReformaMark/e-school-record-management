@@ -42,6 +42,7 @@ export const createUser = mutation({
         position: v.optional(v.string()),
         advisoryClass: v.optional(v.string()),
         subjectId: v.optional(v.array(v.id('subjects'))),
+        schoolHeadType: v.optional(v.union(v.literal("junior-high"), v.literal("senior-high"))),
     },
     handler: async (ctx, args) => {
         try {
@@ -205,6 +206,10 @@ export const updateUser = mutation({
         imageStorageId: v.optional(v.string()),
         gender: v.optional(v.string()),
         description: v.optional(v.string()),
+        schoolHeadType: v.optional(v.union(
+            v.literal("junior-high"),
+            v.literal("senior-high")
+        )),
     },
     handler: async (ctx, args) => {
         const existingUser = await ctx.db.get(args.id);
@@ -219,6 +224,24 @@ export const updateUser = mutation({
             } catch (error) {
                 console.error("Failed to delete old image:", error);
                 // Continue with update even if delete fails
+            }
+        }
+
+        if (args.schoolHeadType && args.schoolHeadType !== existingUser.schoolHeadType) {
+            const existingSchoolHead = await ctx.db
+                .query("users")
+                .filter((q) =>
+                    q.and(
+                        q.eq(q.field("role"), "school-head"),
+                        q.eq(q.field("schoolHeadType"), args.schoolHeadType),
+                        q.eq(q.field("isActive"), true),
+                        q.neq(q.field("_id"), args.id)
+                    )
+                )
+                .first();
+
+            if (existingSchoolHead) {
+                await ctx.db.patch(existingSchoolHead._id, { isActive: false });
             }
         }
 
@@ -244,6 +267,7 @@ export const updateUser = mutation({
             imageStorageId: args.imageStorageId,
             gender: args.gender,
             description: args.description,
+            schoolHeadType: args.schoolHeadType,
         });
     },
 });
@@ -281,7 +305,7 @@ export const deleteUserImage = mutation({
     },
 });
 
-export const createPrincipal = mutation({
+export const createSchoolHead = mutation({
     args: {
         email: v.string(),
         password: v.string(),
@@ -300,26 +324,33 @@ export const createPrincipal = mutation({
         houseNumber: v.optional(v.string()),
         postalCode: v.optional(v.string()),
         imageStorageId: v.optional(v.string()),
+        schoolHeadType: v.union(v.literal("junior-high"), v.literal("senior-high")),
     },
     handler: async (ctx, args) => {
-        // Set existing principals to inactive
-        await ctx.db
+        const { schoolHeadType, ...userData } = args;
+
+        const existingSchoolHead = await ctx.db
             .query("users")
-            .filter((q) => q.eq(q.field("role"), "school-head"))
-            .collect()
-            .then((principals) => {
-                principals.forEach(async (principal) => {
-                    await ctx.db.patch(principal._id, { isActive: false });
-                });
-            });
+            .filter((q) =>
+                q.and(
+                    q.eq(q.field("role"), "school-head"),
+                    q.eq(q.field("schoolHeadType"), schoolHeadType),
+                    q.eq(q.field("isActive"), true)
+                )
+            )
+            .first();
+
+        if (existingSchoolHead) {
+            await ctx.db.patch(existingSchoolHead._id, { isActive: false });
+        }
 
         // Create the principal using createUser
         return createUser(ctx, {
-            ...args,
+            ...userData,
             role: "school-head",
             isActive: true,
-            // department: args.description,
-            description: args.description,
+            description: userData.description,
+            schoolHeadType: schoolHeadType,
         });
     },
 });
@@ -451,3 +482,23 @@ export const getSubjects = query({
             .collect()
     }
 })
+
+export const getSchoolHeads = query({
+    args: {
+        type: v.optional(v.union(
+            v.literal("junior-high"),
+            v.literal("senior-high")
+        )),
+    },
+    handler: async (ctx, args) => {
+        let query = ctx.db
+            .query("users")
+            .filter((q) => q.eq(q.field("role"), "school-head"));
+
+        if (args.type) {
+            query = query.filter((q) => q.eq(q.field("schoolHeadType"), args.type));
+        }
+
+        return await query.collect();
+    },
+});
