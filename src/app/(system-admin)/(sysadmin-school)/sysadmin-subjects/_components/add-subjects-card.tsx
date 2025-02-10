@@ -254,7 +254,6 @@ export const AddSubjectsCard = () => {
                                 <Label>Written</Label>
                                 <Input
                                     type="number"
-                                    placeholder="20%"
                                     {...register("gradeWeights.written", { valueAsNumber: true })}
                                 />
                                 {errors?.gradeWeights?.written && (
@@ -265,7 +264,6 @@ export const AddSubjectsCard = () => {
                                 <Label>Performance</Label>
                                 <Input
                                     type="number"
-                                    placeholder="50%"
                                     {...register("gradeWeights.performance", { valueAsNumber: true })}
                                 />
                                 {errors?.gradeWeights?.performance && (
@@ -276,7 +274,6 @@ export const AddSubjectsCard = () => {
                                 <Label>Exam</Label>
                                 <Input
                                     type="number"
-                                    placeholder="30%"
                                     {...register("gradeWeights.exam", { valueAsNumber: true })}
                                 />
                                 {errors?.gradeWeights?.exam && (
