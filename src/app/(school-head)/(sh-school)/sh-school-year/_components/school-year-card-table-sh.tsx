@@ -10,27 +10,30 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import { useQuery } from "convex/react";
-import { api } from "../../convex/_generated/api";
+import { api } from "../../../../../../convex/_generated/api";
 import { ColumnDef } from "@tanstack/react-table";
-import { Doc } from "../../convex/_generated/dataModel";
+import { Doc } from "../../../../../../convex/_generated/dataModel";
 
-const schoolPeriodColumns: ColumnDef<Doc<"schoolPeriods">>[] = [
-    { accessorKey: "period", header: "Period" },
-    { accessorKey: "timeRange", header: "Time Range" },
-];
+const schoolYearColumns: ColumnDef<Doc<"schoolYears">>[] = [
+    { accessorKey: "batchName", header: "Batch Name" },
+    { accessorKey: "startDate", header: "Start Date" },
+    { accessorKey: "endDate", header: "End Date" },
+]
 
-export const SchoolPeriodCardTable = () => {
-    const schoolPeriodData = useQuery(api.schoolPeriod.get)
+export const SchoolYearCardTableSH = () => {
+    const schoolYearData = useQuery(api.schoolYear.get)
+
+    if (!schoolYearData) return <>No School Year Data found.</>
 
     return (
         <Card
-            className="xl:col-span-2"
+            className="xl:col-span-2" x-chunk="dashboard-01-chunk-4"
         >
             <CardHeader className="flex flex-row items-center">
                 <div className="grid gap-2">
-                    <CardTitle>School Periods</CardTitle>
+                    <CardTitle>School Years</CardTitle>
                     <CardDescription>
-                        View and manage school periods
+                        View and manage school years
                     </CardDescription>
                 </div>
                 <Button asChild size="sm" className="ml-auto gap-1">
@@ -42,10 +45,10 @@ export const SchoolPeriodCardTable = () => {
             </CardHeader>
             <CardContent>
                 <DataTable
-                    columns={schoolPeriodColumns}
-                    data={schoolPeriodData || []}
-                    filter="period"
-                    placeholder="by period"
+                    columns={schoolYearColumns}
+                    data={schoolYearData}
+                    filter="batchName"
+                    placeholder="by batch name"
                 />
             </CardContent>
         </Card>
