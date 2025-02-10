@@ -1,3 +1,9 @@
+"use client";
+
+import { DataTable } from "@/components/data-table";
+import { useQuery } from "convex/react";
+import { api } from "../../../../convex/_generated/api";
+import { registrarColumns } from "./_components/registrar-columns";
 import {
     Breadcrumb,
     BreadcrumbItem,
@@ -16,15 +22,23 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
-
-import { DataTable } from "@/components/data-table";
+import { exportToExcel } from "@/lib/export-to-excel";
 import { cn } from "@/lib/utils";
 import { File, ListFilterIcon, PlusCircleIcon } from "lucide-react";
 import Link from "next/link";
-import { staffColumns, staffData } from "../../../../data/staff-data";
+import { useState } from "react";
 
-// Column definitions for the DataTable
 const SystemAdminRegistrarPage = () => {
+    const registrars = useQuery(api.users.fetchRegistrars);
+    const [showActive, setShowActive] = useState(true);
+    const [showInactive, setShowInactive] = useState(true);
+
+    const filteredRegistrars = registrars?.filter(registrar => {
+        if (!showActive && registrar.isActive) return false;
+        if (!showInactive && !registrar.isActive) return false;
+        return true;
+    }) || [];
+
     return (
         <div className="container mx-auto p-4">
             <Breadcrumb className="hidden md:flex">
@@ -54,17 +68,26 @@ const SystemAdminRegistrarPage = () => {
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
-                                <DropdownMenuLabel>Filter by</DropdownMenuLabel>
+                                <DropdownMenuLabel>Filter by Status</DropdownMenuLabel>
                                 <DropdownMenuSeparator />
-                                <DropdownMenuCheckboxItem checked>
+                                <DropdownMenuCheckboxItem
+                                    checked={showActive}
+                                    onCheckedChange={setShowActive}
+                                >
                                     Active
                                 </DropdownMenuCheckboxItem>
-                                <DropdownMenuCheckboxItem>
-                                    Resigned
+                                <DropdownMenuCheckboxItem
+                                    checked={showInactive}
+                                    onCheckedChange={setShowInactive}
+                                >
+                                    Inactive
                                 </DropdownMenuCheckboxItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
-                        <Button size="sm" variant="outline" className="h-7 gap-1">
+
+                        <Button size="sm" variant="outline" className="h-7 gap-1"
+                            onClick={() => exportToExcel(filteredRegistrars || [], "school_registrars")}
+                        >
                             <File className="h-3.5 w-3.5" />
                             <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
                                 Export
@@ -77,7 +100,8 @@ const SystemAdminRegistrarPage = () => {
                                 variant: "default",
                                 size: "sm",
                                 className: "text-white h-7 gap-1 w-full p-2"
-                            }))}>
+                            }))}
+                        >
                             <PlusCircleIcon className="h-3.5 w-3.5" />
                             <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
                                 Add registrar
@@ -86,23 +110,26 @@ const SystemAdminRegistrarPage = () => {
                     </div>
                 </div>
 
-                <Card x-chunk="dashboard-06-chunk-0">
+                <Card>
                     <CardHeader>
-                        <CardTitle>Registrars</CardTitle>
-                        <CardDescription>Manage the list of registrars.</CardDescription>
+                        <CardTitle>School Registrars</CardTitle>
+                        <CardDescription>
+                            Manage school registrars and their information.
+                        </CardDescription>
                     </CardHeader>
                     <CardContent>
                         <DataTable
-                            columns={staffColumns}
-                            data={staffData}
+                            columns={registrarColumns}
+                            // @ts-expect-error slight type issue
+                            data={filteredRegistrars}
                             filter="firstName"
-                            placeholder="by first name"
+                            placeholder="Search registrars by first name"
                         />
                     </CardContent>
                 </Card>
             </main>
         </div>
-    )
-}
+    );
+};
 
 export default SystemAdminRegistrarPage;

@@ -157,9 +157,46 @@ export const createStaff = mutation({
         contactNumber: v.string(),
         department: v.string(),
         birthDate: v.string(),
+        gender: v.string(),
+        description: v.optional(v.string()),
+        region: v.optional(v.string()),
+        province: v.optional(v.string()),
+        city: v.optional(v.string()),
+        barangay: v.optional(v.string()),
+        street: v.optional(v.string()),
+        imageStorageId: v.optional(v.string()),
+        employeeId: v.optional(v.string()),
+        yearsOfExperience: v.optional(v.number()),
     },
     handler: async (ctx, args) => {
-        return createUser(ctx, { ...args, role: "staff" });
+        try {
+            // Only admin can create staff
+            const adminId = await getAuthUserId(ctx);
+            if (!adminId) throw new ConvexError("Not authenticated");
+
+            const admin = await ctx.db.get(adminId);
+            if (!admin || admin.role !== "admin") {
+                throw new ConvexError("Unauthorized - Only admins can create staff");
+            }
+
+            // Check if email already exists
+            const existingUser = await ctx.db
+                .query("users")
+                .filter((q) => q.eq(q.field("email"), args.email))
+                .first();
+
+            if (existingUser) throw new ConvexError("Email already exists");
+
+            // Create the staff using createUser
+            return createUser(ctx, {
+                ...args,
+                role: "staff",
+                isActive: true,
+            });
+        } catch (error) {
+            console.error("Error in createStaff:", error);
+            throw error;
+        }
     },
 });
 
@@ -210,6 +247,7 @@ export const updateUser = mutation({
             v.literal("junior-high"),
             v.literal("senior-high")
         )),
+        employeeId: v.optional(v.string()),
     },
     handler: async (ctx, args) => {
         const existingUser = await ctx.db.get(args.id);
@@ -502,3 +540,19 @@ export const getSchoolHeads = query({
         return await query.collect();
     },
 });
+
+export const fetchRegistrars = query({
+    handler: async (ctx) => {
+        const registrars = await ctx.db
+            .query("users")
+            .filter((q) =>
+                q.and(
+                    q.eq(q.field("role"), "staff"),
+                    q.eq(q.field("department"), "Registrar's Office")
+                )
+            )
+            .collect();
+
+        return registrars
+    }
+})

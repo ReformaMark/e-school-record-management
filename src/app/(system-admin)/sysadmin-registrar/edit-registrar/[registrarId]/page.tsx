@@ -28,69 +28,91 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import {
-    Barangay,
-    City,
-    Province,
-    Region,
-    fetchBarangays,
-    fetchCities,
-    fetchProvinces,
-    fetchRegions
-} from "@/lib/address-api";
-import { useMutation } from "convex/react";
-import { useRouter } from "next/navigation";
+import { Barangay, City, fetchBarangays, fetchCities, fetchProvinces, fetchRegions, Province, Region } from "@/lib/address-api";
+import { cn } from "@/lib/utils";
+import { useMutation, useQuery } from "convex/react";
+import { ChevronLeft } from "lucide-react";
+import Link from "next/link";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { api } from "../../../../../convex/_generated/api";
+import { api } from "../../../../../../convex/_generated/api";
+import { Id } from "../../../../../../convex/_generated/dataModel";
 
+interface RegistrarFormData {
+    email: string;
+    firstName: string;
+    lastName: string;
+    middleName?: string;
+    employeeId?: string;
+    contactNumber: string;
+    birthDate: string;
+    gender: string;
+    yearsOfExperience?: number;
+    description?: string;
+    region?: string;
+    province?: string;
+    city?: string;
+    barangay?: string;
+    street?: string;
+}
 
-import {
-    ChevronLeft
-} from "lucide-react";
-
-import { Textarea } from "@/components/ui/textarea";
-import { PrincipalFormData, SchoolHeadType } from "@/lib/types";
-import { cn } from "@/lib/utils";
-import Link from "next/link";
-
-const SystemAdminHandlePrincipalPage = () => {
-    const createPrincipal = useMutation(api.users.createSchoolHead);
-    const [isLoading, setIsLoading] = useState(false);
+const SystemAdminEditPrincipalPage = () => {
+    const params = useParams();
+    const registrarId = params.registrarId as Id<"users">;
     const router = useRouter();
-    const [imageStorageId, setImageStorageId] = useState<string | undefined>();
+
+    const registrar = useQuery(api.users.getUser, { id: registrarId });
+    const updateRegistrar = useMutation(api.users.updateUser);
+    const [isLoading, setIsLoading] = useState(false);
 
     const {
         register,
         handleSubmit,
         formState: { errors },
         watch,
-        setValue
-    } = useForm<PrincipalFormData>({
-        defaultValues: {
-            gender: '',
-            schoolHeadType: 'junior-high' // default value
-        }
-    });
+        setValue,
+        reset
+    } = useForm<RegistrarFormData>();
 
-    // const password = watch("password");
-
-    // Address state management
     const [regions, setRegions] = useState<Region[]>([]);
     const [provinces, setProvinces] = useState<Province[]>([]);
     const [cities, setCities] = useState<City[]>([]);
     const [barangays, setBarangays] = useState<Barangay[]>([]);
     const [isNCR, setIsNCR] = useState(false);
+    const [imageStorageId, setImageStorageId] = useState<string | undefined>();
 
-    // Fetch regions on component mount
+    useEffect(() => {
+        if (registrar) {
+            setImageStorageId(registrar.imageStorageId);
+            reset({
+                email: registrar.email,
+                firstName: registrar.firstName,
+                middleName: registrar.middleName || "",
+                lastName: registrar.lastName,
+                employeeId: registrar.employeeId || "",
+                contactNumber: registrar.contactNumber,
+                description: registrar.description || "",
+                gender: registrar.gender || "",
+                birthDate: registrar.birthDate,
+                yearsOfExperience: registrar.yearsOfExperience,
+                region: registrar.region || "",
+                province: registrar.province || "",
+                city: registrar.city || "",
+                barangay: registrar.barangay || "",
+                street: registrar.street || "",
+            });
+        }
+    }, [registrar, reset]);
+
     useEffect(() => {
         fetchRegions().then(data => {
             setRegions(data);
         });
     }, []);
 
-    // Address handling functions (same as in admin page)
+    // Address handling functions
     const handleRegionChange = async (regionCode: string) => {
         setValue('province', '');
         setValue('city', '');
@@ -119,15 +141,20 @@ const SystemAdminHandlePrincipalPage = () => {
     const handleProvinceChange = async (provinceCode: string) => {
         setValue('city', '');
         setValue('barangay', '');
-        setBarangays([]);
 
         const selectedProvince = provinces.find(p => p.code === provinceCode);
         if (selectedProvince) {
             setValue('province', selectedProvince.name);
         }
 
-        const cityData = await fetchCities(provinceCode);
-        setCities(cityData);
+        const regionCode = regions.find(r =>
+            r.name === watch('region')
+        )?.code;
+
+        if (regionCode) {
+            const cityData = await fetchCities(regionCode);
+            setCities(cityData);
+        }
     };
 
     const handleCityChange = async (cityCode: string) => {
@@ -136,10 +163,17 @@ const SystemAdminHandlePrincipalPage = () => {
         const selectedCity = cities.find(c => c.code === cityCode);
         if (selectedCity) {
             setValue('city', selectedCity.name);
+            // if (selectedCity.postalCode) {
+            //     setValue('postalCode', selectedCity.postalCode);
+            // }
         }
 
-        const barangayData = await fetchBarangays(cityCode);
-        setBarangays(barangayData);
+        try {
+            const barangayData = await fetchBarangays(cityCode);
+            setBarangays(barangayData);
+        } catch (error) {
+            toast.error('Failed to fetch barangays: ' + (error as Error).message);
+        }
     };
 
     const handleBarangayChange = (barangayCode: string) => {
@@ -149,48 +183,43 @@ const SystemAdminHandlePrincipalPage = () => {
         }
     };
 
-    const onSubmit = async (data: PrincipalFormData) => {
-        if (data.password !== data.confirmPassword) {
-            toast.error("Passwords do not match");
-            return;
-        }
-
-        if (!data.gender) {
-            toast.error("Please select a gender");
-            return;
-        }
-
+    const onSubmit = async (data: RegistrarFormData) => {
         setIsLoading(true);
         try {
-            await createPrincipal({
+            await updateRegistrar({
+                id: registrarId,
                 email: data.email,
-                password: data.password,
                 firstName: data.firstName,
                 middleName: data.middleName,
                 lastName: data.lastName,
                 contactNumber: data.contactNumber,
-                birthDate: data.birthDate as string,
+                department: "Registrar's Office",
                 gender: data.gender,
+                birthDate: data.birthDate as string,
                 description: data.description,
+                employeeId: data.employeeId,
+                yearsOfExperience: data.yearsOfExperience ? Number(data.yearsOfExperience) : undefined,
                 region: data.region,
                 province: data.province,
                 city: data.city,
                 barangay: data.barangay,
                 street: data.street,
-                houseNumber: data.houseNumber,
-                postalCode: data.postalCode,
                 imageStorageId: imageStorageId,
-                schoolHeadType: data.schoolHeadType,
+                isActive: true,
             });
 
-            toast.success("Principal created successfully");
-            router.push("/sysadmin-principal/list");
+            toast.success("Registrar updated successfully");
+            router.push("/sysadmin-registrar");
         } catch (error) {
-            toast.error("Failed to create principal: " + (error as Error).message);
+            toast.error("Failed to update registrar: " + (error as Error).message);
         } finally {
             setIsLoading(false);
         }
     };
+
+    if (!registrar) {
+        return <div>Loading...</div>;
+    }
 
     return (
         <div className="container mx-auto p-4">
@@ -204,12 +233,12 @@ const SystemAdminHandlePrincipalPage = () => {
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
                         <BreadcrumbLink asChild>
-                            <Link href="/sysadmin-principal/list">List of Principals</Link>
+                            <Link href="/sysadmin-registrar">Registrar</Link>
                         </BreadcrumbLink>
                     </BreadcrumbItem>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
-                        <BreadcrumbPage>Add Principal</BreadcrumbPage>
+                        <BreadcrumbPage>Edit School Registrar</BreadcrumbPage>
                     </BreadcrumbItem>
                 </BreadcrumbList>
             </Breadcrumb>
@@ -219,7 +248,7 @@ const SystemAdminHandlePrincipalPage = () => {
                     <div className="mx-auto grid max-w-[59rem] flex-1 auto-rows-max gap-4">
                         <div className="flex items-center gap-4">
                             <Link
-                                href="/sysadmin-principal/list"
+                                href="/sysadmin-registrar"
                                 className={cn("h-7 w-7", buttonVariants({
                                     variant: "outline",
                                     size: "icon",
@@ -228,10 +257,9 @@ const SystemAdminHandlePrincipalPage = () => {
                                 <span className="sr-only">Back</span>
                             </Link>
                             <h1 className="flex-1 shrink-0 whitespace-nowrap text-xl font-semibold tracking-tight sm:grow-0">
-                                Add Principal
+                                Edit School Registrar
                             </h1>
 
-                            {/* Button for desktop/laptop users */}
                             <div className="hidden items-center gap-2 md:ml-auto md:flex">
                                 <Button
                                     type="submit"
@@ -246,31 +274,33 @@ const SystemAdminHandlePrincipalPage = () => {
 
                         <div className="grid gap-4 md:grid-cols-[1fr_250px] lg:grid-cols-3 lg:gap-8">
                             <div className="grid auto-rows-max items-start gap-4 lg:col-span-2 lg:gap-8">
-                                {/* Fname, Lname, Mname, Desc */}
+                                {/* Registrar Details Card */}
                                 <Card>
                                     <CardHeader>
-                                        <CardTitle>Principal Details</CardTitle>
+                                        <CardTitle>Registrar Details</CardTitle>
                                         <CardDescription>
-                                            Principal Details
+                                            Provide the details of the registrar.
                                         </CardDescription>
                                     </CardHeader>
                                     <CardContent>
                                         <div className="grid gap-6">
                                             <div className="grid gap-3">
-                                                <Label htmlFor="name">Email <span className="text-red-500">*</span></Label>
+                                                <Label htmlFor="name">Email</Label>
                                                 <Input
-                                                    id="email"
-                                                    type="email"
-                                                    className="w-full"
-                                                    placeholder="zKj6w@example.com"
-                                                    {...register("email", { required: "Email is required" })}
+                                                    {...register("email", {
+                                                        required: "Email is required",
+                                                        pattern: {
+                                                            value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                                                            message: "Invalid email address"
+                                                        }
+                                                    })}
                                                 />
                                                 {errors.email && <p className="text-red-500">{errors.email.message}</p>}
                                             </div>
 
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                 <div className="grid gap-3">
-                                                    <Label htmlFor="name">First Name <span className="text-red-500">*</span></Label>
+                                                    <Label htmlFor="name">First Name</Label>
                                                     <Input
                                                         id="name"
                                                         type="text"
@@ -281,7 +311,7 @@ const SystemAdminHandlePrincipalPage = () => {
                                                     {errors.firstName && <p className="text-red-500">{errors.firstName.message}</p>}
                                                 </div>
                                                 <div className="grid gap-3">
-                                                    <Label htmlFor="name">Last Name <span className="text-red-500">*</span></Label>
+                                                    <Label htmlFor="name">Last Name</Label>
                                                     <Input
                                                         id="name"
                                                         type="text"
@@ -292,21 +322,36 @@ const SystemAdminHandlePrincipalPage = () => {
                                                     {errors.lastName && <p className="text-red-500">{errors.lastName.message}</p>}
                                                 </div>
                                             </div>
-                                            <div className="grid gap-3">
-                                                <Label htmlFor="name">Middle Name (Optional)</Label>
-                                                <Input
-                                                    id="name"
-                                                    type="text"
-                                                    className="w-full"
-                                                    placeholder="Kennedy"
-                                                    {...register("middleName")}
-                                                />
-                                            </div>
 
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                {/* password and current password */}
                                                 <div className="grid gap-3">
-                                                    <Label htmlFor="name">Password <span className="text-red-500">*</span></Label>
+                                                    <Label htmlFor="name">Middle Name (Optional)</Label>
+                                                    <Input
+                                                        id="name"
+                                                        type="text"
+                                                        className="w-full"
+                                                        placeholder="Kennedy"
+                                                        {...register("middleName")}
+                                                    />
+                                                </div>
+
+                                                <div className="grid gap-3">
+                                                    <Label htmlFor="empId">Employee ID</Label>
+                                                    <Input
+                                                        id="empId"
+                                                        type="text"
+                                                        className="w-full"
+                                                        placeholder="2023-002"
+                                                        {...register("employeeId")}
+                                                    />
+                                                    {errors.employeeId && <p className="text-red-500">{errors.employeeId.message}</p>}
+                                                </div>
+                                            </div>
+
+                                            {/* password and current password */}
+                                            {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                <div className="grid gap-3">
+                                                    <Label htmlFor="name">Password</Label>
                                                     <Input
                                                         id="password"
                                                         type="password"
@@ -318,7 +363,7 @@ const SystemAdminHandlePrincipalPage = () => {
                                                 </div>
 
                                                 <div className="grid gap-3">
-                                                    <Label htmlFor="name">Confirm Password <span className="text-red-500">*</span></Label>
+                                                    <Label htmlFor="name">Confirm Password</Label>
                                                     <Input
                                                         id="cpassword"
                                                         type="password"
@@ -328,15 +373,18 @@ const SystemAdminHandlePrincipalPage = () => {
                                                     />
                                                     {errors.confirmPassword && <p className="text-red-500">{errors.confirmPassword.message}</p>}
                                                 </div>
-                                            </div>
+                                            </div> */}
                                         </div>
                                     </CardContent>
                                 </Card>
 
-                                {/* Other details */}
+                                {/* Other Details Card */}
                                 <Card>
                                     <CardHeader>
                                         <CardTitle>Other details</CardTitle>
+                                        <CardDescription>
+                                            Provide the details of the registrar.
+                                        </CardDescription>
                                     </CardHeader>
                                     <CardContent>
                                         <div className="grid gap-6">
@@ -408,40 +456,41 @@ const SystemAdminHandlePrincipalPage = () => {
                                             </div>
 
                                             <div className="grid gap-3">
-
-                                                <Label htmlFor="description">Description (Optional)</Label>
-                                                <Textarea
-                                                    id="description"
-                                                    placeholder="Enter something about the principal"
-                                                    className="min-h-32"
-                                                    {...register("description")}
+                                                {/* yrs of exp */}
+                                                <Label htmlFor="yrsOfExp">Years of Experience</Label>
+                                                <Input
+                                                    id="yrsOfExp"
+                                                    type="number"
+                                                    className="w-full"
+                                                    placeholder="Enter years of experience"
+                                                    {...register("yearsOfExperience")}
                                                 />
-
-                                                <Label htmlFor="schoolHeadType">School Head Level <span className="text-red-500">*</span></Label>
-                                                <Select
-                                                    onValueChange={(value: SchoolHeadType) => setValue("schoolHeadType", value)}
-                                                    value={watch("schoolHeadType")}
-                                                >
-                                                    <SelectTrigger>
-                                                        <SelectValue placeholder="Select school head type" />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        <SelectGroup>
-                                                            <SelectLabel>School Head Level</SelectLabel>
-                                                            <SelectItem value="junior-high">Junior High School Head</SelectItem>
-                                                            <SelectItem value="senior-high">Senior High School Head</SelectItem>
-                                                        </SelectGroup>
-                                                    </SelectContent>
-                                                </Select>
-                                                {errors.schoolHeadType && (
-                                                    <p className="text-sm text-red-500">{errors.schoolHeadType.message}</p>
-                                                )}
+                                                {errors.yearsOfExperience && <p className="text-red-500">{errors.yearsOfExperience.message}</p>}
                                             </div>
+
+                                            {/* <div className="grid gap-3">
+                                            <Label htmlFor="gender">Certifications</Label>
+                                            <Textarea
+                                                className="w-full"
+                                                placeholder="Enter certifications"
+                                                rows={4}
+                                            />
+                                        </div>
+
+                                        <div className="grid gap-3">
+                                            <Label htmlFor="gender">Document Management Experience</Label>
+                                            <Textarea
+                                                className="w-full"
+                                                placeholder="Enter document management experience"
+                                                rows={4}
+                                            />
+                                        </div> */}
+
                                         </div>
                                     </CardContent>
                                 </Card>
 
-                                {/* Address details */}
+                                {/* Address Details Card */}
                                 <Card>
                                     <CardHeader>
                                         <CardTitle>Address Details (Optional)</CardTitle>
@@ -561,39 +610,17 @@ const SystemAdminHandlePrincipalPage = () => {
                             </div>
 
                             <div className="grid auto-rows-max items-start gap-4 lg:gap-8">
-                                {/* Admin status */}
-                                {/* <Card x-chunk="dashboard-07-chunk-3">
-                                    <CardHeader>
-                                        <CardTitle>Admin Status</CardTitle>
-                                    </CardHeader>
-                                    <CardContent>
-                                        <div className="grid gap-6">
-                                            <div className="grid gap-3">
-                                                <Label htmlFor="status">Status</Label>
-                                                <Select>
-                                                    <SelectTrigger id="status" aria-label="Select status">
-                                                        <SelectValue placeholder="Select status" />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        <SelectItem value="published">Active</SelectItem>
-                                                        <SelectItem value="archived">Inactive</SelectItem>
-                                                    </SelectContent>
-                                                </Select>
-                                            </div>
-                                        </div>
-                                    </CardContent>
-                                </Card> */}
-
-                                {/* Admin Image */}
+                                {/* Principal Image Card */}
                                 <Card className="overflow-hidden">
                                     <CardHeader>
-                                        <CardTitle>Principal Image</CardTitle>
+                                        <CardTitle>Registrar Image</CardTitle>
                                         <CardDescription>
-                                            Upload principal image (Optional)
+                                            Update registrar image
                                         </CardDescription>
                                     </CardHeader>
                                     <CardContent>
                                         <UserAvatarUpload
+                                            currentImageId={registrar.imageStorageId}
                                             onImageUpload={(storageId) => setImageStorageId(storageId)}
                                             onImageRemove={() => setImageStorageId(undefined)}
                                         />
@@ -602,7 +629,7 @@ const SystemAdminHandlePrincipalPage = () => {
                             </div>
                         </div>
 
-                        {/* Button for mobile users */}
+                        {/* Mobile Save Button */}
                         <div className="flex items-center justify-center gap-2 md:hidden">
                             <Button
                                 type="submit"
@@ -610,14 +637,14 @@ const SystemAdminHandlePrincipalPage = () => {
                                 className="text-white"
                                 disabled={isLoading}
                             >
-                                {isLoading ? "Creating..." : "Save"}
+                                {isLoading ? "Saving..." : "Save Changes"}
                             </Button>
                         </div>
                     </div>
                 </form>
             </main>
         </div>
-    )
-}
+    );
+};
 
-export default SystemAdminHandlePrincipalPage;
+export default SystemAdminEditPrincipalPage; 
