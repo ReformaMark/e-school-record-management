@@ -23,11 +23,15 @@ import { DataTable } from "@/components/data-table";
 import { File, ListFilterIcon } from "lucide-react";
 import Link from "next/link";
 import { teacherColumns, teachersData } from "../../../../data/teachers-data";
+import { useQuery } from "convex/react";
+import { api } from "../../../../convex/_generated/api";
 
 // Column definitions for the DataTable
 
 
 const SchoolHeadTeachersPage = () => {
+    const teachers = useQuery(api.users.getTeachers);
+
     return (
         <div className="container mx-auto p-4">
             <Breadcrumb className="hidden md:flex">
@@ -94,13 +98,18 @@ const SchoolHeadTeachersPage = () => {
                         <CardDescription>View the list of teachers.</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <DataTable
-                            columns={teacherColumns}
-                            // @ts-expect-error TODO: change this to the backend teachers and paganahin yung filtering
-                            data={teachersData}
-                            filter="firstName"
-                            placeholder="teachers by first name"
-                        />
+                        {teachers ? (
+                            <DataTable
+                                columns={teacherColumns}
+                                data={teachers}
+                                filter="firstName"
+                                placeholder="Search teachers..."
+                            />
+                        ) : (
+                            <div className="flex items-center justify-center h-24">
+                                Loading...
+                            </div>
+                        )}
                     </CardContent>
                 </Card>
             </main>

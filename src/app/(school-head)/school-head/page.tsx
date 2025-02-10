@@ -67,7 +67,7 @@ const SchoolHeadPage = () => {
             <div className="grid gap-6 md:grid-cols-2">
                 <StudentEnrollmentTrends />
 
-                <TeacherPerformanceChart />
+                {/* <TeacherPerformanceChart /> */}
 
                 <StudentPerformance />
 

@@ -1,3 +1,4 @@
+"use client"
 import {
     Breadcrumb,
     BreadcrumbItem,
@@ -20,10 +21,24 @@ import {
 import { DataTable } from "@/components/data-table";
 import { File, ListFilterIcon } from "lucide-react";
 import Link from "next/link";
-import { staffColumns, staffData } from "../../../../data/staff-data";
+import { useQuery } from "convex/react";
+import { api } from "../../../../convex/_generated/api";
+import { useState } from "react";
+import { exportToExcel } from "@/lib/export-to-excel";
+import { registrarColumnsInSchoolHead } from "../../../../data/staff-data";
 
 // Column definitions for the DataTable
 const SchoolHeadRegistrarPage = () => {
+    const registrars = useQuery(api.users.fetchRegistrars);
+    const [showActive, setShowActive] = useState(true);
+    const [showInactive, setShowInactive] = useState(true);
+
+    const filteredRegistrars = registrars?.filter(registrar => {
+        if (!showActive && registrar.isActive) return false;
+        if (!showInactive && !registrar.isActive) return false;
+        return true;
+    }) || [];
+
     return (
         <div className="container mx-auto p-4">
             <Breadcrumb className="hidden md:flex">
@@ -53,17 +68,26 @@ const SchoolHeadRegistrarPage = () => {
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
-                                <DropdownMenuLabel>Filter by</DropdownMenuLabel>
+                                <DropdownMenuLabel>Filter by Status</DropdownMenuLabel>
                                 <DropdownMenuSeparator />
-                                <DropdownMenuCheckboxItem checked>
+                                <DropdownMenuCheckboxItem
+                                    checked={showActive}
+                                    onCheckedChange={setShowActive}
+                                >
                                     Active
                                 </DropdownMenuCheckboxItem>
-                                <DropdownMenuCheckboxItem>
-                                    Resigned
+                                <DropdownMenuCheckboxItem
+                                    checked={showInactive}
+                                    onCheckedChange={setShowInactive}
+                                >
+                                    Inactive
                                 </DropdownMenuCheckboxItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
-                        <Button size="sm" variant="outline" className="h-7 gap-1">
+
+                        <Button size="sm" variant="outline" className="h-7 gap-1"
+                            onClick={() => exportToExcel(filteredRegistrars || [], "school_registrars")}
+                        >
                             <File className="h-3.5 w-3.5" />
                             <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
                                 Export
@@ -76,7 +100,8 @@ const SchoolHeadRegistrarPage = () => {
                                 variant: "default",
                                 size: "sm",
                                 className: "text-white h-7 gap-1 w-full p-2"
-                            }))}>
+                            }))}
+                        >
                             <PlusCircleIcon className="h-3.5 w-3.5" />
                             <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
                                 Add registrar
@@ -88,12 +113,13 @@ const SchoolHeadRegistrarPage = () => {
                 <Card x-chunk="dashboard-06-chunk-0">
                     <CardHeader>
                         <CardTitle>Registrars</CardTitle>
-                        <CardDescription>Manage the list of registrars.</CardDescription>
+                        <CardDescription>View the list of registrars.</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <DataTable
-                            columns={staffColumns}
-                            data={staffData}
+                            columns={registrarColumnsInSchoolHead}
+                            // @ts-expect-error slight type error
+                            data={registrars ?? []}
                             filter="firstName"
                             placeholder="by first name"
                         />
