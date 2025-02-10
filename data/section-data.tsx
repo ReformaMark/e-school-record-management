@@ -1,6 +1,6 @@
 "use client"
 import { ColumnDef } from "@tanstack/react-table"
-import { PlusCircle } from "lucide-react"
+import { PencilIcon, PlusCircle } from "lucide-react"
 import Link from "next/link"
 import { Doc, Id } from "../convex/_generated/dataModel"
 
@@ -302,7 +302,13 @@ export const sectionColumns: ColumnDef<SectionWithDetails>[] = [
         header: "Actions",
         cell: ({ row }) => {
             return (
-                <div className="">
+                <div className="flex flex-row gap-2">
+                    <Link
+                        href={`/sysadmin-sections/sysadmin-edit-section/${row.original._id}`}
+                        className="flex flex-row gap-1 items-center"
+                    >
+                        <PencilIcon className="w-4 h-4" /> Edit
+                    </Link>
                     <Link
                         href={`/sysadmin-sections/sysadmin-add-class/${row.original._id}`}
                         className="flex flex-row gap-1 items-center"

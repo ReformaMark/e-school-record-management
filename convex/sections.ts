@@ -1,5 +1,6 @@
 import { ConvexError, v } from "convex/values";
 import { mutation, query } from "./_generated/server";
+import { Id } from "./_generated/dataModel";
 
 export const getSectionsUsingGradeLevel = query({
     args: {
@@ -107,6 +108,7 @@ export const getSections = query({
     handler: async (ctx) => {
         const sections = await ctx.db
             .query("sections")
+            .order("desc")
             .filter(q => q.eq(q.field("isActive"), true))
             .collect();
 
@@ -200,3 +202,95 @@ export const addClassToSection = mutation({
         return classId;
     }
 })
+
+export const update = mutation({
+    args: {
+        id: v.id("sections"),
+        name: v.string(),
+        gradeLevelId: v.id("gradeLevels"),
+        advisorId: v.id("users"),
+        schoolYearId: v.id("schoolYears"),
+        classes: v.array(v.object({
+            id: v.optional(v.id("classes")),
+            subjectId: v.id("subjects"),
+            teacherId: v.id("users"),
+            semester: v.optional(v.string()),
+            track: v.optional(v.string())
+        }))
+    },
+    handler: async (ctx, args) => {
+        const section = await ctx.db.get(args.id);
+        if (!section) {
+            throw new ConvexError("Section not found");
+        }
+
+        const advisor = await ctx.db.get(args.advisorId);
+        if (!advisor || advisor.role !== "teacher") {
+            throw new ConvexError("Invalid advisor selected");
+        }
+
+        const gradeLevel = await ctx.db.get(args.gradeLevelId);
+        const isSHS = gradeLevel?.level.includes("11") || gradeLevel?.level.includes("12");
+
+        if (isSHS) {
+            const invalidClasses = args.classes.filter(
+                cls => !cls.semester || !cls.track
+            );
+            if (invalidClasses.length > 0) {
+                throw new ConvexError(
+                    "Senior High School classes must have semester and track specified"
+                );
+            }
+        }
+
+        // Update section details
+        await ctx.db.patch(args.id, {
+            name: args.name,
+            gradeLevelId: args.gradeLevelId,
+            advisorId: args.advisorId,
+            schoolYearId: args.schoolYearId,
+        });
+
+        // Get existing classes
+        const existingClasses = await ctx.db
+            .query("classes")
+            .filter(q => q.eq(q.field("sectionId"), args.id))
+            .collect();
+
+        // Delete classes that are not in the updated list
+        const updatedClassIds = args.classes
+            .filter(c => c.id)
+            .map(c => c.id) as Id<"classes">[];
+
+        for (const existingClass of existingClasses) {
+            if (!updatedClassIds.includes(existingClass._id)) {
+                await ctx.db.delete(existingClass._id);
+            }
+        }
+
+        // Update or create classes
+        for (const classData of args.classes) {
+            if (classData.id) {
+                // Update existing class
+                await ctx.db.patch(classData.id, {
+                    subjectId: classData.subjectId,
+                    teacherId: classData.teacherId,
+                    semester: isSHS ? classData.semester : undefined,
+                    track: isSHS ? classData.track : undefined
+                });
+            } else {
+                // Create new class
+                await ctx.db.insert("classes", {
+                    subjectId: classData.subjectId,
+                    teacherId: classData.teacherId,
+                    sectionId: args.id,
+                    schoolYearId: args.schoolYearId,
+                    semester: isSHS ? classData.semester : undefined,
+                    track: isSHS ? classData.track : undefined
+                });
+            }
+        }
+
+        return args.id;
+    }
+});
