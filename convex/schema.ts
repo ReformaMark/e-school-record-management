@@ -157,7 +157,6 @@ export default defineSchema({
     schoolYearId: v.id('schoolYears'),
     semester: v.optional(v.string()), // 1st or 2nd
     track: v.optional(v.string()), // core subject (All Track),Academic Track (except Immersion)  ,Work Immersion/ Culminating Activity (for Academic Track) , TVL/ Sports/ Arts and Design Track
-
   }).index('by_teacherId', ['teacherId']),
 
   subjects: defineTable({

@@ -63,6 +63,20 @@ export const create = mutation({
             throw new ConvexError("Invalid advisor selected");
         }
 
+        const gradeLevel = await ctx.db.get(args.gradeLevelId);
+        const isSHS = gradeLevel?.level.includes("11") || gradeLevel?.level.includes("12");
+
+        if (isSHS) {
+            const invalidClasses = args.classes.filter(
+                cls => !cls.semester || !cls.track
+            );
+            if (invalidClasses.length > 0) {
+                throw new ConvexError(
+                    "Senior High School classes must have semester and track specified"
+                );
+            }
+        }
+
         const sectionId = await ctx.db.insert("sections", {
             name: args.name,
             gradeLevelId: args.gradeLevelId,
@@ -74,10 +88,12 @@ export const create = mutation({
 
         const classPromises = args.classes.map(classData =>
             ctx.db.insert("classes", {
-                ...classData,
-                // scheduleId: [],
+                subjectId: classData.subjectId,
+                teacherId: classData.teacherId,
                 sectionId,
-                schoolYearId: args.schoolYearId
+                schoolYearId: args.schoolYearId,
+                semester: isSHS ? classData.semester : undefined,
+                track: isSHS ? classData.track : undefined
             })
         );
 

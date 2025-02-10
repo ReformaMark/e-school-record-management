@@ -27,7 +27,7 @@ import {
     PlusIcon
 } from "lucide-react";
 import Link from "next/link";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { api } from "../../../../../../convex/_generated/api";
@@ -35,6 +35,7 @@ import { Id } from "../../../../../../convex/_generated/dataModel";
 import { SectionFormData, sectionSchema } from "@/lib/validation/add-section-zod";
 
 const SystemAdminAddSectionPage = () => {
+    const [isSeniorHigh, setIsSeniorHigh] = useState<boolean | undefined>(false);
     const { register, control, handleSubmit, setValue, watch, reset, formState: { errors } } = useForm<SectionFormData>({
         resolver: zodResolver(sectionSchema),
         defaultValues: {
@@ -50,19 +51,10 @@ const SystemAdminAddSectionPage = () => {
             }]
         }
     });
-
-    const formValues = watch()
-
     const { fields, append, remove } = useFieldArray({
         control,
         name: "classes"
     });
-
-    const teachers = useQuery(api.users.getTeachers);
-    const subjects = useQuery(api.subjects.getSubjects);
-    const schoolYears = useQuery(api.schoolYear.get);
-    const gradeLevels = useQuery(api.gradeLevel.get);
-
     const { mutate: createSection, isPending } = useMutation({
         mutationFn: useConvexMutation(api.sections.create),
         onSuccess: () => {
@@ -73,6 +65,27 @@ const SystemAdminAddSectionPage = () => {
             toast.error(error.message);
         }
     });
+    const selectedGradeLevelId = watch("gradeLevelId");
+    const teachers = useQuery(api.users.getTeachers);
+    const subjects = useQuery(api.subjects.getSubjects);
+    const schoolYears = useQuery(api.schoolYear.get);
+    const gradeLevels = useQuery(api.gradeLevel.get);
+
+    const filteredSubjects = subjects?.filter(
+        subject => subject.gradeLevelId === selectedGradeLevelId
+    );
+
+    const trackOptions = [
+        { label: "Core Subject (All Track)", value: "core" },
+        { label: "Academic Track", value: "academic" },
+        { label: "Work Immersion/Culminating Activity", value: "immersion" },
+        { label: "TVL Track", value: "tvl" },
+        { label: "Sports Track", value: "sports" },
+        { label: "Arts and Design Track", value: "arts" }
+    ];
+
+    const formValues = watch()
+
 
     useEffect(() => {
         const advisorId = watch('advisorId');
@@ -87,12 +100,37 @@ const SystemAdminAddSectionPage = () => {
     }, [watch('advisorId'), fields.length, setValue]);
 
     const handleAddClass = () => {
+        const formValues = watch();
         append({
             subjectId: "",
-            teacherId: fields.length === 0 ? formValues.advisorId : "", // Set advisor for first class
+            teacherId: fields.length === 0 ? formValues.advisorId : "",
             semester: "",
             track: ""
         });
+    };
+
+    const handleGradeLevelChange = (value: string) => {
+        setValue("gradeLevelId", value)
+
+        const selectedGradeLevel = gradeLevels?.find(g => g._id === value);
+        const isSHS = selectedGradeLevel?.level.includes("11") || selectedGradeLevel?.level.includes("12");
+        setIsSeniorHigh(isSHS);
+
+        if (!isSHS) {
+            // Clear semester and track for all classes
+            fields.forEach((_, index) => {
+                setValue(`classes.${index}.semester`, "");
+                setValue(`classes.${index}.track`, "");
+            });
+        }
+    };
+
+    const handleSemesterChange = (value: string, index: number) => {
+        setValue(`classes.${index}.semester`, value);
+    };
+
+    const handleTrackChange = (value: string, index: number) => {
+        setValue(`classes.${index}.track`, value);
     };
 
     const onSubmit = (data: SectionFormData) => {
@@ -175,7 +213,7 @@ const SystemAdminAddSectionPage = () => {
                                                     <SelectContent>
                                                         {schoolYears?.map((sy) => (
                                                             <SelectItem key={sy._id} value={sy._id}>
-                                                                {sy.startDate} - {sy.endDate}
+                                                                {sy.sy || `${sy.startDate.split('-')[0]}-${sy.endDate.split('-')[0]}`}
                                                             </SelectItem>
                                                         ))}
                                                     </SelectContent>
@@ -188,16 +226,13 @@ const SystemAdminAddSectionPage = () => {
                                             <div className="grid gap-3 grid-cols-1 md:grid-cols-2">
                                                 <div className="grid gap-2">
                                                     <Label>Grade Level</Label>
-                                                    <Select onValueChange={(value) => setValue("gradeLevelId", value)}>
+                                                    <Select onValueChange={handleGradeLevelChange}>
                                                         <SelectTrigger>
                                                             <SelectValue placeholder="Select Grade Level" />
                                                         </SelectTrigger>
                                                         <SelectContent>
                                                             {gradeLevels?.map((grade) => (
-                                                                <SelectItem
-                                                                    key={grade._id}
-                                                                    value={grade._id}
-                                                                >
+                                                                <SelectItem key={grade._id} value={grade._id}>
                                                                     {grade.level}
                                                                 </SelectItem>
                                                             ))}
@@ -240,17 +275,26 @@ const SystemAdminAddSectionPage = () => {
                                     <CardContent>
                                         <div className="space-y-6">
                                             {fields.map((field, index) => (
-                                                <div key={field.id} className="grid gap-4 lg:grid-cols-4">
+                                                <div key={field.id} className="grid gap-4 lg:grid-cols-5">
                                                     <div className="grid gap-2">
                                                         <Label>Subject</Label>
                                                         <Select
                                                             onValueChange={(value) => setValue(`classes.${index}.subjectId`, value)}
+                                                            disabled={!selectedGradeLevelId} // Disable if no grade level selected
                                                         >
                                                             <SelectTrigger>
-                                                                <SelectValue placeholder={index === 0 ? "Adviser's subject" : "Select subject"} />
+                                                                <SelectValue
+                                                                    placeholder={
+                                                                        !selectedGradeLevelId
+                                                                            ? "Select grade level first"
+                                                                            : index === 0
+                                                                                ? "Adviser's subject"
+                                                                                : "Select subject"
+                                                                    }
+                                                                />
                                                             </SelectTrigger>
                                                             <SelectContent>
-                                                                {subjects?.map((subject) => (
+                                                                {filteredSubjects?.map((subject) => (
                                                                     <SelectItem key={subject._id} value={subject._id}>
                                                                         {subject.name}
                                                                     </SelectItem>
@@ -258,7 +302,9 @@ const SystemAdminAddSectionPage = () => {
                                                             </SelectContent>
                                                         </Select>
                                                         {errors.classes?.[index]?.subjectId && (
-                                                            <p className="text-sm text-red-500">{errors.classes[index].subjectId.message}</p>
+                                                            <p className="text-sm text-red-500">
+                                                                {errors.classes[index].subjectId.message}
+                                                            </p>
                                                         )}
                                                     </div>
 
@@ -288,6 +334,46 @@ const SystemAdminAddSectionPage = () => {
                                                             </p>
                                                         )}
                                                     </div>
+
+                                                    {isSeniorHigh && (
+                                                        <>
+                                                            <div className="grid gap-2">
+                                                                <Label>Semester</Label>
+                                                                <Select onValueChange={(value) => handleSemesterChange(value, index)}>
+                                                                    <SelectTrigger>
+                                                                        <SelectValue placeholder="Select Semester" />
+                                                                    </SelectTrigger>
+                                                                    <SelectContent>
+                                                                        <SelectItem value="1st">1st Semester</SelectItem>
+                                                                        <SelectItem value="2nd">2nd Semester</SelectItem>
+                                                                    </SelectContent>
+                                                                </Select>
+                                                                {errors.classes?.[index]?.semester && (
+                                                                    <p className="text-sm text-red-500">{errors.classes[index].semester.message}</p>
+                                                                )}
+                                                            </div>
+
+                                                            <div className="grid gap-2">
+                                                                <Label>Track</Label>
+                                                                <Select onValueChange={(value) => handleTrackChange(value, index)}>
+                                                                    <SelectTrigger>
+                                                                        <SelectValue placeholder="Select Track" />
+                                                                    </SelectTrigger>
+                                                                    <SelectContent>
+                                                                        {trackOptions.map((track) => (
+                                                                            <SelectItem key={track.value} value={track.value}>
+                                                                                {track.label}
+                                                                            </SelectItem>
+                                                                        ))}
+                                                                    </SelectContent>
+                                                                </Select>
+                                                                {errors.classes?.[index]?.track && (
+                                                                    <p className="text-sm text-red-500">{errors.classes[index].track.message}</p>
+                                                                )}
+                                                            </div>
+                                                        </>
+                                                    )}
+
                                                     {index > 0 && (
                                                         <Button
                                                             type="button"
