@@ -229,6 +229,22 @@ export default defineSchema({
     description: v.optional(v.string())
   }),
 
+  // possible schema for handling student interventions
+  //   studentInterventions: defineTable({
+  //     studentId: v.id('students'),
+  //     classId: v.id('classes'),
+  //     quarter: v.string(),
+  //     interventionsUsed: v.array(v.string()), // List of interventions used
+  //     generalRemark: v.optional(v.string()), // General remark for all interventions
+  //     detailedRemarks: v.optional(v.array(v.object({
+  //       intervention: v.string(),
+  //       remark: v.string()
+  //     }))) // Detailed remarks for each intervention
+  //   }).index('by_studentId', ['studentId'])
+  //     .index('by_classId', ['classId'])
+  //     .index('by_quarter', ['quarter'])
+  // });
+
   // gradeSummary: defineTable({
   //   section: v.id('sections'),
   //   teacherId: v.id('users'),
