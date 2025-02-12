@@ -6,7 +6,7 @@ import {
 
 const isAuthPage = createRouteMatcher(["/auth"])
 const isAdminPage = createRouteMatcher(["/dashboard/*"])
-const isUserPage = createRouteMatcher(["/user/*"])
+const isTeacherPage = createRouteMatcher(["/dashboard/*"])
 
 export default convexAuthNextjsMiddleware(async (request, { convexAuth }) => {
     if (isAuthPage(request) && convexAuth.isAuthenticated()) {
@@ -14,7 +14,7 @@ export default convexAuthNextjsMiddleware(async (request, { convexAuth }) => {
     }
 
     if (!convexAuth.isAuthenticated()) {
-        if (isAdminPage(request) || isUserPage(request)) {
+        if (isAdminPage(request) || isTeacherPage(request)) {
             return nextjsMiddlewareRedirect(request, "/auth")
         }
         return;

@@ -1,3 +1,4 @@
+import { forRemedial } from "@/app/(teacher)/section/_components/studentData";
 import { authTables } from "@convex-dev/auth/server";
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
@@ -320,9 +321,154 @@ export default defineSchema({
     schoolYear: v.id('schoolYears'),
     isSubmitted: v.optional(v.boolean()) // determine if the quarterly grades has been recorded on the quarterLyGrades table
   }).index("by_studentId", ["studentId"])
-    .index("by_classId", ["classId"])
+    .index("by_classId", ["classId"]),
+
+  finalGrades: defineTable({
+    advisorId: v.id('users'),
+    studentId: v.id('students'),
+    sectionId: v.id('sections'),
+    subjects: v.array(v.object({
+      classId: v.id('classes'),
+      subjectName: v.string(),
+      finalGrade: v.number(),
+      forRemedial: v.boolean(),
+      remedialGrade: v.optional(v.number()),
+      status: v.optional(v.string())
+    })),
+    generalAverage: v.number(),
+  }),
+  
+
+  promotion:defineTable({
+    from: v.number(),
+    to: v.number(),
+    studentId: v.id('students'),
+    type: v.union(v.literal("regular"),v.literal("conditional"),)
+  }),
+    
+  values: defineTable({
+    studentId: v.id('students'),
+    classId: v.id('classes'),
+    makaDyos: v.object({
+      first: v.object({
+        first: v.optional(v.string()),
+        second: v.optional(v.string()),
+        third: v.optional(v.string()),
+        fourth: v.optional(v.string())
+      }),
+      second: v.object({
+        first:v.optional(v.string()),
+        second: v.optional(v.string()),
+        third: v.optional(v.string()),
+        fourth: v.optional(v.string())
+      })
+    }),
+    makaTao: v.object({
+      first: v.object({
+        first: v.optional(v.string()),
+        second: v.optional(v.string()),
+        third: v.optional(v.string()),
+        fourth: v.optional(v.string())
+      }),
+      second: v.object({
+        first: v.optional(v.string()),
+        second: v.optional(v.string()),
+        third: v.optional(v.string()),
+        fourth: v.optional(v.string())
+      })
+    }),
+    makakalikasan: v.object({
+      first: v.object({
+        first: v.optional(v.string()),
+        second: v.optional(v.string()),
+        third: v.optional(v.string()),
+        fourth: v.optional(v.string())
+      })
+    }),
+    makaBansa: v.object({
+      first: v.object({
+        first: v.optional(v.string()),
+        second: v.optional(v.string()),
+        third: v.optional(v.string()),
+        fourth: v.optional(v.string())
+      }),
+      second: v.object({
+        first: v.optional(v.string()),
+        second: v.optional(v.string()),
+        third: v.optional(v.string()),
+        fourth: v.optional(v.string())
+      })
+    }),
 
 
+  }),
+
+  attendance: defineTable({
+    studentId: v.id('students'),
+    classId: v.id('classes'),
+    june: v.object({
+      totalSchooldays: v.optional(v.number()),
+      daysAbsent: v.optional(v.number()),
+      daysPresent: v.optional(v.number()),
+    }),
+    july: v.object({
+      totalSchooldays: v.optional(v.number()),
+      daysAbsent: v.optional(v.number()),
+      daysPresent: v.optional(v.number()),
+    }),
+    august: v.object({
+      totalSchooldays: v.optional(v.number()),
+      daysAbsent: v.optional(v.number()),
+      daysPresent: v.optional(v.number()),
+    }),
+    september: v.object({
+      totalSchooldays: v.optional(v.number()),
+      daysAbsent: v.optional(v.number()),
+      daysPresent: v.optional(v.number()),
+    }),
+    october: v.object({
+      totalSchooldays: v.optional(v.number()),
+      daysAbsent: v.optional(v.number()),
+      daysPresent: v.optional(v.number()),
+    }),
+    november: v.object({
+      totalSchooldays: v.optional(v.number()),
+      daysAbsent: v.optional(v.number()),
+      daysPresent: v.optional(v.number()),
+    }),
+    december: v.object({
+      totalSchooldays: v.optional(v.number()),
+      daysAbsent: v.optional(v.number()),
+      daysPresent: v.optional(v.number()),
+    }),
+    january: v.object({
+      totalSchooldays: v.optional(v.number()),
+      daysAbsent: v.optional(v.number()),
+      daysPresent: v.optional(v.number()),
+    }),
+    february: v.object({
+      totalSchooldays: v.optional(v.number()),
+      daysAbsent: v.optional(v.number()),
+      daysPresent: v.optional(v.number()),
+    }),
+    march: v.object({
+      totalSchooldays: v.optional(v.number()),
+      daysAbsent: v.optional(v.number()),
+      daysPresent: v.optional(v.number()),
+    }),
+    april: v.object({
+      totalSchooldays: v.optional(v.number()),
+      daysAbsent: v.optional(v.number()),
+      daysPresent: v.optional(v.number()),
+    }),
+    may: v.object({
+      totalSchooldays: v.optional(v.number()),
+      daysAbsent: v.optional(v.number()),
+      daysPresent: v.optional(v.number()),
+    }),
+  }),
+
+ 
 })
 
 

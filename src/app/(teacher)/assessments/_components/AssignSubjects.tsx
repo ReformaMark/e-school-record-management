@@ -4,11 +4,11 @@ import Loading from '@/app/components/Loading'
 import { ColumnDef } from '@tanstack/react-table'
 
 import GradeWeightsForm from './GradeWeightsForm'
-import { SubjectsWithAppliedGradeWeihts } from '@/lib/types'
+import { SubjectsWithAppliedGradeWeights } from '@/lib/types'
 
 
 interface QuarterExamPropsTypes {
-    subjects: SubjectsWithAppliedGradeWeihts[] | undefined
+    subjects: SubjectsWithAppliedGradeWeights[] | undefined
 }
 
 export default function AssignSubjects({subjects}: QuarterExamPropsTypes) {
@@ -33,7 +33,7 @@ export default function AssignSubjects({subjects}: QuarterExamPropsTypes) {
   )
 };
 
-const AssignedSubjectsColumn: ColumnDef<SubjectsWithAppliedGradeWeihts>[] = [
+const AssignedSubjectsColumn: ColumnDef<SubjectsWithAppliedGradeWeights>[] = [
     {  id: "subject",
         accessorKey: "subject",
         header: "Subject",

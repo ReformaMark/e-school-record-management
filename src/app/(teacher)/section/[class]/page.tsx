@@ -10,15 +10,15 @@ import Link from 'next/link'
 import { cn } from '@/lib/utils'
 import FinalGradeSHSTemplate from '@/app/components/FinalGradeSHSTemplate'
 import { DataTable } from '@/components/data-table' 
-import { forRemedial, studentMasterList, summerClassStatus } from '../_components/studentData'
+import { forRemedial, studentMasterList } from '../_components/studentData'
 import NeedsImprovement from '../_components/NeedsImprovement'
 import InputGrades from '../_components/InputGrades'
 import Loading from '@/app/components/Loading'
 import { useQuery } from 'convex/react'
 import { api } from '../../../../../convex/_generated/api'
-import { ClassesWithDetails, SectionWithGradeLevel, StudentsWithEnrollMentTypes } from '@/lib/types'
+import { ClassesWithDetails, FinalGradesWithSubject, SectionWithGradeLevel, StudentsWithEnrollMentTypes } from '@/lib/types'
 import MapehQuarterlyGradesTab from '../_components/MapehQuarterlyGradesTab'
-import { Doc } from '../../../../../convex/_generated/dataModel'
+import { Doc, Id } from '../../../../../convex/_generated/dataModel'
 
 function Section({params}:{params: {class: string}}) {
   const classId = params.class;
@@ -26,6 +26,10 @@ function Section({params}:{params: {class: string}}) {
   //section === class
   const cls = classes?.find((section) => section?._id === classId);
   
+  const forRemedialStudents = useQuery(api.finalGrades.forRemedial,{
+      classId: classId as Id<'classes'>,
+      sectionId: cls?.sectionId
+  })
   const studentInMasterlist = useQuery(api.students.studentsInMasterList, {classId: cls?._id })
  
   if(isLoading || !studentInMasterlist ){
@@ -121,7 +125,7 @@ function Section({params}:{params: {class: string}}) {
             <DataTable 
               //@ts-ignore
               columns={forRemedial}
-              data={summerClassStatus}
+              data={forRemedialStudents as FinalGradesWithSubject[]}
               filter='lrn'
               placeholder="students by LRN"
               />

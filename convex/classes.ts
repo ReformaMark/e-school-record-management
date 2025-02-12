@@ -11,7 +11,7 @@ export const getTeacherClasses = query({
             throw new ConvexError('No Teacher Id.')
         }
 
-        const classes = await ctx.db.query('classes').collect()
+        const classes = await ctx.db.query('classes').filter(q => q.eq(q.field('teacherId'), teacherId)).collect()
 
         // const classWithDetails = await asyncMap(classes, async (class)=>{
 

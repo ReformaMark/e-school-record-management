@@ -10,15 +10,15 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { GradeWeightsFormSchema } from '@/lib/validation/grade-weights-form';
 import { toast } from 'sonner';
-import { Doc } from '../../../../../convex/_generated/dataModel';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Label } from '@/components/ui/label'
 import { cn } from '@/lib/utils'
 import { useMutation } from 'convex/react'
 import { api } from '../../../../../convex/_generated/api'
+import { SubjectsWithAppliedGradeWeights } from '@/lib/types'
 
 interface GradeWeightsFormProps{
-    subject: Doc<'subjects'>
+    subject: SubjectsWithAppliedGradeWeights
 }
 
 function GradeWeightsForm({subject}: GradeWeightsFormProps) {
@@ -26,16 +26,19 @@ function GradeWeightsForm({subject}: GradeWeightsFormProps) {
     const [learningMode, setLearningMode] = useState<string>("")
 
     const addAppliedGW = useMutation(api.appliedGradeWeigths.create)
+ 
 
     const form = useForm<z.infer<typeof GradeWeightsFormSchema>>({
         resolver: zodResolver(GradeWeightsFormSchema),
         defaultValues: {
             learningMode: "Face to face",
-            written: subject.gradeWeights?.written,
-            performance: subject.gradeWeights?.performance,
-            exam: learningMode === "Alternative Learning Module" ? undefined :subject.gradeWeights?.exam
+            written: subject.appliedGradeWeights ? subject.appliedGradeWeights?.written : subject.gradeWeights?.written,
+            performance:  subject.appliedGradeWeights ? subject.appliedGradeWeights?.performance : subject.gradeWeights?.performance,
+            exam: learningMode === "Alternative Learning Module" ? undefined : subject.appliedGradeWeights ? subject.appliedGradeWeights?.exam : subject.gradeWeights?.exam,
         }
     });
+
+    console.log(typeof form.getValues('written'))
     const onSubmit = async (data: z.infer<typeof GradeWeightsFormSchema>) => {
         toast.promise(addAppliedGW({
             subjectId: subject._id,
@@ -114,8 +117,9 @@ function GradeWeightsForm({subject}: GradeWeightsFormProps) {
                                                 <Input 
                                                     type="number" 
                                                     placeholder="Percent" 
-                                                    {...field} 
+                                                    {...field}
                                                     className='w-20' 
+                                                    
                                                 />
                                             </FormControl>
                                             <FormMessage />
@@ -136,6 +140,7 @@ function GradeWeightsForm({subject}: GradeWeightsFormProps) {
                                                     placeholder="Percent" 
                                                     {...field} 
                                                     className='w-20' 
+                                                    // defaultValue={Number(appliedGradeWeights.performance)}
                                                 />
                                         
                                             </FormControl>
@@ -158,6 +163,7 @@ function GradeWeightsForm({subject}: GradeWeightsFormProps) {
                                                     placeholder="Percent" 
                                                     {...field} 
                                                     className={cn('w-20')} 
+                                                    // defaultValue={appliedGradeWeights ? Number(appliedGradeWeights.exam) : subject.gradeWeights?.exam}
                                                 />
                                             </FormControl>
                                             <FormMessage />

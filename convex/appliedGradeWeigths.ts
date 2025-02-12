@@ -14,26 +14,52 @@ export const create = mutation({
         const teacherId = await getAuthUserId(ctx)
         if(!teacherId) throw new ConvexError('No teacher id found.');
 
-        if(!args.exam){
-            await ctx.db.insert('appliedGradeWeigths',{
-                teacherId: teacherId,
-                subjectId: args.subjectId,
-                learningMode: args.learningMode,
-                written: args.written,
-                performance: args.performance,
-             
-            })
+        const existingAGW = await ctx.db.query('appliedGradeWeigths')
+            .filter(q => q.eq(q.field('subjectId'), args.subjectId))
+            .filter(q => q.eq(q.field('teacherId'), teacherId))
+            .first()
+        if(existingAGW) {
+            if(!args.exam){
+                await ctx.db.patch(existingAGW._id,{
+                    teacherId: teacherId,
+                    subjectId: args.subjectId,
+                    learningMode: args.learningMode,
+                    written: args.written,
+                    performance: args.performance,
+                 
+                })
+            } else {
+                await ctx.db.patch(existingAGW._id,{
+                    teacherId: teacherId,
+                    subjectId: args.subjectId,
+                    learningMode: args.learningMode,
+                    written: args.written,
+                    performance: args.performance,
+                    exam: args.exam
+                })
+            }
+
         } else {
-            await ctx.db.insert('appliedGradeWeigths',{
-                teacherId: teacherId,
-                subjectId: args.subjectId,
-                learningMode: args.learningMode,
-                written: args.written,
-                performance: args.performance,
-                exam: args.exam
-            })
+            if(!args.exam){
+                await ctx.db.insert('appliedGradeWeigths',{
+                    teacherId: teacherId,
+                    subjectId: args.subjectId,
+                    learningMode: args.learningMode,
+                    written: args.written,
+                    performance: args.performance,
+                 
+                })
+            } else {
+                await ctx.db.insert('appliedGradeWeigths',{
+                    teacherId: teacherId,
+                    subjectId: args.subjectId,
+                    learningMode: args.learningMode,
+                    written: args.written,
+                    performance: args.performance,
+                    exam: args.exam
+                })
+            }
         }
-    return
     }
 })
 

@@ -248,13 +248,15 @@ export const StudentTable = () =>{
     const sortedStudents = students?.sort((a, b) => a.lastName.localeCompare(b.lastName)) ?? [];
     return (
         <>
-            {students && (
+            {students ? (
                 <DataTable
                     columns={StudentColumn}
                     data={sortedStudents}
                     filter="fullName"
                     placeholder="students by name"
                 />
+            ): (
+                <div className="text-gray-500 text-sm text-center py-4">No assigned section.</div>
             )}
         </>
     )

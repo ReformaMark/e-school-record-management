@@ -5,7 +5,7 @@ import Sidenav from "../components/Sidenav";
 import { Toaster } from "@/components/ui/sonner";
 import { ConvexAuthNextjsServerProvider } from "@convex-dev/auth/nextjs/server";
 import { ConvexClientProvider } from "../components/convex-client-provider";
-import { RoleCheck } from "@/components/guards/logged-in";
+import { TeacherGuard } from "@/components/guards/teacher-guard";
 
 export const metadata: Metadata = {
   title: "ERMS-teacher",
@@ -24,14 +24,14 @@ export default function RootLayout({
           <body
             className={`bg-[#E0E7E9] relative`}
           > 
-             <RoleCheck/>
+            <TeacherGuard>
               <Toaster richColors />
               <Navbar/>
               <Sidenav/>
               <div className="w-full pt-[15%] md:pt-0  md:absolute z-30 md:right-0 md:top-[80px] md:w-[80%]">
                   {children}
               </div>
-          
+            </TeacherGuard>
           </body>
         </html>
       </ConvexClientProvider>

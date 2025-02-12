@@ -33,13 +33,16 @@ import { Input } from "@/components/ui/input";
 import { CgDanger } from "react-icons/cg";
 import Link from "next/link";
 import { Label } from "@/components/ui/label";
-import { StudentsWithClassRecord, StudentsWithEnrollMentTypes, StudentsWithQuarterlyGrade } from "@/lib/types";
+import { FinalGradesWithSubject, StudentsWithClassRecord, StudentsWithEnrollMentTypes, StudentsWithQuarterlyGrade } from "@/lib/types";
 import PerformanceTaskDialog from "./PerformanceTaskDialog";
 import WrittenWorksDialog from "./WrittenWorksDialog";
 import QuarterlyAssessmentDialog from "./QuarterlyExamDialog";
 import SubmitGradesDialog from "./SubmitGradesDialog";
 import InterventionDialog from "./InterventionDialog";
 import { Badge } from "@/components/ui/badge";
+import { useMutation } from "convex/react";
+import { api } from "../../../../../convex/_generated/api";
+import { toast } from "sonner";
 
 
 type Student = {
@@ -301,14 +304,6 @@ export const studentsData = [
   },
 ];
 
-
-type SummerClassStatus = {
-  fullName: string;              // Student's full name
-  status: "Required to Enroll" | "Recommended for Summer Class" | "Enrolled" | "Not Enrolled"; // Status regarding summer class
-  subject: string;               // Subject for which summer class is being considered
-  remarks: string;               // Any additional notes about the student's performance or situation
-  originalFinalGrade: number;    // Student's original final grade before summer class
-};
 export const summerClassStatus = [
   {
     fullName: "Maria Santos",
@@ -340,20 +335,78 @@ export const summerClassStatus = [
   }
 ];
 
-export const forRemedial: ColumnDef<SummerClassStatus>[] = [
+export const forRemedial: ColumnDef<FinalGradesWithSubject>[] = [
   
-  { accessorKey: 'fullName', header: "Full Name"},
-  { accessorKey: 'originalFinalGrade', header: "Final Grade"},
-  { accessorKey: "status", header: "Status" },
+  { id: "fullName", 
+    accessorFn: (row) => {
+      const { lastName, firstName, middleName, extensionName } = row.student;
+    
+      // Construct the full name including optional middle and extension names
+      return [
+        firstName, 
+        middleName, 
+        lastName, 
+        extensionName
+      ].filter(Boolean).join(" ");
+    },
+    header: "Full Name",
+    cell: ({ row }) => { 
+      const a = row.original
+      return (
+        <div className="">{a.student.firstName} {a.student.middleName} {a.student.lastName }</div>
+      )
+    }
+  },
+  { id: "originalFinalGrade", 
+    accessorKey: 'originalFinalGrade', 
+    header: "Final Grade",
+    cell: ({ row }) => {
+      const a = row.original
+      return (
+        <div className="">
+          {a.subjectForRemedial.finalGrade}
+        </div>
+      )
+
+    }
+  },
+  {  id: "status", accessorKey: "status", header: "Status",
+    cell: ({ row }) => { 
+      const a = row.original
+      return (
+        <div className="">{a.subjectForRemedial.status ?? "Not Enrolled"}</div>
+      )
+    }
+   },
   {
     id: "actions",
     header: "Actions",
     cell: ({ row }) => {
-        const status = row.original.status
+        const a = row.original
+        const status = row.original.subjectForRemedial.status ?? "Not Enrolled" // Enrolled or Not Enrolled
+        const rg = row.original.subjectForRemedial.remedialGrade
         const [isOpen, setIsOpen] = useState<boolean>(false)
-      
+        const [enrollmentStatus, setEnrollmentStatus] = useState(status)
+        const [remedialGrade, setRemedialGrade] = useState(rg)
+        const fullName = `${a.student.firstName} ${a.student.middleName} ${a.student.lastName}`
+        const updateStatus = useMutation(api.finalGrades.updateStatus)
         const handleOpen = () =>{
           setIsOpen(!isOpen)
+        }
+        console.log(enrollmentStatus)
+        const handleSaveStatus = ()=> {
+          toast.promise(updateStatus({
+            finalGradeId: a._id,
+            classId: a.subjectForRemedial.classId,
+            status: enrollmentStatus, // New status t
+            remedialGrade: remedialGrade
+          }),{
+            loading: "Updating status...",
+            success: "Status updated successfully.",
+            error: "Updating status failed."
+          })
+
+          setIsOpen(false)
         }
       return (
         <div className="flex items-center gap-x-2 ">
@@ -373,26 +426,26 @@ export const forRemedial: ColumnDef<SummerClassStatus>[] = [
             </DropdownMenuContent>
           </DropdownMenu>
 
-        <Dialog open={isOpen}>
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
           <DialogContent className=' max-h-screen overflow-auto text-primary'>
           <DialogHeader>
               <DialogTitle>
-                <h1>Student Name: {row.original.fullName}</h1>
+                <h1>Student Name: {fullName}</h1>
               </DialogTitle>
               
           </DialogHeader>
           {status === 'Enrolled' ? (
             <div className="">
              
-              <h1>Subject: {row.original.subject}</h1>
-              <h1>Status: {row.original.status}</h1>
+              <h1>Subject: {row.original.subjectForRemedial.subjectName}</h1>
+              <h1>Status: {status}</h1>
               <div className="grid grid-cols-2 gap-x-5">
                 <div className="">
                   <Label htmlFor="initialGrade">Final Grade</Label>
                   <Input 
                     type='number' 
                     name="initialGrade"
-                    value={row.original.originalFinalGrade}
+                    value={row.original.subjectForRemedial.finalGrade}
                     readOnly
                   />
                 </div>
@@ -401,54 +454,42 @@ export const forRemedial: ColumnDef<SummerClassStatus>[] = [
                   <Input 
                     type='number' 
                     name="summerClassGrade"
-                    
+                    min={row.original.subjectForRemedial.finalGrade}
+                    onChange={(e) => setRemedialGrade(e.target.value ? Number(e.target.value) : undefined)}
+                    defaultValue={row.original.subjectForRemedial.remedialGrade}
                   />
                 </div>
               </div>
             </div>
           ) :(
             <div className="">
-              {row.original.status === 'Not Enrolled' ? (
-                <div className="">
-                  <h1>Subject: {row.original.subject}</h1>
-                  <h1>Status: {row.original.status}</h1>
-                  <h1>Final Grade: {row.original.originalFinalGrade}</h1>
-                </div>
-              ): (
-                <div className="">
-                  <h1>Subject: {row.original.subject}</h1>
-                  <h1>Final Grade: {row.original.originalFinalGrade}</h1>
-                  <div className="flex items-center gap-x-3">
-                    <h1>Status: </h1>
-                    <Select defaultValue={status}>
-                      <SelectTrigger className="outline outline-primary">
-                        <SelectValue defaultValue={status} placeholder="Select status" />
-                      </SelectTrigger>
-                      <SelectContent>
-                          <SelectItem value="Not Enrolled">Not Enrolled</SelectItem>
-                          <SelectItem value="Enrolled">Enrolled</SelectItem>
-                    
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-              )}
+              
+              <h1>Subject: {row.original.subjectForRemedial.subjectName}</h1>
+              <h1>Final Grade: {row.original.subjectForRemedial.finalGrade}</h1>
+              <div className="flex items-center gap-x-3">
+                <h1>Status: </h1>
+                <Select defaultValue={enrollmentStatus} onValueChange={(value) => setEnrollmentStatus(value)}>
+                  <SelectTrigger className="outline outline-primary">
+                    <SelectValue defaultValue={enrollmentStatus} placeholder="Select status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                      <SelectItem value="Not Enrolled">Not Enrolled</SelectItem>
+                      <SelectItem value="Enrolled">Enrolled</SelectItem>
+                
+                  </SelectContent>
+                </Select>
+              </div>
                
             </div>
           )}
          
           <DialogFooter>
             {status === 'Enrolled' &&(
-              <Button variant={'default'} onClick={()=> setIsOpen(!isOpen)} className="text-white">Submit Grade</Button>
+              <Button variant={'default'} onClick={handleSaveStatus} className="text-white">Submit Grade</Button>
 
             )}
             {status === 'Not Enrolled' &&(
-              <Button variant={'default'} onClick={()=> setIsOpen(!isOpen)} className="text-white">Close</Button>
-
-            )}
-            {status !== 'Not Enrolled' && status !== 'Enrolled' && (
-              <Button variant={'default'} onClick={()=> setIsOpen(!isOpen)} className="text-white">Save</Button>
-
+              <Button variant={'default'} onClick={handleSaveStatus} className="text-white">Save</Button>
             )}
           </DialogFooter>
           </DialogContent>

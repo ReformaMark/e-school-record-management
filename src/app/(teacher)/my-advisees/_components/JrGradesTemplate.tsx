@@ -1,136 +1,473 @@
-import React from 'react'
+'use client'
+import { QuarterlyGradesWithSubject, StudentWithDetails } from '@/lib/types'
+import { getAverageForJrh, getFinalQuarterlyGrade, getPassFailStatusMAPEH } from '@/lib/utils'
+import React, { useMemo } from 'react'
+import FinalizeGradesDialog from './FinalizeGradesDialog'
+import { useQuery } from 'convex/react'
+import { api } from '../../../../../convex/_generated/api'
+import { Doc } from '../../../../../convex/_generated/dataModel'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
-function JrGradesTemplate() {
+interface JrGradesTemplateProps {
+    student: StudentWithDetails
+}
+function JrGradesTemplate({student}:JrGradesTemplateProps) {
+    const remedialGrades = useQuery(api.finalGrades.remedialGrades,{
+        studentId: student._id,
+        sectionId: student.sectionDoc?._id
+    })
+
+    const english = student.quarterlyGrades.filter(s => s.subject.name.toLowerCase() === "english")
+    const mathematics = student.quarterlyGrades.filter(s => s.subject.name.toLowerCase() === "mathematics")
+    const science = student.quarterlyGrades.filter(s => s.subject.name.toLowerCase() === "science")
+    const filipino = student.quarterlyGrades.filter(s => s.subject.name.toLowerCase() === "filipino")
+    const ap = student.quarterlyGrades.filter(s => s.subject.name.toLowerCase() === "araling panlipunan")
+    const esp = student.quarterlyGrades.filter(s => s.subject.name.toLowerCase() === "edukasyon sa pagpapakatao")
+    const music = student.quarterlyGrades.filter(s => s.subject.name.toUpperCase() === "MAPEH" && s.subComponent?.toLowerCase() === "music")
+    const arts =  student.quarterlyGrades.filter(s => s.subject.name.toUpperCase() === "MAPEH" && s.subComponent?.toLowerCase() === "arts")
+    const pe = student.quarterlyGrades.filter(s => s.subject.name.toUpperCase() === "MAPEH" && s.subComponent?.toLowerCase() === "physical education")
+    const health = student.quarterlyGrades.filter(s => s.subject.name.toUpperCase() === "MAPEH" && s.subComponent?.toLowerCase() === "health")
+    const epp = student.quarterlyGrades.filter(s => s.subject.name.toLowerCase() === "edukasyong pantahanan at pangkabuhayan")
+    const tle = student.quarterlyGrades.filter(s => s.subject.name.toLowerCase() === "technology and livelihood education")
+
+    const hasTLE =   tle.length !== 0
+    const hasEPP =    epp.length !== 0
+    
+   
+
+    const calculateQuarterlyAverage = (quarterlyGrades: QuarterlyGradesWithSubject[]): number | string => {
+        // Define all required quarters
+        const requiredQuarters = ["1st", "2nd", "3rd", "4th"];
+        
+        // Get valid grades for each quarter, prioritizing interventionGrade
+        const grades = requiredQuarters.map(qtr => {
+            const grade = quarterlyGrades.find(g => g.quarter === qtr);
+            return grade ? (grade.interventionGrade ?? grade.quarterlyGrade) : null;
+        });
+        
+        // If any quarter is missing (null, undefined, or not found), return ""
+        if (grades.some(grade => grade === null || grade === undefined)) {
+            return "";
+        }
+        
+        // Ensure TypeScript treats grades as a number array (safe cast)
+        const validGrades = grades.filter(grade => typeof grade === "number") as number[];
+        
+        if (validGrades.length === 0) return "";
+        
+        // Compute the average
+        const total = validGrades.reduce((sum, grade) => sum + grade, 0);
+        return total / validGrades.length;
+    };
+
+    const getPassFailStatus = (quarterlyGrades: QuarterlyGradesWithSubject[]): string => {
+        const average = calculateQuarterlyAverage(quarterlyGrades);
+        
+        if (typeof average === "string") return ""; // If no valid grades, return an empty string
+        return average <= 74 ? "Failed" : "Passed";
+    };
+
+    const calculateGeneralAverage = useMemo(()=> (): number | string => {
+        // Calculate the average grade for each subject
+        const englishAverage = calculateQuarterlyAverage(english);
+        const mathematicsAverage = calculateQuarterlyAverage(mathematics);
+        const scienceAverage = calculateQuarterlyAverage(science);
+        const filipinoAverage = calculateQuarterlyAverage(filipino);
+        const apAverage = calculateQuarterlyAverage(ap);
+        const espAverage = calculateQuarterlyAverage(esp);
+        const musicAverage = calculateQuarterlyAverage(music);
+        const artsAverage = calculateQuarterlyAverage(arts);
+        const peAverage = calculateQuarterlyAverage(pe);
+        const healthAverage = calculateQuarterlyAverage(health);
+        const eppAverage = calculateQuarterlyAverage(epp);
+        const tleAverage = calculateQuarterlyAverage(tle);
+        const mapehAverage = getAverageForJrh(musicAverage, artsAverage, peAverage, healthAverage)
+    
+        // Collect all required subject averages (excluding TLE and EPP)
+        const requiredSubjectAverages = [
+            englishAverage,
+            mathematicsAverage,
+            scienceAverage,
+            filipinoAverage,
+            apAverage,
+            espAverage,
+            mapehAverage,
+        ];
+    
+        // Check if any required subject average is ""
+        if (requiredSubjectAverages.includes("")) {
+            return ""; // Return an empty string if any required subject average is ""
+        }
+    
+        // Add only valid TLE and EPP averages to the list for calculation
+        const allAverages = [
+            ...requiredSubjectAverages,
+            ...(hasEPP ? [eppAverage] : []),
+            ...(hasTLE ? [tleAverage] : []),
+        ];
+
+        if (allAverages.includes("")) {
+            return ""; // Return an empty string if any required subject average is ""
+        }
+    
+        // Calculate the general average if all required subjects have valid averages
+        const validAverages = allAverages as number[];
+        const total = validAverages.reduce((sum, avg) => sum + avg, 0);
+        const generalAverage = total / allAverages.length;
+    
+        return parseFloat(generalAverage.toFixed(2)); // Round to 2 decimal places
+        
+    },[student.quarterlyGrades]);
+
+    function getRemedialGrade(remedialGrade: Doc<'finalGrades'>, subjectName: string): number | null {
+        const subject = remedialGrade?.subjects.find((s) => s.subjectName.toLowerCase() === subjectName.toLowerCase());
+        return subject?.remedialGrade ?? null;
+    }
+
+
+    const quarter = ["1st", "2nd", "3rd", "4th"]
+    
+    const averages = [
+        {   classId: english.length > 0 ? english[0].classId : undefined,
+            subjectName: "English",
+            finalGrade: calculateQuarterlyAverage(english)
+        },
+        {
+            classId: mathematics.length > 0 ? mathematics[0].classId : undefined,
+            subjectName: "Mathematics",
+            finalGrade: calculateQuarterlyAverage(mathematics)
+        },
+        {
+            classId: science.length > 0 ? science[0].classId : undefined,
+            subjectName: "Science",
+            finalGrade: calculateQuarterlyAverage(science)
+        },
+        {
+            classId: filipino.length > 0 ? filipino[0].classId : undefined,
+            subjectName: "Filipino",
+            finalGrade: calculateQuarterlyAverage(filipino)
+        },
+        {
+            classId: ap.length > 0 ? ap[0].classId : undefined,
+            subjectName: "Araling Panlipunan (AP)",
+            finalGrade: calculateQuarterlyAverage(ap)
+        },
+        {
+            classId: esp.length > 0 ? esp[0].classId : undefined,
+            subjectName: "EsP (Edukasyon sa Pagpapakatao)",
+            finalGrade: calculateQuarterlyAverage(esp)
+        },
+        {
+            classId: music.length > 0 ? music[0].classId : undefined,
+            subjectName: "MAPEH",
+            finalGrade:  getAverageForJrh(calculateQuarterlyAverage(music),calculateQuarterlyAverage(pe), calculateQuarterlyAverage(pe), calculateQuarterlyAverage(pe)) ?  getAverageForJrh(calculateQuarterlyAverage(music),calculateQuarterlyAverage(pe), calculateQuarterlyAverage(pe), calculateQuarterlyAverage(pe)): ""
+        },
+        {
+            classId: epp.length > 0 ? epp[0].classId : undefined,
+            subjectName: "EPP (Edukasyong Pantahanan at Pangkabuhayan)",
+            finalGrade: calculateQuarterlyAverage(epp)
+        },
+        {
+            classId: tle.length > 0 ? tle[0].classId : undefined,
+            subjectName: "TLE (Technology and Livelihood Education)",
+            finalGrade: calculateQuarterlyAverage(tle)
+        }
+    ];
+    const genAve = calculateGeneralAverage()
   return (
     <div className='text-xs md:text-sm w-full gap-x-10'>
+        <div className="flex justify-end">
+
+        <FinalizeGradesDialog student={student} averages={averages} generalAverage={genAve}/>
+         
+        </div>
         <h1 className='text-sm font-semibold text-center mb-4'>REPORT ON LEARNING PROGRESS AND ACHIEVEMENT</h1>
     
-        <div className="grid grid-cols-12 w-full bg-gray-200 items-center text-center font-semibold text-xs md:text-sm border border-black">
+        <div className="grid grid-cols-12 w-full  items-center text-center font-semibold text-xs md:text-sm border border-black">
             <h1 className='col-span-4 h-full flex items-center justify-center border-r border-r-black'>Learning Areas</h1>
-            <div className="col-span-4 grid grid-cols-4 text-center items-center border-r border-r-black">
-                <h1 className='col-span-4 border-b border-b-black'>Quarter</h1>
-                <h1 className='col-span-1 '>1st</h1>
-                <h1 className='col-span-1 border-l border-l-black'>2nd</h1>
-                <h1 className='col-span-1 border-l border-l-black'>3rd</h1>
-                <h1 className='col-span-1 border-l border-l-black'>4th</h1>
+            <div className="col-span-4 grid grid-cols-4 text-center items-center ">
+                <div className="col-span-4 border-b border-b-black px-2">Quarter</div>
+                <div className="col-span-1 border-r border-r-black p-2">1st</div>
+                <div className="col-span-1 border-r border-r-black p-2">2nd</div>
+                <div className="col-span-1 border-r border-r-black p-2">3rd</div>
+                <div className="col-span-1 p-2">4th</div>
             </div>
-            <h1 className='col-span-2 flex items-center justify-center h-full '>Final Rating</h1>
-            <h1 className='col-span-2 flex items-center justify-center h-full border-l border-l-black'>Remarks</h1>
+            <h1 className='col-span-2 flex items-center border-x-black border-x justify-center h-full'>Final Rating</h1>
+            <h1 className='col-span-2 flex items-center justify-center h-full '>Remarks</h1>
         </div>
         
         {/* Grades Data */}
-        <div className="grid grid-cols-12 w-full bg-gray-100 items-center text-center font-medium text-sm">
+        <div className="grid grid-cols-12 w-full items-center  text-center font-medium text-sm">
             <div className='col-span-4 border-b border-black border-x p-2 text-left'>English</div>
-            <div className='col-span-1 border-b border-black border-r p-2'>85</div>
-            <div className='col-span-1 border-b border-black border-r p-2'>87</div>
-            <div className='col-span-1 border-b border-black border-r p-2'>88</div>
-            <div className='col-span-1 border-b border-black border-r p-2'>86</div>
-            <div className='col-span-2 border-b border-black border-r p-2'>87</div>
-            <div className='col-span-2 border-b border-black border-r p-2'>Passed</div>
+            {quarter.map((quarter)=>(
+                <div key={`english${quarter}`}  className='col-span-1 border-b border-black border-r p-2 h-full'>{getFinalQuarterlyGrade(english, quarter)}</div>
+            ))}
+           
+            {getRemedialGrade(remedialGrades as Doc<'finalGrades'>, "english") === null ? (
+                    <div className='col-span-2 border-b border-black border-r p-2 h-full'>{calculateQuarterlyAverage(english)}</div>
+            ):(
+                <TooltipProvider>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                        <div className='col-span-2 border-b border-black border-r p-2 h-full'> {calculateQuarterlyAverage(english)} </div>
+                        </TooltipTrigger>
+                        <TooltipContent className=' bg-white p-5 space-y-2 shadow-md'>
+                            <p>Summer/remedial class Final Grade: {getRemedialGrade(remedialGrades as Doc<'finalGrades'>, "english")} </p>
+                        </TooltipContent>
+                    </Tooltip>
+                </TooltipProvider> 
+            )}
+            <div className='col-span-2 border-b border-black border-r p-2 h-full'>{getPassFailStatus(english)}</div>
         </div>
-        <div className="grid grid-cols-12 w-full bg-gray-100 items-center text-center font-medium text-sm">
+        <div className="grid grid-cols-12 w-full  items-center  text-center font-medium text-sm">
             <div className='col-span-4 border-b border-black border-x p-2 text-left'>Mathematics</div>
-            <div className='col-span-1 border-b border-black border-r p-2'>70</div>
-            <div className='col-span-1 border-b border-black border-r p-2'>74</div>
-            <div className='col-span-1 border-b border-black border-r p-2'>76</div>
-            <div className='col-span-1 border-b border-black border-r p-2'>75</div>
-            <div className='col-span-2 border-b border-black border-r p-2'>74</div>
-            <div className='col-span-2 border-b border-black border-r p-2'>Failed</div>
+            {quarter.map((quarter)=>(
+                <div key={`mathematics${quarter}`} className='col-span-1 border-b border-black border-r p-2 h-full'>{getFinalQuarterlyGrade(mathematics, quarter)}</div>
+            ))}
+            {getRemedialGrade(remedialGrades as Doc<'finalGrades'>, "mathematics") === null ? (
+                    <div className='col-span-2 border-b border-black border-r p-2 h-full'>{calculateQuarterlyAverage(mathematics)}</div>
+            ):(
+           
+            <TooltipProvider>
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                    <div className='col-span-2 border-b border-black border-r p-2 h-full'> {calculateQuarterlyAverage(mathematics)} </div>
+                    </TooltipTrigger>
+                    <TooltipContent className=' bg-white p-5 space-y-2 shadow-md'>
+                        <p>Summer/remedial class Final Grade: {getRemedialGrade(remedialGrades as Doc<'finalGrades'>, "mathematics")} </p>
+                    </TooltipContent>
+                </Tooltip>
+            </TooltipProvider> 
+         
+            )}
+            <div className='col-span-2 border-b border-black border-r p-2 h-full'>{getPassFailStatus(mathematics)}</div>
         </div>
-        <div className="grid grid-cols-12 w-full bg-gray-100 items-center text-center font-medium text-sm">
+        <div className="grid grid-cols-12 w-full  items-center text-center font-medium text-sm">
             <div className='col-span-4 border-b border-black border-x p-2 text-left'>Science</div>
-            <div className='col-span-1 border-b border-black border-r p-2'>89</div>
-            <div className='col-span-1 border-b border-black border-r p-2'>91</div>
-            <div className='col-span-1 border-b border-black border-r p-2'>90</div>
-            <div className='col-span-1 border-b border-black border-r p-2'>88</div>
-            <div className='col-span-2 border-b border-black border-r p-2'>90</div>
-            <div className='col-span-2 border-b border-black border-r p-2'>Passed</div>
+            {quarter.map((quarter)=>(
+                <div key={`science${quarter}`} className='col-span-1 border-b border-black border-r p-2 h-full'>{getFinalQuarterlyGrade(science, quarter)}</div>
+            ))}
+            {getRemedialGrade(remedialGrades as Doc<'finalGrades'>, "science") === null ? (
+                    <div className='col-span-2 border-b border-black border-r p-2 h-full'>{calculateQuarterlyAverage(science)}</div>
+            ):(
+           
+                <TooltipProvider>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                        <div className='col-span-2 border-b border-black border-r p-2 h-full'> {calculateQuarterlyAverage(science)}</div>
+                        </TooltipTrigger>
+                        <TooltipContent className=' bg-white p-5 space-y-2 shadow-md'>
+                            <p>Summer/remedial class Final Grade: {getRemedialGrade(remedialGrades as Doc<'finalGrades'>, "science")} </p>
+                        </TooltipContent>
+                    </Tooltip>
+                </TooltipProvider> 
+            
+            )}
+            <div className='col-span-2 border-b border-black border-r p-2 h-full'>{getPassFailStatus(science)}</div>
         </div>
-        <div className="grid grid-cols-12 w-full bg-gray-100 items-center text-center font-medium text-sm">
+        <div className="grid grid-cols-12 w-full  items-center  text-center font-medium text-sm">
             <div className='col-span-4 border-b border-black border-x p-2 text-left'>Filipino</div>
-            <div className='col-span-1 border-b border-black border-r p-2'>90</div>
-            <div className='col-span-1 border-b border-black border-r p-2'>89</div>
-            <div className='col-span-1 border-b border-black border-r p-2'>92</div>
-            <div className='col-span-1 border-b border-black border-r p-2'>91</div>
-            <div className='col-span-2 border-b border-black border-r p-2'>91</div>
-            <div className='col-span-2 border-b border-black border-r p-2'>Passed</div>
+            {quarter.map((quarter)=>(
+                <div key={`filipino${quarter}`} className='col-span-1 border-b border-black border-r p-2 h-full'>{getFinalQuarterlyGrade(filipino, quarter)}</div>
+            ))}
+           
+            {getRemedialGrade(remedialGrades as Doc<'finalGrades'>, "filipino") === null ? (
+                    <div className='col-span-2 border-b border-black border-r p-2 h-full'>{calculateQuarterlyAverage(filipino)}</div>
+            ):(
+           
+                <TooltipProvider>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                        <div className='col-span-2 border-b border-black border-r p-2 h-full'> {calculateQuarterlyAverage(filipino)} </div>
+                        </TooltipTrigger>
+                        <TooltipContent className=' bg-white p-5 space-y-2 shadow-md'>
+                            <p>Summer/remedial class Final Grade: {getRemedialGrade(remedialGrades as Doc<'finalGrades'>, "filipino")} </p>
+                        </TooltipContent>
+                    </Tooltip>
+                </TooltipProvider> 
+           
+            )}
+            <div className='col-span-2 border-b border-black border-r p-2 h-full'>{getPassFailStatus(filipino)}</div>
         </div>
-        <div className="grid grid-cols-12 w-full bg-gray-100 items-center text-center font-medium text-sm">
+        <div className="grid grid-cols-12 w-full  items-center  text-center font-medium text-sm">
             <div className='col-span-4 border-b border-black border-x p-2 text-left'>Araling Panlipunan</div>
-            <div className='col-span-1 border-b h-full border-black border-r p-2'>88</div>
-            <div className='col-span-1 border-b h-full border-black border-r p-2'>87</div>
-            <div className='col-span-1 border-b h-full border-black border-r p-2'>89</div>
-            <div className='col-span-1 border-b h-full border-black border-r p-2'>90</div>
-            <div className='col-span-2 border-b h-full border-black border-r p-2'>89</div>
-            <div className='col-span-2 border-b h-full border-black border-r p-2'>Passed</div>
+            {quarter.map((quarter)=>(
+                <div key={`ap${quarter}`} className='col-span-1 border-b border-black border-r p-2 h-full'>{getFinalQuarterlyGrade(ap, quarter)}</div>
+            ))}
+            {getRemedialGrade(remedialGrades as Doc<'finalGrades'>, "Araling Panlipunan") === null ? (
+                    <div className='col-span-2 border-b border-black border-r p-2 h-full'>{calculateQuarterlyAverage(ap)}</div>
+            ):(
+           
+                <TooltipProvider>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                        <div className='col-span-2 border-b border-black border-r p-2 h-full'>  {calculateQuarterlyAverage(ap)}  </div>
+                        </TooltipTrigger>
+                        <TooltipContent className=' bg-white p-5 space-y-2 shadow-md'>
+                            <p>Summer/remedial class Final Grade: {getRemedialGrade(remedialGrades as Doc<'finalGrades'>, "Araling Panlipunan")} </p>
+                        </TooltipContent>
+                    </Tooltip>
+                </TooltipProvider> 
+          
+            )}
+            <div className='col-span-2 border-b border-black border-r p-2 h-full'>{getPassFailStatus(ap)}</div>
         </div>
-        <div className="grid grid-cols-12 w-full bg-gray-100 items-center text-center font-medium text-sm">
+        <div className="grid grid-cols-12 w-full  items-center  text-center font-medium text-sm">
             <div className='col-span-4 border-b border-black border-x p-2 text-left'>Edukasyon sa Pagpapakatao (EsP)</div>
-            <div className='col-span-1 border-b h-full border-black border-r p-2'>91</div>
-            <div className='col-span-1 border-b h-full border-black border-r p-2'>90</div>
-            <div className='col-span-1 border-b h-full border-black border-r p-2'>92</div>
-            <div className='col-span-1 border-b h-full border-black border-r p-2'>91</div>
-            <div className='col-span-2 border-b h-full border-black border-r p-2'>91</div>
-            <div className='col-span-2 border-b h-full border-black border-r p-2'>Passed</div>
+            {quarter.map((quarter)=>(
+                <div key={`esp${quarter}`} className='col-span-1 border-b border-black border-r p-2 h-full'>{getFinalQuarterlyGrade(esp, quarter)}</div>
+            ))}
+            {getRemedialGrade(remedialGrades as Doc<'finalGrades'>, "Edukasyon sa Pagpapakatao (EsP)") === null ? (
+                    <div className='col-span-2 border-b border-black border-r p-2 h-full'>{calculateQuarterlyAverage(esp)}</div>
+            ):(
+           
+                <TooltipProvider>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                        <div className='col-span-2 border-b border-black border-r p-2 h-full'> {calculateQuarterlyAverage(esp)}  </div>
+                        </TooltipTrigger>
+                        <TooltipContent className=' bg-white p-5 space-y-2 shadow-md'>
+                            <p>Summer/remedial class Final Grade: {getRemedialGrade(remedialGrades as Doc<'finalGrades'>, "Edukasyon sa Pagpapakatao (EsP)")} </p>
+                        </TooltipContent>
+                    </Tooltip>
+                </TooltipProvider> 
+          
+            )}
+            <div className='col-span-2 border-b border-black border-r p-2 h-full'>{getPassFailStatus(esp)}</div>
         </div>
-        <div className="grid grid-cols-12 w-full bg-gray-100 items-center text-center font-medium text-sm">
-            <div className='col-span-4 border-b h-full border-black border-x p-2 text-left'>Edukasyong Pantahanan at Pangkabuhayan</div>
-            <div className='col-span-1 border-b h-full border-black border-r p-2'>88</div>
-            <div className='col-span-1 border-b h-full border-black border-r p-2'>87</div>
-            <div className='col-span-1 border-b h-full border-black border-r p-2'>89</div>
-            <div className='col-span-1 border-b h-full border-black border-r p-2'>90</div>
-            <div className='col-span-2 border-b h-full border-black border-r p-2'>89</div>
-            <div className='col-span-2 border-b h-full border-black border-r p-2'>Passed</div>
+        {hasEPP && (
+            <div className="grid grid-cols-12 w-full  items-center  text-center font-medium text-sm">
+                <div className='col-span-4 border-b h-full border-black border-x p-2 text-left'>Edukasyong Pantahanan at Pangkabuhayan</div>
+                {quarter.map((quarter)=>(
+                    <div key={`epp${quarter}`} className='col-span-1 border-b border-black border-r p-2 h-full'>{getFinalQuarterlyGrade(epp, quarter)}</div>
+                ))}
+                {getRemedialGrade(remedialGrades as Doc<'finalGrades'>, "Edukasyong Pantahanan at Pangkabuhayan") === null ? (
+                        <div className='col-span-2 border-b border-black border-r p-2 h-full'>{calculateQuarterlyAverage(epp)}</div>
+                ):(
+               
+                    <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                            <div className='col-span-2 border-b border-black border-r p-2 h-full'>  {calculateQuarterlyAverage(epp)} </div>
+                            </TooltipTrigger>
+                            <TooltipContent className=' bg-white p-5 space-y-2 shadow-md'>
+                                <p>Summer/remedial class Final Grade: {getRemedialGrade(remedialGrades as Doc<'finalGrades'>, "Edukasyong Pantahanan at Pangkabuhayan")} </p>
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider> 
+               
+                )}
+                <div className='col-span-2 border-b border-black border-r p-2 h-full'>{getPassFailStatus(epp)}</div>
+            </div>
+        )}
+       
+        {hasTLE && (
+            <div className="grid grid-cols-12 w-full  items-center  text-center font-medium text-sm">
+                <div className='col-span-4 border-b h-full border-black border-x p-2 text-left'>Technology and Livelihood Education (TLE)</div>
+                {quarter.map((quarter)=>(
+                    <div key={`tle${quarter}`} className='col-span-1 border-b border-black border-r p-2 h-full'>{getFinalQuarterlyGrade(tle, quarter)}</div>
+                ))}
+                <div className='col-span-2 border-b border-black border-r p-2 h-full'>{calculateQuarterlyAverage(epp)}</div>
+                {getRemedialGrade(remedialGrades as Doc<'finalGrades'>, "Technology and Livelihood Education (TLE)") === null ? (
+                        <div className='col-span-2 border-b border-black border-r p-2 h-full'>{calculateQuarterlyAverage(tle)}</div>
+                ):(
+               
+                    <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                            <div className='col-span-2 border-b border-black border-r p-2 h-full'> {calculateQuarterlyAverage(tle)} </div>
+                            </TooltipTrigger>
+                            <TooltipContent className=' bg-white p-5 space-y-2 shadow-md'>
+                                <p>Summer/remedial class Final Grade: {getRemedialGrade(remedialGrades as Doc<'finalGrades'>, "Technology and Livelihood Education (TLE)")} </p>
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider> 
+               
+                )}
+                <div className='col-span-2 border-b border-black border-r p-2 h-full'>{getPassFailStatus(tle)}</div>
+            </div>
+        )}
+       
+        <div className="grid grid-cols-12 w-full  items-center  text-center font-medium text-sm">
+            <div className='col-span-4 border-b h-full border-black border-x p-2 text-left'>MAPEH</div>
+            <div className='col-span-1 border-b border-black border-r p-2 h-full'>{calculateQuarterlyAverage(music)}</div>
+            <div className='col-span-1 border-b border-black border-r p-2 h-full'>{calculateQuarterlyAverage(arts)}</div>
+            <div className='col-span-1 border-b border-black border-r p-2 h-full'>{calculateQuarterlyAverage(pe)}</div>
+            <div className='col-span-1 border-b border-black border-r p-2 h-full'>{calculateQuarterlyAverage(health)}</div>
+            {getRemedialGrade(remedialGrades as Doc<'finalGrades'>, "MAPEH") === null ? (
+                <div className='col-span-2 border-b border-black border-r p-2 h-full'>{getAverageForJrh(
+                    calculateQuarterlyAverage(music),
+                    calculateQuarterlyAverage(arts),
+                    calculateQuarterlyAverage(pe),
+                    calculateQuarterlyAverage(health)
+                )}</div>
+                ):(
+              
+                    <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                            <div className='col-span-2 border-b border-black border-r p-2 h-full'> {getAverageForJrh(
+                                calculateQuarterlyAverage(music),
+                                calculateQuarterlyAverage(arts),
+                                calculateQuarterlyAverage(pe),
+                                calculateQuarterlyAverage(health)
+                            )}
+                            </div>
+                            </TooltipTrigger>
+                            <TooltipContent className=' bg-white p-5 space-y-2 shadow-md'>
+                                <p>Summer/remedial class Final Grade: {getRemedialGrade(remedialGrades as Doc<'finalGrades'>, "MAPEH")} </p>
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider> 
+              
+            )}
+            <div className='col-span-2 border-b border-black border-r p-2 h-full'>{getPassFailStatusMAPEH(
+                getAverageForJrh(
+                    calculateQuarterlyAverage(music),
+                    calculateQuarterlyAverage(arts),
+                    calculateQuarterlyAverage(pe),
+                    calculateQuarterlyAverage(health)
+                )
+            )}</div>
         </div>
-        <div className="grid grid-cols-12 w-full border-x border-b border-black bg-gray-100 items-center text-center font-medium text-sm">
-            <div className='col-span-4  text-center border-r border-r-black'>
-                <h1 className='text-left border-b border-b-black p-2'>MAPEH</h1>
-                <h1 className='border-b border-b-black p-1'>Music</h1>
-                <h1 className='border-b border-b-black p-1'>Arts</h1>
-                <h1 className='border-b border-b-black p-1'>Physical <br/>Education</h1>
-                <h1 >Health</h1>
-            </div>
-            <div className='col-span-1 border-r border-r-black h-full'>
-                <h1 className='border-b border-b-black p-2'>90</h1>
-                <h1 className='border-b border-b-black p-1'>90</h1>
-                <h1 className='border-b border-b-black p-1'>90</h1>
-                <h1 className='border-b border-b-black p-1'>90<br/> <span className='text-white'> 0</span> </h1>
-                <h1 >90</h1>
-            </div>
-            <div className='col-span-1 border-r border-r-black h-full'>
-                <h1 className='border-b border-b-black p-2'>90</h1>
-                <h1 className='border-b border-b-black p-1'>90</h1>
-                <h1 className='border-b border-b-black p-1'>90</h1>
-                <h1 className='border-b border-b-black p-1'>90<br/> <span className='text-white'> 0</span> </h1>
-                <h1 >90</h1>
-            </div>
-            <div className='col-span-1 border-r border-r-black h-full'>
-            <h1 className='border-b border-b-black p-2'>90</h1>
-                <h1 className='border-b border-b-black p-1'>90</h1>
-                <h1 className='border-b border-b-black p-1'>90</h1>
-                <h1 className='border-b border-b-black p-1'>90 <br/> <span className='text-white'> 0</span></h1>
-                <h1 >90</h1>
-            </div>
-            <div className='col-span-1 border-r border-r-black h-full'>
-                <h1 className='border-b border-b-black p-2'>90</h1>
-                <h1 className='border-b border-b-black p-1'>90</h1>
-                <h1 className='border-b border-b-black p-1'>90</h1>
-                <h1 className='border-b border-b-black p-1'>90 <br/> <span className='text-white'> 0</span></h1>
-                <h1 >90</h1>
-            </div>
-            <div className='col-span-2  h-full'>
-                <h1  className='border-b border-b-black p-2'>90</h1>
+        <div className="grid grid-cols-12 w-full  items-center  text-center font-medium text-sm">
+            <div className='col-span-4 border-b h-full border-black border-x p-2 text-center'>Music</div>
+            {quarter.map((quarter)=>(
+                <div key={`music${quarter}`} className='col-span-1 border-b border-black border-r p-2 h-full'>{getFinalQuarterlyGrade(music, quarter)}</div>
+            ))}
+            <div className='col-span-2 border-b border-r-black border-r p-2 h-full'></div>
+            <div className='col-span-2 border-b border-r-black border-r p-2 h-full'></div>
+        </div>
+        <div className="grid grid-cols-12 w-full  items-center text-center font-medium text-sm">
+            <div className='col-span-4 border-b h-full border-black border-x p-2 text-center'>Arts</div>
+            {quarter.map((quarter)=>(
+                <div key={`arts${quarter}`} className='col-span-1 border-b border-black border-r p-2 h-full'>{getFinalQuarterlyGrade(arts, quarter)}</div>
+            ))}
+            <div className='col-span-2 border-b border-r-black border-r p-2 h-full'></div>
+            <div className='col-span-2 border-b border-r-black border-r p-2 h-full'></div>
+        </div>
+        <div className="grid grid-cols-12 w-full  items-center  text-center font-medium text-sm">
+            <div className='col-span-4 border-b h-full border-black border-x p-2 text-center'>Physical Education</div>
+            {quarter.map((quarter)=>(
+                <div key={`pe${quarter}`} className='col-span-1 border-b border-black border-r p-2 h-full'>{getFinalQuarterlyGrade(pe, quarter)}</div>
+            ))}
+            <div className='col-span-2 border-b border-r-black border-r p-2 h-full'></div>
+            <div className='col-span-2 border-b border-r-black border-r p-2 h-full'></div>
+        </div>
+        <div className="grid grid-cols-12 w-full  items-center text-center font-medium text-sm">
+            <div className='col-span-4 border-b h-full border-black border-x p-2 text-center'>Health</div>
+            {quarter.map((quarter)=>(
+                <div key={`health${quarter}`} className='col-span-1 border-b border-black border-r p-2 h-full'>{getFinalQuarterlyGrade(health, quarter)}</div>
+            ))}
+            <div className='col-span-2 border-b border-black border-r p-2 h-full'></div>
+            <div className='col-span-2 border-b border-black border-r p-2 h-full'></div>
+        </div>
+        
+        <div className="grid grid-cols-12 w-full  items-center text-center font-medium text-sm">
+            <div className='col-span-4 border-r h-full border-r-black p-2 text-center bg-white'></div>
+            <div className='col-span-4 border-b border-black border-r  font-semibold tracking-widest font-serif text-lg'>General Average</div>
             
-            </div>
-            <div className='col-span-2 border-l border-l-black  h-full'>
-                <h1  className='border-b border-b-black p-2'>Passed</h1>
-            </div>
-        </div>
-        <div className="grid grid-cols-12 w-full bg-gray-100 items-center text-center font-medium text-sm">
-            <div className='col-span-4 border-r '></div>
-            <div className='col-span-4 border-b border-black border-x font-semibold tracking-widest font-serif text-lg'>General Average</div>
-            
-            <div className='col-span-2 border-b border-black border-r font-semibold text-lg'>89</div>
+            <div className='col-span-2 h-full border-b border-b-black border-r-black border-r font-semibold text-lg'>{calculateGeneralAverage()}</div>
             
         </div>    
     </div>

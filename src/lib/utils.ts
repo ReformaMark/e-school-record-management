@@ -2,7 +2,8 @@ import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 import { setDate } from "date-fns"
 import { transmutationTable3, transmutationTableJRHigh2, transmutationTableSHS2, transmutationTableSHSCore2 } from "../../data/transmutation-data"
-import { QuarterlyGrades, StudentsWithQuarterlyGrades } from "./types"
+import { ClassWithSubject, QuarterlyGrades, QuarterlyGradesWithSubject, StudentsWithQuarterlyGrades, StudentWithDetails } from "./types"
+import { Doc, Id } from "../../convex/_generated/dataModel"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -122,15 +123,21 @@ export function formatQuarter(quarter: string): string {
   return `${quarterNumber}${suffix}`;
 }
 
-export const getQuarterlyGrades = (grades: QuarterlyGrades[] | undefined, quarter?: string) => {
-  if(!grades){
-    return ""
+export const getQuarterlyGrades = (grades: QuarterlyGrades[] | undefined, quarter?: string): number | string => {
+  if (!grades) {
+    return "";
   }
+
   if (quarter) {
-    // If a specific quarter is provided, return only that quarter's grade
-    return grades?.find(g => g.quarter === quarter)?.quarterlyGrade ?? "";
+    // Find the grade for the given quarter
+    const grade = grades.find(g => g.quarter === quarter);
+
+    // Return interventionGrade if available, otherwise return quarterlyGrade
+    return grade ? grade.interventionGrade ?? grade.quarterlyGrade ?? "" : "";
   }
-}
+
+  return ""; // Default return if no quarter is provided
+};
 
 export const getAverageForShs = (num1: number | string, num2: number | string): number | string => {
   if (typeof num1 === "string" || typeof num2 === "string") {
@@ -205,3 +212,62 @@ export const getQuarterlyGrade = (
   return grade?.interventionGrade; // Return score if found, otherwise null
 };
 
+export const getStudentGrade = (quarterlyGrades: Doc<'quarterlyGrades'>[] | null, classId: Id<'classes'>, quarter: string): number | string => {
+  const grade = quarterlyGrades?.find(qg => qg.classId === classId && qg.quarter === quarter);
+
+  if (!grade) return ""; // ✅ Return empty string if classId is not found
+  return grade.interventionGrade !== undefined ? grade.interventionGrade : grade.quarterlyGrade;
+};
+
+export const getStudentGradeJRH = (quarterlyGrades: QuarterlyGradesWithSubject[] | null, classId: Id<'classes'>, quarter: string): number | string => {
+  const grade = quarterlyGrades?.find(qg => qg.classId === classId && qg.quarter === quarter);
+
+  if (!grade) return ""; // ✅ Return empty string if classId is not found
+  return grade.interventionGrade !== undefined ? grade.interventionGrade : grade.quarterlyGrade;
+};
+
+
+export const getStudentGeneralAverage = (
+  coreSubjects: ClassWithSubject[],
+  appliedAndSpecializedSubjects: ClassWithSubject[],
+  student: StudentWithDetails,
+  sem: string,
+): number | string => {
+  // Get the subject averages
+  const subjectAverages = [...coreSubjects, ...appliedAndSpecializedSubjects].map((clss) => {
+    const firstSemGrade = getStudentGrade(student.quarterlyGrades, clss._id, sem === "1st" ? "1st" : "3rd");
+    const secondSemGrade = getStudentGrade(student.quarterlyGrades, clss._id, sem === "1st" ? "2nd" : "4th");
+    return getAverageForShs(firstSemGrade, secondSemGrade);
+  });
+
+   // Ensure all values are numbers; if any value is not a number, return ""
+   if (subjectAverages.some(avg => typeof avg !== "number" || isNaN(avg))) {
+    return ""; // 🚨 Stop calculation if there’s an invalid value
+  }
+
+  // Filter out null/undefined values & enforce type safety
+  const validAverages = subjectAverages.filter(
+    (avg): avg is number => avg !== null && avg !== undefined
+  );
+
+  // Compute the general average
+  const total = validAverages.reduce((sum, avg) => sum + avg, 0);
+  return validAverages.length > 0 ? total / validAverages.length : "";
+};
+
+
+export const getPassFailStatusMAPEH = (average?: number | string): string => {
+    if (typeof average === "string" || average === undefined) return ""; // If no valid grades, return an empty string
+    return average <= 74 ? "Failed" : "Passed";
+};
+
+export const getFinalQuarterlyGrade = (
+    quarterlyGrades: QuarterlyGradesWithSubject[],
+    quarter: string
+): number | null => {
+    // Find the quarterly grade for the given quarter
+    const grade = quarterlyGrades.find(qg => qg.quarter === quarter);
+  
+    // Return interventionGrade if available, otherwise quarterlyGrade
+    return grade ? grade.interventionGrade ?? grade.quarterlyGrade : null;
+};

@@ -1,4 +1,4 @@
-import { Doc } from "../../convex/_generated/dataModel";
+import { Doc, Id } from "../../convex/_generated/dataModel";
 
 export type SchoolHeadType = "junior-high" | "senior-high";
 
@@ -101,7 +101,7 @@ export interface StudentsWithClassRecord extends Doc<"students"> {
     sectionDoc: SectionWithGradeLevel | null
 }
 
-export interface SubjectsWithAppliedGradeWeihts extends Doc<'subjects'> {
+export interface SubjectsWithAppliedGradeWeights extends Doc<'subjects'> {
     appliedGradeWeights: Doc<'appliedGradeWeigths'> | null
 }
 
@@ -112,4 +112,34 @@ export interface StudentsWithQuarterlyGrades extends Doc<'students'> {
 }
 export interface StudentsWithQuarterlyGrade extends Doc<'students'> {
     quarterlyGrade: QuarterlyGrades | undefined
+}
+
+export interface StudentWithDetails extends Doc<'students'> {
+    quarterlyGrades: QuarterlyGradesWithSubject[],
+    sectionDoc: SectionWithGradeLevel | null,
+    cLass: Doc<'classes'> | null;
+    advisor: Doc<'users'> | null;
+    subjects: ClassWithSubject[];
+}
+
+export interface QuarterlyGradesWithSubject extends Doc<'quarterlyGrades'> {
+    subject: Doc<'subjects'>
+}
+
+export interface ClassWithSubject extends Doc<'classes'> {
+    subject: Doc<'subjects'>
+}
+
+export interface FinalGradesWithSubject extends Doc<'finalGrades'>{
+    student: Doc<'students'>
+    subjectForRemedial: SubjectForRemedial
+}
+
+interface SubjectForRemedial {
+    remedialGrade?: number | undefined;
+    classId: Id<"classes">;
+    subjectName: string;
+    finalGrade: number;
+    forRemedial: boolean;
+    status: string | undefined
 }

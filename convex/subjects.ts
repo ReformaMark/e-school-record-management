@@ -30,7 +30,7 @@ export const getAssignSubjects = query({
         if (!teacherId) throw new ConvexError('No Teacher Id found.');
         if (!args.sy) return []
         const classes = await ctx.db.query('classes')
-            .withIndex('by_teacherId')
+            .filter(q => q.eq(q.field('teacherId'), teacherId))
             .filter(q => q.eq(q.field('schoolYearId'), args.sy))
             .collect()
 

@@ -117,11 +117,11 @@ export const getStudentByTeacher = query({
     }
 
     const section = await ctx.db.query('sections')
-      .withIndex('by_advisorId')
+      .filter(q => q.eq(q.field('advisorId'), teacherId))
       .first()
    
     if(!section || section === null) {
-      throw new ConvexError('No section found.')
+      return undefined
     }
 
     const students = await asyncMap(section.students, async (studentId)=>{
@@ -165,5 +165,80 @@ export const studentsInMasterList = query({
       return {...student, enrollment: enrollment}
     })
     return students as StudentsWithEnrollMentTypes[]
+  }
+})
+
+export const getStudentWithDetails = query({
+  args:{
+    id: v.optional(v.id('students'))
+   
+  }, handler: async(ctx, args) => {
+    if(!args.id) throw new ConvexError('No student Id.')
+    const teacherId = await getAuthUserId(ctx)
+    if(!teacherId) throw new ConvexError('No teacher Id.')
+    const teacher = await ctx.db.get(teacherId)
+    const student = await ctx.db.get(args.id)
+    if(!student) throw new ConvexError('No student found.')
+    const schoolYear = await ctx.db.query('schoolYears').order('desc').collect()
+    const latestSY = schoolYear[0]._id
+
+    const teacherSections = await ctx.db.query('sections')
+      .withIndex('by_advisorId')
+      .filter(q => q.eq(q.field('schoolYearId'), latestSY))
+      .collect();
+
+    const studentSection = teacherSections.find( c => c.students.find(s => s === student._id))
+    if(!studentSection) throw new ConvexError('No section found for the student')
+
+    const gradeLevel = await ctx.db.get(studentSection?.gradeLevelId)
+    if(!gradeLevel) throw new ConvexError('No gradeLevel found.')
+
+    const teacherClasses = await ctx.db.query('classes')
+    .filter(q => q.eq(q.field('sectionId'), studentSection._id))
+    .filter(q => q.eq(q.field('teacherId'), teacherId))
+    .first()
+
+    const subjects = await ctx.db.query('classes').filter(q => q.eq(q.field('sectionId'), studentSection._id)).collect()
+    console.log(subjects)
+    const subjectsWithDetail = await asyncMap(subjects, async(s)=>{
+      const subject = await ctx.db.get(s.subjectId)
+      if(!subject) return null
+      return {
+        ...s,
+        subject: subject
+      }
+    })
+
+    const filterSubject = subjectsWithDetail.filter( s => s !== null)
+
+    const classId = teacherClasses?._id
+
+    const quarterlyGrades = await ctx.db.query('quarterlyGrades')
+    .filter(q=> q.eq(q.field('studentId'), student._id))
+    .filter(q=> q.eq(q.field('classId'), classId))
+    .collect()
+
+    const qgWithSubject = await asyncMap(quarterlyGrades, async(qg)=>{
+      const cLAss = await ctx.db.get(qg.classId)
+      if(!cLAss) return null
+      const subject = await ctx.db.get(cLAss.subjectId)
+      if(!subject) return null
+
+      return {
+        ...qg,
+        subject: subject
+      }
+    })
+
+    const notNull = qgWithSubject.filter(item => item !== null)
+    
+    return {
+      ...student,
+      quarterlyGrades: notNull,
+      sectionDoc: {...studentSection, gradeLevel: gradeLevel},
+      cLass: teacherClasses,
+      advisor: teacher,
+      subjects: filterSubject
+    }
   }
 })

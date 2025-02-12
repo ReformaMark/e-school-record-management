@@ -13,29 +13,7 @@ function Studentpage() {
     <main className="">
         <div className="flex items-center">
             <div className="hidden md:flex   ml-auto items-center gap-2">
-                {/* <DropdownMenu >
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="outline" size="sm" className="h-7 gap-1">
-                            <ListFilterIcon className="h-3.5 w-3.5" />
-                            <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                                Filter
-                            </span>
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Filter by</DropdownMenuLabel>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuCheckboxItem checked>
-                            none
-                        </DropdownMenuCheckboxItem>
-                        <DropdownMenuCheckboxItem>
-                            At risks/Needs Intervention
-                        </DropdownMenuCheckboxItem>
-                        <DropdownMenuCheckboxItem>
-                            Failed
-                        </DropdownMenuCheckboxItem>
-                    </DropdownMenuContent>
-                </DropdownMenu> */}
+               
                 <Button size="sm" variant="outline" className="hidden md:flex  h-7 gap-1">
                     <File className="h-3.5 w-3.5" />
                     <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
