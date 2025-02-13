@@ -1,5 +1,6 @@
 "use client";
 
+import { UserAvatarUpload } from "@/components/shared/user-avatar-upload";
 import {
     Breadcrumb,
     BreadcrumbItem,
@@ -27,20 +28,18 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { ChevronLeft } from "lucide-react";
+import { Barangay, City, Province, Region, fetchBarangays, fetchCities, fetchProvinces, fetchRegions } from "@/lib/address-api";
 import { cn } from "@/lib/utils";
-import Link from "next/link";
-import { SchoolSubjects, schoolSubjects } from "../../../../../../data/teachers-data";
-import { MultiSelectSubject } from "../../../_components/multi-select-subject";
 import { useMutation, useQuery } from "convex/react";
-import { api } from "../../../../../../convex/_generated/api";
+import { ChevronLeft } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { toast } from "sonner";
-import { UserAvatarUpload } from "@/components/shared/user-avatar-upload";
-import { Barangay, City, Province, Region, fetchBarangays, fetchCities, fetchProvinces, fetchRegions } from "@/lib/address-api";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { api } from "../../../../../../convex/_generated/api";
 import { Id } from "../../../../../../convex/_generated/dataModel";
+import { schoolSubjects } from "../../../../../../data/teachers-data";
 
 interface TeacherFormData {
     email: string;
@@ -198,7 +197,7 @@ const SystemAdminEditTeacherPage = ({ params }: { params: { teacherId: string } 
                 lastName: data.lastName,
                 contactNumber: data.contactNumber,
                 employeeId: data.employeeId,
-                position: data.position,
+                // position: data.position,
                 specialization: data.specialization,
                 yearsOfExperience: Number(data.yearsOfExperience),
                 birthDate: data.birthDate,
@@ -208,8 +207,8 @@ const SystemAdminEditTeacherPage = ({ params }: { params: { teacherId: string } 
                 city: watch('city'),
                 barangay: watch('barangay'),
                 street: data.street,
-                advisoryClass: data.advisoryClass,
-                subjectId: subjects?.map((s) => s._id),
+                // advisoryClass: data.advisoryClass,
+                // subjectId: subjects?.map((s) => s._id),
                 imageStorageId,
             });
 
@@ -284,7 +283,7 @@ const SystemAdminEditTeacherPage = ({ params }: { params: { teacherId: string } 
                                 <Card>
                                     <CardHeader>
                                         <CardTitle>Teacher Details</CardTitle>
-                                        <CardDescription>Add teacher details</CardDescription>
+                                        <CardDescription>Edit teacher details</CardDescription>
                                     </CardHeader>
                                     <CardContent>
                                         <div className="grid gap-6">
@@ -424,7 +423,7 @@ const SystemAdminEditTeacherPage = ({ params }: { params: { teacherId: string } 
                                 </Card>
 
                                 {/* Academic Details Card */}
-                                <Card>
+                                {/* <Card>
                                     <CardHeader>
                                         <CardTitle>Academic Details</CardTitle>
                                     </CardHeader>
@@ -477,7 +476,7 @@ const SystemAdminEditTeacherPage = ({ params }: { params: { teacherId: string } 
                                             </div>
                                         </div>
                                     </CardContent>
-                                </Card>
+                                </Card> */}
 
                                 {/* Address Details Card */}
                                 <Card>

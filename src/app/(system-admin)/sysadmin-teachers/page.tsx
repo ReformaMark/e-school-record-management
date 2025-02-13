@@ -34,11 +34,11 @@ const SystemAdminTeachersPage = () => {
     const [showAdviser, setShowAdviser] = useState(true);
     const [showSubjectTeacher, setShowSubjectTeacher] = useState(true);
 
-    const filteredTeachers = teachers?.filter(teacher => {
-        if (showAdviser && teacher.position === "adviser") return true;
-        if (showSubjectTeacher && teacher.position === "subject-teacher") return true;
-        return false;
-    })
+    // const filteredTeachers = teachers?.filter(teacher => {
+    //     if (showAdviser && teacher.position === "adviser") return true;
+    //     if (showSubjectTeacher && teacher.position === "subject-teacher") return true;
+    //     return false;
+    // })
 
     return (
         <div className="container mx-auto p-4">
@@ -61,12 +61,12 @@ const SystemAdminTeachersPage = () => {
                     <div className="ml-auto flex items-center gap-2">
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <Button variant="outline" size="sm" className="h-7 gap-1">
+                                {/* <Button variant="outline" size="sm" className="h-7 gap-1">
                                     <ListFilterIcon className="h-3.5 w-3.5" />
                                     <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
                                         Filter
                                     </span>
-                                </Button>
+                                </Button> */}
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
                                 <DropdownMenuLabel>Filter by</DropdownMenuLabel>
@@ -85,11 +85,11 @@ const SystemAdminTeachersPage = () => {
                                 </DropdownMenuCheckboxItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
-                        <Button 
+                        <Button
                             size="sm"
                             variant="outline"
                             className="h-7 gap-1"
-                            onClick={() => exportToExcelTeachers(filteredTeachers || [], "teachers")}
+                            onClick={() => exportToExcelTeachers(teachers || [], "teachers")}
                         >
                             <File className="h-3.5 w-3.5" />
                             <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
@@ -117,10 +117,10 @@ const SystemAdminTeachersPage = () => {
                         <CardDescription>Manage the list of teachers.</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        {filteredTeachers ? (
+                        {teachers ? (
                             <DataTable
                                 columns={teacherColumns}
-                                data={filteredTeachers}
+                                data={teachers}
                                 filter="firstName"
                                 placeholder="Search teachers..."
                             />

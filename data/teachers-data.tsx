@@ -1,7 +1,7 @@
 "use client"
 
 import { ColumnDef } from "@tanstack/react-table";
-import { MoreHorizontal } from "lucide-react";
+import { Calendar, Clock, MapPin, MoreHorizontal, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
     DropdownMenu,
@@ -12,11 +12,25 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 import Link from "next/link";
+import { useQuery } from "convex/react";
+import { api } from "../convex/_generated/api";
+import { Id } from "../convex/_generated/dataModel";
+import { useState } from "react";
 
 export type Teacher = {
-    id: string;
+    id: Id<"users">;
     firstName: string;
     lastName: string;
     middleName?: string;
@@ -47,8 +61,8 @@ export const teacherColumns: ColumnDef<Teacher>[] = [
         header: "Employee ID",
     },
     {
-        accessorKey: "name",
-        header: "Name",
+        accessorKey: "firstName",
+        header: "Full Name",
         cell: ({ row }) => {
             const fullName = `${row.original.firstName} ${row.original.middleName ? row.original.middleName + ' ' : ''}${row.original.lastName}`;
             return <span className="font-medium">{fullName}</span>;
@@ -59,18 +73,110 @@ export const teacherColumns: ColumnDef<Teacher>[] = [
         header: "Email",
     },
     {
-        accessorKey: "position",
-        header: "Position",
-    },
-    {
         accessorKey: "specialization",
         header: "Specialization",
+        cell: ({ row }) => {
+            const specialization = row.original.specialization
+
+            return (
+                <div>
+                    {
+                        specialization === "math" ? "Math"
+                            : specialization === "english" ? "English"
+                                : specialization === "physical-education" ? "Physical Education"
+                                    : specialization === "science" ? "Science"
+                                        : specialization === "history" ? "History"
+                                            : "No specialization assigned"
+                    }
+                </div>
+            )
+        }
     },
     {
         accessorKey: "advisoryClass",
-        header: "Advisory Class",
+        header: "Classes",
         cell: ({ row }) => {
-            return row.original.advisoryClass || "N/A";
+            const classes = useQuery(api.classes.getClassesByTeacherId, {
+                teacherId: row.original.id
+            });
+            const [isOpen, setIsOpen] = useState(false);
+
+            if (!classes) return "Loading...";
+            if (classes.length === 0) return "No classes assigned";
+
+            return (
+                <>
+                    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+                        <DialogTrigger asChild>
+                            <Button variant="outline" className="h-8 px-2 text-left font-normal">
+                                <div className="flex items-center gap-2 overflow-hidden">
+                                    <Users className="h-4 w-4 flex-shrink-0" />
+                                    <span className="truncate">{classes[0]?.subject?.name}</span>
+                                    {classes.length > 1 && (
+                                        <Badge variant="secondary" className="ml-auto">
+                                            +{classes.length - 1}
+                                        </Badge>
+                                    )}
+                                </div>
+                            </Button>
+                        </DialogTrigger>
+                        <DialogContent className="w-[95vw] max-w-4xl h-[90vh] flex flex-col p-3">
+                            <DialogHeader className="px-6 pt-6">
+                                <DialogTitle className="text-black">Classes for {row.original.firstName} {row.original.lastName}</DialogTitle>
+                                <DialogDescription>
+                                    Assigned classes and their details
+                                </DialogDescription>
+                            </DialogHeader>
+                            <ScrollArea className="flex-1 p-6">
+                                <div className="grid gap-4 md:grid-cols-2">
+                                    {classes.map((classItem) => (
+                                        <div
+                                            key={classItem?._id}
+                                            className="rounded-lg border bg-card text-card-foreground shadow-sm"
+                                        >
+                                            <div className="space-y-1.5 p-4">
+                                                <h3 className="font-semibold tracking-tight text-base">
+                                                    {classItem?.subject?.name}
+                                                </h3>
+                                                <p className="text-sm text-muted-foreground">
+                                                    {classItem?.section?.name} • {classItem?.section?.gradeLevel?.level}
+                                                </p>
+                                            </div>
+                                            {classItem?.track && (
+                                                <div className="px-4 py-2 bg-muted/50">
+                                                    <Badge variant="outline" className="h-5 px-1.5 text-xs font-normal">
+                                                        {classItem?.track}
+                                                    </Badge>
+                                                </div>
+                                            )}
+                                            <div className="p-4 space-y-3">
+                                                {classItem?.schedules?.map((schedule) => (
+                                                    <div key={schedule._id} className="space-y-1.5">
+                                                        <div className="flex items-center gap-2 text-sm">
+                                                            <Calendar className="h-4 w-4 text-muted-foreground" />
+                                                            <span className="font-medium">{schedule.day}</span>
+                                                        </div>
+                                                        <div className="ml-6 space-y-1">
+                                                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                                                <Clock className="h-3 w-3" />
+                                                                <span>{schedule.schoolPeriod?.timeRange}</span>
+                                                            </div>
+                                                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                                                <MapPin className="h-3 w-3" />
+                                                                <span>{schedule.room?.name}</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </ScrollArea>
+                        </DialogContent>
+                    </Dialog>
+                </>
+            );
         },
     },
     {
@@ -92,10 +198,10 @@ export const teacherColumns: ColumnDef<Teacher>[] = [
                                 Edit teacher
                             </Link>
                         </DropdownMenuItem>
-                        <DropdownMenuItem>View schedule</DropdownMenuItem>
-                        <DropdownMenuItem className="text-destructive">
+                        {/* <DropdownMenuItem>View schedule</DropdownMenuItem> */}
+                        {/* <DropdownMenuItem className="text-destructive">
                             Delete teacher
-                        </DropdownMenuItem>
+                        </DropdownMenuItem> */}
                     </DropdownMenuContent>
                 </DropdownMenu>
             );

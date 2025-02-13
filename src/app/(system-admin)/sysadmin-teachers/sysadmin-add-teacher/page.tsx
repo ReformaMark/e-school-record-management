@@ -43,9 +43,8 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { api } from "../../../../../convex/_generated/api";
-import { SchoolSubjects, schoolSubjects } from "../../../../../data/teachers-data";
-import { MultiSelectSubject } from "../../_components/multi-select-subject";
 import { Id } from "../../../../../convex/_generated/dataModel";
+import { SchoolSubjects, schoolSubjects } from "../../../../../data/teachers-data";
 
 const SystemAdminAddTeacherPage = () => {
     const createTeacher = useMutation(api.users.createTeacher);
@@ -58,7 +57,7 @@ const SystemAdminAddTeacherPage = () => {
     const [barangays, setBarangays] = useState<Barangay[]>([]);
     const [isNCR, setIsNCR] = useState(false);
     const { setValue, watch } = useForm();
-    const [selectedSubjects, setSelectedSubjects] = useState<SchoolSubjects[]>([])
+    // const [selectedSubjects, setSelectedSubjects] = useState<SchoolSubjects[]>([])
 
     useEffect(() => {
         fetchRegions().then(data => {
@@ -154,8 +153,8 @@ const SystemAdminAddTeacherPage = () => {
                 gender: formData.get('gender') as string,
                 specialization: formData.get('specialization') as string,
                 yearsOfExperience: parseInt(formData.get('yrsOfExp') as string),
-                position: formData.get('position') as string,
-                advisoryClass: (formData.get('advisoryClass') as string) || undefined,
+                // position: formData.get('position') as string,
+                // advisoryClass: (formData.get('advisoryClass') as string) || undefined,
                 subjectId: formData.getAll('subjects') as Id<'subjects'>[],
                 // Use watch to get the address values
                 region: watch('region'),
@@ -395,7 +394,7 @@ const SystemAdminAddTeacherPage = () => {
                                 </Card>
 
                                 {/* Academic Details Card */}
-                                <Card>
+                                {/* <Card>
                                     <CardHeader>
                                         <CardTitle>Academic Details</CardTitle>
                                     </CardHeader>
@@ -437,7 +436,7 @@ const SystemAdminAddTeacherPage = () => {
                                             </div>
                                         </div>
                                     </CardContent>
-                                </Card>
+                                </Card> */}
 
                                 <Card>
                                     <CardHeader>
