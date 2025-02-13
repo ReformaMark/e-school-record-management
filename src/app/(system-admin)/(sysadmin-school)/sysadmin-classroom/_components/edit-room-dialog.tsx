@@ -25,8 +25,9 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { api } from "../../../../../../convex/_generated/api";
 import { Id } from "../../../../../../convex/_generated/dataModel";
-import { roomSchema, roomTypes } from "./add-class-room-card";
+import { RoomFormData, roomSchema, roomTypes } from "./add-class-room-card";
 import { RoomWithTeacher } from "./classroom-columns";
+import { trackOptions } from "@/lib/constants";
 
 interface EditRoomDialogProps {
     open: boolean;
@@ -36,13 +37,14 @@ interface EditRoomDialogProps {
 
 export const EditRoomDialog = ({ open, onClose, room }: EditRoomDialogProps) => {
     const teachers = useQuery(api.classroom.getTeachers);
+    const gradeLevels = useQuery(api.gradeLevel.get);
 
-    const { register, handleSubmit, setValue, formState: { errors } } = useForm({
+    const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<RoomFormData>({
         resolver: zodResolver(roomSchema),
         defaultValues: {
             name: room.name,
             capacity: room.capacity,
-            type: room.type,
+            type: room.type as "REGULAR" | "LABORATORY" | "COMPUTER_LABORATORY" | undefined,
             teacherId: room.teacherId,
             description: room.description
         }
@@ -59,11 +61,30 @@ export const EditRoomDialog = ({ open, onClose, room }: EditRoomDialogProps) => 
         }
     });
 
+    const handleGradeLevelSelect = (level: string) => {
+        const teacher = teachers?.find(t => t._id === watch("teacherId"));
+        if (teacher) {
+            setValue("gradeLevel", level);
+            setValue("name", `${level}-${teacher.lastName}`);
+        }
+    };
+
     const handleTeacherSelect = (teacherId: Id<"users">) => {
         const selectedTeacher = teachers?.find(t => t._id === teacherId);
+        const gradeLevel = watch("gradeLevel")
+
         if (selectedTeacher) {
             setValue("teacherId", teacherId);
-            setValue("name", `Room ${selectedTeacher.lastName}`);
+            setValue("name", `${gradeLevel}-${selectedTeacher.lastName}`);
+        }
+    };
+
+    const handleTrackSelect = (track: "core" | "academic" | "immersion" | "tvl" | "sports" | "arts") => {
+        const teacher = teachers?.find(t => t._id === watch("teacherId"));
+        const gradeLevel = watch("gradeLevel");
+
+        if (teacher && (gradeLevel?.startsWith("Grade 11") || gradeLevel?.startsWith("Grade 12"))) {
+            setValue("name", `${gradeLevel}-${track}-${teacher.lastName}`);
         }
     };
 
@@ -74,8 +95,14 @@ export const EditRoomDialog = ({ open, onClose, room }: EditRoomDialogProps) => 
                     <DialogTitle>Edit Room</DialogTitle>
                 </DialogHeader>
                 <form onSubmit={
-                    // @ts-expect-error slight type mismatch, teacherId in zod is string but expects Id users no errors will happen here
-                    handleSubmit(data => updateRoom({ id: room._id, ...data }))}>
+                    handleSubmit(data => updateRoom({
+                        id: room._id,
+                        teacherId: data.teacherId as Id<"users">,
+                        capacity: data.capacity,
+                        name: data.name,
+                        type: data.type,
+                        description: data.description,
+                    }))}>
                     <div className="grid gap-8 mt-7">
                         <div className="grid gap-2">
                             <Label>Assign Teacher</Label>
@@ -95,6 +122,43 @@ export const EditRoomDialog = ({ open, onClose, room }: EditRoomDialogProps) => 
                                 <p className="text-sm text-red-500">{errors.teacherId.message}</p>
                             )}
                         </div>
+
+                        <div className="grid gap-2">
+                            <Label>Grade Level</Label>
+                            <Select onValueChange={handleGradeLevelSelect}>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Select grade level" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {gradeLevels?.map((grade) => (
+                                        <SelectItem key={grade._id} value={grade.level}>
+                                            {grade.level}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                            {errors.gradeLevel && (
+                                <p className="text-sm text-red-500">{errors.gradeLevel.message}</p>
+                            )}
+                        </div>
+
+                        {(watch("gradeLevel")?.startsWith("Grade 11") || watch("gradeLevel")?.startsWith("Grade 12")) && (
+                            <div className="grid gap-2">
+                                <Label>Track</Label>
+                                <Select onValueChange={handleTrackSelect}>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select track" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {trackOptions.map((track) => (
+                                            <SelectItem key={track.value} value={track.value}>
+                                                {track.label}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        )}
 
                         <div className="grid gap-2">
                             <Label>Room Name</Label>

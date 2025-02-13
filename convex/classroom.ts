@@ -6,7 +6,7 @@ export const create = mutation({
         name: v.string(),
         capacity: v.number(),
         type: v.string(),
-        features: v.optional(v.array(v.string())),
+        // features: v.optional(v.array(v.string())),
         teacherId: v.id("users"),
         description: v.optional(v.string()),
         gradeLevel: v.optional(v.string()),
@@ -35,7 +35,7 @@ export const create = mutation({
             name: args.name,
             type: args.type,
             description: args.description,
-            features: args.features,
+            // features: args.features,
             teacherId: args.teacherId,
             isActive: true
         });
@@ -88,9 +88,11 @@ export const update = mutation({
         name: v.string(),
         capacity: v.number(),
         type: v.string(),
-        features: v.optional(v.array(v.string())),
+        // features: v.optional(v.array(v.string())),
         teacherId: v.id("users"),
-        description: v.optional(v.string())
+        description: v.optional(v.string()),
+        // gradeLevel: v.optional(v.string()),
+        // track: v.optional(v.string()),
     },
     handler: async (ctx, args) => {
         const { id, ...updates } = args;

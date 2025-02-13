@@ -29,12 +29,12 @@ import { toast } from "sonner"
 import { z } from "zod"
 import { api } from "../../../../../../convex/_generated/api"
 
-export const roomTypes = ["REGULAR", "LABORATORY", "COMPUTER_LAB"] as const;
+export const roomTypes = ["REGULAR", "LABORATORY", "COMPUTER_LABORATORY"] as const;
 
 export const roomSchema = z.object({
     name: z.string().min(1, "Room name is required"),
     capacity: z.coerce.number().min(1, "Capacity must be at least 1"),
-    type: z.enum(["REGULAR", "LABORATORY", "COMPUTER_LAB"]),
+    type: z.enum(["REGULAR", "LABORATORY", "COMPUTER_LABORATORY"]),
     teacherId: z.string().min(1, "Teacher is required"),
     description: z.string().optional(),
     features: z.array(z.string()).optional(),
@@ -64,9 +64,11 @@ export const AddClassRoomCard = () => {
 
     const handleTeacherSelect = (teacherId: string) => {
         const selectedTeacher = teachers?.find(t => t._id === teacherId);
+        const gradeLevel = watch("gradeLevel")
+
         if (selectedTeacher) {
             setValue("teacherId", teacherId);
-            setValue("name", `${selectedTeacher.lastName}'s Room`);
+            setValue("name", `${gradeLevel}-${selectedTeacher.lastName}`);
         }
     };
 
@@ -86,8 +88,6 @@ export const AddClassRoomCard = () => {
             setValue("name", `${gradeLevel}-${track}-${teacher.lastName}`);
         }
     };
-
-    console.log(watch())
 
     return (
         <Card className="flex flex-col h-fit">

@@ -14,7 +14,7 @@ import { EditRoomDialog } from "./edit-room-dialog";
 export const roomTypes = {
     REGULAR: "Regular Classroom",
     LABORATORY: "Science Laboratory",
-    COMPUTER_LAB: "Computer Laboratory"
+    COMPUTER_LABORATORY: "Computer Laboratory"
 } as const;
 
 export type RoomWithTeacher = Doc<"rooms"> & {
