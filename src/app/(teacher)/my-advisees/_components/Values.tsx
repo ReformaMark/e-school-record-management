@@ -12,12 +12,15 @@ import { api } from '../../../../../convex/_generated/api';
 import { Id } from '../../../../../convex/_generated/dataModel';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
+import { cn } from '@/lib/utils';
 
 interface ValuesProps {
     studentId: Id<'students'>,
     classId: Id<'classes'>,
+    sf9?: boolean
 }
 function Values({
+    sf9,
     studentId,
     classId
 }: ValuesProps) {
@@ -100,7 +103,7 @@ function Values({
 
   return (
     <div className="">
-        <div className="flex justify-end">
+        <div className={cn(sf9? "hidden" : "flex justify-end")}>
             {!isEditing && (
                 <Button
                 type="button"
@@ -135,30 +138,30 @@ function Values({
             )}
       </div>
         
-        <h1 className='text-sm font-semibold text-center'>REPORT ON LEARNER&apos;S OBSERVANCE OF VALUES</h1>
+        <h1 className={cn(sf9 ? "text-[0.6rem]" : "text-sm" ,' font-semibold text-center ')}>REPORT ON LEARNER&apos;S OBSERVANCE OF VALUES</h1>
         
         <div className="grid grid-cols-12 w-full border-collapse border border-black  border-b-0 bg-gray-200 items-center text-center font-semibold text-sm">
-            <h1 className='col-span-4 h-full  flex items-center justify-center border-r border-r-black'>Core Values</h1>
-            <h1 className='col-span-4 flex items-center justify-center h-full border-r border-r-black'>Behavior Statements</h1>
+            <div className={cn(sf9 ? "text-xs col-span-3": "col-span-4",' flex items-center justify-center  h-full border-r border-r-black ')}>Core Values</div>
+            <div className={cn(sf9 ? "text-xs col-span-5": "col-span-4",' flex items-center justify-center h-full border-r border-r-black')}>Behavior Statements</div>
             <div className="col-span-4 grid grid-cols-4  text-center  items-center">
-                <h1 className='col-span-4 border-b border-b-black'>Quarter</h1>
-                <h1 className='col-span-1 '>1</h1>
-                <h1 className='col-span-1 border-l border-l-black'>2</h1>
-                <h1 className='col-span-1 border-l border-l-black'>3</h1>
-                <h1 className='col-span-1 border-l border-l-black'>4</h1>
+                <h1 className={cn(sf9 ? "text-xs": "",'col-span-4 border-b border-b-black')}>Quarter</h1>
+                <h1 className={cn(sf9 ? "text-xs": "",'col-span-1 ')}>1</h1>
+                <h1 className={cn(sf9 ? "text-xs": "",'col-span-1 border-l border-l-black')}>2</h1>
+                <h1 className={cn(sf9 ? "text-xs": "",'col-span-1 border-l border-l-black')}>3</h1>
+                <h1 className={cn(sf9 ? "text-xs": "",'col-span-1 border-l border-l-black')}>4</h1>
             </div>
         </div>
 
         {/* Core Values and Behavior Statements Section */}
         <div className="">
             {/* Maka-Diyos */}
-            <div className="grid grid-cols-12 items-center text-center font-medium text-xs md:text-sm">
-                <div className='col-span-4 h-full flex justify-center items-center border border-black p-2'>Maka-Diyos</div>
-                <div className='col-span-4 border-r border-r-black border-y border-y-black  h-full'>
-                    <p className=" p-2 border-b border-black">Expresses one&apos;s spiritual beliefs while respecting the spiritual beliefs of others.</p>
-                    <p className="p-2">Shows adherence to ethical principles by upholding truth in all undertakings.</p>
+            <div className="grid grid-cols-12 items-center text-center font-medium text-sm border border-black">
+                <div  className={cn(sf9 ? "text-xs col-span-3": "col-span-4",' flex items-center justify-center  h-full border-r border-r-black ')}>Maka-Diyos</div>
+                <div className={cn(sf9 ? "col-span-5" : "col-span-4" ,' h-full border-r border-r-black')}>
+                    <p className={cn(sf9 ? "p-1 text-[0.6rem]": "p-2", "border-b border-black")}>Expresses one&apos;s spiritual beliefs while respecting the spiritual beliefs of others.</p>
+                    <p className={cn(sf9 ? "p-1 text-[0.6rem]": "p-2")}>Shows adherence to ethical principles by upholding truth in all undertakings.</p>
                 </div>
-                <div className="col-span-4 border border-black border-l-0 h-full">
+                <div className="col-span-4  h-full">
                    
                         {isEditing ? (
                             <div className="grid grid-cols-4 h-1/2">
@@ -380,13 +383,13 @@ function Values({
             </div>
 
             {/* Makatao */}
-            <div className="grid grid-cols-12 items-center text-center font-medium text-sm">
-                <div className='col-span-4 flex items-center justify-center border-x border-x-black  h-full '>Makatao</div>
-                <div className='col-span-4  h-full border-r border-r-black'>
-                    <p className=" p-2 border-b border-b-black">Is sensitive to individual, social, and cultural differences.</p>
-                    <p className="p-2">Demonstrates contributions towards solidarity.</p>
+            <div className="grid grid-cols-12 items-center text-center font-medium text-sm border-b border-b-black border-x border-x-black">
+                <div  className={cn(sf9 ? "text-xs col-span-3": "col-span-4",' flex items-center justify-center  h-full border-r border-r-black ')}>Maka-Tao</div>
+                <div className={cn(sf9 ? "col-span-5" : "col-span-4" ,' h-full border-r border-r-black')}>
+                    <p className={cn(sf9 ? "p-1 text-[0.6rem]": "p-2", "border-b border-black")}>Is sensitive to individual, social, and cultural differences.</p>
+                    <p className={cn(sf9 ? "p-1 text-[0.6rem]": "p-2")}>Demonstrates contributions towards solidarity.</p>
                 </div>
-                <div className="col-span-4  h-full border-r border-r-black">
+                <div className="col-span-4  h-full">
                 {isEditing ? (
                             <div className="grid grid-cols-4 h-1/2">
                                 <FormField
@@ -605,10 +608,11 @@ function Values({
             </div>
 
             {/* Maka-Kalikasan */}
-            <div className="grid grid-cols-12 items-center text-center font-medium text-sm border-t border-t-black border-x border-x-black">
-                <div className='col-span-4 flex items-center justify-center border-r border-r-black h-full'>Maka-Kalikasan</div>
-                <div className='col-span-4 h-full'>
-                    <p className=" p-2 border-r border-r-black">Cares for the environment and utilizes resources wisely, judiciously, and economically.</p>
+            <div className="grid grid-cols-12 items-center text-center font-medium text-sm  border-x border-x-black">
+                <div  className={cn(sf9 ? "text-xs col-span-3": "col-span-4",' flex items-center justify-center  h-full border-r border-r-black ')}>Maka-Kalikasan</div>
+                <div className={cn(sf9 ? "col-span-5" : "col-span-4" ,' h-full border-r border-r-black')}>
+                    <p className={cn(sf9 ? "p-1 text-[0.6rem]": "p-2", "")}>Cares for the environment and utilizes resources wisely, judiciously, and economically.</p>
+                    
                 </div>
                 <div className="col-span-4 h-full">
                 {isEditing ? (
@@ -724,10 +728,10 @@ function Values({
 
             {/* Maka-Bansa */}
             <div className="grid grid-cols-12 items-center text-center font-medium text-sm border border-black">
-                <div className='col-span-4 flex items-center justify-center  h-full border-r border-r-black '>Maka-Bansa</div>
-                <div className='col-span-4 h-full border-r border-r-black'>
-                    <p className="border-b border-b-black p-2">Demonstrates pride in being a Filipino; exercises the rights and responsibilities of a Filipino citizen.</p>
-                    <p className="p-2 ">Demonstrates appropriate behavior in carrying out activities in school, community, and country.</p>
+                <div  className={cn(sf9 ? "text-xs col-span-3": "col-span-4",' flex items-center justify-center  h-full border-r border-r-black ')}>Maka-Bansa</div>
+                <div className={cn(sf9 ? "col-span-5" : "col-span-4" ,' h-full border-r border-r-black')}>
+                    <p className={cn(sf9 ? "p-1 text-[0.6rem]": "p-2", "border-b border-black")}>Demonstrates pride in being a Filipino; exercises the rights and responsibilities of a Filipino citizen.</p>
+                    <p className={cn(sf9 ? "p-1 text-[0.6rem]": "p-2")}>Demonstrates appropriate behavior in carrying out activities in school, community, and country.</p>
                 </div>
                 <div className="col-span-4 h-full ">
                 {isEditing ? (
