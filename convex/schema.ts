@@ -162,6 +162,11 @@ export default defineSchema({
     schoolYearId: v.id('schoolYears'),
     semester: v.optional(v.string()), // 1st or 2nd
     track: v.optional(v.string()), // core subject (All Track),Academic Track (except Immersion)  ,Work Immersion/ Culminating Activity (for Academic Track) , TVL/ Sports/ Arts and Design Track
+    // schedules: v.optional(v.array(v.object({
+    //   days: v.array(v.string()),
+    //   schoolPeriodId: v.id("schoolPeriods"),
+    //   roomId: v.id('rooms'),
+    // }))),
   }).index('by_teacherId', ['teacherId']),
 
   subjects: defineTable({
@@ -257,9 +262,11 @@ export default defineSchema({
     day: v.array(v.string()), // Mon,Tue,Wed,THu,Fri,Sat, 
     schoolPeriodId: v.id('schoolPeriods'), // range ng time
     roomId: v.id('rooms'),
+    classId: v.id("classes"),
     teacherId: v.id('users'),
-    classId: v.id("classes")
-  }),
+  }).index("by_room", ["roomId"])
+    .index("by_teacher", ["teacherId"])
+    .index("by_class", ["classId"]),
 
   schoolPeriods: defineTable({
     period: v.string(),
@@ -276,6 +283,7 @@ export default defineSchema({
     type: v.string(),
     features: v.optional(v.array(v.string())),
     teacherId: v.optional(v.id("users")), // Reference to assigned teacher
+    gradeLevelId: v.optional(v.id("gradeLevels")), // Reference to grade level
     isActive: v.optional(v.boolean()),
     description: v.optional(v.string())
   }).index("by_teacherId", ["teacherId"]),
@@ -353,15 +361,15 @@ export default defineSchema({
     })),
     generalAverage: v.number(),
   }),
-  
 
-  promotion:defineTable({
+
+  promotion: defineTable({
     from: v.number(),
     to: v.number(),
     studentId: v.id('students'),
-    type: v.union(v.literal("regular"),v.literal("conditional"),)
+    type: v.union(v.literal("regular"), v.literal("conditional"),)
   }),
-    
+
   values: defineTable({
     studentId: v.id('students'),
     classId: v.id('classes'),
@@ -373,7 +381,7 @@ export default defineSchema({
         fourth: v.optional(v.string())
       }),
       second: v.object({
-        first:v.optional(v.string()),
+        first: v.optional(v.string()),
         second: v.optional(v.string()),
         third: v.optional(v.string()),
         fourth: v.optional(v.string())
@@ -484,7 +492,7 @@ export default defineSchema({
     }),
   }),
 
- 
+
 })
 
 

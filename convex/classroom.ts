@@ -9,7 +9,7 @@ export const create = mutation({
         // features: v.optional(v.array(v.string())),
         teacherId: v.id("users"),
         description: v.optional(v.string()),
-        gradeLevel: v.optional(v.string()),
+        gradeLevelId: v.optional(v.id("gradeLevels")),
         track: v.optional(v.string()),
     },
     handler: async (ctx, args) => {
@@ -37,7 +37,8 @@ export const create = mutation({
             description: args.description,
             // features: args.features,
             teacherId: args.teacherId,
-            isActive: true
+            isActive: true,
+            gradeLevelId: args.gradeLevelId,
         });
     }
 })
@@ -88,11 +89,9 @@ export const update = mutation({
         name: v.string(),
         capacity: v.number(),
         type: v.string(),
-        // features: v.optional(v.array(v.string())),
         teacherId: v.id("users"),
         description: v.optional(v.string()),
-        // gradeLevel: v.optional(v.string()),
-        // track: v.optional(v.string()),
+        gradeLevelId: v.optional(v.id("gradeLevels")),
     },
     handler: async (ctx, args) => {
         const { id, ...updates } = args;
@@ -109,6 +108,36 @@ export const update = mutation({
             throw new ConvexError("Teacher not found");
         }
 
-        return await ctx.db.patch(id, updates);
+        if (args.gradeLevelId) {
+            const gradeLevel = await ctx.db.get(args.gradeLevelId);
+            if (!gradeLevel) {
+                throw new ConvexError("Grade level not found");
+            }
+        }
+
+        return await ctx.db.patch(id, {
+            ...updates,
+            gradeLevelId: args.gradeLevelId
+        });
+    }
+});
+
+export const getAvailableRooms = query({
+    handler: async (ctx) => {
+        const rooms = await ctx.db
+            .query("rooms")
+            .filter(q => q.eq(q.field("isActive"), true))
+            .collect();
+
+        return Promise.all(rooms.map(async (room) => {
+            const teacher = await ctx.db.get(room.teacherId!);
+            const gradeLevel = room.gradeLevelId ? await ctx.db.get(room.gradeLevelId) : null;
+
+            return {
+                ...room,
+                teacher,
+                gradeLevel
+            };
+        }));
     }
 });

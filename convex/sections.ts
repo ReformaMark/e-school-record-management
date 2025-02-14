@@ -51,14 +51,25 @@ export const create = mutation({
         gradeLevelId: v.id("gradeLevels"),
         advisorId: v.id("users"),
         schoolYearId: v.id("schoolYears"),
+        roomId: v.id("rooms"),
         classes: v.array(v.object({
             subjectId: v.id("subjects"),
             teacherId: v.id("users"),
             semester: v.optional(v.string()),
-            track: v.optional(v.string())
+            track: v.optional(v.string()),
+            schedules: v.optional(v.array(v.object({
+                days: v.array(v.string()),
+                schoolPeriodId: v.id("schoolPeriods"),
+                roomId: v.id("rooms")
+            }))),
         }))
     },
     handler: async (ctx, args) => {
+        const room = await ctx.db.get(args.roomId);
+        if (!room || !room.isActive) {
+            throw new ConvexError("Invalid room selected");
+        }
+
         const advisor = await ctx.db.get(args.advisorId);
         if (!advisor || advisor.role !== "teacher") {
             throw new ConvexError("Invalid advisor selected");
@@ -78,29 +89,103 @@ export const create = mutation({
             }
         }
 
+        for (const classData of args.classes) {
+            if (classData.schedules) {
+                for (const schedule of classData.schedules) {
+                    // Check room availability
+                    const roomConflict = await ctx.db
+                        .query("schedules")
+                        .filter(q =>
+                            q.and(
+                                q.eq(q.field("roomId"), schedule.roomId),
+                                q.eq(q.field("schoolPeriodId"), schedule.schoolPeriodId),
+                                // Check if any of the days match
+                                q.or(
+                                    ...schedule.days.map(day =>
+                                        q.eq(q.field("day"), [day])
+                                    )
+                                )
+                            )
+                        )
+                        .first();
+
+                    if (roomConflict) {
+                        throw new ConvexError(
+                            `Room schedule conflict: ${schedule.days.join(", ")} at period ${schedule.schoolPeriodId}`
+                        );
+                    }
+
+                    // Check teacher availability
+                    const teacherConflict = await ctx.db
+                        .query("schedules")
+                        .filter(q =>
+                            q.and(
+                                q.eq(q.field("teacherId"), classData.teacherId),
+                                q.eq(q.field("schoolPeriodId"), schedule.schoolPeriodId),
+                                // Check if any of the days match
+                                q.or(
+                                    ...schedule.days.map(day =>
+                                        q.eq(q.field("day"), [day])
+                                    )
+                                )
+                            )
+                        )
+                        .first();
+
+                    if (teacherConflict) {
+                        throw new ConvexError(
+                            `Teacher schedule conflict: ${schedule.days.join(", ")} at period ${schedule.schoolPeriodId}`
+                        );
+                    }
+                }
+            }
+        }
+
         const sectionId = await ctx.db.insert("sections", {
             name: args.name,
             gradeLevelId: args.gradeLevelId,
             advisorId: args.advisorId,
             schoolYearId: args.schoolYearId,
+            roomId: args.roomId,
             isActive: true,
             students: []
         });
 
-        const classPromises = args.classes.map(classData =>
-            ctx.db.insert("classes", {
+        for (const classData of args.classes) {
+            const classId = await ctx.db.insert("classes", {
                 subjectId: classData.subjectId,
                 teacherId: classData.teacherId,
                 sectionId,
                 schoolYearId: args.schoolYearId,
-                semester: isSHS ? classData.semester : undefined,
-                track: isSHS ? classData.track : undefined
-            })
-        );
+                semester: classData.semester,
+                track: classData.track
+            });
 
-        await Promise.all(classPromises);
+            // Create schedules for each class if they exist
+            if (classData.schedules) {
+                for (const schedule of classData.schedules) {
+                    await ctx.db.insert("schedules", {
+                        day: schedule.days,
+                        schoolPeriodId: schedule.schoolPeriodId,
+                        roomId: schedule.roomId,
+                        classId,
+                        teacherId: classData.teacherId
+                    });
+                }
+            }
+        }
 
         return sectionId;
+    }
+});
+
+export const getSchedulesByClassId = query({
+    args: { classId: v.id("classes") },
+    handler: async (ctx, { classId }) => {
+        return await ctx.db
+            .query("schedules")
+            .filter(q => q.eq(q.field("classId"), classId))
+            .collect();
     }
 });
 
@@ -124,32 +209,22 @@ export const getSections = query({
             const classesWithDetails = await Promise.all(classes.map(async (classItem) => {
                 const teacher = await ctx.db.get(classItem.teacherId);
                 const subject = await ctx.db.get(classItem.subjectId);
-                // const schedule = await await Promise.all(classItem.scheduleId.map(async (scheduleId) => { 
-                //     const schedId = await ctx.db.get(scheduleId)
 
-                //     return schedId
-                // }))
-
-                // const removeNullSched = schedule.filter(sched => sched !== null)
-
-                const schedule = await ctx.db
+                // Get schedules for this class
+                const schedules = await ctx.db
                     .query("schedules")
                     .filter(q => q.eq(q.field("classId"), classItem._id))
-                    .first();
-
-                let periodDetails = null;
-                if (schedule) {
-                    periodDetails = await ctx.db.get(schedule.schoolPeriodId);
-                }
+                    .collect();
 
                 return {
                     ...classItem,
                     teacher,
                     subject,
-                    schedule: schedule ? {
-                        ...schedule,
-                        period: periodDetails
-                    } : null
+                    schedule: schedules.map(schedule => ({
+                        days: schedule.day,
+                        schoolPeriodId: schedule.schoolPeriodId,
+                        roomId: schedule.roomId
+                    }))
                 };
             }));
 
@@ -171,37 +246,99 @@ export const addClassToSection = mutation({
         teacherId: v.id("users"),
         semester: v.optional(v.string()),
         track: v.optional(v.string()),
+        schedules: v.optional(v.array(v.object({
+            days: v.array(v.string()),
+            schoolPeriodId: v.id("schoolPeriods"),
+            roomId: v.id("rooms")
+        })))
     },
     handler: async (ctx, args) => {
-        const section = await ctx.db.get(args.sectionId)
+        const section = await ctx.db.get(args.sectionId);
         if (!section || !section.isActive) {
-            throw new ConvexError("Invalid or inactive section")
+            throw new ConvexError("Invalid or inactive section");
         }
 
+        // Validate teacher
         const teacher = await ctx.db.get(args.teacherId);
         if (!teacher || teacher.role !== "teacher") {
             throw new ConvexError("Invalid teacher selected");
         }
 
-        const gradeLevel = await ctx.db.get(section.gradeLevelId);
-        const isSHS = gradeLevel?.level.includes("11") || gradeLevel?.level.includes("12");
+        // Check schedule conflicts if schedules are provided
+        if (args.schedules) {
+            for (const schedule of args.schedules) {
+                // Check room availability
+                const roomConflict = await ctx.db
+                    .query("schedules")
+                    .filter(q =>
+                        q.and(
+                            q.eq(q.field("roomId"), schedule.roomId),
+                            q.eq(q.field("schoolPeriodId"), schedule.schoolPeriodId),
+                            q.or(
+                                ...schedule.days.map(day =>
+                                    q.eq(q.field("day"), [day])
+                                )
+                            )
+                        )
+                    )
+                    .first();
 
-        if (isSHS && (!args.semester || !args.track)) {
-            throw new ConvexError("Semester and Track are required for Senior High School");
+                if (roomConflict) {
+                    throw new ConvexError(
+                        `Room schedule conflict: ${schedule.days.join(", ")} at period ${schedule.schoolPeriodId}`
+                    );
+                }
+
+                // Check teacher availability
+                const teacherConflict = await ctx.db
+                    .query("schedules")
+                    .filter(q =>
+                        q.and(
+                            q.eq(q.field("teacherId"), args.teacherId),
+                            q.eq(q.field("schoolPeriodId"), schedule.schoolPeriodId),
+                            q.or(
+                                ...schedule.days.map(day =>
+                                    q.eq(q.field("day"), [day])
+                                )
+                            )
+                        )
+                    )
+                    .first();
+
+                if (teacherConflict) {
+                    throw new ConvexError(
+                        `Teacher schedule conflict: ${schedule.days.join(", ")} at period ${schedule.schoolPeriodId}`
+                    );
+                }
+            }
         }
 
+        // Create the class
         const classId = await ctx.db.insert("classes", {
             subjectId: args.subjectId,
             teacherId: args.teacherId,
             sectionId: args.sectionId,
             schoolYearId: section.schoolYearId,
-            semester: isSHS ? args.semester : undefined,
-            track: isSHS ? args.track : undefined
+            semester: args.semester,
+            track: args.track
         });
+
+        // Create schedules if provided
+        if (args.schedules) {
+            for (const schedule of args.schedules) {
+                await ctx.db.insert("schedules", {
+                    day: schedule.days,
+                    schoolPeriodId: schedule.schoolPeriodId,
+                    roomId: schedule.roomId,
+                    classId,
+                    teacherId: args.teacherId
+                });
+            }
+        }
 
         return classId;
     }
-})
+});
 
 export const update = mutation({
     args: {
@@ -210,12 +347,18 @@ export const update = mutation({
         gradeLevelId: v.id("gradeLevels"),
         advisorId: v.id("users"),
         schoolYearId: v.id("schoolYears"),
+        roomId: v.id("rooms"),
         classes: v.array(v.object({
             id: v.optional(v.id("classes")),
             subjectId: v.id("subjects"),
             teacherId: v.id("users"),
             semester: v.optional(v.string()),
-            track: v.optional(v.string())
+            track: v.optional(v.string()),
+            schedules: v.optional(v.array(v.object({
+                days: v.array(v.string()),
+                schoolPeriodId: v.id("schoolPeriods"),
+                roomId: v.id("rooms"),
+            })))
         }))
     },
     handler: async (ctx, args) => {
@@ -249,6 +392,7 @@ export const update = mutation({
             gradeLevelId: args.gradeLevelId,
             advisorId: args.advisorId,
             schoolYearId: args.schoolYearId,
+            roomId: args.roomId,
         });
 
         // Get existing classes
@@ -268,7 +412,6 @@ export const update = mutation({
             }
         }
 
-        // Update or create classes
         for (const classData of args.classes) {
             if (classData.id) {
                 // Update existing class
@@ -276,18 +419,55 @@ export const update = mutation({
                     subjectId: classData.subjectId,
                     teacherId: classData.teacherId,
                     semester: isSHS ? classData.semester : undefined,
-                    track: isSHS ? classData.track : undefined
+                    track: isSHS ? classData.track : undefined,
                 });
+
+                // Update schedules if they exist
+                if (classData.schedules) {
+                    // Delete existing schedules
+                    const existingSchedules = await ctx.db
+                        .query("schedules")
+                        .filter(q => q.eq(q.field("classId"), classData.id))
+                        .collect();
+
+                    for (const schedule of existingSchedules) {
+                        await ctx.db.delete(schedule._id);
+                    }
+
+                    // Create new schedules
+                    for (const schedule of classData.schedules) {
+                        await ctx.db.insert("schedules", {
+                            day: schedule.days,
+                            schoolPeriodId: schedule.schoolPeriodId,
+                            roomId: schedule.roomId,
+                            classId: classData.id,
+                            teacherId: classData.teacherId
+                        });
+                    }
+                }
             } else {
                 // Create new class
-                await ctx.db.insert("classes", {
+                const classId = await ctx.db.insert("classes", {
                     subjectId: classData.subjectId,
                     teacherId: classData.teacherId,
                     sectionId: args.id,
                     schoolYearId: args.schoolYearId,
                     semester: isSHS ? classData.semester : undefined,
-                    track: isSHS ? classData.track : undefined
+                    track: isSHS ? classData.track : undefined,
                 });
+
+                // Create schedules for new class
+                if (classData.schedules) {
+                    for (const schedule of classData.schedules) {
+                        await ctx.db.insert("schedules", {
+                            day: schedule.days,
+                            schoolPeriodId: schedule.schoolPeriodId,
+                            roomId: schedule.roomId,
+                            classId,
+                            teacherId: classData.teacherId
+                        });
+                    }
+                }
             }
         }
 

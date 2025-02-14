@@ -13,6 +13,8 @@ import { BiLeftArrow } from "react-icons/bi";
 import { toast } from "sonner";
 import { api } from "../../../../../../../convex/_generated/api";
 import { Id } from "../../../../../../../convex/_generated/dataModel";
+import { AddScheduleModal } from "../../_components/add-schedule-modal";
+import { Trash } from "lucide-react";
 
 const AddClassToSectionPage = () => {
     const params = useParams();
@@ -23,7 +25,12 @@ const AddClassToSectionPage = () => {
         subjectId: "" as Id<"subjects">,
         teacherId: "" as Id<"users">,
         semester: "",
-        track: ""
+        track: "",
+        schedules: [] as Array<{
+            days: string[];
+            schoolPeriodId: Id<"schoolPeriods">;
+            roomId: Id<"rooms">;
+        }>
     });
 
     // Queries
@@ -32,6 +39,9 @@ const AddClassToSectionPage = () => {
     const teachers = useQuery(api.users.getTeachers);
     const subjects = useQuery(api.subjects.getSubjects);
     const classes = useQuery(api.classes.getClassesBySection, { sectionId });
+    const schoolPeriods = useQuery(api.schoolPeriod.get);
+    const rooms = useQuery(api.classroom.getAvailableRooms);
+
     const filteredSubjects = subjects?.filter(
         subject => subject.gradeLevelId === currentSection?.gradeLevelId
     );
@@ -55,7 +65,8 @@ const AddClassToSectionPage = () => {
                 subjectId: "" as Id<"subjects">,
                 teacherId: "" as Id<"users">,
                 semester: "",
-                track: ""
+                track: "",
+                schedules: [],
             });
         },
         onError: (error) => {
@@ -67,10 +78,51 @@ const AddClassToSectionPage = () => {
         e.preventDefault();
         if (!sectionId) return;
 
+        // Validate required fields
+        if (!formData.subjectId || !formData.teacherId) {
+            toast.error("Please fill in all required fields");
+            return;
+        }
+
+        // Validate SHS specific fields
+        if (isSHS && (!formData.semester || !formData.track)) {
+            toast.error("Please select semester and track for SHS classes");
+            return;
+        }
+
+        // Validate at least one schedule
+        if (formData.schedules.length === 0) {
+            toast.error("Please add at least one schedule");
+            return;
+        }
+
         addClass({
-            sectionId: sectionId as Id<"sections">,
-            ...formData
+            sectionId,
+            subjectId: formData.subjectId,
+            teacherId: formData.teacherId,
+            semester: formData.semester,
+            track: formData.track,
+            schedules: formData.schedules.map(schedule => ({
+                days: schedule.days,
+                schoolPeriodId: schedule.schoolPeriodId,
+                roomId: schedule.roomId
+            }))
         });
+    };
+
+    const handleScheduleAdd = (schedule: {
+        days: string[];
+        schoolPeriodId: string;
+        roomId: string;
+    }) => {
+        setFormData(prev => ({
+            ...prev,
+            schedules: [...prev.schedules, {
+                days: schedule.days,
+                schoolPeriodId: schedule.schoolPeriodId as Id<"schoolPeriods">,
+                roomId: schedule.roomId as Id<"rooms">
+            }]
+        }));
     };
 
     if (!currentSection) return <div>Section not found</div>;
@@ -183,6 +235,50 @@ const AddClassToSectionPage = () => {
                                     </div>
                                 </>
                             )}
+
+                            <div className="space-y-4">
+                                <div className="flex items-center justify-between">
+                                    <Label>Schedules</Label>
+                                    <AddScheduleModal
+                                        onScheduleAdd={handleScheduleAdd}
+                                        schoolPeriods={schoolPeriods || []}
+                                        rooms={rooms || []}
+                                    />
+                                </div>
+
+                                {/* Display added schedules */}
+                                <div className="space-y-2">
+                                    {formData.schedules.map((schedule, index) => (
+                                        <div
+                                            key={index}
+                                            className="flex items-center justify-between p-2 bg-gray-50 rounded-md"
+                                        >
+                                            <div className="space-y-1">
+                                                <div className="text-sm font-medium">
+                                                    {schedule.days.join(", ")}
+                                                </div>
+                                                <div className="text-sm text-muted-foreground">
+                                                    {schoolPeriods?.find(p => p._id === schedule.schoolPeriodId)?.timeRange} |
+                                                    {rooms?.find(r => r._id === schedule.roomId)?.name}
+                                                </div>
+                                            </div>
+                                            <Button
+                                                type="button"
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={() => {
+                                                    setFormData(prev => ({
+                                                        ...prev,
+                                                        schedules: prev.schedules.filter((_, i) => i !== index)
+                                                    }));
+                                                }}
+                                            >
+                                                <Trash className="h-4 w-4" />
+                                            </Button>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
                         </div>
 
                         <Button type="submit" disabled={isPending} className="text-white">

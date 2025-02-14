@@ -28,6 +28,8 @@ import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { z } from "zod"
 import { api } from "../../../../../../convex/_generated/api"
+import { Id } from "../../../../../../convex/_generated/dataModel"
+import { useState } from "react"
 
 export const roomTypes = ["REGULAR", "LABORATORY", "COMPUTER_LABORATORY"] as const;
 
@@ -45,6 +47,7 @@ export const roomSchema = z.object({
 export type RoomFormData = z.infer<typeof roomSchema>;
 
 export const AddClassRoomCard = () => {
+    const [selectedGradeLevelId, setSelectedGradeLevelId] = useState<Id<"gradeLevels"> | null>(null);
     const teachers = useQuery(api.classroom.getTeachers);
     const gradeLevels = useQuery(api.gradeLevel.get);
 
@@ -74,9 +77,12 @@ export const AddClassRoomCard = () => {
 
     const handleGradeLevelSelect = (level: string) => {
         const teacher = teachers?.find(t => t._id === watch("teacherId"));
-        if (teacher) {
+        const gradeLevel = gradeLevels?.find(g => g.level === level)
+
+        if (teacher && gradeLevel) {
             setValue("gradeLevel", level);
             setValue("name", `${level}-${teacher.lastName}`);
+            setSelectedGradeLevelId(gradeLevel._id as Id<"gradeLevels">)
         }
     };
 
@@ -98,8 +104,16 @@ export const AddClassRoomCard = () => {
                 </CardDescription>
             </CardHeader>
             <form onSubmit={
-                // @ts-expect-error slight type mismatch, teacherId in zod is string but expects Id users no errors will happen here
-                handleSubmit(data => createRoom(data))}>
+                handleSubmit(data => {
+                    // Remove gradeLevel from data since it's just for display
+                    const { gradeLevel, ...submitData } = data;
+                    createRoom({
+                        ...submitData,
+                        gradeLevelId: selectedGradeLevelId ?? undefined,
+                        teacherId: data.teacherId as Id<"users">
+                    });
+                })
+            }>
                 <CardContent className="grid gap-8 mt-7">
                     <div className="grid gap-2">
                         <Label>Assign Teacher</Label>

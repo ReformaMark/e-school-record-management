@@ -71,7 +71,8 @@ export interface SectionWithDetails extends Doc<'sections'> {
     advisor: Doc<'users'> | null,
     classes: ClassessWithTeacherSubSched[],
     schoolYear: Doc<'schoolYears'> | null,
-    gradeLevel: Doc<'gradeLevels'> | null
+    gradeLevel: Doc<'gradeLevels'> | null,
+    roomId: Id<"rooms">,
 }
 
 interface ClassessWithTeacherSubSched extends Doc<'classes'> {

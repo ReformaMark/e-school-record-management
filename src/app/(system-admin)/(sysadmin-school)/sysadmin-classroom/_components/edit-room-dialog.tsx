@@ -17,6 +17,7 @@ import {
     SelectValue
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { trackOptions } from "@/lib/constants";
 import { useConvexMutation } from "@convex-dev/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
@@ -27,7 +28,7 @@ import { api } from "../../../../../../convex/_generated/api";
 import { Id } from "../../../../../../convex/_generated/dataModel";
 import { RoomFormData, roomSchema, roomTypes } from "./add-class-room-card";
 import { RoomWithTeacher } from "./classroom-columns";
-import { trackOptions } from "@/lib/constants";
+import { useState } from "react";
 
 interface EditRoomDialogProps {
     open: boolean;
@@ -36,6 +37,7 @@ interface EditRoomDialogProps {
 }
 
 export const EditRoomDialog = ({ open, onClose, room }: EditRoomDialogProps) => {
+    const [selectedGradeLevelId, setSelectedGradeLevelId] = useState<Id<"gradeLevels"> | null>(null);
     const teachers = useQuery(api.classroom.getTeachers);
     const gradeLevels = useQuery(api.gradeLevel.get);
 
@@ -46,7 +48,8 @@ export const EditRoomDialog = ({ open, onClose, room }: EditRoomDialogProps) => 
             capacity: room.capacity,
             type: room.type as "REGULAR" | "LABORATORY" | "COMPUTER_LABORATORY" | undefined,
             teacherId: room.teacherId,
-            description: room.description
+            description: room.description,
+            gradeLevel: room.name.split("-")[0]
         }
     });
 
@@ -63,9 +66,12 @@ export const EditRoomDialog = ({ open, onClose, room }: EditRoomDialogProps) => 
 
     const handleGradeLevelSelect = (level: string) => {
         const teacher = teachers?.find(t => t._id === watch("teacherId"));
-        if (teacher) {
+        const gradeLevel = gradeLevels?.find(g => g.level === level);
+
+        if (teacher && gradeLevel) {
             setValue("gradeLevel", level);
             setValue("name", `${level}-${teacher.lastName}`);
+            setSelectedGradeLevelId(gradeLevel._id);
         }
     };
 
@@ -88,21 +94,23 @@ export const EditRoomDialog = ({ open, onClose, room }: EditRoomDialogProps) => 
         }
     };
 
+    const onSubmit = (data: RoomFormData) => {
+        const { gradeLevel, track, ...submitData } = data;
+        updateRoom({
+            id: room._id,
+            ...submitData,
+            gradeLevelId: selectedGradeLevelId ?? undefined,
+            teacherId: data.teacherId as Id<"users">
+        });
+    };
+
     return (
         <Dialog open={open} onOpenChange={onClose}>
             <DialogContent className="text-black bg-white">
                 <DialogHeader>
                     <DialogTitle>Edit Room</DialogTitle>
                 </DialogHeader>
-                <form onSubmit={
-                    handleSubmit(data => updateRoom({
-                        id: room._id,
-                        teacherId: data.teacherId as Id<"users">,
-                        capacity: data.capacity,
-                        name: data.name,
-                        type: data.type,
-                        description: data.description,
-                    }))}>
+                <form onSubmit={handleSubmit(onSubmit)} className="grid gap-8 mt-7">
                     <div className="grid gap-8 mt-7">
                         <div className="grid gap-2">
                             <Label>Assign Teacher</Label>

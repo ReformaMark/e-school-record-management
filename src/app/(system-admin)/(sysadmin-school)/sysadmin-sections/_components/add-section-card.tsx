@@ -21,13 +21,38 @@ import {
     SelectValue
 } from "@/components/ui/select"
 import { Separator } from "@/components/ui/separator"
+import { useQuery } from "convex/react"
 import { MinusIcon, PlusIcon } from "lucide-react"
 import { useState } from "react"
 import { toast } from "sonner"
+import { api } from "../../../../../../convex/_generated/api"
+import { useForm } from "react-hook-form"
+import { Id } from "../../../../../../convex/_generated/dataModel"
 
 export const AddSectionCard = () => {
     const [step, setStep] = useState<number>(1)
     const [selectCount, setSelectCount] = useState<number>(1);
+
+    const rooms = useQuery(api.classroom.getAvailableRooms);
+
+    const { register, handleSubmit, setValue, watch } = useForm({
+        defaultValues: {
+            name: "",
+            roomId: "",
+            adviserId: "",
+            schoolYearId: "",
+            gradeLevelId: "",
+        }
+    });
+
+    const handleRoomSelect = (roomId: Id<"rooms">) => {
+        const selectedRoom = rooms?.find(room => room._id === roomId);
+        if (selectedRoom && selectedRoom.teacher && selectedRoom.gradeLevel) {
+            setValue("roomId", roomId);
+            setValue("adviserId", selectedRoom.teacher._id);
+            setValue("gradeLevelId", selectedRoom.gradeLevel._id);
+        }
+    };
 
     const addSubjectTeacher = () => {
         if (selectCount >= 5) {

@@ -1,4 +1,5 @@
 "use client"
+
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
     Card,
@@ -35,6 +36,10 @@ import { useFieldArray, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { api } from "../../../../../../convex/_generated/api";
 import { Id } from "../../../../../../convex/_generated/dataModel";
+import { MultiSelect } from "@/components/ui/multi-select";
+import { Plus, Trash } from "lucide-react";
+import { AddScheduleModal } from "./add-schedule-modal";
+import { EditScheduleModal } from "./edit-schedule-modal";
 
 interface SectionFormProps {
     isEditing?: boolean;
@@ -48,9 +53,10 @@ export const SectionForm = ({ isEditing = false, section }: SectionFormProps) =>
         resolver: zodResolver(sectionSchema),
         defaultValues: {
             name: "",
-            gradeLevelId: "",
+            roomId: "",
             advisorId: "",
             schoolYearId: "",
+            gradeLevelId: "",
             classes: [{
                 subjectId: "",
                 teacherId: "",
@@ -91,6 +97,8 @@ export const SectionForm = ({ isEditing = false, section }: SectionFormProps) =>
     const subjects = useQuery(api.subjects.getSubjects);
     const schoolYears = useQuery(api.schoolYear.get);
     const gradeLevels = useQuery(api.gradeLevel.get);
+    const schoolPeriods = useQuery(api.schoolPeriod.get);
+    const rooms = useQuery(api.classroom.getAvailableRooms);
 
     const filteredSubjects = subjects?.filter(
         subject => subject.gradeLevelId === selectedGradeLevelId
@@ -113,11 +121,13 @@ export const SectionForm = ({ isEditing = false, section }: SectionFormProps) =>
                 gradeLevelId: section.gradeLevelId,
                 advisorId: section.advisorId,
                 schoolYearId: section.schoolYearId,
+                roomId: section.roomId,
                 classes: section.classes.map(cls => ({
                     subjectId: cls.subjectId,
                     teacherId: cls.teacherId,
                     semester: cls.semester || "",
-                    track: cls.track || ""
+                    track: cls.track || "",
+                    schedules: cls.schedule || []
                 }))
             });
 
@@ -166,13 +176,30 @@ export const SectionForm = ({ isEditing = false, section }: SectionFormProps) =>
         }
     };
 
-    const handleSemesterChange = (value: string, index: number) => {
-        setValue(`classes.${index}.semester`, value);
+    const handleRoomSelect = (roomId: string) => {
+        const selectedRoom = rooms?.find(room => room._id === roomId);
+        if (selectedRoom && selectedRoom.teacher && selectedRoom.gradeLevel) {
+            setValue("roomId", roomId);
+            setValue("advisorId", selectedRoom.teacher._id);
+            setValue("gradeLevelId", selectedRoom.gradeLevel._id);
+
+            if (fields.length > 0) {
+                setValue("classes.0.teacherId", selectedRoom.teacher._id);
+            }
+
+            const isSHS = selectedRoom.gradeLevel.level.includes("11") ||
+                selectedRoom.gradeLevel.level.includes("12");
+            setIsSeniorHigh(isSHS);
+        }
     };
 
-    const handleTrackChange = (value: string, index: number) => {
-        setValue(`classes.${index}.track`, value);
-    };
+    // const handleSemesterChange = (value: string, index: number) => {
+    //     setValue(`classes.${index}.semester`, value);
+    // };
+
+    // const handleTrackChange = (value: string, index: number) => {
+    //     setValue(`classes.${index}.track`, value);
+    // };
 
     const onSubmit = (data: SectionFormData) => {
         if (isEditing && section) {
@@ -182,10 +209,16 @@ export const SectionForm = ({ isEditing = false, section }: SectionFormProps) =>
                 advisorId: data.advisorId as Id<"users">,
                 gradeLevelId: data.gradeLevelId as Id<"gradeLevels">,
                 schoolYearId: data.schoolYearId as Id<"schoolYears">,
+                roomId: data.roomId as Id<"rooms">,
                 classes: data.classes.map(cls => ({
                     ...cls,
                     subjectId: cls.subjectId as Id<"subjects">,
                     teacherId: cls.teacherId as Id<"users">,
+                    schedules: cls.schedules?.map(schedule => ({
+                        ...schedule,
+                        roomId: schedule.roomId as Id<"rooms">,
+                        schoolPeriodId: schedule.schoolPeriodId as Id<"schoolPeriods">,
+                    }))
                 }))
             });
         } else {
@@ -193,11 +226,17 @@ export const SectionForm = ({ isEditing = false, section }: SectionFormProps) =>
                 ...data,
                 advisorId: data.advisorId as Id<"users">,
                 gradeLevelId: data.gradeLevelId as Id<"gradeLevels">,
+                roomId: data.roomId as Id<"rooms">,
                 schoolYearId: data.schoolYearId as Id<"schoolYears">,
                 classes: data.classes.map(cls => ({
                     ...cls,
                     subjectId: cls.subjectId as Id<"subjects">,
                     teacherId: cls.teacherId as Id<"users">,
+                    schedules: cls.schedules?.map(schedule => ({
+                        ...schedule,
+                        roomId: schedule.roomId as Id<"rooms">,
+                        schoolPeriodId: schedule.schoolPeriodId as Id<"schoolPeriods">,
+                    }))
                 }))
             });
         }
@@ -240,7 +279,6 @@ export const SectionForm = ({ isEditing = false, section }: SectionFormProps) =>
 
                         <div className="grid gap-4 md:grid-cols-[1fr_250px] lg:grid-cols-3 lg:gap-8">
                             <div className="grid auto-rows-max items-start gap-4 lg:col-span-3 lg:gap-8">
-                                {/* Fname, Lname, Mname, Desc */}
                                 <Card>
                                     <CardHeader>
                                         <CardTitle>Section Details</CardTitle>
@@ -285,43 +323,40 @@ export const SectionForm = ({ isEditing = false, section }: SectionFormProps) =>
 
                                             <div className="grid gap-3 grid-cols-1 md:grid-cols-2">
                                                 <div className="grid gap-2">
-                                                    <Label>Grade Level</Label>
+                                                    <Label>Room</Label>
                                                     <Select
-                                                        onValueChange={handleGradeLevelChange}
-                                                        value={watch("gradeLevelId")}
+                                                        onValueChange={handleRoomSelect}
+                                                        value={watch("roomId")}
                                                     >
                                                         <SelectTrigger>
-                                                            <SelectValue placeholder="Select Grade Level" />
+                                                            <SelectValue placeholder="Select Room" />
                                                         </SelectTrigger>
                                                         <SelectContent>
-                                                            {gradeLevels?.map((grade) => (
-                                                                <SelectItem key={grade._id} value={grade._id}>
-                                                                    {grade.level}
+                                                            {rooms?.map((room) => (
+                                                                <SelectItem key={room._id} value={room._id}>
+                                                                    {room.name} ({room.teacher?.lastName})
                                                                 </SelectItem>
                                                             ))}
                                                         </SelectContent>
                                                     </Select>
-                                                    {errors.gradeLevelId && (
-                                                        <p className="text-sm text-red-500">{errors.gradeLevelId.message}</p>
+                                                    {errors.roomId && (
+                                                        <p className="text-sm text-red-500">{errors.roomId.message}</p>
                                                     )}
                                                 </div>
 
+                                                {/* Make Adviser field read-only since it's auto-populated from room selection */}
                                                 <div className="grid gap-2">
                                                     <Label>Adviser</Label>
                                                     <Select
-                                                        onValueChange={(value) => setValue("advisorId", value)}
+                                                        disabled
                                                         value={watch("advisorId")}
                                                     >
                                                         <SelectTrigger>
-                                                            <SelectValue placeholder="Select Adviser" />
+                                                            <SelectValue>
+                                                                {teachers?.find(t => t.id === watch("advisorId"))?.lastName},
+                                                                {teachers?.find(t => t.id === watch("advisorId"))?.firstName}
+                                                            </SelectValue>
                                                         </SelectTrigger>
-                                                        <SelectContent>
-                                                            {teachers?.map((teacher) => (
-                                                                <SelectItem key={teacher.id} value={teacher.id}>
-                                                                    {teacher.lastName}, {teacher.firstName}
-                                                                </SelectItem>
-                                                            ))}
-                                                        </SelectContent>
                                                     </Select>
                                                     {errors.advisorId && (
                                                         <p className="text-sm text-red-500">{errors.advisorId.message}</p>
@@ -341,138 +376,187 @@ export const SectionForm = ({ isEditing = false, section }: SectionFormProps) =>
                                     <CardContent>
                                         <div className="space-y-6">
                                             {fields.map((field, index) => (
-                                                <div key={field.id} className="grid gap-4 lg:grid-cols-5">
-                                                    <div className="grid gap-2">
-                                                        <Label>Subject</Label>
-                                                        <Select
-                                                            onValueChange={(value) => setValue(`classes.${index}.subjectId`, value)}
-                                                            disabled={!selectedGradeLevelId}
-                                                            value={watch(`classes.${index}.subjectId`)}
-                                                        >
-                                                            <SelectTrigger>
-                                                                <SelectValue
-                                                                    placeholder={
-                                                                        !selectedGradeLevelId
-                                                                            ? "Select grade level first"
-                                                                            : index === 0
-                                                                                ? "Adviser's subject"
-                                                                                : "Select subject"
-                                                                    }
-                                                                />
-                                                            </SelectTrigger>
-                                                            <SelectContent>
-                                                                {filteredSubjects?.map((subject) => (
-                                                                    <SelectItem key={subject._id} value={subject._id}>
-                                                                        {subject.name}
-                                                                    </SelectItem>
-                                                                ))}
-                                                            </SelectContent>
-                                                        </Select>
-                                                        {errors.classes?.[index]?.subjectId && (
-                                                            <p className="text-sm text-red-500">
-                                                                {errors.classes[index].subjectId.message}
-                                                            </p>
+                                                <Card key={field.id} className="p-4 border border-gray-200">
+                                                    <div className="grid gap-4 sm:grid-cols-2">
+                                                        <div className="space-y-2">
+                                                            <Label htmlFor={`subject-${index}`}>Subject</Label>
+                                                            <Select
+                                                                onValueChange={(value) => setValue(`classes.${index}.subjectId`, value)}
+                                                                disabled={!selectedGradeLevelId}
+                                                                value={watch(`classes.${index}.subjectId`)}
+                                                            >
+                                                                <SelectTrigger id={`subject-${index}`}>
+                                                                    <SelectValue
+                                                                        placeholder={
+                                                                            !selectedGradeLevelId
+                                                                                ? "Select grade level first"
+                                                                                : index === 0
+                                                                                    ? "Adviser's subject"
+                                                                                    : "Select subject"
+                                                                        }
+                                                                    />
+                                                                </SelectTrigger>
+                                                                <SelectContent>
+                                                                    {filteredSubjects?.map((subject) => (
+                                                                        <SelectItem key={subject._id} value={subject._id}>
+                                                                            {subject.name}
+                                                                        </SelectItem>
+                                                                    ))}
+                                                                </SelectContent>
+                                                            </Select>
+                                                            {errors.classes?.[index]?.subjectId && (
+                                                                <p className="text-sm text-red-500">{errors.classes[index].subjectId.message}</p>
+                                                            )}
+                                                        </div>
+
+                                                        <div className="space-y-2">
+                                                            <Label htmlFor={`teacher-${index}`}>{index === 0 ? "Adviser" : "Teacher"}</Label>
+                                                            <Select
+                                                                onValueChange={(value) => setValue(`classes.${index}.teacherId`, value)}
+                                                                disabled={index === 0}
+                                                                value={watch(`classes.${index}.teacherId`)}
+                                                            >
+                                                                <SelectTrigger id={`teacher-${index}`}>
+                                                                    <SelectValue
+                                                                        placeholder={index === 0 ? "Adviser will teach this subject" : "Select teacher"}
+                                                                    />
+                                                                </SelectTrigger>
+                                                                <SelectContent>
+                                                                    {teachers?.map((teacher) => (
+                                                                        <SelectItem key={teacher.id} value={teacher.id}>
+                                                                            {teacher.lastName}, {teacher.firstName}
+                                                                        </SelectItem>
+                                                                    ))}
+                                                                </SelectContent>
+                                                            </Select>
+                                                            {errors.classes?.[index]?.teacherId && (
+                                                                <p className="text-sm text-red-500">{errors.classes[index].teacherId.message}</p>
+                                                            )}
+                                                        </div>
+
+                                                        {isSeniorHigh && (
+                                                            <>
+                                                                <div className="space-y-2">
+                                                                    <Label htmlFor={`semester-${index}`}>Semester</Label>
+                                                                    <Select
+                                                                        onValueChange={(value) => setValue(`classes.${index}.semester`, value)}
+                                                                        value={watch(`classes.${index}.semester`)}
+                                                                    >
+                                                                        <SelectTrigger id={`semester-${index}`}>
+                                                                            <SelectValue placeholder="Select Semester" />
+                                                                        </SelectTrigger>
+                                                                        <SelectContent>
+                                                                            <SelectItem value="1st">1st Semester</SelectItem>
+                                                                            <SelectItem value="2nd">2nd Semester</SelectItem>
+                                                                        </SelectContent>
+                                                                    </Select>
+                                                                    {errors.classes?.[index]?.semester && (
+                                                                        <p className="text-sm text-red-500">{errors.classes[index].semester.message}</p>
+                                                                    )}
+                                                                </div>
+
+                                                                <div className="space-y-2">
+                                                                    <Label htmlFor={`track-${index}`}>Track</Label>
+                                                                    <Select
+                                                                        onValueChange={(value) => setValue(`classes.${index}.track`, value)}
+                                                                        value={watch(`classes.${index}.track`)}
+                                                                    >
+                                                                        <SelectTrigger id={`track-${index}`}>
+                                                                            <SelectValue placeholder="Select Track" />
+                                                                        </SelectTrigger>
+                                                                        <SelectContent>
+                                                                            {trackOptions.map((track) => (
+                                                                                <SelectItem key={track.value} value={track.value}>
+                                                                                    {track.label}
+                                                                                </SelectItem>
+                                                                            ))}
+                                                                        </SelectContent>
+                                                                    </Select>
+                                                                    {errors.classes?.[index]?.track && (
+                                                                        <p className="text-sm text-red-500">{errors.classes[index].track.message}</p>
+                                                                    )}
+                                                                </div>
+                                                            </>
                                                         )}
                                                     </div>
 
-                                                    <div className="grid gap-2">
-                                                        <Label>{index === 0 ? "Adviser" : "Teacher"}</Label>
-                                                        <Select
-                                                            onValueChange={(value) => setValue(`classes.${index}.teacherId`, value)}
-                                                            disabled={index === 0}
-                                                            value={watch(`classes.${index}.teacherId`)} // Add this line
-                                                        >
-                                                            <SelectTrigger>
-                                                                <SelectValue
-                                                                    placeholder={index === 0 ? "Adviser will teach this subject" : "Select teacher"}
+                                                    <div className="mt-4 space-y-4">
+                                                        <div className="flex items-center justify-between">
+                                                            <Label>Schedules</Label>
+                                                            {isEditing ? (
+                                                                <EditScheduleModal
+                                                                    initialSchedule={watch(`classes.${index}.schedules`)?.[0] || {
+                                                                        days: [],
+                                                                        schoolPeriodId: "",
+                                                                        roomId: ""
+                                                                    }}
+                                                                    onScheduleEdit={(schedule) => {
+                                                                        const schedules = watch(`classes.${index}.schedules`) || [];
+                                                                        // Replace the first schedule with the edited one
+                                                                        setValue(`classes.${index}.schedules`, [schedule]);
+                                                                    }}
+                                                                    schoolPeriods={schoolPeriods || []}
+                                                                    rooms={rooms || []}
                                                                 />
-                                                            </SelectTrigger>
-                                                            <SelectContent>
-                                                                {teachers?.map((teacher) => (
-                                                                    <SelectItem key={teacher.id} value={teacher.id}>
-                                                                        {teacher.lastName}, {teacher.firstName}
-                                                                    </SelectItem>
-                                                                ))}
-                                                            </SelectContent>
-                                                        </Select>
-                                                        {errors.classes?.[index]?.teacherId && (
-                                                            <p className="text-sm text-red-500">
-                                                                {errors.classes[index].teacherId.message}
-                                                            </p>
-                                                        )}
+                                                            ) : (
+                                                                <AddScheduleModal
+                                                                    onScheduleAdd={(schedule) => {
+                                                                        const schedules = watch(`classes.${index}.schedules`) || [];
+                                                                        setValue(`classes.${index}.schedules`, [...schedules, schedule]);
+                                                                    }}
+                                                                    schoolPeriods={schoolPeriods || []}
+                                                                    rooms={rooms || []}
+                                                                />
+                                                            )}
+                                                        </div>
+
+                                                        <div className="space-y-2">
+                                                            {watch(`classes.${index}.schedules`)?.map((schedule, scheduleIndex) => (
+                                                                <div
+                                                                    key={scheduleIndex}
+                                                                    className="flex items-center justify-between p-2 bg-gray-50 rounded-md"
+                                                                >
+                                                                    <div className="space-y-1">
+                                                                        <div className="text-sm font-medium">{schedule.days.join(", ")}</div>
+                                                                        <div className="text-sm text-muted-foreground">
+                                                                            {schoolPeriods?.find((p) => p._id === schedule.schoolPeriodId)?.timeRange} |
+                                                                            {rooms?.find((r) => r._id === schedule.roomId)?.name}
+                                                                        </div>
+                                                                    </div>
+                                                                    <Button
+                                                                        type="button"
+                                                                        variant="ghost"
+                                                                        size="sm"
+                                                                        onClick={() => {
+                                                                            const schedules = watch(`classes.${index}.schedules`)
+                                                                            setValue(
+                                                                                `classes.${index}.schedules`,
+                                                                                schedules?.filter((_, i) => i !== scheduleIndex),
+                                                                            )
+                                                                        }}
+                                                                    >
+                                                                        <Trash className="h-4 w-4" />
+                                                                    </Button>
+                                                                </div>
+                                                            ))}
+                                                        </div>
                                                     </div>
-
-                                                    {isSeniorHigh && (
-                                                        <>
-                                                            <div className="grid gap-2">
-                                                                <Label>Semester</Label>
-                                                                <Select
-                                                                    onValueChange={(value) => handleSemesterChange(value, index)}
-                                                                    value={watch(`classes.${index}.semester`)}
-                                                                >
-                                                                    <SelectTrigger>
-                                                                        <SelectValue placeholder="Select Semester" />
-                                                                    </SelectTrigger>
-                                                                    <SelectContent>
-                                                                        <SelectItem value="1st">1st Semester</SelectItem>
-                                                                        <SelectItem value="2nd">2nd Semester</SelectItem>
-                                                                    </SelectContent>
-                                                                </Select>
-                                                                {errors.classes?.[index]?.semester && (
-                                                                    <p className="text-sm text-red-500">{errors.classes[index].semester.message}</p>
-                                                                )}
-                                                            </div>
-
-                                                            <div className="grid gap-2">
-                                                                <Label>Track</Label>
-                                                                <Select
-                                                                    onValueChange={(value) => handleTrackChange(value, index)}
-                                                                    value={watch(`classes.${index}.track`)}
-                                                                >
-                                                                    <SelectTrigger>
-                                                                        <SelectValue placeholder="Select Track" />
-                                                                    </SelectTrigger>
-                                                                    <SelectContent>
-                                                                        {trackOptions.map((track) => (
-                                                                            <SelectItem key={track.value} value={track.value}>
-                                                                                {track.label}
-                                                                            </SelectItem>
-                                                                        ))}
-                                                                    </SelectContent>
-                                                                </Select>
-                                                                {errors.classes?.[index]?.track && (
-                                                                    <p className="text-sm text-red-500">{errors.classes[index].track.message}</p>
-                                                                )}
-                                                            </div>
-                                                        </>
-                                                    )}
 
                                                     {index > 0 && (
-                                                        <Button
-                                                            type="button"
-                                                            variant="ghost"
-                                                            size="sm"
-                                                            className="mt-8"
-                                                            onClick={() => remove(index)}
-                                                        >
+                                                        <Button type="button" variant="ghost" size="sm" className="mt-4" onClick={() => remove(index)}>
                                                             <MinusIcon className="h-4 w-4 mr-2" />
-                                                            Remove
+                                                            Remove Class
                                                         </Button>
                                                     )}
-                                                </div>
+                                                </Card>
                                             ))}
 
                                             {!isEditing && (
-                                                <Button
-                                                    type="button"
-                                                    variant="outline"
-                                                    onClick={handleAddClass}
-                                                >
+                                                <Button type="button" variant="outline" onClick={handleAddClass} className="w-full">
                                                     <PlusIcon className="h-4 w-4 mr-2" />
                                                     Add Class
                                                 </Button>
                                             )}
-
                                         </div>
                                     </CardContent>
                                 </Card>
@@ -491,6 +575,6 @@ export const SectionForm = ({ isEditing = false, section }: SectionFormProps) =>
                     </div>
                 </form>
             </main>
-        </div>
+        </div >
     )
 }
