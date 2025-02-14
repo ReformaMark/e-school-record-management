@@ -1,7 +1,7 @@
 'use client'
-import React from 'react'
+import React, { useState } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { ChevronLeft } from 'lucide-react'
+import { ChevronLeft, File } from 'lucide-react'
 import { Button, buttonVariants } from '@/components/ui/button'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
@@ -20,6 +20,7 @@ import { api } from '../../../../../convex/_generated/api'
 import { Doc, Id } from '../../../../../convex/_generated/dataModel'
 import Values from '../_components/Values'
 import Attendance from '../_components/Attendance'
+import SchoolForm9 from '../_components/SchoolForm9'
 
 function Student({
     params
@@ -28,6 +29,7 @@ function Student({
         studentId: string
     }
 }) {
+    const [isOpen, setIsOpen] = useState(false)
     const student = useQuery(api.students.getStudentWithDetails,{
         id: params.studentId as Id<'students'>,
     })
@@ -55,17 +57,27 @@ function Student({
                 <h1 className='text-lg md:text-xl text-primary font-semibold flex items-center'>Student Report Card</h1>
                 <div className="space-y-3">
                     <DropdownMenu>
-                        <DropdownMenuTrigger><Button variant={'link'}>Generate School Reports</Button></DropdownMenuTrigger>
+                        <DropdownMenuTrigger><Button variant={'link'}></Button>
+                        <Button variant="outline" size="sm" className="h-7 gap-1">
+                                    <File className="h-3.5 w-3.5" />
+                                    <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                                        School Reports
+                                    </span>
+                                </Button>
+                        </DropdownMenuTrigger>
                         <DropdownMenuContent>
                             <DropdownMenuLabel>School Forms</DropdownMenuLabel>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem>School Form 9 (SF9)</DropdownMenuItem>
-                            <DropdownMenuItem>School Form 9 (SF10)</DropdownMenuItem>
+                            <DropdownMenuItem onClick={()=>setIsOpen(true)}>
+                                School Form 9 (SF9)
+                            </DropdownMenuItem>
+                            <DropdownMenuItem>School Form 10 (SF10)</DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </div>
+               
             </div>
-            
+           
             <div className="grid grid-cols-4 mb-5 text-sm md:text-sm font-semibold">
                 {/* <h1 className='col-span-4 md:col-span-2  text-text'>Student Number: <span className='text-sm md:text-lg font-semibold'> {student?} </span></h1> */}
                 <h1 className='col-span-4 md:col-span-2  text-text'>LRN: <span className='text-sm md:text-lg font-normal'> {student?.lrn} </span></h1>
@@ -84,6 +96,10 @@ function Student({
                     </>
                 )}       
             </div> 
+
+            {student && (
+                <SchoolForm9 student={student} setIsOpen={setIsOpen} isOpen={isOpen}/>
+            )}
        
           
              
@@ -114,7 +130,7 @@ function Student({
                 ) :(
                     <TabsContent value="grades" className='text-xs md:text-sm w-full gap-x-10'>
                         {student && (
-                            <JrGradesTemplate student={student}/>
+                            <JrGradesTemplate student={student} sf9={false}/>
                         )}
                     </TabsContent>
                 )}

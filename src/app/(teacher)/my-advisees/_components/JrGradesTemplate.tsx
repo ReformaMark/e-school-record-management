@@ -1,6 +1,6 @@
 'use client'
 import { QuarterlyGradesWithSubject, StudentWithDetails } from '@/lib/types'
-import { getAverageForJrh, getFinalQuarterlyGrade, getPassFailStatusMAPEH } from '@/lib/utils'
+import { cn, getAverageForJrh, getFinalQuarterlyGrade, getPassFailStatusMAPEH } from '@/lib/utils'
 import React, { useMemo } from 'react'
 import FinalizeGradesDialog from './FinalizeGradesDialog'
 import { useQuery } from 'convex/react'
@@ -9,9 +9,10 @@ import { Doc } from '../../../../../convex/_generated/dataModel'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
 interface JrGradesTemplateProps {
-    student: StudentWithDetails
+    student: StudentWithDetails,
+    sf9?: boolean
 }
-function JrGradesTemplate({student}:JrGradesTemplateProps) {
+function JrGradesTemplate({student,sf9}:JrGradesTemplateProps) {
     const remedialGrades = useQuery(api.finalGrades.remedialGrades,{
         studentId: student._id,
         sectionId: student.sectionDoc?._id
@@ -176,40 +177,40 @@ function JrGradesTemplate({student}:JrGradesTemplateProps) {
     const genAve = calculateGeneralAverage()
   return (
     <div className='text-xs md:text-sm w-full gap-x-10'>
-        <div className="flex justify-end">
+        <div className={cn(sf9 ? "hidden" : "flex justify-end")}>
 
-        <FinalizeGradesDialog student={student} averages={averages} generalAverage={genAve}/>
+            <FinalizeGradesDialog student={student} averages={averages} generalAverage={genAve}/>
          
         </div>
-        <h1 className='text-sm font-semibold text-center mb-4'>REPORT ON LEARNING PROGRESS AND ACHIEVEMENT</h1>
+        <h1 className={cn(sf9 ? "text-[0.6rem]" : "text-sm" ,' font-semibold text-center ')}>REPORT ON LEARNING PROGRESS AND ACHIEVEMENT</h1>
     
-        <div className="grid grid-cols-12 w-full  items-center text-center font-semibold text-xs md:text-sm border border-black">
-            <h1 className='col-span-4 h-full flex items-center justify-center border-r border-r-black'>Learning Areas</h1>
+        <div className="grid grid-cols-12 w-full  items-center text-center font-semibold text-xs md:text-sm ">
+            <div className='col-span-4 h-full flex items-center justify-center border border-black'>Learning Areas</div>
             <div className="col-span-4 grid grid-cols-4 text-center items-center ">
-                <div className="col-span-4 border-b border-b-black px-2">Quarter</div>
-                <div className="col-span-1 border-r border-r-black p-2">1st</div>
-                <div className="col-span-1 border-r border-r-black p-2">2nd</div>
-                <div className="col-span-1 border-r border-r-black p-2">3rd</div>
-                <div className="col-span-1 p-2">4th</div>
+                <div className={cn("col-span-4 border-b border-black border-r border-r-black border-y border-y-black", sf9 ? 'text-xs p-1' : 'p-2')}>Quarter</div>
+                <div className={cn("col-span-1 border-b border-black border-r border-r-black", sf9 ? 'text-xs p-1' : 'p-2')}>1</div>
+                <div className={cn("col-span-1 border-b border-black border-r border-r-black", sf9 ? 'text-xs p-1' : 'p-2')}>2</div>
+                <div className={cn("col-span-1 border-b border-black border-r border-r-black", sf9 ? 'text-xs p-1' : 'p-2')}>3</div>
+                <div className={cn("col-span-1 border-b border-black border-r border-r-black", sf9 ? 'text-xs p-1' : 'p-2')}>4</div>
             </div>
-            <h1 className='col-span-2 flex items-center border-x-black border-x justify-center h-full'>Final Rating</h1>
-            <h1 className='col-span-2 flex items-center justify-center h-full '>Remarks</h1>
+            <h1 className='col-span-2 flex items-center border-y border-y-black border-r-black border-r justify-center h-full'>Final <br/> Rating</h1>
+            <h1 className='col-span-2 flex items-center justify-center h-full border-y border-y-black border-r-black border-r '>Remarks</h1>
         </div>
         
         {/* Grades Data */}
         <div className="grid grid-cols-12 w-full items-center  text-center font-medium text-sm">
-            <div className='col-span-4 border-b border-black border-x p-2 text-left'>English</div>
+            <div className={cn(sf9 ? 'text-xs p-1' : 'p-2' , 'h-full col-span-4 border-b border-black border-x  text-left')}>English</div>
             {quarter.map((quarter)=>(
-                <div key={`english${quarter}`}  className='col-span-1 border-b border-black border-r p-2 h-full'>{getFinalQuarterlyGrade(english, quarter)}</div>
+                <div key={`english${quarter}`} className={cn('col-span-1 border-b border-black border-r', sf9 ? 'text-xs p-1' : 'p-2', 'h-full')}>{getFinalQuarterlyGrade(english, quarter)}</div>
             ))}
            
             {getRemedialGrade(remedialGrades as Doc<'finalGrades'>, "english") === null ? (
-                    <div className='col-span-2 border-b border-black border-r p-2 h-full'>{calculateQuarterlyAverage(english)}</div>
+                    <div className={cn( sf9 ? 'text-xs p-1' : 'p-2', 'h-full col-span-2 border-b border-black border-r ')}>{calculateQuarterlyAverage(english)}</div>
             ):(
                 <TooltipProvider>
                     <Tooltip>
                         <TooltipTrigger asChild>
-                        <div className='col-span-2 border-b border-black border-r p-2 h-full'> {calculateQuarterlyAverage(english)} </div>
+                        <div className={cn( sf9 ? 'text-xs p-1' : 'p-2', 'col-span-2 border-b border-black border-r h-full ')}> {calculateQuarterlyAverage(english)} </div>
                         </TooltipTrigger>
                         <TooltipContent className=' bg-white p-5 space-y-2 shadow-md'>
                             <p>Summer/remedial class Final Grade: {getRemedialGrade(remedialGrades as Doc<'finalGrades'>, "english")} </p>
@@ -217,185 +218,169 @@ function JrGradesTemplate({student}:JrGradesTemplateProps) {
                     </Tooltip>
                 </TooltipProvider> 
             )}
-            <div className='col-span-2 border-b border-black border-r p-2 h-full'>{getPassFailStatus(english)}</div>
+            <div className={cn( sf9 ? 'text-xs p-1' : 'p-2', 'col-span-2 border-b border-black border-r h-full')}>{getPassFailStatus(english)}</div>
         </div>
         <div className="grid grid-cols-12 w-full  items-center  text-center font-medium text-sm">
-            <div className='col-span-4 border-b border-black border-x p-2 text-left'>Mathematics</div>
+            <div className={cn(sf9 ? 'text-xs p-1' : 'p-2' , 'h-full col-span-4 border-b border-black border-x  text-left')}>Mathematics</div>
             {quarter.map((quarter)=>(
-                <div key={`mathematics${quarter}`} className='col-span-1 border-b border-black border-r p-2 h-full'>{getFinalQuarterlyGrade(mathematics, quarter)}</div>
+                <div key={`mathematics${quarter}`} className={cn('col-span-1 border-b border-black border-r', sf9 ? 'text-xs p-1' : 'p-2', 'h-full')}>{getFinalQuarterlyGrade(mathematics, quarter)}</div>
             ))}
             {getRemedialGrade(remedialGrades as Doc<'finalGrades'>, "mathematics") === null ? (
-                    <div className='col-span-2 border-b border-black border-r p-2 h-full'>{calculateQuarterlyAverage(mathematics)}</div>
+                    <div className={cn( sf9 ? 'text-xs p-1' : 'p-2', 'h-full col-span-2 border-b border-black border-r ')}>{calculateQuarterlyAverage(mathematics)}</div>
             ):(
-           
-            <TooltipProvider>
-                <Tooltip>
-                    <TooltipTrigger asChild>
-                    <div className='col-span-2 border-b border-black border-r p-2 h-full'> {calculateQuarterlyAverage(mathematics)} </div>
-                    </TooltipTrigger>
-                    <TooltipContent className=' bg-white p-5 space-y-2 shadow-md'>
-                        <p>Summer/remedial class Final Grade: {getRemedialGrade(remedialGrades as Doc<'finalGrades'>, "mathematics")} </p>
-                    </TooltipContent>
-                </Tooltip>
-            </TooltipProvider> 
-         
-            )}
-            <div className='col-span-2 border-b border-black border-r p-2 h-full'>{getPassFailStatus(mathematics)}</div>
-        </div>
-        <div className="grid grid-cols-12 w-full  items-center text-center font-medium text-sm">
-            <div className='col-span-4 border-b border-black border-x p-2 text-left'>Science</div>
-            {quarter.map((quarter)=>(
-                <div key={`science${quarter}`} className='col-span-1 border-b border-black border-r p-2 h-full'>{getFinalQuarterlyGrade(science, quarter)}</div>
-            ))}
-            {getRemedialGrade(remedialGrades as Doc<'finalGrades'>, "science") === null ? (
-                    <div className='col-span-2 border-b border-black border-r p-2 h-full'>{calculateQuarterlyAverage(science)}</div>
-            ):(
-           
                 <TooltipProvider>
                     <Tooltip>
                         <TooltipTrigger asChild>
-                        <div className='col-span-2 border-b border-black border-r p-2 h-full'> {calculateQuarterlyAverage(science)}</div>
+                        <div className={cn( sf9 ? 'text-xs p-1' : 'p-2', 'col-span-2 border-b border-black border-r ')}> {calculateQuarterlyAverage(mathematics)} </div>
+                        </TooltipTrigger>
+                        <TooltipContent className=' bg-white p-5 space-y-2 shadow-md'>
+                            <p>Summer/remedial class Final Grade: {getRemedialGrade(remedialGrades as Doc<'finalGrades'>, "mathematics")} </p>
+                        </TooltipContent>
+                    </Tooltip>
+                </TooltipProvider> 
+            )}
+            <div className={cn(sf9 ? 'text-xs p-1' : 'p-2', 'col-span-2 border-b border-black border-r h-full')}>{getPassFailStatus(mathematics)}</div>
+        </div>
+        <div className="grid grid-cols-12 w-full  items-center text-center font-medium text-sm">
+            <div className={cn(sf9 ? 'text-xs p-1' : 'p-2' , 'h-full col-span-4 border-b border-black border-x  text-left')}>Science</div>
+            {quarter.map((quarter)=>(
+                <div key={`science${quarter}`} className={cn('col-span-1 border-b border-black border-r', sf9 ? 'text-xs p-1' : 'p-2', 'h-full')}>{getFinalQuarterlyGrade(science, quarter)}</div>
+            ))}
+            {getRemedialGrade(remedialGrades as Doc<'finalGrades'>, "science") === null ? (
+                    <div className={cn( sf9 ? 'text-xs p-1' : 'p-2', 'h-full col-span-2 border-b border-black border-r ')}>{calculateQuarterlyAverage(science)}</div>
+            ):(
+                <TooltipProvider>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                        <div className={cn( sf9 ? 'text-xs p-1' : 'p-2', 'col-span-2 border-b border-black border-r ')}> {calculateQuarterlyAverage(science)} </div>
                         </TooltipTrigger>
                         <TooltipContent className=' bg-white p-5 space-y-2 shadow-md'>
                             <p>Summer/remedial class Final Grade: {getRemedialGrade(remedialGrades as Doc<'finalGrades'>, "science")} </p>
                         </TooltipContent>
                     </Tooltip>
                 </TooltipProvider> 
-            
             )}
-            <div className='col-span-2 border-b border-black border-r p-2 h-full'>{getPassFailStatus(science)}</div>
+            <div className={cn( sf9 ? 'text-xs p-1' : 'p-2', 'col-span-2 border-b border-black border-r h-full')}>{getPassFailStatus(science)}</div>
         </div>
         <div className="grid grid-cols-12 w-full  items-center  text-center font-medium text-sm">
-            <div className='col-span-4 border-b border-black border-x p-2 text-left'>Filipino</div>
+            <div className={cn(sf9 ? 'text-xs p-1' : 'p-2' , 'h-full col-span-4 border-b border-black border-x  text-left')}>Filipino</div>
             {quarter.map((quarter)=>(
-                <div key={`filipino${quarter}`} className='col-span-1 border-b border-black border-r p-2 h-full'>{getFinalQuarterlyGrade(filipino, quarter)}</div>
+                <div key={`filipino${quarter}`} className={cn('col-span-1 border-b border-black border-r', sf9 ? 'text-xs p-1' : 'p-2', 'h-full')}>{getFinalQuarterlyGrade(filipino, quarter)}</div>
             ))}
-           
             {getRemedialGrade(remedialGrades as Doc<'finalGrades'>, "filipino") === null ? (
-                    <div className='col-span-2 border-b border-black border-r p-2 h-full'>{calculateQuarterlyAverage(filipino)}</div>
+                    <div className={cn( sf9 ? 'text-xs p-1' : 'p-2', 'h-full col-span-2 border-b border-black border-r ')}>{calculateQuarterlyAverage(filipino)}</div>
             ):(
-           
                 <TooltipProvider>
                     <Tooltip>
                         <TooltipTrigger asChild>
-                        <div className='col-span-2 border-b border-black border-r p-2 h-full'> {calculateQuarterlyAverage(filipino)} </div>
+                        <div className={cn( sf9 ? 'text-xs p-1' : 'p-2', 'col-span-2 border-b border-black border-r ')}> {calculateQuarterlyAverage(filipino)} </div>
                         </TooltipTrigger>
                         <TooltipContent className=' bg-white p-5 space-y-2 shadow-md'>
                             <p>Summer/remedial class Final Grade: {getRemedialGrade(remedialGrades as Doc<'finalGrades'>, "filipino")} </p>
                         </TooltipContent>
                     </Tooltip>
                 </TooltipProvider> 
-           
             )}
-            <div className='col-span-2 border-b border-black border-r p-2 h-full'>{getPassFailStatus(filipino)}</div>
+            <div className={cn( sf9 ? 'text-xs p-1' : 'p-2', 'col-span-2 border-b border-black border-r h-full')}>{getPassFailStatus(filipino)}</div>
         </div>
         <div className="grid grid-cols-12 w-full  items-center  text-center font-medium text-sm">
-            <div className='col-span-4 border-b border-black border-x p-2 text-left'>Araling Panlipunan</div>
+            <div className={cn(sf9 ? 'text-xs p-1' : 'p-2' , 'h-full col-span-4 border-b border-black border-x  text-left')}>Araling Panlipunan</div>
             {quarter.map((quarter)=>(
-                <div key={`ap${quarter}`} className='col-span-1 border-b border-black border-r p-2 h-full'>{getFinalQuarterlyGrade(ap, quarter)}</div>
+                <div key={`ap${quarter}`} className={cn('col-span-1 border-b border-black border-r', sf9 ? 'text-xs p-1' : 'p-2', 'h-full')}>{getFinalQuarterlyGrade(ap, quarter)}</div>
             ))}
             {getRemedialGrade(remedialGrades as Doc<'finalGrades'>, "Araling Panlipunan") === null ? (
-                    <div className='col-span-2 border-b border-black border-r p-2 h-full'>{calculateQuarterlyAverage(ap)}</div>
+                    <div className={cn( sf9 ? 'text-xs p-1' : 'p-2', 'h-full col-span-2 border-b border-black border-r ')}>{calculateQuarterlyAverage(ap)}</div>
             ):(
-           
                 <TooltipProvider>
                     <Tooltip>
                         <TooltipTrigger asChild>
-                        <div className='col-span-2 border-b border-black border-r p-2 h-full'>  {calculateQuarterlyAverage(ap)}  </div>
+                        <div className={cn( sf9 ? 'text-xs p-1' : 'p-2', 'col-span-2 border-b border-black border-r ')}> {calculateQuarterlyAverage(ap)} </div>
                         </TooltipTrigger>
                         <TooltipContent className=' bg-white p-5 space-y-2 shadow-md'>
                             <p>Summer/remedial class Final Grade: {getRemedialGrade(remedialGrades as Doc<'finalGrades'>, "Araling Panlipunan")} </p>
                         </TooltipContent>
                     </Tooltip>
                 </TooltipProvider> 
-          
             )}
-            <div className='col-span-2 border-b border-black border-r p-2 h-full'>{getPassFailStatus(ap)}</div>
+            <div className={cn( sf9 ? 'text-xs p-1' : 'p-2', 'col-span-2 border-b border-black border-r h-full')}>{getPassFailStatus(ap)}</div>
         </div>
         <div className="grid grid-cols-12 w-full  items-center  text-center font-medium text-sm">
-            <div className='col-span-4 border-b border-black border-x p-2 text-left'>Edukasyon sa Pagpapakatao (EsP)</div>
+            <div className={cn(sf9 ? 'text-xs p-1' : 'p-2' , 'h-full col-span-4 border-b border-black border-x  text-left')}>Edukasyon sa Pagpapakatao (EsP)</div>
             {quarter.map((quarter)=>(
-                <div key={`esp${quarter}`} className='col-span-1 border-b border-black border-r p-2 h-full'>{getFinalQuarterlyGrade(esp, quarter)}</div>
+                <div key={`esp${quarter}`} className={cn('col-span-1 border-b border-black border-r', sf9 ? 'text-xs p-1' : 'p-2', 'h-full')}>{getFinalQuarterlyGrade(esp, quarter)}</div>
             ))}
             {getRemedialGrade(remedialGrades as Doc<'finalGrades'>, "Edukasyon sa Pagpapakatao (EsP)") === null ? (
-                    <div className='col-span-2 border-b border-black border-r p-2 h-full'>{calculateQuarterlyAverage(esp)}</div>
+                    <div className={cn( sf9 ? 'text-xs p-1' : 'p-2', 'h-full col-span-2 border-b border-black border-r ')}>{calculateQuarterlyAverage(esp)}</div>
             ):(
-           
                 <TooltipProvider>
                     <Tooltip>
                         <TooltipTrigger asChild>
-                        <div className='col-span-2 border-b border-black border-r p-2 h-full'> {calculateQuarterlyAverage(esp)}  </div>
+                        <div className={cn( sf9 ? 'text-xs p-1' : 'p-2', 'col-span-2 border-b border-black border-r ')}> {calculateQuarterlyAverage(esp)} </div>
                         </TooltipTrigger>
                         <TooltipContent className=' bg-white p-5 space-y-2 shadow-md'>
                             <p>Summer/remedial class Final Grade: {getRemedialGrade(remedialGrades as Doc<'finalGrades'>, "Edukasyon sa Pagpapakatao (EsP)")} </p>
                         </TooltipContent>
                     </Tooltip>
                 </TooltipProvider> 
-          
             )}
-            <div className='col-span-2 border-b border-black border-r p-2 h-full'>{getPassFailStatus(esp)}</div>
+            <div className={cn( sf9 ? 'text-xs p-1' : 'p-2', 'col-span-2 border-b border-black border-r h-full')}>{getPassFailStatus(esp)}</div>
         </div>
         {hasEPP && (
             <div className="grid grid-cols-12 w-full  items-center  text-center font-medium text-sm">
-                <div className='col-span-4 border-b h-full border-black border-x p-2 text-left'>Edukasyong Pantahanan at Pangkabuhayan</div>
+                <div className={cn(sf9 ? 'text-xs p-1' : 'p-2' , 'h-full col-span-4 border-b border-black border-x  text-left')}>Edukasyong Pantahanan at Pangkabuhayan</div>
                 {quarter.map((quarter)=>(
-                    <div key={`epp${quarter}`} className='col-span-1 border-b border-black border-r p-2 h-full'>{getFinalQuarterlyGrade(epp, quarter)}</div>
+                    <div key={`epp${quarter}`} className={cn('col-span-1 border-b border-black border-r', sf9 ? 'text-xs p-1' : 'p-2', 'h-full')}>{getFinalQuarterlyGrade(epp, quarter)}</div>
                 ))}
                 {getRemedialGrade(remedialGrades as Doc<'finalGrades'>, "Edukasyong Pantahanan at Pangkabuhayan") === null ? (
-                        <div className='col-span-2 border-b border-black border-r p-2 h-full'>{calculateQuarterlyAverage(epp)}</div>
+                        <div className={cn( sf9 ? 'text-xs p-1' : 'p-2', 'h-full col-span-2 border-b border-black border-r ')}>{calculateQuarterlyAverage(epp)}</div>
                 ):(
-               
                     <TooltipProvider>
                         <Tooltip>
                             <TooltipTrigger asChild>
-                            <div className='col-span-2 border-b border-black border-r p-2 h-full'>  {calculateQuarterlyAverage(epp)} </div>
+                            <div className={cn( sf9 ? 'text-xs p-1' : 'p-2', 'col-span-2 border-b border-black border-r ')}> {calculateQuarterlyAverage(epp)} </div>
                             </TooltipTrigger>
                             <TooltipContent className=' bg-white p-5 space-y-2 shadow-md'>
                                 <p>Summer/remedial class Final Grade: {getRemedialGrade(remedialGrades as Doc<'finalGrades'>, "Edukasyong Pantahanan at Pangkabuhayan")} </p>
                             </TooltipContent>
                         </Tooltip>
                     </TooltipProvider> 
-               
                 )}
-                <div className='col-span-2 border-b border-black border-r p-2 h-full'>{getPassFailStatus(epp)}</div>
+                <div className={cn( sf9 ? 'text-xs p-1' : 'p-2', 'col-span-2 border-b border-black border-r h-full')}>{getPassFailStatus(epp)}</div>
             </div>
         )}
        
         {hasTLE && (
             <div className="grid grid-cols-12 w-full  items-center  text-center font-medium text-sm">
-                <div className='col-span-4 border-b h-full border-black border-x p-2 text-left'>Technology and Livelihood Education (TLE)</div>
+                <div className={cn(sf9 ? 'text-xs p-1' : 'p-2' , 'h-full col-span-4 border-b border-black border-x  text-left')}>Technology and Livelihood Education (TLE)</div>
                 {quarter.map((quarter)=>(
-                    <div key={`tle${quarter}`} className='col-span-1 border-b border-black border-r p-2 h-full'>{getFinalQuarterlyGrade(tle, quarter)}</div>
+                    <div key={`tle${quarter}`} className={cn('col-span-1 border-b border-black border-r', sf9 ? 'text-xs p-1' : 'p-2', 'h-full')}>{getFinalQuarterlyGrade(tle, quarter)}</div>
                 ))}
-                <div className='col-span-2 border-b border-black border-r p-2 h-full'>{calculateQuarterlyAverage(epp)}</div>
                 {getRemedialGrade(remedialGrades as Doc<'finalGrades'>, "Technology and Livelihood Education (TLE)") === null ? (
-                        <div className='col-span-2 border-b border-black border-r p-2 h-full'>{calculateQuarterlyAverage(tle)}</div>
+                        <div className={cn( sf9 ? 'text-xs p-1' : 'p-2', 'h-full col-span-2 border-b border-black border-r ')}>{calculateQuarterlyAverage(tle)}</div>
                 ):(
-               
                     <TooltipProvider>
                         <Tooltip>
                             <TooltipTrigger asChild>
-                            <div className='col-span-2 border-b border-black border-r p-2 h-full'> {calculateQuarterlyAverage(tle)} </div>
+                            <div className={cn( sf9 ? 'text-xs p-1' : 'p-2', 'col-span-2 border-b border-black border-r ')}> {calculateQuarterlyAverage(tle)} </div>
                             </TooltipTrigger>
                             <TooltipContent className=' bg-white p-5 space-y-2 shadow-md'>
                                 <p>Summer/remedial class Final Grade: {getRemedialGrade(remedialGrades as Doc<'finalGrades'>, "Technology and Livelihood Education (TLE)")} </p>
                             </TooltipContent>
                         </Tooltip>
                     </TooltipProvider> 
-               
                 )}
-                <div className='col-span-2 border-b border-black border-r p-2 h-full'>{getPassFailStatus(tle)}</div>
+                <div className={cn( sf9 ? 'text-xs p-1' : 'p-2', 'col-span-2 border-b border-black border-r h-full')}>{getPassFailStatus(tle)}</div>
             </div>
         )}
        
-        <div className="grid grid-cols-12 w-full  items-center  text-center font-medium text-sm">
-            <div className='col-span-4 border-b h-full border-black border-x p-2 text-left'>MAPEH</div>
-            <div className='col-span-1 border-b border-black border-r p-2 h-full'>{calculateQuarterlyAverage(music)}</div>
-            <div className='col-span-1 border-b border-black border-r p-2 h-full'>{calculateQuarterlyAverage(arts)}</div>
-            <div className='col-span-1 border-b border-black border-r p-2 h-full'>{calculateQuarterlyAverage(pe)}</div>
-            <div className='col-span-1 border-b border-black border-r p-2 h-full'>{calculateQuarterlyAverage(health)}</div>
+        <div className={cn("grid grid-cols-12 w-full  items-center  text-center font-medium text-sm")}>
+            <div className={cn(sf9 ? 'text-xs p-1' : 'p-2' , 'h-full col-span-4 border-b border-black border-x  text-left')}>MAPEH</div>
+            <div className={cn(sf9 ? 'text-xs p-1':'p-2','col-span-1 border-b border-black border-r p-2 h-full')}>{calculateQuarterlyAverage(music)}</div>
+            <div className={cn(sf9 ? 'text-xs p-1':'p-2','col-span-1 border-b border-black border-r p-2 h-full')}>{calculateQuarterlyAverage(arts)}</div>
+            <div className={cn(sf9 ? 'text-xs p-1':'p-2','col-span-1 border-b border-black border-r p-2 h-full')}>{calculateQuarterlyAverage(pe)}</div>
+            <div className={cn(sf9 ? 'text-xs p-1':'p-2','col-span-1 border-b border-black border-r p-2 h-full')}>{calculateQuarterlyAverage(health)}</div>
             {getRemedialGrade(remedialGrades as Doc<'finalGrades'>, "MAPEH") === null ? (
-                <div className='col-span-2 border-b border-black border-r p-2 h-full'>{getAverageForJrh(
+                <div className={cn(sf9 ? 'text-xs p-1' : 'p-2' ,'col-span-2 border-b border-black border-r h-full')}>{getAverageForJrh(
                     calculateQuarterlyAverage(music),
                     calculateQuarterlyAverage(arts),
                     calculateQuarterlyAverage(pe),
@@ -406,7 +391,7 @@ function JrGradesTemplate({student}:JrGradesTemplateProps) {
                     <TooltipProvider>
                         <Tooltip>
                             <TooltipTrigger asChild>
-                            <div className='col-span-2 border-b border-black border-r p-2 h-full'> {getAverageForJrh(
+                            <div className={cn(sf9 ? 'text-xs p-1' : 'p-2' ,'col-span-2 border-b border-black border-r h-full')}> {getAverageForJrh(
                                 calculateQuarterlyAverage(music),
                                 calculateQuarterlyAverage(arts),
                                 calculateQuarterlyAverage(pe),
@@ -421,7 +406,7 @@ function JrGradesTemplate({student}:JrGradesTemplateProps) {
                     </TooltipProvider> 
               
             )}
-            <div className='col-span-2 border-b border-black border-r p-2 h-full'>{getPassFailStatusMAPEH(
+            <div className={cn(sf9 ? 'text-xs p-1' : 'p-2' ,'col-span-2 border-b border-black border-r h-full')}>{getPassFailStatusMAPEH(
                 getAverageForJrh(
                     calculateQuarterlyAverage(music),
                     calculateQuarterlyAverage(arts),
@@ -431,45 +416,80 @@ function JrGradesTemplate({student}:JrGradesTemplateProps) {
             )}</div>
         </div>
         <div className="grid grid-cols-12 w-full  items-center  text-center font-medium text-sm">
-            <div className='col-span-4 border-b h-full border-black border-x p-2 text-center'>Music</div>
+            <div className={cn(sf9 ? 'text-xs p-1' : 'p-2' ,'col-span-4 border-b border-b-black h-full border-x-black border-x  text-center')}>Music</div>
             {quarter.map((quarter)=>(
-                <div key={`music${quarter}`} className='col-span-1 border-b border-black border-r p-2 h-full'>{getFinalQuarterlyGrade(music, quarter)}</div>
+                <div key={`music${quarter}`} className={cn(sf9 ? 'text-xs p-1' : 'p-2' ,'col-span-1 border-b border-black border-r  h-full')}>{getFinalQuarterlyGrade(music, quarter)}</div>
             ))}
-            <div className='col-span-2 border-b border-r-black border-r p-2 h-full'></div>
-            <div className='col-span-2 border-b border-r-black border-r p-2 h-full'></div>
-        </div>
-        <div className="grid grid-cols-12 w-full  items-center text-center font-medium text-sm">
-            <div className='col-span-4 border-b h-full border-black border-x p-2 text-center'>Arts</div>
-            {quarter.map((quarter)=>(
-                <div key={`arts${quarter}`} className='col-span-1 border-b border-black border-r p-2 h-full'>{getFinalQuarterlyGrade(arts, quarter)}</div>
-            ))}
-            <div className='col-span-2 border-b border-r-black border-r p-2 h-full'></div>
-            <div className='col-span-2 border-b border-r-black border-r p-2 h-full'></div>
+            <div className={cn(sf9 ? 'text-xs p-1' : 'p-2' ,'col-span-2 border-b border-r-black border-r p-2 h-full')}></div>
+            <div className={cn(sf9 ? 'text-xs p-1' : 'p-2' ,'col-span-2 border-b border-r-black border-r p-2 h-full')}></div>
         </div>
         <div className="grid grid-cols-12 w-full  items-center  text-center font-medium text-sm">
-            <div className='col-span-4 border-b h-full border-black border-x p-2 text-center'>Physical Education</div>
+            <div className={cn(sf9 ? 'text-xs p-1' : 'p-2' ,'col-span-4 border-b border-b-black h-full border-x-black border-x text-center')}>Arts</div>
             {quarter.map((quarter)=>(
-                <div key={`pe${quarter}`} className='col-span-1 border-b border-black border-r p-2 h-full'>{getFinalQuarterlyGrade(pe, quarter)}</div>
+                <div key={`arts${quarter}`} className={cn(sf9 ? 'text-xs p-1' : 'p-2' ,'col-span-1 border-b border-black border-r  h-full')}>{getFinalQuarterlyGrade(arts, quarter)}</div>
             ))}
-            <div className='col-span-2 border-b border-r-black border-r p-2 h-full'></div>
-            <div className='col-span-2 border-b border-r-black border-r p-2 h-full'></div>
+            <div className={cn(sf9 ? 'text-xs p-1' : 'p-2' ,'col-span-2 border-b border-r-black border-r p-2 h-full')}></div>
+            <div className={cn(sf9 ? 'text-xs p-1' : 'p-2' ,'col-span-2 border-b border-r-black border-r p-2 h-full')}></div>
         </div>
-        <div className="grid grid-cols-12 w-full  items-center text-center font-medium text-sm">
-            <div className='col-span-4 border-b h-full border-black border-x p-2 text-center'>Health</div>
+        <div className="grid grid-cols-12 w-full  items-center  text-center font-medium text-sm">
+            <div className={cn(sf9 ? 'text-xs p-1' : 'p-2' ,'col-span-4 border-b border-b-black h-full border-x-black border-x text-center')}>Physical Education</div>
             {quarter.map((quarter)=>(
-                <div key={`health${quarter}`} className='col-span-1 border-b border-black border-r p-2 h-full'>{getFinalQuarterlyGrade(health, quarter)}</div>
+                <div key={`pe${quarter}`} className={cn(sf9 ? 'text-xs p-1' : 'p-2' ,'col-span-1 border-b border-black border-r  h-full')}>{getFinalQuarterlyGrade(pe, quarter)}</div>
             ))}
-            <div className='col-span-2 border-b border-black border-r p-2 h-full'></div>
-            <div className='col-span-2 border-b border-black border-r p-2 h-full'></div>
+            <div className={cn(sf9 ? 'text-xs p-1' : 'p-2' ,'col-span-2 border-b border-r-black border-r p-2 h-full')}></div>
+            <div className={cn(sf9 ? 'text-xs p-1' : 'p-2' ,'col-span-2 border-b border-r-black border-r p-2 h-full')}></div>
+        </div>
+        <div className="grid grid-cols-12 w-full  items-center  text-center font-medium text-sm border-b border-b-black">
+            <div className={cn(sf9 ? 'text-xs p-1' : 'p-2' ,'col-span-4 h-full border-x-black border-x  text-center')}>Health</div>
+            {quarter.map((quarter)=>(
+                <div key={`health${quarter}`} className={cn(sf9 ? 'text-xs p-1' : 'p-2' ,'col-span-1  border-r-black border-r  h-full')}>{getFinalQuarterlyGrade(health, quarter)}</div>
+            ))}
+            <div className={cn(sf9 ? 'text-xs p-1' : 'p-2' ,'col-span-2  border-r-black border-r p-2 h-full')}></div>
+            <div className={cn(sf9 ? 'text-xs p-1' : 'p-2' ,'col-span-2  border-r-black border-r p-2 h-full')}></div>
         </div>
         
-        <div className="grid grid-cols-12 w-full  items-center text-center font-medium text-sm">
-            <div className='col-span-4 border-r h-full border-r-black p-2 text-center bg-white'></div>
-            <div className='col-span-4 border-b border-black border-r  font-semibold tracking-widest font-serif text-lg'>General Average</div>
+        <div className="grid grid-cols-12 w-full  items-center text-center border-b border-b-black border-x border-x-black font-medium text-sm">
+           
+            <div className={cn(sf9 ? "text-xs p-1": "text-lg" ,'col-span-8  border-r border-r-black  font-semibold tracking-widest font-serif ')}>General Average</div>
             
-            <div className='col-span-2 h-full border-b border-b-black border-r-black border-r font-semibold text-lg'>{calculateGeneralAverage()}</div>
+            <div className={cn(sf9 ? "text-xs p-1" : "text-lg" ,'col-span-2 h-full  border-r-black border-r font-semibold ')}>{calculateGeneralAverage()}</div>
             
         </div>    
+        {sf9 && (
+            <div className="mt-5">
+             <div className="grid grid-cols-3 font-semibold">
+                 <h1>Descriptors</h1>
+                 <h1>Grade Scaling</h1>
+                 <h1>Remarks</h1>
+             </div>
+             <div className="grid grid-cols-3">
+                <h1>Outstanding</h1>
+                <h1>90-100</h1>
+                <h1>Passed</h1>
+             </div>
+             <div className="grid grid-cols-3">
+                <h1>Very Satisfactory</h1>
+                <h1>85-89</h1>
+                <h1>Passed</h1>
+             </div>
+             <div className="grid grid-cols-3">
+                <h1>Satisfactory</h1>
+                <h1>80-84</h1>
+                <h1>Passed</h1>
+             </div>
+             <div className="grid grid-cols-3">
+                <h1>Fairly Satisfactory</h1>
+                <h1>75-79</h1>
+                <h1>Passed</h1>
+             </div>
+             <div className="grid grid-cols-3">
+                <h1>Did Not Meet Expect</h1>
+                <h1>Below 76</h1>
+                <h1>Failed</h1>
+             </div>
+         </div>
+        )}
+       
     </div>
   )
 }
