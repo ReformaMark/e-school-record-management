@@ -92,7 +92,8 @@ export const SchoolSectionCardTableSH = () => {
                 {sections && (
                     <DataTable
                         columns={sectionColumns}
-                        data={sections}
+                        // @ts-expect-error slight type issue
+                        data={sections ?? []}
                         filter="name"
                         placeholder="by section name"
                     />

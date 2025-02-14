@@ -27,7 +27,8 @@ import { useQuery } from "convex/react";
 import {
     ChevronLeft,
     MinusIcon,
-    PlusIcon
+    PlusIcon,
+    Trash
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -36,8 +37,6 @@ import { useFieldArray, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { api } from "../../../../../../convex/_generated/api";
 import { Id } from "../../../../../../convex/_generated/dataModel";
-import { MultiSelect } from "@/components/ui/multi-select";
-import { Plus, Trash } from "lucide-react";
 import { AddScheduleModal } from "./add-schedule-modal";
 import { EditScheduleModal } from "./edit-schedule-modal";
 
@@ -160,21 +159,21 @@ export const SectionForm = ({ isEditing = false, section }: SectionFormProps) =>
         });
     };
 
-    const handleGradeLevelChange = (value: string) => {
-        setValue("gradeLevelId", value)
+    // const handleGradeLevelChange = (value: string) => {
+    //     setValue("gradeLevelId", value)
 
-        const selectedGradeLevel = gradeLevels?.find(g => g._id === value);
-        const isSHS = selectedGradeLevel?.level.includes("11") || selectedGradeLevel?.level.includes("12");
-        setIsSeniorHigh(isSHS);
+    //     const selectedGradeLevel = gradeLevels?.find(g => g._id === value);
+    //     const isSHS = selectedGradeLevel?.level.includes("11") || selectedGradeLevel?.level.includes("12");
+    //     setIsSeniorHigh(isSHS);
 
-        if (!isSHS) {
-            // Clear semester and track for all classes
-            fields.forEach((_, index) => {
-                setValue(`classes.${index}.semester`, "");
-                setValue(`classes.${index}.track`, "");
-            });
-        }
-    };
+    //     if (!isSHS) {
+    //         // Clear semester and track for all classes
+    //         fields.forEach((_, index) => {
+    //             setValue(`classes.${index}.semester`, "");
+    //             setValue(`classes.${index}.track`, "");
+    //         });
+    //     }
+    // };
 
     const handleRoomSelect = (roomId: string) => {
         const selectedRoom = rooms?.find(room => room._id === roomId);
@@ -491,6 +490,7 @@ export const SectionForm = ({ isEditing = false, section }: SectionFormProps) =>
                                                                         roomId: ""
                                                                     }}
                                                                     onScheduleEdit={(schedule) => {
+                                                                        // eslint-disable-next-line @typescript-eslint/no-unused-vars
                                                                         const schedules = watch(`classes.${index}.schedules`) || [];
                                                                         // Replace the first schedule with the edited one
                                                                         setValue(`classes.${index}.schedules`, [schedule]);

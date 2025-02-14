@@ -23,7 +23,7 @@ import { DataTable } from "@/components/data-table";
 import { exportToExcelTeachers } from "@/lib/export-to-excel";
 import { cn } from "@/lib/utils";
 import { useQuery } from "convex/react";
-import { File, ListFilterIcon, PlusCircleIcon } from "lucide-react";
+import { File, PlusCircleIcon } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { api } from "../../../../convex/_generated/api";

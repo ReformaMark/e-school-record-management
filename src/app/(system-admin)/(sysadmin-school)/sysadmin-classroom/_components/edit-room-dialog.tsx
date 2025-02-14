@@ -95,7 +95,7 @@ export const EditRoomDialog = ({ open, onClose, room }: EditRoomDialogProps) => 
     };
 
     const onSubmit = (data: RoomFormData) => {
-        const { gradeLevel, track, ...submitData } = data;
+        const { ...submitData } = data;
         updateRoom({
             id: room._id,
             ...submitData,

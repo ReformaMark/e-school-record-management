@@ -26,7 +26,9 @@ interface AddScheduleModalProps {
         schoolPeriodId: string;
         roomId: string;
     }) => void;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     schoolPeriods: any[];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     rooms: any[];
 }
 

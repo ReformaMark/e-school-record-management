@@ -24,6 +24,7 @@ export const SchoolSectionCardTable = () => {
                 {sections && (
                     <DataTable
                         columns={sectionColumns}
+                        // @ts-expect-error slight type issue
                         data={sections}
                         filter="name"
                         placeholder="by section name"

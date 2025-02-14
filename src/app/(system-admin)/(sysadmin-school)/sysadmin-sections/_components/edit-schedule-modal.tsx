@@ -1,5 +1,6 @@
 "use client"
 
+import { Button } from "@/components/ui/button";
 import {
     Dialog,
     DialogContent,
@@ -7,8 +8,8 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { MultiSelect } from "@/components/ui/multi-select";
 import {
     Select,
     SelectContent,
@@ -16,8 +17,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { MultiSelect } from "@/components/ui/multi-select";
-import { Edit, Plus } from "lucide-react";
+import { Edit } from "lucide-react";
 import { useState } from "react";
 
 interface EditScheduleModalProps {
@@ -31,7 +31,9 @@ interface EditScheduleModalProps {
         schoolPeriodId: string;
         roomId: string;
     }) => void;
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
     schoolPeriods: any[];
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
     rooms: any[];
 }
 

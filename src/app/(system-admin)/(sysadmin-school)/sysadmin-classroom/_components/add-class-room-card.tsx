@@ -106,6 +106,7 @@ export const AddClassRoomCard = () => {
             <form onSubmit={
                 handleSubmit(data => {
                     // Remove gradeLevel from data since it's just for display
+                    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
                     const { gradeLevel, ...submitData } = data;
                     createRoom({
                         ...submitData,

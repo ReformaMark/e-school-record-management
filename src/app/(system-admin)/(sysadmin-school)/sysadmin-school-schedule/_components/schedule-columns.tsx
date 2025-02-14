@@ -31,20 +31,16 @@ export const ScheduleColumns: ColumnDef<ScheduleWithDetails>[] = [
         }
     },
     {
-        accessorKey: "teacher",
+        id: "teacher",
         header: "Teacher",
-        cell: ({ row }) => {
-            const teacher = row.original.teacher;
-            return teacher ? `${teacher.lastName}, ${teacher.firstName}` : "Unassigned";
-        }
+        accessorFn: (row) => row.teacher ? `${row.teacher.lastName}, ${row.teacher.firstName}` : "Unassigned",
+        cell: ({ getValue }) => getValue()
     },
     {
-        accessorKey: "room",
+        id: "room",
         header: "Room",
-        cell: ({ row }) => {
-            const room = row.original.room;
-            return room ? room.name : "Not assigned";
-        }
+        accessorFn: (row) => row.room ? row.room.name : "Not assigned",
+        cell: ({ getValue }) => getValue()
     },
     {
         id: "actions",

@@ -22,13 +22,14 @@ import {
 
 export const ScheduleCardTable = () => {
     const [selectedDay, setSelectedDay] = useState<string>("all");
+    const [filterType, setFilterType] = useState<"teacher" | "room">("teacher");
     const schedules = useQuery(api.schedules.get) as { day: string }[] | undefined;
 
     const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
     // Update the filtering logic
     const filteredSchedules = selectedDay !== "all"
-        ? schedules?.filter((schedule: { day: string }) => schedule.day === selectedDay)
+        ? schedules?.filter((schedule) => schedule.day.includes(selectedDay))
         : schedules;
 
     return (
@@ -41,22 +42,38 @@ export const ScheduleCardTable = () => {
                             Manage your class schedules here
                         </CardDescription>
                     </div>
-                    <Select
-                        value={selectedDay}
-                        onValueChange={setSelectedDay}
-                    >
-                        <SelectTrigger className="w-[180px]">
-                            <SelectValue placeholder="Filter by day" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="all">All Days</SelectItem>
-                            {days.map((day) => (
-                                <SelectItem key={day} value={day}>
-                                    {day}
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
+
+                    <div className="flex gap-3">
+                        <Select
+                            value={selectedDay}
+                            onValueChange={setSelectedDay}
+                        >
+                            <SelectTrigger className="w-[180px]">
+                                <SelectValue placeholder="Filter by day" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">All Days</SelectItem>
+                                {days.map((day) => (
+                                    <SelectItem key={day} value={day}>
+                                        {day}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+
+                        <Select
+                            value={filterType}
+                            onValueChange={(value: "teacher" | "room") => setFilterType(value)}
+                        >
+                            <SelectTrigger className="w-[180px]">
+                                <SelectValue placeholder="Filter by..." />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="teacher">Teacher Name</SelectItem>
+                                <SelectItem value="room">Room</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
                 </div>
             </CardHeader>
             <CardContent>
@@ -64,8 +81,8 @@ export const ScheduleCardTable = () => {
                     columns={ScheduleColumns}
                     // @ts-expect-error slight type issue
                     data={filteredSchedules ?? []}
-                    filter="teacher"
-                    placeholder="Filter by teacher..."
+                    filter={filterType}
+                    placeholder={filterType === "teacher" ? "Filter by teacher..." : "Filter by room..."}
                 />
             </CardContent>
         </Card>

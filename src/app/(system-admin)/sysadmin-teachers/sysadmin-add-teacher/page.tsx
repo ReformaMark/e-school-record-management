@@ -44,7 +44,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { api } from "../../../../../convex/_generated/api";
 import { Id } from "../../../../../convex/_generated/dataModel";
-import { SchoolSubjects, schoolSubjects } from "../../../../../data/teachers-data";
+import { schoolSubjects } from "../../../../../data/teachers-data";
 
 const SystemAdminAddTeacherPage = () => {
     const createTeacher = useMutation(api.users.createTeacher);

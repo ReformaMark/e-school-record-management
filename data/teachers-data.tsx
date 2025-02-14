@@ -95,7 +95,7 @@ export const teacherColumns: ColumnDef<Teacher>[] = [
     {
         accessorKey: "advisoryClass",
         header: "Classes",
-        cell: ({ row }) => {
+        cell: function Cell({ row }) {
             const classes = useQuery(api.classes.getClassesByTeacherId, {
                 teacherId: row.original.id
             });
@@ -144,7 +144,7 @@ export const teacherColumns: ColumnDef<Teacher>[] = [
                                             </div>
                                             {classItem?.track && (
                                                 <div className="px-4 py-2 bg-muted/50">
-                                                    <Badge variant="outline" className="h-5 px-1.5 text-xs font-normal">
+                                                    <Badge variant="outline" className="h-5 px-1.5 text-xs font-normal bg-foreground text-white capitalize">
                                                         {classItem?.track}
                                                     </Badge>
                                                 </div>
@@ -154,7 +154,21 @@ export const teacherColumns: ColumnDef<Teacher>[] = [
                                                     <div key={schedule._id} className="space-y-1.5">
                                                         <div className="flex items-center gap-2 text-sm">
                                                             <Calendar className="h-4 w-4 text-muted-foreground" />
-                                                            <span className="font-medium">{schedule.day}</span>
+                                                            <div className="flex flex-wrap gap-1">
+
+                                                                {(Array.isArray(schedule.day) ? schedule.day :
+                                                                    // @ts-expect-error bug
+                                                                    schedule.day.split(','))
+                                                                    .map((day: string) => (
+                                                                        <Badge
+                                                                            key={day}
+                                                                            variant="outline"
+                                                                            className="h-5 px-1.5 text-xs font-normal text-black border-black"
+                                                                        >
+                                                                            {day.trim()}
+                                                                        </Badge>
+                                                                    ))}
+                                                            </div>
                                                         </div>
                                                         <div className="ml-6 space-y-1">
                                                             <div className="flex items-center gap-2 text-sm text-muted-foreground">
