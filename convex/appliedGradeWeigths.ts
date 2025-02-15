@@ -26,6 +26,7 @@ export const create = mutation({
                     learningMode: args.learningMode,
                     written: args.written,
                     performance: args.performance,
+                    exam: undefined
                  
                 })
             } else {
@@ -47,6 +48,7 @@ export const create = mutation({
                     learningMode: args.learningMode,
                     written: args.written,
                     performance: args.performance,
+                    exam: undefined
                  
                 })
             } else {

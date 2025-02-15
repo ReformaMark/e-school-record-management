@@ -23,23 +23,28 @@ interface GradeWeightsFormProps{
 
 function GradeWeightsForm({subject}: GradeWeightsFormProps) {
     const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false)
-    const [learningMode, setLearningMode] = useState<string>("")
+    const [learningMode, setLearningMode] = useState<string>(subject.appliedGradeWeights?.learningMode ?? "Face to face")
 
     const addAppliedGW = useMutation(api.appliedGradeWeigths.create)
  
-
     const form = useForm<z.infer<typeof GradeWeightsFormSchema>>({
         resolver: zodResolver(GradeWeightsFormSchema),
         defaultValues: {
-            learningMode: "Face to face",
-            written: subject.appliedGradeWeights ? subject.appliedGradeWeights?.written : subject.gradeWeights?.written,
-            performance:  subject.appliedGradeWeights ? subject.appliedGradeWeights?.performance : subject.gradeWeights?.performance,
-            exam: learningMode === "Alternative Learning Module" ? undefined : subject.appliedGradeWeights ? subject.appliedGradeWeights?.exam : subject.gradeWeights?.exam,
+            learningMode: subject.appliedGradeWeights?.learningMode ?? "Face to face",
+            written: subject.appliedGradeWeights?.written ?? subject.gradeWeights?.written,
+            performance: subject.appliedGradeWeights?.performance ?? subject.gradeWeights?.performance,
+            exam: subject.appliedGradeWeights?.exam ?? (learningMode === "Alternative Learning Module" ? undefined : subject.gradeWeights?.exam),
         }
     });
 
-    console.log(typeof form.getValues('written'))
     const onSubmit = async (data: z.infer<typeof GradeWeightsFormSchema>) => {
+        const isOneHundred = data.learningMode === "Face to face" ? (data.written + data.performance + (data.exam ?? 0)) === 100 : (data.written + data.performance) === 100
+
+        if(!isOneHundred) {
+            toast.error("The sum of all grade weights must equal 100%.");
+            return
+        }
+        
         toast.promise(addAppliedGW({
             subjectId: subject._id,
             learningMode: data.learningMode,
@@ -75,11 +80,14 @@ function GradeWeightsForm({subject}: GradeWeightsFormProps) {
                                         <FormLabel className='mt-3 text-white px-2 py-1 font-semibold text-sm block w-full bg-primary'>Learning Mode</FormLabel>
                                         <FormControl>
                                             <RadioGroup 
-                                                defaultValue="Face to face" 
+                                                defaultValue={subject.appliedGradeWeights?.learningMode ?? "Face to face"}
                                                 className='pl-5 flex gap-x-5'
                                                 onValueChange={(value) => {
                                                     field.onChange(value)
                                                     setLearningMode(value)
+                                                    if (value === "Alternative Learning Module") {
+                                                        form.setValue('exam', undefined)
+                                                    }
                                                 }}
                                             >
                                                 <FormItem  className="space-x-2">
@@ -95,7 +103,8 @@ function GradeWeightsForm({subject}: GradeWeightsFormProps) {
                                                     <FormControl>
                                                         <RadioGroupItem 
                                                             value="Alternative Learning Module" 
-                                                            className='rounded-none' />
+                                                            className='rounded-none' 
+                                                        />
                                                     </FormControl>
                                                     <Label htmlFor="No">Alternative Learning Module</Label>
                                                 </FormItem >
@@ -174,7 +183,10 @@ function GradeWeightsForm({subject}: GradeWeightsFormProps) {
                             </div>
                         </div>
                         <DialogFooter>
-                            <Button type='button' variant="ghost" onClick={() => setIsDialogOpen(false)} className="text-primary">
+                            <Button type='button' variant="ghost" onClick={() =>{
+                                 setIsDialogOpen(false)
+                                 setLearningMode(subject.appliedGradeWeights?.learningMode ?? "Face to face")
+                                 }} className="text-primary">
                                 Close
                             </Button>
                             <Button type="submit" variant={'default'} className="text-white">Save</Button>

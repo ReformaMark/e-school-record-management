@@ -64,7 +64,7 @@ const AssignedSubjectsColumn: ColumnDef<SubjectsWithAppliedGradeWeights>[] = [
         cell: ({ row }) => { 
           const subject = row.original
           return (
-            <div className="text-sm font-medium">
+            <div className="text-xs font-medium">
               <h3><span className='w-1/3 inline-block '>Written Works</span> {subject.gradeWeights ? `- ${subject.gradeWeights.written}%` : "-"}</h3>
               <h3><span className='w-1/3 inline-block '>Performance Tasks</span> {subject.gradeWeights ? `- ${subject.gradeWeights.performance}%` : "-"}</h3>
               <h3><span className='w-1/3 inline-block '>Major Examination</span> {subject.gradeWeights ? `- ${subject.gradeWeights.exam}%` : "-"}</h3>
@@ -80,10 +80,12 @@ const AssignedSubjectsColumn: ColumnDef<SubjectsWithAppliedGradeWeights>[] = [
           return (
             <>
                 { subject.appliedGradeWeights !== null ? (
-                    <div className="text-sm font-medium">
+                    <div className="text-xs font-medium">
                         <h3><span className='w-1/2 inline-block '>Written Works</span> {subject.appliedGradeWeights !== null ? `- ${subject.appliedGradeWeights.written}%` : "-"}</h3>
                         <h3><span className='w-1/2 inline-block '>Performance Tasks</span> {subject.appliedGradeWeights ? `- ${subject.appliedGradeWeights.performance}%` : "-"}</h3>
-                        <h3><span className='w-1/2 inline-block '>Major Examination</span> {subject.appliedGradeWeights  !== null && subject.appliedGradeWeights.exam ? `- ${subject.appliedGradeWeights.exam}%` : "-"}</h3>
+                        {subject.appliedGradeWeights.learningMode === "Face to face" && (
+                          <h3><span className='w-1/2 inline-block '>Major Examination</span> {subject.appliedGradeWeights  !== null && subject.appliedGradeWeights.exam ? `- ${subject.appliedGradeWeights.exam}%` : "-"}</h3>
+                        )}
                     </div>
                 ):(
                     <h1>Not Set</h1>
