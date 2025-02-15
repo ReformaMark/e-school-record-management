@@ -11,7 +11,6 @@ import { Doc } from '../../../../../convex/_generated/dataModel';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface IProps {
-   
     clss: ClassesWithDetails
 }
 
@@ -50,11 +49,11 @@ function InputGrades({clss}:IProps) {
 
   return (
     <div className='text-primary'>
-        <Tabs defaultValue="1st" className="w-full shadow-none">
+        <Tabs defaultValue="1st" className="w-full">
         {isMAPEH ? (
             <div className="grid grid-cols-3 ">
                 <div className="">
-
+ 
                 <TabsList className='space-x-3 bg-transparent'>
                     <TabsTrigger value="1st" className='font-medium text-xs md:text-md shadow-md border-b-2 data-[state=active]:border-b-primary data-[state=active]:text-primary'>1st</TabsTrigger>
                     <TabsTrigger value="2nd" className='font-medium text-xs md:text-md shadow-md border-b-2 data-[state=active]:border-b-primary data-[state=active]:text-primary'>2nd</TabsTrigger>
@@ -78,11 +77,11 @@ function InputGrades({clss}:IProps) {
               
             </div>
         ): (
-            <TabsList>
-                <TabsTrigger value="1st">1st</TabsTrigger>
-                <TabsTrigger value="2nd">2nd</TabsTrigger>
-                <TabsTrigger value="3rd">3rd</TabsTrigger>
-                <TabsTrigger value="4th">4th</TabsTrigger>
+            <TabsList className={'space-x-3 bg-transparent'}>
+                <TabsTrigger className='font-medium text-xs md:text-md shadow-md border-b-2 data-[state=active]:border-b-primary data-[state=active]:text-primary' value="1st">1st</TabsTrigger>
+                <TabsTrigger className='font-medium text-xs md:text-md shadow-md border-b-2 data-[state=active]:border-b-primary data-[state=active]:text-primary' value="2nd">2nd</TabsTrigger>
+                <TabsTrigger className='font-medium text-xs md:text-md shadow-md border-b-2 data-[state=active]:border-b-primary data-[state=active]:text-primary' value="3rd">3rd</TabsTrigger>
+                <TabsTrigger className='font-medium text-xs md:text-md shadow-md border-b-2 data-[state=active]:border-b-primary data-[state=active]:text-primary' value="4th">4th</TabsTrigger>
             </TabsList>
         )}
               
@@ -104,7 +103,7 @@ function InputGrades({clss}:IProps) {
                 columns={InputGradesCol}
                 data={firstQuarterStudents ?? []}
                 filter='fullName'
-                placeholder='by Full Name'
+                placeholder='by name'
             />
         </TabsContent>
         <TabsContent value="2nd">

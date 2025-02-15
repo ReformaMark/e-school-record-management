@@ -36,8 +36,70 @@ export const getTeacherClasses = query({
         if (!teacherId) {
             throw new ConvexError('No Teacher Id.')
         }
+        const classes = await ctx.db.query('classes')
+        .filter(q => q.eq(q.field('teacherId'), teacherId))
+        .collect()
 
-        const classes = await ctx.db.query('classes').filter(q => q.eq(q.field('teacherId'), teacherId)).collect()
+        // const classWithDetails = await asyncMap(classes, async (class)=>{
+
+        // })
+
+        const classWithDetails = await asyncMap(classes, async (c) => {
+            const subject = await ctx.db.get(c.subjectId)
+            const teacher = await ctx.db.get(c.teacherId)
+            const section = await ctx.db.get(c.sectionId)
+            if (!section) return
+            const gradeLevel = await ctx.db.get(section?.gradeLevelId)
+
+            const schedules = await ctx.db.query('schedules')
+                .filter(q => q.eq(q.field('teacherId'), teacher?._id))
+                .filter(q => q.eq(q.field('classId'), c._id))
+                .collect()
+            const schedWithdetails = await asyncMap(schedules, async (sched) => {
+                const schoolPeriod = await ctx.db.get(sched.schoolPeriodId)
+                const room = await ctx.db.get(sched.roomId)
+                return {
+                    ...sched,
+                    schoolPeriod: schoolPeriod,
+                    room: room
+                }
+            })
+            const schoolYear = await ctx.db.get(c.schoolYearId)
+            return {
+                ...c,
+                subject: {
+                    ...subject,
+                    gradeLevel: gradeLevel
+                },
+                teacher: teacher,
+                section: {
+                    ...section,
+                    gradeLevel: gradeLevel
+                },
+                schedules: schedWithdetails,
+                schoolYear: schoolYear,
+            }
+        })
+
+        return classWithDetails
+    }
+})
+
+export const getTeacherClassesWithSchoolYear = query({
+    args:{
+        schoolYearId: v.optional(v.id('schoolYears'))
+    },
+    handler: async (ctx, args) => {
+        const teacherId = await getAuthUserId(ctx)
+        if (!teacherId) {
+            throw new ConvexError('No Teacher Id.')
+        }
+        if(!args.schoolYearId) return []
+    
+        const classes = await ctx.db.query('classes')
+        .filter(q => q.eq(q.field('teacherId'), teacherId))
+        .filter(q => q.eq(q.field("schoolYearId"), args.schoolYearId))
+        .collect()
 
         // const classWithDetails = await asyncMap(classes, async (class)=>{
 

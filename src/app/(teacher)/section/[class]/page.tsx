@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 'use client'
 import React from 'react'
-import { useClasses } from '../section-data'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import QuarterlyGradesTemplate from '@/app/components/QuarterlyGradesTemplate'
 import {  buttonVariants } from '@/components/ui/button'
@@ -19,10 +18,15 @@ import { api } from '../../../../../convex/_generated/api'
 import { ClassesWithDetails, FinalGradesWithSubject, SectionWithGradeLevel, StudentsWithEnrollMentTypes } from '@/lib/types'
 import MapehQuarterlyGradesTab from '../_components/MapehQuarterlyGradesTab'
 import { Doc, Id } from '../../../../../convex/_generated/dataModel'
+import { useSearchParams } from 'next/navigation'
 
 function Section({params}:{params: {class: string}}) {
+  const searchParams = useSearchParams()
+  const sy = searchParams.get('sy')
   const classId = params.class;
-  const {isLoading, classes} = useClasses()
+  const classes = useQuery(api.classes.getTeacherClassesWithSchoolYear, {
+    schoolYearId: sy as Id<'schoolYears'>
+  })
   //section === class
   const cls = classes?.find((section) => section?._id === classId);
   
@@ -30,9 +34,9 @@ function Section({params}:{params: {class: string}}) {
       classId: classId as Id<'classes'>,
       sectionId: cls?.sectionId
   })
-  const studentInMasterlist = useQuery(api.students.studentsInMasterList, {classId: cls?._id })
+  const studentInMasterlist = useQuery(api.students.studentsInMasterList, {classId: classId as Id<'classes'> })
  
-  if(isLoading || !studentInMasterlist ){
+  if(classes === undefined || !studentInMasterlist ){
     return <Loading/>
   }
 
