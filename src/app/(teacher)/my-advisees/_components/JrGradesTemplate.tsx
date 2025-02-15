@@ -118,7 +118,22 @@ function JrGradesTemplate({student,sf9}:JrGradesTemplateProps) {
     
         return parseFloat(generalAverage.toFixed(2)); // Round to 2 decimal places
         
-    },[student.quarterlyGrades]);
+    },[
+        english, 
+        mathematics, 
+        science, 
+        filipino, 
+        ap, 
+        esp, 
+        music, 
+        arts, 
+        pe, 
+        health, 
+        epp, 
+        tle, 
+        hasEPP, 
+        hasTLE
+    ]);
 
     function getRemedialGrade(remedialGrade: Doc<'finalGrades'>, subjectName: string): number | null {
         const subject = remedialGrade?.subjects.find((s) => s.subjectName.toLowerCase() === subjectName.toLowerCase());

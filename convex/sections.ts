@@ -23,7 +23,9 @@ export const getSectionsUsingGradeLevel = query({
 export const addStudentToSection = mutation({
     args: {
         studentId: v.id('students'),
-        sectionId: v.id('sections')
+        sectionId: v.id('sections'),
+        gradeLevelToEnroll: v.number(),
+        semesterToEnroll: v.optional(v.string())
     },
     handler: async (ctx, args) => {
         if (!args.studentId) {
@@ -32,15 +34,37 @@ export const addStudentToSection = mutation({
         if (!args.sectionId) {
             throw new Error("No section Id");
         }
-
         const section = await ctx.db.get(args.sectionId)
-        const sectionStudents = section?.students
+        const isShs = args.gradeLevelToEnroll > 10
 
-        sectionStudents?.push(args.studentId)
+        if(isShs) {
+            if(args.semesterToEnroll === "1st"){
+                const sectionStudentsFirst = section?.firstSemStudents
+                sectionStudentsFirst?.push(args.studentId)
 
-        await ctx.db.patch(args.sectionId, {
-            students: sectionStudents
-        })
+                await ctx.db.patch(args.sectionId, {
+                   firstSemStudents: sectionStudentsFirst
+                })
+            }
+            if(args.semesterToEnroll === "2nd"){
+                const sectionStudentsSecond = section?.secondSemStudents
+                sectionStudentsSecond?.push(args.studentId)
+
+                await ctx.db.patch(args.sectionId, {
+                   secondSemStudents: sectionStudentsSecond
+                })
+            }
+        } else {
+       
+            const sectionStudents = section?.students
+    
+            sectionStudents?.push(args.studentId)
+    
+            await ctx.db.patch(args.sectionId, {
+                students: sectionStudents
+            })
+        }
+      
 
     }
 })
@@ -148,7 +172,9 @@ export const create = mutation({
             schoolYearId: args.schoolYearId,
             roomId: args.roomId,
             isActive: true,
-            students: []
+            students: [],
+            firstSemStudents: [],
+            secondSemStudents: []
         });
 
         for (const classData of args.classes) {

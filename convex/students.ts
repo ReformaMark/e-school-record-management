@@ -146,6 +146,7 @@ export const studentsInMasterList = query({
     throw new ConvexError("Np section Id")
     }
     const cls = await ctx.db.get(args.classId)
+    const semester = cls?.semester
 
     if(!cls) {
       throw new ConvexError("No class Found.")
@@ -154,17 +155,51 @@ export const studentsInMasterList = query({
     if(!section) {
       throw new ConvexError("No section Found.")
     }
-    const students = await asyncMap(section.students, async(studentId) =>{
-      const student = await ctx.db.get(studentId)
-      const enrollment = await ctx.db.query('enrollments')
-        .filter((q) => q.eq(q.field("studentId"), studentId))
-        .filter((q) => q.eq(q.field("sectionId"), section._id))
-        .order('desc')
-        .first()
-        
-      return {...student, enrollment: enrollment}
-    })
-    return students as StudentsWithEnrollMentTypes[]
+
+    if(!semester){
+      const students = await asyncMap(section.students, async(studentId) =>{
+        const student = await ctx.db.get(studentId)
+        const enrollment = await ctx.db.query('enrollments')
+          .filter((q) => q.eq(q.field("studentId"), studentId))
+          .filter((q) => q.eq(q.field("sectionId"), section._id))
+          .order('desc')
+          .first()
+          
+        return {...student, enrollment: enrollment}
+      })
+      return students as StudentsWithEnrollMentTypes[]
+    } else {
+      if(semester === "1st") {
+        const students = await asyncMap(section.firstSemStudents, async(studentId) =>{
+          const student = await ctx.db.get(studentId)
+          const enrollment = await ctx.db.query('enrollments')
+            .filter((q) => q.eq(q.field("studentId"), studentId))
+            .filter((q) => q.eq(q.field("sectionId"), section._id))
+            .filter((q) => q.eq(q.field("semester"), semester))
+            .order('desc')
+            .first()
+            
+          return {...student, enrollment: enrollment}
+        })
+        return students as StudentsWithEnrollMentTypes[]
+      }
+
+      if(semester === "2nd") {
+        const students = await asyncMap(section.secondSemStudents, async(studentId) =>{
+          const student = await ctx.db.get(studentId)
+          const enrollment = await ctx.db.query('enrollments')
+            .filter((q) => q.eq(q.field("studentId"), studentId))
+            .filter((q) => q.eq(q.field("sectionId"), section._id))
+            .filter((q) => q.eq(q.field("semester"), semester))
+            .order('desc')
+            .first()
+            
+          return {...student, enrollment: enrollment}
+        })
+        return students as StudentsWithEnrollMentTypes[]
+      }
+    }
+  
   }
 })
 

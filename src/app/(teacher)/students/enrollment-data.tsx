@@ -466,7 +466,7 @@ import EnrollmentConfirmationDialog from "./_components/EnrollmentConfirmationDi
   id: "actions",
   header: "Actions",
   cell: ({ row }) => {
-    const enrollmentStatus = row.original.enrollmentStatus 
+    const enrollmentStatus = row.original.enrollmentStatus
     const isEnrolling = enrollmentStatus === "Can Enroll"
     return (
       <div className="flex items-center gap-x-2 ">

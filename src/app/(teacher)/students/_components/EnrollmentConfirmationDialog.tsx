@@ -7,7 +7,7 @@ import { useMutation, useQuery } from 'convex/react'
 import { User } from 'lucide-react'
 import React, { useState } from 'react'
 import { api } from '../../../../../convex/_generated/api'
-import {Id } from '../../../../../convex/_generated/dataModel'
+import {Doc, Id } from '../../../../../convex/_generated/dataModel'
 import { toast } from 'sonner'
 
 interface EnrollmentConfirmationDialogProps {
@@ -17,7 +17,7 @@ interface EnrollmentConfirmationDialogProps {
 
 export default function EnrollmentConfirmationDialog({
     isEnrolling,
-    student
+    student,
 }: EnrollmentConfirmationDialogProps) {
     const [open, setOpen] = useState<boolean>(false)
     const [isOpen, setIsOpen] = useState<boolean>(false)
@@ -29,8 +29,17 @@ export default function EnrollmentConfirmationDialog({
     const schoolYear = useQuery(api.schoolYear.get)
     const addEnrollment = useMutation(api.enrollments.addEnrollment)
 
-    const latestSY = schoolYear ? schoolYear[0] : undefined
+    const latestSY = getLatestSchoolYear(schoolYear ?? [])
 
+    function getLatestSchoolYear(schoolYears: Doc<'schoolYears'>[]) {
+        if (!Array.isArray(schoolYears) || schoolYears.length === 0) {
+            return undefined;
+        }
+
+        return schoolYears.reduce((latest, current) => {
+            return new Date(current.endDate).getFullYear() > new Date(latest.endDate).getFullYear() ? current : latest;
+        });
+    }
     //get the sections of the grade level
     const sections = useQuery(api.sections.getSectionsUsingGradeLevel, {gradeLevel: gradelevel})
     const handleEnroll = () =>{
@@ -48,14 +57,19 @@ export default function EnrollmentConfirmationDialog({
         }
 
    
-        toast.promise(addStudentToSection({studentId: student._id, sectionId: selectedSection as Id<'sections'>}), {
+        toast.promise(addStudentToSection({
+            studentId: student._id, 
+            sectionId: selectedSection as Id<'sections'>, 
+            gradeLevelToEnroll: Number(gradelevel),
+            semesterToEnroll: student.semesterToEnroll
+        }), {
             loading: "Enrolling student...",
             success: async() => {
                 setIsOpen(false)
                 setOpen(false)
                 setIsLoading(false)
                 await updateStudentGradeLevel({studentId: student._id})
-                await addEnrollment({studentId: student._id, sectionId: selectedSection as Id<'sections'>, schoolYearId: latestSY._id, dateEnrolled: new Date().toDateString(), status: "Success"})
+                await addEnrollment({studentId: student._id, sectionId: selectedSection as Id<'sections'>, schoolYearId: latestSY._id, dateEnrolled: new Date().toDateString(), status: "Success", sem: student.semesterToEnroll})
                 return "Student enrolled successfully."
             } ,
             error: () => {

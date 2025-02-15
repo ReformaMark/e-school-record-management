@@ -12,6 +12,7 @@ export const create = mutation({
         quarter: v.string(),
         assessmentNo: v.number(),
         type:v.string(),
+        semester: v.optional(v.string()),
         score: v.number(),
         schoolYearId: v.optional(v.id('schoolYears')),
         subComponent: v.optional(v.string())
@@ -22,6 +23,7 @@ export const create = mutation({
         if(!args.schoolYearId) {
             return 
         }
+        
         const classes =  await ctx.db.query('classes')
             .withIndex('by_teacherId')
             .filter(q=> q.eq(q.field('subjectId'), args.subjectId))
@@ -31,8 +33,16 @@ export const create = mutation({
         await asyncMap(classes, async(cls) =>{
             const section = await ctx.db.get(cls.sectionId)
             if(!section) return
-           
-            await asyncMap(section.students, async(studentId) =>{
+            let students = section.students;
+            if(args.semester) {
+                if(args.semester === "1st") {
+                    students = section.firstSemStudents;
+                }
+                if(args.semester === "2nd") {
+                    students = section.secondSemStudents;
+                }
+            }
+            await asyncMap(students, async(studentId) =>{
                 let hasExistingCR
                 if(args.subComponent){
                     const rec = await ctx.db.query('classRecords')
@@ -43,14 +53,25 @@ export const create = mutation({
                         .first()
                     hasExistingCR = rec
                 } else {
-                    const rec = await ctx.db.query('classRecords')
-                    .filter(q=> q.eq(q.field('classId'), cls._id))
-                    .filter(q=> q.eq(q.field('studentId'), studentId))
-                    .filter(q=> q.eq(q.field('quarter'), args.quarter))
-                    .first()
-                    hasExistingCR = rec
+                    if(args.semester) {
+                        const rec = await ctx.db.query('classRecords')
+                        .filter(q=> q.eq(q.field('classId'), cls._id))
+                        .filter(q=> q.eq(q.field('studentId'), studentId))
+                        .filter(q=> q.eq(q.field('quarter'), args.quarter))
+                        .filter(q=> q.eq(q.field('semester'), args.semester))
+                        .first()
+                        hasExistingCR = rec
+                    } else {
+                        const rec = await ctx.db.query('classRecords')
+                        .filter(q=> q.eq(q.field('classId'), cls._id))
+                        .filter(q=> q.eq(q.field('studentId'), studentId))
+                        .filter(q=> q.eq(q.field('quarter'), args.quarter))
+                        .first()
+                        hasExistingCR = rec
+                    }
+                   
                 }
-               
+               console.log(hasExistingCR)
 
                 if (hasExistingCR) {
                     if (args.type === "Written Works") {
@@ -197,7 +218,8 @@ export const create = mutation({
                             performance: [],
                             quarterlyExam: [],
                             quarter: args.quarter,
-                            subComponent: args.subComponent
+                            subComponent: args.subComponent,
+                            semester: args.semester
                         });
                     } else if (args.quarter === '1st' && args.type === 'Performance Tasks') {
                         await ctx.db.insert('classRecords', {
@@ -214,7 +236,8 @@ export const create = mutation({
                             }],
                             quarterlyExam: [],
                             quarter: args.quarter,
-                            subComponent: args.subComponent
+                            subComponent: args.subComponent,
+                            semester: args.semester
                         });
                     } else if (args.quarter === '1st' && args.type === 'Quarterly Assessment') {
                         await ctx.db.insert('classRecords', {
@@ -231,7 +254,8 @@ export const create = mutation({
                                 highestScore: args.score,
                             }],
                             quarter: args.quarter,
-                            subComponent: args.subComponent
+                            subComponent: args.subComponent,
+                            semester: args.semester
                         });
                     } else if (args.quarter === '2nd' && args.type === 'Written Works') {
                         await ctx.db.insert('classRecords', {
@@ -248,7 +272,8 @@ export const create = mutation({
                             performance: [],
                             quarterlyExam: [],
                             quarter: args.quarter,
-                            subComponent: args.subComponent
+                            subComponent: args.subComponent,
+                            semester: args.semester
                         });
                     } else if (args.quarter === '2nd' && args.type === 'Performance Tasks') {
                         await ctx.db.insert('classRecords', {
@@ -265,7 +290,8 @@ export const create = mutation({
                             }],
                             quarterlyExam: [],
                             quarter: args.quarter,
-                            subComponent: args.subComponent
+                            subComponent: args.subComponent,
+                            semester: args.semester
                         });
                     } else if (args.quarter === '2nd' && args.type === 'Quarterly Assessment') {
                         await ctx.db.insert('classRecords', {
@@ -282,7 +308,8 @@ export const create = mutation({
                                 highestScore: args.score,
                             }],
                             quarter: args.quarter,
-                            subComponent: args.subComponent
+                            subComponent: args.subComponent,
+                            semester: args.semester
                         });
                     } else if (args.quarter === '3rd' && args.type === 'Written Works') {
                         await ctx.db.insert('classRecords', {
@@ -299,7 +326,8 @@ export const create = mutation({
                             performance: [],
                             quarterlyExam: [],
                             quarter: args.quarter,
-                            subComponent: args.subComponent
+                            subComponent: args.subComponent,
+                            semester: args.semester
                         });
                     } else if (args.quarter === '3rd' && args.type === 'Performance Tasks') {
                         await ctx.db.insert('classRecords', {
@@ -316,7 +344,8 @@ export const create = mutation({
                             }],
                             quarterlyExam: [],
                             quarter: args.quarter,
-                            subComponent: args.subComponent
+                            subComponent: args.subComponent,
+                            semester: args.semester
                         });
                     } else if (args.quarter === '3rd' && args.type === 'Quarterly Assessment') {
                         await ctx.db.insert('classRecords', {
@@ -333,7 +362,8 @@ export const create = mutation({
                                 highestScore: args.score,
                             }],
                             quarter: args.quarter,
-                            subComponent: args.subComponent
+                            subComponent: args.subComponent,
+                            semester: args.semester
                         });
                     } else if (args.quarter === '4th' && args.type === 'Written Works') {
                         await ctx.db.insert('classRecords', {
@@ -350,7 +380,8 @@ export const create = mutation({
                             performance: [],
                             quarterlyExam: [],
                             quarter: args.quarter,
-                            subComponent: args.subComponent
+                            subComponent: args.subComponent,
+                            semester: args.semester
                         });
                     } else if (args.quarter === '4th' && args.type === 'Performance Tasks') {
                         await ctx.db.insert('classRecords', {
@@ -367,7 +398,8 @@ export const create = mutation({
                             }],
                             quarterlyExam: [],
                             quarter: args.quarter,
-                            subComponent: args.subComponent
+                            subComponent: args.subComponent,
+                            semester: args.semester
                         });
                     } else if (args.quarter === '4th' && args.type === 'Quarterly Assessment') {
                         await ctx.db.insert('classRecords', {
@@ -384,7 +416,8 @@ export const create = mutation({
                                 highestScore: args.score,
                             }],
                             quarter: args.quarter,
-                            subComponent: args.subComponent
+                            subComponent: args.subComponent,
+                            semester: args.semester
                         });
                     }
                  
@@ -402,43 +435,119 @@ export const get = query({
     },
     handler: async (ctx, args) => {
         const cls = await ctx.db.get(args.classId);
+        const semester = cls?.semester
         if (!cls) return null;
         const section = await ctx.db.get(cls.sectionId);
         if (!section) return null;
         const gradeLevel = await ctx.db.get(section.gradeLevelId)
-        const students = await asyncMap(section?.students, async (studentId) => {
-            const student = await ctx.db.get(studentId);
-            if(!student) return null
-            const classRecords = await ctx.db.query('classRecords')
-                .filter(q=>q.eq(q.field('studentId'), studentId))
-                .filter(q=>q.eq(q.field('classId'), cls._id))
-                .collect();
-
-            const classRecordWIthSubject = await asyncMap(classRecords, async(c)=>{
-                const cls = await ctx.db.get(c.classId)
-                if(!cls) return
-                const subject = await ctx.db.get(cls?.subjectId)
-                return {
-                    ...c,
-                    cLass:{
-                        ...cls,
-                        subject: subject
+        if(semester) {
+          if(semester === "1st") {
+            const students = await asyncMap(section?.firstSemStudents, async (studentId) => {
+                const student = await ctx.db.get(studentId);
+                if(!student) return null
+                const classRecords = await ctx.db.query('classRecords')
+                    .filter(q=>q.eq(q.field('studentId'), studentId))
+                    .filter(q=>q.eq(q.field('classId'), cls._id))
+                    .collect();
+    
+                const classRecordWIthSubject = await asyncMap(classRecords, async(c)=>{
+                    const cls = await ctx.db.get(c.classId)
+                    if(!cls) return
+                    const subject = await ctx.db.get(cls?.subjectId)
+                    return {
+                        ...c,
+                        cLass:{
+                            ...cls,
+                            subject: subject
+                        }
                     }
-                }
-            })
-
-            const classRWithS = classRecordWIthSubject.filter((c)=> c !== undefined)
-            return {
-                ...student,
-                sectionDoc: {
-                    ...section,
-                    gradeLevel: gradeLevel
-                },
-                classRecords: classRWithS,
-            };
-        });
-        const filteredStudents = students.filter(student => student !== null);
-        return filteredStudents;
+                })
+    
+                const classRWithS = classRecordWIthSubject.filter((c)=> c !== undefined)
+                return {
+                    ...student,
+                    sectionDoc: {
+                        ...section,
+                        gradeLevel: gradeLevel
+                    },
+                    classRecords: classRWithS,
+                };
+            });
+            const filteredStudents = students.filter(student => student !== null);
+            return filteredStudents;
+          }
+          if(semester === "2nd") {
+            const students = await asyncMap(section?.secondSemStudents, async (studentId) => {
+                const student = await ctx.db.get(studentId);
+                if(!student) return null
+                const classRecords = await ctx.db.query('classRecords')
+                    .filter(q=>q.eq(q.field('studentId'), studentId))
+                    .filter(q=>q.eq(q.field('classId'), cls._id))
+                    .collect();
+    
+                const classRecordWIthSubject = await asyncMap(classRecords, async(c)=>{
+                    const cls = await ctx.db.get(c.classId)
+                    if(!cls) return
+                    const subject = await ctx.db.get(cls?.subjectId)
+                    return {
+                        ...c,
+                        cLass:{
+                            ...cls,
+                            subject: subject
+                        }
+                    }
+                })
+    
+                const classRWithS = classRecordWIthSubject.filter((c)=> c !== undefined)
+                return {
+                    ...student,
+                    sectionDoc: {
+                        ...section,
+                        gradeLevel: gradeLevel
+                    },
+                    classRecords: classRWithS,
+                };
+            });
+            const filteredStudents = students.filter(student => student !== null);
+            return filteredStudents;
+          }
+          
+        } else {
+            const students = await asyncMap(section?.students, async (studentId) => {
+                const student = await ctx.db.get(studentId);
+                if(!student) return null
+                const classRecords = await ctx.db.query('classRecords')
+                    .filter(q=>q.eq(q.field('studentId'), studentId))
+                    .filter(q=>q.eq(q.field('classId'), cls._id))
+                    .collect();
+    
+                const classRecordWIthSubject = await asyncMap(classRecords, async(c)=>{
+                    const cls = await ctx.db.get(c.classId)
+                    if(!cls) return
+                    const subject = await ctx.db.get(cls?.subjectId)
+                    return {
+                        ...c,
+                        cLass:{
+                            ...cls,
+                            subject: subject
+                        }
+                    }
+                })
+    
+                const classRWithS = classRecordWIthSubject.filter((c)=> c !== undefined)
+                return {
+                    ...student,
+                    sectionDoc: {
+                        ...section,
+                        gradeLevel: gradeLevel
+                    },
+                    classRecords: classRWithS,
+                };
+            });
+            const filteredStudents = students.filter(student => student !== null);
+            return filteredStudents;
+        }
+       
     }
 })
 

@@ -19,6 +19,8 @@ function InputGrades({clss}:IProps) {
     const teacher = useQuery(api.users.teacher)
     const [selectedSubComponent, setSelectedSubComponent] = useState<string>("Music")
     const isMAPEH = clss.subject?.name.toLocaleUpperCase() === 'MAPEH'
+    const isShs = Number(clss.section?.gradeLevel?.level ?? 0) > 10
+    const sem = clss.semester
     const studentsWithClassRecord = students?.sort((a, b) => (a?.lastName ?? '').localeCompare(b?.lastName ?? ''));
   
     const appliedGW = useQuery(api.appliedGradeWeigths.get, {subjectId: clss?.subjectId })
@@ -49,7 +51,7 @@ function InputGrades({clss}:IProps) {
 
   return (
     <div className='text-primary'>
-        <Tabs defaultValue="1st" className="w-full">
+        <Tabs defaultValue={sem ? sem === "2nd" ? "3rd" : "1st" : "1st"} className="w-full">
         {isMAPEH ? (
             <div className="grid grid-cols-3 ">
                 <div className="">
@@ -76,10 +78,20 @@ function InputGrades({clss}:IProps) {
                 </div>
               
             </div>
-        ): (
+        ): !isShs ? (
             <TabsList className={'space-x-3 bg-transparent'}>
                 <TabsTrigger className='font-medium text-xs md:text-md shadow-md border-b-2 data-[state=active]:border-b-primary data-[state=active]:text-primary' value="1st">1st</TabsTrigger>
                 <TabsTrigger className='font-medium text-xs md:text-md shadow-md border-b-2 data-[state=active]:border-b-primary data-[state=active]:text-primary' value="2nd">2nd</TabsTrigger>
+                <TabsTrigger className='font-medium text-xs md:text-md shadow-md border-b-2 data-[state=active]:border-b-primary data-[state=active]:text-primary' value="3rd">3rd</TabsTrigger>
+                <TabsTrigger className='font-medium text-xs md:text-md shadow-md border-b-2 data-[state=active]:border-b-primary data-[state=active]:text-primary' value="4th">4th</TabsTrigger>
+            </TabsList>
+        ) : sem && sem === "1st" ?(
+            <TabsList className={'space-x-3 bg-transparent'}>
+                <TabsTrigger className='font-medium text-xs md:text-md shadow-md border-b-2 data-[state=active]:border-b-primary data-[state=active]:text-primary' value="1st">1st</TabsTrigger>
+                <TabsTrigger className='font-medium text-xs md:text-md shadow-md border-b-2 data-[state=active]:border-b-primary data-[state=active]:text-primary' value="2nd">2nd</TabsTrigger>
+            </TabsList>
+        ): (
+            <TabsList className={'space-x-3 bg-transparent'}>
                 <TabsTrigger className='font-medium text-xs md:text-md shadow-md border-b-2 data-[state=active]:border-b-primary data-[state=active]:text-primary' value="3rd">3rd</TabsTrigger>
                 <TabsTrigger className='font-medium text-xs md:text-md shadow-md border-b-2 data-[state=active]:border-b-primary data-[state=active]:text-primary' value="4th">4th</TabsTrigger>
             </TabsList>

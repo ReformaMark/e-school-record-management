@@ -35,7 +35,8 @@ function ApplyAssessment({id, assessment}: ApplyAssessmentProps) {
             score: assessment.highestScore,
             schoolYearId: assessment.schoolYear,
             subComponent: assessment.subComponent,
-            assessmentId: id, // ✅ Use the returned
+            assessmentId: id,
+            semester: assessment.semester
         }),{
             loading: 'Applying Assessment...',
             success: 'Assessment applied successfully',

@@ -208,6 +208,39 @@ export const EditAssessmentForm = ({
                                             )}
                                         />
                                     </div>
+                                    {assessment.gradeLevel > 10 && (
+                                        <div className="grid gap-2">
+                                        <FormField
+                                            name="semester"
+                                            control={form.control}
+                                            render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Semester <span className='text-red-700'>*</span></FormLabel>
+                                                <FormControl>
+                                                    <Select 
+                                                        onValueChange={(value) => {
+                                                            field.onChange(value)
+                                                        }} 
+                                                        value={field.value} 
+                                                       disabled
+                                                    >
+                                                        <SelectTrigger>
+                                                            <SelectValue placeholder="Select a semester" />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                     
+                                                            <SelectItem  value={'1st'}>1st</SelectItem>
+                                                            <SelectItem  value={'2nd'}>2nd</SelectItem>
+                                                     
+                                                        </SelectContent>
+                                                    </Select>
+                                                </FormControl>
+                                                <FormMessage/>
+                                            </FormItem>
+                                            )}
+                                        />
+                                    </div>
+                                    )}
                                     <div className="grid gap-2">
                                         <FormField
                                             name="subject"

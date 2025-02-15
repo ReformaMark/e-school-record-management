@@ -120,6 +120,7 @@ export default defineSchema({
     section: v.optional(v.id('sections')),
     schoolYear: v.string(),
     gradeLevelToEnroll: v.optional(v.string()),
+    semesterToEnroll: v.optional(v.string()),
     enrollmentStatus: v.optional(v.string()),
 
     // For Returning Student
@@ -139,6 +140,7 @@ export default defineSchema({
     studentId: v.id('students'),
     sectionId: v.id('sections'),
     schoolYearId: v.id('schoolYears'),
+    semester: v.optional(v.string()),
     dateEnrolled: v.string(),
     dateWithdrawn: v.optional(v.string()),
     status: v.string(),
@@ -153,6 +155,8 @@ export default defineSchema({
     schoolYearId: v.id('schoolYears'),
     isActive: v.boolean(),
     students: v.array(v.id('students')),
+    firstSemStudents: v.array(v.id('students')),
+    secondSemStudents: v.array((v.id('students'))),
   }).index('by_advisorId', ['advisorId']),
 
   classes: defineTable({
@@ -223,6 +227,7 @@ export default defineSchema({
     quarter: v.string(),
     quarterlyGrade: v.number(), // score
     needsIntervention: v.boolean(),
+    semester: v.optional(v.string()),
     subComponent: v.optional(v.string()), // components of mapeh
     // if the student participate in an intervention
     interventionGrade: v.optional(v.number()),
@@ -342,6 +347,7 @@ export default defineSchema({
     })),
     subComponent: v.optional(v.string()), // Music, arts, PE, Health
     quarter: v.string(),
+    semester: v.optional(v.string()),
     schoolYear: v.id('schoolYears'),
     isSubmitted: v.optional(v.boolean()) // determine if the quarterly grades has been recorded on the quarterLyGrades table
   }).index("by_studentId", ["studentId"])
@@ -351,6 +357,7 @@ export default defineSchema({
     advisorId: v.id('users'),
     studentId: v.id('students'),
     sectionId: v.id('sections'),
+    schoolYearId: v.optional(v.id('schoolYears')),
     subjects: v.array(v.object({
       classId: v.id('classes'),
       subjectName: v.string(),
@@ -360,6 +367,7 @@ export default defineSchema({
       status: v.optional(v.string())
     })),
     generalAverage: v.number(),
+    semester: v.optional(v.string())
   }),
 
 

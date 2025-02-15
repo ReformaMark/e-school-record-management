@@ -9,6 +9,7 @@ export const addEnrollment = mutation({
         schoolYearId: v.id('schoolYears'),
         dateEnrolled: v.string(),
         dateWithdrawn: v.optional(v.string()),
+        sem: v.optional(v.string()),
         status: v.string(),
     },
     handler: async(ctx, args) => {
@@ -27,7 +28,8 @@ export const addEnrollment = mutation({
             dateEnrolled: args.dateEnrolled,
             dateWithdrawn: args.dateWithdrawn,
             status: args.status,
-            enrolledBy: userId
+            enrolledBy: userId,
+            semester: args.sem
         })
     },
 })

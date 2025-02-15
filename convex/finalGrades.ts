@@ -8,47 +8,92 @@ export const create = mutation({
         advisorId: v.id('users'),
         studentId: v.id('students'),
         sectionId: v.id('sections'),
+        schoolYearId: v.optional(v.id('schoolYears')),
         subjects: v.array(v.object({
             subjectName: v.string(),
             finalGrade: v.number(),
             forRemedial: v.boolean(),
             classId: v.id('classes'),
         })),
-        generalAverage: v.number()
+        generalAverage: v.number(),
+        semester: v.optional(v.string())
     },
     handler: async(ctx, args) =>{
         await ctx.db.insert('finalGrades',{
-            ...args
+            ...args 
         })
-
-    const student = await ctx.db.get(args.studentId)
-    const nextGradeLevel = (Number(student?.gradeLevel) ?? 0) + 1
-        await ctx.db.patch(args.studentId,{
-            enrollmentStatus: 'Can Enroll',
-            gradeLevelToEnroll: nextGradeLevel.toString(),
-            gradeLevel: undefined
-        })
+        const student = await ctx.db.get(args.studentId)
+        const nextGradeLevel = (Number(student?.gradeLevel) ?? 0) + 1
+        if(args.semester) {
+            if(args.semester === "1st") {
+                await ctx.db.patch(args.studentId,{
+                    enrollmentStatus: 'Can Enroll',
+                    semesterToEnroll: "2nd",
+                    semester: undefined
+                })
+                return
+            } else {
+              
+                const isGraduated = nextGradeLevel === 13
+                if(isGraduated) return
+                await ctx.db.patch(args.studentId,{
+                    enrollmentStatus: 'Can Enroll',
+                    gradeLevelToEnroll: nextGradeLevel.toString(),
+                    gradeLevel: undefined
+                })
+                return
+            }
+        } else {
+            await ctx.db.patch(args.studentId,{
+                enrollmentStatus: 'Can Enroll',
+                gradeLevelToEnroll: nextGradeLevel.toString(),
+                gradeLevel: undefined
+            })
+        }
+    
+   
     }
 })
+
 export const isStudentPromoted = query({
     args:{
         sectionId: v.id('sections'),
+        schoolYearId: v.optional(v.id('schoolYears')),
         studentId: v.id('students'),
+        semester: v.optional(v.string())
     },
     handler: async(ctx, args) =>{
         const teacherId = await getAuthUserId(ctx)
         if(!teacherId) throw new ConvexError('No teacher Id')
-        const studentFinalGradeExist = await ctx.db.query('finalGrades')
-        .filter(q => q.eq(q.field('studentId'), args.studentId))
-        .filter(q => q.eq(q.field('advisorId'), teacherId))
-        .filter(q => q.eq(q.field('sectionId'), args.sectionId))
-        .unique()
-
-        if(studentFinalGradeExist) {
-            return true
+        if(args.semester) {
+            const studentFinalGradeExist = await ctx.db.query('finalGrades')
+            .filter(q => q.eq(q.field('studentId'), args.studentId))
+            .filter(q => q.eq(q.field('advisorId'), teacherId))
+            .filter(q => q.eq(q.field('sectionId'), args.sectionId))
+            .filter(q => q.eq(q.field('schoolYearId'), args.schoolYearId))
+            .filter(q => q.eq(q.field('semester'), args.semester))
+            .unique()
+    
+            if(studentFinalGradeExist) {
+                return true
+            } else {
+                return false
+            }
         } else {
-            return false
+            const studentFinalGradeExist = await ctx.db.query('finalGrades')
+            .filter(q => q.eq(q.field('studentId'), args.studentId))
+            .filter(q => q.eq(q.field('advisorId'), teacherId))
+            .filter(q => q.eq(q.field('sectionId'), args.sectionId))
+            .filter(q => q.eq(q.field('schoolYearId'), args.schoolYearId))
+            .unique()
+    
+            if(studentFinalGradeExist) {
+                return true
+            } else {
+                return false
+            }
         }
+    
     }
 })
 

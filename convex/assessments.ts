@@ -19,6 +19,7 @@ export const getAssessments = query({
         const assessments = await ctx.db.query('assessments')
             .filter(q => q.eq(q.field("teacherId"), teacherId))
             .filter(q => q.eq(q.field("schoolYear"), args.sy))
+            .order('desc')
             .collect()
 
         const assessmentsData = await asyncMap(assessments, async(assessment) => {
@@ -164,8 +165,8 @@ export const getTheHighestAssessmentNo = query({
         gradeLevel: v.optional(v.string()),
         subjectId: v.optional(v.id('subjects')),
         quarter: v.optional(v.string()),
-        subComponent: v.optional(v.string())
-
+        subComponent: v.optional(v.string()),
+        semester: v.optional(v.string())
     },
     handler: async(ctx, args) =>{
         const teacherId = await getAuthUserId(ctx)
@@ -188,6 +189,21 @@ export const getTheHighestAssessmentNo = query({
                 assessments: filteredAssessment
             }
         } else {
+            if(args.semester) {
+                const assessment = await ctx.db.query('assessments')
+                .filter(q => q.eq(q.field('gradeLevel'), Number(args.gradeLevel)))
+                .filter(q => q.eq(q.field('subjectId'), args.subjectId))
+                .filter(q => q.eq(q.field('type'), args.type))
+                .filter(q => q.eq(q.field('teacherId'), teacherId))
+                .filter(q => q.eq(q.field('quarter'), args.quarter))
+                .filter(q => q.eq(q.field('semester'), args.semester))
+                .collect()
+                const filteredAssessment = assessment?.sort((a,b) => b.assessmentNo - a.assessmentNo)
+                return {
+                    ...filteredAssessment[0],
+                    assessments: filteredAssessment
+                }
+            }
             const assessment = await ctx.db.query('assessments')
             .filter(q => q.eq(q.field('gradeLevel'), Number(args.gradeLevel)))
             .filter(q => q.eq(q.field('subjectId'), args.subjectId))

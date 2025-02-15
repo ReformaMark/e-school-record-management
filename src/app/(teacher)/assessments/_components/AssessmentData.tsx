@@ -20,7 +20,17 @@ export const AssessmentColumn: ColumnDef<AssessmentTypes>[] = [
           )
         }
       },
-      { id: "quarter", accessorKey: "quarter", header: "Quarter" },
+      { id: "quarter", accessorKey: "quarter", header: "Quarter",
+        cell: ({ row }) => { 
+          const assessment = row.original
+          const isShs = row.original.gradeLevel > 10
+          return (
+            <div className="">
+              <h3>{isShs ? `${assessment.quarter} - ${assessment.semester} semester ` : assessment.quarter}</h3>
+            </div>
+          )
+        }
+       },
       { id: "assessmentNo", accessorKey: "assessmentNo", header: "Assessment No." },
       { id: "highestScore", accessorKey: "highestScore", header: "Highest Score" },
       {

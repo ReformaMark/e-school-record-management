@@ -27,6 +27,8 @@ function FinalizeGradesDialog({student, averages, generalAverage}:FinalizeGrades
     const isPromoted = useQuery(api.finalGrades.isStudentPromoted,{
         studentId: student._id as Id<'students'>,
         sectionId: student.sectionDoc?._id as Id<'sections'>,
+        schoolYearId: student.sectionDoc?.schoolYearId as Id<'schoolYears'>,
+        semester: student.cLass?.semester
     })
 
     const alreadyPromoted = useMemo(() => isPromoted === undefined ? true : isPromoted ,[isPromoted])
@@ -78,7 +80,9 @@ function FinalizeGradesDialog({student, averages, generalAverage}:FinalizeGrades
             advisorId: student.cLass?.teacherId as Id<'users'>,
             studentId: student._id,
             subjects: removeClassIdUndefined ?? [],
-            generalAverage: typeof generalAverage === 'string' ? 0 : generalAverage
+            schoolYearId: student.cLass?.schoolYearId,
+            generalAverage: typeof generalAverage === 'string' ? 0 : generalAverage,
+            semester: student.cLass?.semester
         }),{
             loading: "Promoting student...",
             success: "Student promoted successfully.",

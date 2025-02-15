@@ -1060,12 +1060,20 @@ export const InputGradesCol: ColumnDef<StudentsWithClassRecord>[] = [
       }
 
       const allScoresDefined = (student: StudentsWithClassRecord): boolean => {
+      
         return (
           Array.isArray(student.classRecords) && // Ensure classRecords is an array
           student.classRecords.length > 0 && // Ensure it's not empty
           Array.isArray(student.classRecords[0].quarterlyExam) && // Ensure quarterlyExam is an array
-          student.classRecords[0].quarterlyExam.every(exam => exam.score !== undefined) // Check scores
-        );
+          Array.isArray(student.classRecords[0].written) && // Ensure written is an array
+          Array.isArray(student.classRecords[0].performance) && // Ensure performance is an array
+          student.classRecords[0].quarterlyExam.length > 0 && // Ensure quarterlyExam is not empty
+          student.classRecords[0].written.length > 0 && // Ensure written is not empty
+          student.classRecords[0].performance.length > 0 && // Ensure performance is not empty
+          student.classRecords[0].quarterlyExam.every(exam => exam.score !== undefined) &&
+          student.classRecords[0].written.every(w => w.score !== undefined)  &&
+          student.classRecords[0].performance.every(w => w.score !== undefined) 
+        )
       };
       const hasExamScore = allScoresDefined(student)
 

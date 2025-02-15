@@ -48,7 +48,7 @@ function NeedsImprovement({
       const fourthQuarterIntervention = getUniqueQuarterlyGrades("4th", studentNeedsIntervention ?? []);
   return (
     <div>
-        <Tabs defaultValue='1st' className='w-full'>
+        <Tabs defaultValue={semester ? semester === "2nd" ? "3rd" : "1st" : "1st"} className='w-full'>
             <TabsList  className='space-x-3 bg-transparent'>
             {semester ? semester === "1st" ? (
                 <>

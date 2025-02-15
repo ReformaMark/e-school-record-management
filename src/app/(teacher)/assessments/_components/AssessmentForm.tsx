@@ -60,7 +60,8 @@ export const AssessmentForm = ({
     const [selectedSubjectId, setSelectedSubjectId] = useState<Id<'subjects'> | undefined>()
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const [subComponent, setSubComponent] = useState<string>()
-
+    const [semester, setSemester] = useState<string>()
+    
     const addWrittenWorks = useMutation(api.assessments.addWrittenWorks)
     const createClassRecords = useMutation(api.classRecords.create)
     const {classes} = useClasses()
@@ -94,7 +95,14 @@ export const AssessmentForm = ({
             createClassRecords: "yes"
         }
     })
-    const getTheHighestAssessmentNo = useQuery(api.assessments.getTheHighestAssessmentNo, {type: assessmment, gradeLevel: selectedGLevel, subjectId: selectedSubjectId, quarter: selectedQuarter, subComponent:subComponent})
+    const getTheHighestAssessmentNo = useQuery(api.assessments.getTheHighestAssessmentNo, {
+        type: assessmment, 
+        gradeLevel: selectedGLevel, 
+        subjectId: selectedSubjectId,
+        quarter: selectedQuarter, 
+        subComponent:subComponent,
+        semester: semester,
+    })
     const existingAssessmentNo = getTheHighestAssessmentNo?.assessments.map(assessment => assessment.assessmentNo) ?? [];
     
     function onSubmit(data: z.infer<typeof AssessmentFormSchema>) {
@@ -206,6 +214,36 @@ export const AssessmentForm = ({
                                             )}
                                         />
                                     </div>
+                                    {Number(selectedGLevel) > 10 && (
+                                         <div className="grid gap-2">
+                                         <FormField
+                                             name="semester"
+                                             control={form.control}
+                                             render={({ field }) => (
+                                             <FormItem>
+                                                 <FormLabel>Semester <span className='text-red-700'>*</span></FormLabel>
+                                                 <FormControl>
+                                                     <Select  onValueChange={(value) => {
+                                                             field.onChange(value);
+                                                             setSemester(value)
+                                                             setSelectedQuarter(value === "1st" ? "1st" : "3rd")
+                                                         }}
+                                                         value={field.value} >
+                                                         <SelectTrigger>
+                                                             <SelectValue placeholder="Select a Semester" />
+                                                         </SelectTrigger>
+                                                         <SelectContent>
+                                                             <SelectItem value={"1st"}>1st</SelectItem>
+                                                             <SelectItem value={"2nd"}>2nd</SelectItem>
+                                                         </SelectContent>
+                                                     </Select>
+                                                 </FormControl>
+                                                 <FormMessage/>
+                                             </FormItem>
+                                             )}
+                                         />
+                                     </div>
+                                    )}
                                     <div className="grid gap-2">
                                         <FormField
                                             name="quarter"
@@ -223,9 +261,20 @@ export const AssessmentForm = ({
                                                             <SelectValue placeholder="Select a Quarter" />
                                                         </SelectTrigger>
                                                         <SelectContent>
-                                                        {quarter.map((quarter)=>(
-                                                            <SelectItem key={quarter} value={quarter.toString()}>{quarter}</SelectItem>
+                                                        {Number(selectedGLevel) > 10 ? semester === "2nd" ? (
+                                                            <>
+                                                                <SelectItem  value={"3rd"}>3rd</SelectItem>
+                                                                <SelectItem  value={"4th"}>4th</SelectItem>
+                                                            </>
+                                                        ): (
+                                                            <>
+                                                                <SelectItem  value={"1st"}>1st</SelectItem>
+                                                                <SelectItem  value={"2nd"}>2nd</SelectItem>
+                                                            </>
+                                                        ): quarter.map((q)=> (
+                                                            <SelectItem key={q}  value={q}>{q}</SelectItem>
                                                         ))}
+                                                        
                                                         </SelectContent>
                                                     </Select>
                                                 </FormControl>

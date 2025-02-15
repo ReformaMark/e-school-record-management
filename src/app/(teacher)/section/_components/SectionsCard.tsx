@@ -10,7 +10,8 @@ function SectionsCard({
 }:{
     cls: ClassesWithDetails | undefined,
 }) {
-   const totalStudents = cls?.section?.students.length
+    const isShs = Number(cls?.section?.gradeLevel?.level ?? 0) > 10
+   const totalStudents = isShs ? cls?.semester === "1st" ? cls?.section?.firstSemStudents.length : cls?.section?.secondSemStudents.length : cls?.section?.students.length
   return (
     <div className='bg-white rounded-md shadow-md flex flex-col justify-between'>
         <div className={`flex justify-between text-white shadow-md px-5 py-1 bg-primary-foreground text-lg font-semibold`}>

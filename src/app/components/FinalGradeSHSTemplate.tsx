@@ -21,10 +21,12 @@ function FinalGradeSHSTemplate({
     subject: Doc<'subjects'> | null
     cls: ClassesWithDetails
 }) {
+    const semester = cls.semester
 
     const studentQuarterlyGrades = useQuery(api.quarterlyGrades.get,{
         gradeLevel: Number(section.gradeLevel?.level),
-        classId: cls._id
+        classId: cls._id,
+        semester: semester
     })
     
     const males = studentQuarterlyGrades
@@ -59,13 +61,15 @@ function FinalGradeSHSTemplate({
                 </div>
                 <div className="flex w-full">
                 
-                        <h1 className="w-[34%] flex justify-center items-center text-center uppercase border border-collapse border-black">First Quarter</h1>
+                        <h1 className="w-[34%] flex justify-center items-center text-center uppercase border border-collapse border-black">{semester === "1st" ? "First" : "Third"} Quarter</h1>
             
             
-                        <h1 className="w-[34%] flex justify-center items-center text-center uppercase border border-collapse border-black">Second Quarter</h1>
+                        <h1 className="w-[34%] flex justify-center items-center text-center uppercase border border-collapse border-black">{semester === "2nd" ? "Second" : "Fourth"} Quarter</h1>
             
                 
-                        <h1 className="w-[18%] font-semibold text-xs py-2 flex justify-center items-center text-center uppercase border border-collapse border-black">First Semister Final Grades</h1>
+                        <h1 className="w-[18%] font-semibold text-xs py-2 flex justify-center items-center text-center uppercase border border-collapse border-black">
+                            {semester === "1st" ? "First" : semester === "2nd" ? "Second" : semester === "3rd" ? "Third" : "Fourth"} Semester Final Grades
+                        </h1>
                 
             
                         <h1 className="w-[14%] flex justify-center items-center uppercase border border-collapse text-center border-black">Remarks</h1>
@@ -73,7 +77,7 @@ function FinalGradeSHSTemplate({
                 </div>
             </div>
         </div>
-        <div className='flex text-sm font-semibold max-w-full bg-gray-400'>
+        <div className='flex text-sm font-semibold max-w-full min-w-[100vh] bg-gray-400'>
             <div className='w-[25%]'>
                 <h1 className='uppercase w-full h-full  flex justify-center items-center border border-collapse border-black'>Males</h1>
             </div>
@@ -96,7 +100,7 @@ function FinalGradeSHSTemplate({
             </div>
         </div>
         { males && males.map((student, index)=>(
-             <div key={student?._id} className='flex text-sm font-semibold max-w-full'>
+             <div key={student?._id} className='flex text-sm font-semibold max-w-full min-w-[100vh]'>
              <div className='w-[25%] flex items-center'>
                 <h1 className='w-[10%] flex justify-center items-center border border-collapse h-full border-black'>{index + 1}</h1>
                  <h1 className='uppercase w-full h-full text-xs  flex justify-start items-center border border-collapse border-black'>{student?.lastName}, {student?.firstName} {student?.middleName}</h1>
@@ -172,7 +176,7 @@ function FinalGradeSHSTemplate({
         ))
 
         }
-        <div className='flex text-sm font-semibold max-w-full bg-gray-400'>
+        <div className='flex text-sm font-semibold max-w-full min-w-[100vh] bg-gray-400'>
             <div className='w-[25%]'>
                 <h1 className='uppercase w-full h-full  flex justify-center items-center border border-collapse border-black'>Females</h1>
             </div>
@@ -195,7 +199,7 @@ function FinalGradeSHSTemplate({
             </div>
         </div>
         { females && females.map((student, index)=>(
-             <div key={student?._id} className='flex text-sm font-semibold max-w-full'>
+             <div key={student?._id} className='flex text-sm font-semibold max-w-full min-w-[100vh]'>
              <div className='w-[25%] flex items-center'>
                 <h1 className='w-[10%] flex justify-center items-center border border-collapse h-full border-black'>{index + 1}</h1>
                  <h1 className='uppercase w-full h-full text-xs  flex justify-start items-center border border-collapse px-2 border-black'>{student?.lastName}, {student?.firstName} {student?.middleName}</h1>
