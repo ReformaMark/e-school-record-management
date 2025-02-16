@@ -81,7 +81,7 @@ function ClassRecordTemplate({
     const teacherFullName = `${teacher.firstName} ${teacher.middleName ? teacher.middleName : ""} ${teacher.lastName}`
     const quarter = sortedRecords[0].classRecords.length < 1 ? "1" : sortedRecords[0].classRecords[0].quarter
     const gradeAndSection = `${section.gradeLevel?.level} - ${section.name}`
-    const subjectName = subComponent ? subComponent : subject.name
+    const subjectName =  subject.name.toUpperCase() === "MAPEH" ? subComponent : subject.name
     const writtenAssessments = subject.name.toUpperCase() === "MAPEH" ? assessments.filter( a => a.type === "Written Works").filter(a => a.quarter === quarter && a.subComponent === subComponent ).sort((a,b)=> a.assessmentNo - b.assessmentNo) : assessments.filter( a => a.type === "Written Works").filter(a => a.quarter === quarter).sort((a,b)=> a.assessmentNo - b.assessmentNo)
     const performanceAssessments = subject.name.toUpperCase() === "MAPEH" ?  assessments.filter( a => a.type === "Performance Tasks").filter(a => a.quarter === quarter && a.subComponent === subComponent).sort((a,b)=> a.assessmentNo - b.assessmentNo) : assessments.filter( a => a.type === "Performance Tasks").filter(a => a.quarter === quarter).sort((a,b)=> a.assessmentNo - b.assessmentNo)
     const quarterlyAssessments = subject.name.toUpperCase() === "MAPEH" ? assessments.filter( a => a.type === "Quarterly Assessment").filter(a => a.quarter === quarter && a.subComponent === subComponent).sort((a,b)=> a.assessmentNo - b.assessmentNo) : assessments.filter( a => a.type === "Quarterly Assessment").filter(a => a.quarter === quarter).sort((a,b)=> a.assessmentNo - b.assessmentNo)

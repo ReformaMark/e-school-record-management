@@ -100,7 +100,7 @@ export function convertToTransmutedGrade(
       transmutationTable = transmutationTableSHS2;
     }
   }
-
+  console.log(initialGrade)
   const foundEntry = transmutationTable.find(entry => initialGrade >= entry.min && initialGrade <= entry.max);
 
   return foundEntry ? foundEntry.transmutedGrade : initialGrade; // Return original grade if no match found

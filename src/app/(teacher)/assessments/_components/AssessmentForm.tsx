@@ -146,7 +146,6 @@ export const AssessmentForm = ({
             }
               
                 form.reset();
-                setDialogOpen(false);
                 setSelectedGLevel("");
                 setSelectedQuarter("");
                 setSelectedSubjectId(undefined);

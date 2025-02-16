@@ -30,7 +30,7 @@ function JrGradesTemplate({student,sf9}:JrGradesTemplateProps) {
     const pe = student.quarterlyGrades.filter(s => s.subject.name.toUpperCase() === "MAPEH" && s.subComponent?.toLowerCase() === "physical education")
     const health = student.quarterlyGrades.filter(s => s.subject.name.toUpperCase() === "MAPEH" && s.subComponent?.toLowerCase() === "health")
     const epp = student.quarterlyGrades.filter(s => s.subject.name.toLowerCase() === "edukasyong pantahanan at pangkabuhayan")
-    const tle = student.quarterlyGrades.filter(s => s.subject.name.toLowerCase() === "technology and livelihood education")
+    const tle = student.quarterlyGrades.filter(s => s.subject.name.toLowerCase() === "technology and livelihood education (tle)")
 
     const hasTLE =   tle.length !== 0
     const hasEPP =    epp.length !== 0
@@ -166,12 +166,12 @@ function JrGradesTemplate({student,sf9}:JrGradesTemplateProps) {
         },
         {
             classId: ap.length > 0 ? ap[0].classId : undefined,
-            subjectName: "Araling Panlipunan (AP)",
+            subjectName: "Araling Panlipunan",
             finalGrade: calculateQuarterlyAverage(ap)
         },
         {
             classId: esp.length > 0 ? esp[0].classId : undefined,
-            subjectName: "EsP (Edukasyon sa Pagpapakatao)",
+            subjectName: "Edukasyon sa Pagpapakatao",
             finalGrade: calculateQuarterlyAverage(esp)
         },
         {
@@ -181,12 +181,12 @@ function JrGradesTemplate({student,sf9}:JrGradesTemplateProps) {
         },
         {
             classId: epp.length > 0 ? epp[0].classId : undefined,
-            subjectName: "EPP (Edukasyong Pantahanan at Pangkabuhayan)",
+            subjectName: "Edukasyong Pantahanan at Pangkabuhayan",
             finalGrade: calculateQuarterlyAverage(epp)
         },
         {
             classId: tle.length > 0 ? tle[0].classId : undefined,
-            subjectName: "TLE (Technology and Livelihood Education)",
+            subjectName: "Technology and Livelihood Education (TLE)",
             finalGrade: calculateQuarterlyAverage(tle)
         }
     ];

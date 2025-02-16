@@ -21,6 +21,7 @@ import * as z from "zod";
 import { api } from "../../../../../../convex/_generated/api";
 import { useQuery } from "convex/react";
 import { Id } from "../../../../../../convex/_generated/dataModel";
+import { useState } from "react";
 
 
 // const componentSchema = z.object({
@@ -75,13 +76,25 @@ export const subjectSchema = z.object({
 export type SubjectFormData = z.infer<typeof subjectSchema>;
 
 export const AddSubjectsCard = () => {
-    const { register, handleSubmit, setValue, formState: { errors } } = useForm<SubjectFormData>({
+    const [gradeLevel, setGradeLevel] = useState(0)
+    const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm<SubjectFormData>({
         resolver: zodResolver(subjectSchema),
         // defaultValues: {
         //     isMapeh: false
         // }
     });
     const gradeLevels = useQuery(api.gradeLevel.get);
+    const subjects = [
+        "English",
+        "Mathematics",
+        "Science",
+        "Filipino",
+        "Araling Panlipunan",
+        "Edukasyon sa Pagpapakatao",
+        "MAPEH",
+        "Edukasyong Pantahanan at Pangkabuhayan",
+        "Technology and Livelihood Education (TLE)"
+    ];
 
     const { mutate: createSubject, isPending } = useMutation({
         mutationFn: useConvexMutation(api.subjects.create),
@@ -93,6 +106,12 @@ export const AddSubjectsCard = () => {
         }
     });
 
+    const sortGradeLevels = gradeLevels?.sort((a,b) => Number(a.level) - Number(b.level))
+
+    const findGradeLevel = () => {
+        const gradeLevel = gradeLevels?.find(level => level._id === getValues('gradeLevelId'));
+        return gradeLevel ? Number(gradeLevel.level) : 0;
+    };
     // const isMapeh = watch("isMapeh");
 
     // const handleMapehChange = (checked: boolean) => {
@@ -117,6 +136,7 @@ export const AddSubjectsCard = () => {
         });
     };
 
+    const isShs = gradeLevel > 10
     // const components = ["music", "arts", "pe", "health"] as const;
 
     return (
@@ -128,29 +148,16 @@ export const AddSubjectsCard = () => {
             <form onSubmit={handleSubmit(onSubmit)}>
                 <CardContent className="grid gap-8 mt-7">
                     <div className="space-y-2">
-                        <Label>Subject Name</Label>
-                        <Input {...register("name")} />
-                        {errors.name && (
-                            <p className="text-sm text-red-500">{errors.name.message}</p>
-                        )}
-                    </div>
-
-                    <div className="space-y-2">
-                        <Label>Subject Code</Label>
-                        <Input {...register("subjectCode")} />
-                        {errors.subjectCode && (
-                            <p className="text-sm text-red-500">{errors.subjectCode.message}</p>
-                        )}
-                    </div>
-
-                    <div className="space-y-2">
                         <Label>Grade Level</Label>
-                        <Select onValueChange={(value) => setValue("gradeLevelId", value)}>
+                        <Select onValueChange={(value) => {
+                            setValue("gradeLevelId", value)      
+                            setGradeLevel(findGradeLevel())          
+                            }}>
                             <SelectTrigger>
                                 <SelectValue placeholder="Select Grade Level" />
                             </SelectTrigger>
                             <SelectContent>
-                                {gradeLevels?.map((grade) => (
+                                {sortGradeLevels?.map((grade) => (
                                     <SelectItem
                                         key={grade._id}
                                         value={grade._id}
@@ -164,6 +171,51 @@ export const AddSubjectsCard = () => {
                             <p className="text-sm text-red-500">{errors.gradeLevelId.message}</p>
                         )}
                     </div>
+                    {isShs ? (
+                        <div className="space-y-2">
+                         <Label>Subject Name</Label>
+                         <Input {...register("name")} />
+                         {errors.name && (
+                             <p className="text-sm text-red-500">{errors.name.message}</p>
+                         )}
+                        </div>
+                    ): (
+                        // to ensure the format of subject names
+                        <div className="space-y-2">
+                        <Label>Subject Name</Label>
+                        <Select onValueChange={(value) => {
+                            setValue("name", value)                
+                            }}>
+                            <SelectTrigger>
+                                <SelectValue placeholder="Select Subect" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {subjects?.map((subect) => (
+                                    <SelectItem
+                                        key={subect}
+                                        value={subect}
+                                    >
+                                        {subect}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                        {errors.name && (
+                            <p className="text-sm text-red-500">{errors.name.message}</p>
+                        )}
+                    </div>
+                    ) }
+                   
+
+                    <div className="space-y-2">
+                        <Label>Subject Code</Label>
+                        <Input {...register("subjectCode")} />
+                        {errors.subjectCode && (
+                            <p className="text-sm text-red-500">{errors.subjectCode.message}</p>
+                        )}
+                    </div>
+
+                  
 
                     <div className="space-y-2">
                         <Label>Category</Label>
