@@ -4,6 +4,7 @@ import { mutation, query } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { asyncMap } from "convex-helpers";
 import { StudentsWithEnrollMentTypes, StudentTypes } from "@/lib/types";
+import { Id } from "./_generated/dataModel";
 
 export const getStudent = query({
     handler: async (ctx) => {
@@ -233,11 +234,14 @@ export const getStudentWithDetails = query({
     .filter(q => q.eq(q.field('teacherId'), teacherId))
     .first()
 
-    const subjects = await ctx.db.query('classes').filter(q => q.eq(q.field('sectionId'), studentSection._id)).collect()
-    console.log(subjects)
-    const subjectsWithDetail = await asyncMap(subjects, async(s)=>{
+    const classes = await ctx.db.query('classes').filter(q => q.eq(q.field('sectionId'), studentSection._id)).collect()
+
+    const classIds = classes.map((cls) => cls._id);
+
+    const subjectsWithDetail = await asyncMap(classes, async(s)=>{
       const subject = await ctx.db.get(s.subjectId)
       if(!subject) return null
+  
       return {
         ...s,
         subject: subject
@@ -246,14 +250,15 @@ export const getStudentWithDetails = query({
 
     const filterSubject = subjectsWithDetail.filter( s => s !== null)
 
-    const classId = teacherClasses?._id
-
     const quarterlyGrades = await ctx.db.query('quarterlyGrades')
     .filter(q=> q.eq(q.field('studentId'), student._id))
-    .filter(q=> q.eq(q.field('classId'), classId))
     .collect()
 
-    const qgWithSubject = await asyncMap(quarterlyGrades, async(qg)=>{
+    const filtererdQG = quarterlyGrades.filter(qg => classIds.find(c=> c === qg.classId))
+
+    console.log(filtererdQG)
+
+    const qgWithSubject = await asyncMap(filtererdQG, async(qg)=>{
       const cLAss = await ctx.db.get(qg.classId)
       if(!cLAss) return null
       const subject = await ctx.db.get(cLAss.subjectId)

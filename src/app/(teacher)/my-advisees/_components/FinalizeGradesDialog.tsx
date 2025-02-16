@@ -31,6 +31,8 @@ function FinalizeGradesDialog({student, averages, generalAverage}:FinalizeGrades
         semester: student.cLass?.semester
     })
 
+    const isShs = Number(student.sectionDoc?.gradeLevel?.level ?? 0) > 10
+
     const alreadyPromoted = useMemo(() => isPromoted === undefined ? true : isPromoted ,[isPromoted])
 
     const failedAverages = useMemo(() => {
@@ -119,7 +121,7 @@ function FinalizeGradesDialog({student, averages, generalAverage}:FinalizeGrades
             
         </DialogHeader>
         
-        { failedAverages && failedAverages?.length >= 1 ? (
+        { failedAverages && failedAverages?.length >= 1 ? failedAverages.length  >= 3 && isShs ? (
             <>
                 <div className="space-y-3">
                     <p>{studentName} has <strong>failed ({ failedAverages?.length})</strong> of his subjects.</p>
@@ -133,7 +135,24 @@ function FinalizeGradesDialog({student, averages, generalAverage}:FinalizeGrades
                     <p className='text-sm text-justify'>* Must pass remedial classes for failed competencies in the subjects or learning areas to be allowed to enroll in the next semester. Otherwise the learner must retake the subjects failed.</p>
                 </div>
                 <DialogFooter>
-                    <Button variant={'default'} onClick={()=> setIsOpen(!isOpen)} className=" text-white">Conditionally Promote</Button>
+                    <Button variant={'destructive'} onClick={handlePromote} className=" text-white">Retain</Button>
+                </DialogFooter>
+            </>
+        ) :(
+            <>
+                <div className="space-y-3">
+                    <p>{studentName} has <strong>failed ({ failedAverages?.length})</strong> of his subjects.</p>
+                    <h1>Failed Subject(s):</h1>
+                    { failedAverages?.map((fs)=>(
+                        <div key={fs.subjectName} className="">
+                            <h1 className='pl-5'>- <strong>{fs.subjectName} - ({fs.subjectName})</strong></h1>
+                        </div>
+                    ))}
+
+                    <p className='text-sm text-justify'>* Must pass remedial classes for failed competencies in the subjects or learning areas to be allowed to enroll in the next semester. Otherwise the learner must retake the subjects failed.</p>
+                </div>
+                <DialogFooter>
+                    <Button variant={'default'} onClick={handlePromote} className=" text-white">Conditionally Promote</Button>
                 </DialogFooter>
             </>
         ): (
