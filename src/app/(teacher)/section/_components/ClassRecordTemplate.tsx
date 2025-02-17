@@ -2,7 +2,7 @@
 import React from 'react'
 import { SectionWithGradeLevel, StudentsWithClassRecord, SubjectWithGradeLevel } from '@/lib/types';
 import { Doc } from '../../../../../convex/_generated/dataModel';
-import { calculateInitialGrade, calculatePercentageScore, calculateTotalScore, calculateWeightedScore, convertToTransmutedGrade, formatQuarter } from '@/lib/utils';
+import { calculateInitialGrade, calculatePercentageScore, calculateTotalScore, calculateWeightedScore, cn, convertToTransmutedGrade, formatQuarter } from '@/lib/utils';
 
 interface ClassRecordTemplateProps {
     sortedRecords: StudentsWithClassRecord[],
@@ -93,7 +93,7 @@ function ClassRecordTemplate({
     const writtenWeight = appliedGW?.written ?? 0
     const performanceWeight = appliedGW?.performance ?? 0
     const examWeight = appliedGW?.exam ?? 0
-
+    const learningMode = appliedGW.learningMode
 
     const males = sortedRecords
         .filter((student) => student.sex === 'Male')
@@ -107,28 +107,31 @@ function ClassRecordTemplate({
 
     <div className='min-w-[1000px] text-primary'>
         <div className="flex w-full border-collapse">
-            <h1 className='border w-[25%] px-3 py-1 uppercase border-black border-collapse text-xs font-semibold text-center'>{formatQuarter(quarter)} Quarter</h1>
-            <h1 className='border w-[25%] px-3 py-1 uppercase border-black border-collapse text-xs font-semibold text-left'>Grade & Section: {gradeAndSection}</h1>
-            <h1 className='border w-[25%] px-3 py-1 uppercase border-black border-collapse text-xs font-semibold text-left'>Teacher: {teacherFullName}</h1>
-            <h1 className='border w-[25%] px-3 py-1 uppercase border-black border-collapse text-xs font-semibold text-center'>{subjectName}</h1>
+            <h1 className='border w-[25%] px-3 py-1 uppercase border-y-black border-l-black text-[0.6rem] font-semibold text-center'>{formatQuarter(quarter)} Quarter</h1>
+            <h1 className='border w-[25%] px-3 py-1 uppercase border-x-black border-l-2 border-y-black text-[0.6rem] font-semibold text-left'>Grade & Section: {gradeAndSection}</h1>
+            <h1 className='border w-[25%] px-3 py-1 uppercase border-black border-collapse text-[0.6rem] font-semibold text-left'>Teacher: {teacherFullName}</h1>
+            <h1 className='border w-[25%] px-3 py-1 uppercase border-black border-collapse text-[0.6rem] font-semibold text-center'>{subjectName}</h1>
         </div>
         <div className="flex max-w-full">
-            <h1 className="w-[3%] uppercase border border-black border-collapse text-sm font-semibold text-center"></h1>
-            <h1 className="w-[22%] uppercase border border-black border-collapse text-sm flex justify-center items-center font-semibold text-center">Learner&apos; Names</h1>
-            <h1 className="w-[27%] uppercase border border-black border-collapse text-sm flex justify-center items-center font-semibold text-center">Written Works ({writtenWeight}%)</h1>
-            <h1 className="w-[28%] uppercase border border-black border-collapse text-sm flex justify-center items-center font-semibold text-center">Performance Task ({performanceWeight}%)</h1>
+            <h1 className="w-[3%] uppercase border-x-black border-x border-y-black border-b-black border-b text-sm font-semibold text-center"></h1>
+            <h1 className="w-[22%] uppercase border-b-black border-b text-sm flex justify-center items-center font-semibold text-center">Learner&apos; Names</h1>
+            <h1 className="w-[27%] uppercase border-x-black border-l-2 text-sm flex justify-center items-center font-semibold text-center">Written Works ({writtenWeight}%)</h1>
+            <h1 className="w-[28%] uppercase border border-black border-collapse border-l-2 text-sm flex justify-center items-center font-semibold text-center">Performance Task ({performanceWeight}%)</h1>
+            {learningMode?.toLowerCase() === "face to face" && (
+
             <h1 className="w-[8%] uppercase border border-black border-collapse text-[0.6rem] leading-relaxed flex justify-center items-center font-semibold text-center">Quarterly Assessment ({examWeight}%)</h1>
-            <h1 className="w-[6%] uppercase border border-black border-b-0 border-collapse text-[0.6rem] flex justify-center items-center  font-semibold text-center">Initial</h1>
-            <h1 className="w-[6%] uppercase border border-black border-b-0  border-collapse text-[0.55rem] flex justify-center items-center font-semibold text-center">Quarterly</h1>
+            )}
+            <h1 className={cn(learningMode === "Face to face" ? "w-[6%]" : "w-[10%]","uppercase border border-black border-b-0 border-collapse text-[0.6rem] flex justify-center items-center  font-semibold text-center")}>Initial</h1>
+            <h1 className={cn(learningMode === "Face to face" ? "w-[6%]" : "w-[10%]","uppercase border border-black border-b-0  border-collapse text-[0.55rem] flex justify-center items-center font-semibold text-center")}>Quarterly</h1>
         </div>
         <div className="flex max-w-full">
-            <h1 className="w-[3%] uppercase border border-black border-collapse text-sm font-semibold text-center"></h1>
-            <h1 className="w-[22%] uppercase border border-black border-collapse text-sm flex justify-center items-center font-semibold text-center"></h1>
+            <h1 className="w-[3%] uppercase border-x-black border-x border-b-black border-b text-sm font-semibold text-center"></h1>
+            <h1 className="w-[22%] uppercase border-b-black border-b text-sm flex justify-center items-center font-semibold text-center"></h1>
             <div className="w-[27%] uppercase border border-x-0 border-black border-collapse text-sm flex justify-center items-center font-semibold text-center">
                 {Array.from({ length: 10 }, (_, index) => (
                     <h1
                         key={index}
-                        className="w-[7%] uppercase border border-b-0 border-black border-collapse text-[0.6rem] flex justify-center items-center font-semibold text-center"
+                        className="w-[7%] uppercase border border-b-0 border-black first:border-l-2 border-collapse text-[0.6rem] flex justify-center items-center font-semibold text-center"
                     >
                         {index + 1}
                     </h1>
@@ -155,22 +158,25 @@ function ClassRecordTemplate({
                 <h1 className="w-[10%] uppercase border border-b-0 border-black border-collapse text-[0.6rem] flex justify-center items-center font-semibold text-center">PS</h1>
                 <h1 className="w-[10%] uppercase border border-b-0 border-black border-collapse text-[0.6rem] flex justify-center items-center font-semibold text-center">WS</h1>
             </div>
+            {learningMode?.toLowerCase() === "face to face" && (
+
             <div className="w-[8%] uppercase border border-x-0 border-black border-collapse text-sm leading-relaxed grid grid-cols-3 justify-center items-center font-semibold text-center">
                 <h1 className=" h-full uppercase border border-black border-b-0 border-t-0 border-collapse text-[0.6rem]flex justify-center items-center  font-semibold text-center">1</h1>
                 <h1 className=" h-full uppercase border border-black border-b-0 border-t-0 border-collapse text-[0.6rem] flex justify-center items-center  font-semibold text-center">PS</h1>
                 <h1 className=" h-full uppercase border border-black border-b-0 border-t-0 border-collapse text-[0.6rem] flex justify-center items-center  font-semibold text-center">WS</h1>
             </div>
-            <h1 className="w-[6%] uppercase border border-black border-t-0 border-b-0  border-collapse text-[0.6rem] flex justify-center items-start  font-semibold text-center">Grade</h1>
-            <h1 className="w-[6%] uppercase border border-black border-t-0 border-b-0  border-collapse text-[0.6rem] flex justify-center items-start font-semibold text-center">Grade</h1>
+            )}
+            <h1 className={cn(learningMode === "Face to face" ? "w-[6%]" : "w-[10%]"," uppercase border border-black border-t-0 border-b-0  border-collapse text-[0.6rem] flex justify-center items-start  font-semibold text-center")}>Grade</h1>
+            <h1 className={cn(learningMode === "Face to face" ? "w-[6%]" : "w-[10%]","uppercase border border-black border-t-0 border-b-0  border-collapse text-[0.6rem] flex justify-center items-start font-semibold text-center")}>Grade</h1>
         </div>
         <div className="flex max-w-full">
-            <h1 className="w-[3%] uppercase border border-black border-collapse text-sm font-semibold text-center"></h1>
-            <h1 className="w-[22%] uppercase border border-black border-collapse text-[0.6rem] flex justify-end items-center font-semibold text-right">Highest possible score</h1>
+            <h1 className="w-[3%] uppercase border-x border-x-black border-b-black border-b text-sm font-semibold text-center"></h1>
+            <h1 className="w-[22%] uppercase  border-b-black border-b  text-[0.6rem] flex justify-end items-center font-semibold text-right">Highest possible score</h1>
             <div className="w-[27%] uppercase border border-x-0 border-black border-collapse text-sm flex justify-center items-center font-semibold text-center">
                 {Array.from({ length: 10 }).map((_, index) => (
                     <h1 
                         key={index} 
-                        className="w-[7%] h-full uppercase border border-b-0 border-black border-collapse text-[0.6rem] flex justify-center items-center font-semibold text-center"
+                        className="w-[7%] h-full uppercase border border-b-0 first:border-l-2 border-black border-collapse text-[0.6rem] flex justify-center items-center font-semibold text-center"
                     >
                         {writtenAssessments[index]?.highestScore || ""}
                     </h1>
@@ -192,23 +198,25 @@ function ClassRecordTemplate({
                 <h1 className="w-[10%] h-full uppercase border border-b-0 border-black border-collapse text-[0.5rem] md:text-[0.6rem] flex justify-center items-center font-semibold text-center">{calculatePercentageScore(totalPerformance,totalPerformance)}</h1>
                 <h1 className="w-[10%] h-full uppercase border border-b-0 border-black border-collapse text-[0.5rem] md:text-[0.6rem] flex justify-center items-center font-semibold text-center">{calculateWeightedScore(calculatePercentageScore(totalPerformance,totalPerformance),performanceWeight)}%</h1>
             </div>
+            {learningMode?.toLowerCase() === "face to face" && (
             <div className="w-[8%] uppercase border border-x-0 border-black border-collapse text-sm leading-relaxed grid grid-cols-3 justify-center items-center font-semibold text-center">
                 <h1 className="h-full uppercase border  border-black border-b-0 border-t-0 border-collapse text-xs flex justify-center items-center  font-semibold text-center">{totalQE}</h1>
                 <h1 className="h-full uppercase border border-black border-b-0 border-t-0 border-collapse text-[0.5rem] md:text-[0.6rem] flex justify-center items-center  font-semibold text-center">{calculatePercentageScore(totalQE,totalQE)}</h1>
                 <h1 className="h-full uppercase border border-black border-b-0 border-t-0 border-collapse text-[0.5rem] md:text-[0.6rem] flex justify-center items-center  font-semibold text-center">{examWeight ? `${calculateWeightedScore(calculatePercentageScore(totalQE,totalQE),examWeight ?? 0)}%` : ""}</h1>
             </div>
-            <h1 className="w-[6%] uppercase border border-black border-t-0  border-collapse text-xs flex justify-center items-start  font-semibold text-center"></h1>
-            <h1 className="w-[6%] uppercase border border-black border-t-0   border-collapse text-xs flex justify-center items-start font-semibold text-center"></h1>
+            )}
+            <h1 className={cn(learningMode === "Face to face" ? "w-[6%]" : "w-[10%]"," uppercase  border border-black border-t-0  border-collapse text-xs flex justify-center items-start  font-semibold text-center")}></h1>
+            <h1 className={cn(learningMode === "Face to face" ? "w-[6%]" : "w-[10%]"," uppercase  border border-black border-t-0   border-collapse text-xs flex justify-center items-start font-semibold text-center")}></h1>
         </div>
         {/* Males */}
-        <div className="flex max-w-full bg-gray-300">
-            <h1 className="w-[3%] uppercase border border-black border-collapse text-sm font-semibold text-center"></h1>
-            <h1 className="w-[22%] px-1 uppercase border border-black border-collapse text-xs flex justify-start items-center font-semibold text-left">MALE</h1>
-            <div className="w-[27%] uppercase border border-x-0 border-black border-collapse text-sm flex justify-center items-center font-semibold text-center">
+        <div className="flex max-w-full bg-gray-300 ">
+            <h1 className="w-[3%] uppercase border-b-black border-b border-x border-x-black text-sm font-semibold text-center"></h1>
+            <h1 className="w-[22%] px-1 uppercase  border-b-black border-b text-xs flex justify-start items-center font-semibold text-left">FEMALE</h1>
+            <div className="w-[27%] uppercase border-b-black border-b text-sm flex justify-center items-center font-semibold text-center">
                 {Array.from({ length: 10 }).map((_, index) => (
                     <h1 
                         key={index} 
-                        className="w-[7%] h-full uppercase border border-b-0 border-black border-collapse text-[0.6rem] flex justify-center items-center font-semibold text-center"
+                        className="w-[7%] h-full uppercase border border-b-0 border-black border-collapse first:border-l-2 border-collapse text-[0.6rem] flex justify-center items-center font-semibold text-center"
                     >
                     </h1>
                 ))}
@@ -216,7 +224,7 @@ function ClassRecordTemplate({
                 <h1 className="w-[10%]  h-full uppercase border border-b-0 border-black border-collapse text-xs flex justify-center items-center font-semibold text-center"></h1>
                 <h1 className="w-[10%] h-full uppercase border border-b-0 border-black border-collapse text-xs flex justify-center items-center font-semibold text-center"></h1>
             </div>
-            <div className="w-[28%] uppercase border border-x-0 border-black border-collapse text-sm flex justify-center items-center font-semibold text-center">
+            <div className="w-[28%] uppercase border-b-black border-b text-sm flex justify-center items-center font-semibold text-center">
                 {Array.from({ length: 10 }).map((_, index) => (
                     <h1 
                         key={index} 
@@ -224,56 +232,62 @@ function ClassRecordTemplate({
                     >
                     </h1>
                 ))}
-                <h1 className="w-[10%] h-full border border-b-0 border-black border-collapse text-[0.6rem] flex justify-center items-center font-semibold text-center"></h1>
+                <h1 className="w-[10%] h-full uppercase border border-b-0 border-black border-collapse text-[0.6rem] flex justify-center items-center font-semibold text-center"></h1>
                 <h1 className="w-[10%] h-full uppercase border border-b-0 border-black border-collapse text-[0.6rem] flex justify-center items-center font-semibold text-center"></h1>
                 <h1 className="w-[10%] h-full uppercase border border-b-0 border-black border-collapse text-[0.6rem] flex justify-center items-center font-semibold text-center"></h1>
             </div>
+            {learningMode?.toLowerCase() === "face to face" && (
             <div className="w-[8%] uppercase border border-x-0 border-black border-collapse text-sm leading-relaxed grid grid-cols-3 justify-center items-center font-semibold text-center">
                 <h1 className="h-full uppercase border border-black border-b-0 border-t-0 border-collapse text-xs flex justify-center items-center  font-semibold text-center"></h1>
                 <h1 className="h-full uppercase border border-black border-b-0 border-t-0 border-collapse text-xs flex justify-center items-center  font-semibold text-center"></h1>
                 <h1 className="h-full uppercase border border-black border-b-0 border-t-0 border-collapse text-xs flex justify-center items-center  font-semibold text-center"></h1>
             </div>
-            <h1 className="w-[6%] h-full uppercase border  border-black border-b border-collapse text-xs flex justify-center items-start  font-semibold text-center"></h1>
-            <h1 className="w-[6%] h-full uppercase border  border-black border-b  border-collapse text-xs flex justify-center items-start font-semibold text-center"></h1>
+            )}
+
+            <h1 className={cn(learningMode === "Face to face" ? "w-[6%] ": "w-[10%] ", "h-full uppercase border  border-black border-b border-collapse text-xs flex justify-center items-start  font-semibold text-center")}></h1>
+            <h1 className={cn(learningMode === "Face to face" ? "w-[6%] ": "w-[10%] ", "h-full uppercase border  border-black border-b  border-collapse text-xs flex justify-center items-start font-semibold text-center")}></h1>
         </div>
         {males && males.map((male, index)=>(
-            <div key={male._id} className="flex max-w-full hover:bg-gray-200">
-            <h1 className="w-[3%] uppercase border border-black border-collapse text-sm font-semibold text-center">{index+1}</h1>
-            <h1 className="w-[22%] px-1 uppercase border border-black border-collapse text-xs flex justify-start items-center font-semibold text-left">{male.lastName}, {male.firstName} {male.middleName}</h1>
-            <div className="w-[27%] uppercase border border-x-0 border-black border-collapse text-sm flex justify-center items-center font-semibold text-center">
+             <div key={male.lrn} className="flex max-w-full hover:bg-gray-200 ">
+             <h1 className="w-[3%] uppercase border-x-black border-x border-b-black border-b text-sm font-semibold text-center">{index+1}</h1>
+             <h1 className="w-[22%] px-1 uppercase  border-b-black border-b text-xs flex justify-start items-center font-semibold text-left">{male.lastName}, {male.firstName} {male.middleName}</h1>
+             <div className="w-[27%] uppercase border-b-black border-b  border-l-black text-sm flex justify-center items-center font-semibold text-center">
                 {Array.from({ length: 10 }).map((_, index) => (
-                    <h1 
-                        key={index} 
-                        className="w-[7%] h-full uppercase border border-b-0 border-black border-collapse text-[0.6rem] flex justify-center items-center font-semibold text-center"
-                    >
-                         {male.classRecords[0]?.written[index]?.score || ""}  {/* Fill with score or empty string */}
-                    </h1>
+                <h1 
+                    key={index} 
+                    className="w-[7%] h-full uppercase border border-b-0 border-black first:border-l-2  border-collapse text-[0.6rem] flex justify-center items-center font-semibold text-center"
+                >
+                    {male.classRecords[0]?.written[index]?.score || ""}  {/* Display score or empty string */}
+                </h1>
                 ))}
-                <h1 className="w-[10%]  h-full border border-b-0 border-black border-collapse text-[0.6rem] flex justify-center items-center font-semibold text-center">{calculateTotalScore(male.classRecords[0]?.written)}</h1>
-                <h1 className="w-[10%]  h-full uppercase border border-b-0 border-black border-collapse text-[0.5rem] md:text-[0.6rem] flex justify-center items-center font-semibold text-center">{calculatePercentageScore(calculateTotalScore(male.classRecords[0]?.written), totalWritten).toFixed(1)}</h1>
-                <h1 className="w-[10%] h-full uppercase border border-b-0 border-black border-collapse text-[0.5rem] md:text-[0.6rem] flex justify-center items-center font-semibold text-center">{calculateWeightedScore(calculatePercentageScore(calculateTotalScore(male.classRecords[0]?.written), totalWritten), writtenWeight).toFixed(0)}%</h1>
-            </div>
-            <div className="w-[28%] uppercase border border-x-0 border-black border-collapse text-sm flex justify-center items-center font-semibold text-center">
+                
+                 <h1 className="w-[10%]  h-full border border-b-0 border-black border-collapse text-[0.6rem] flex justify-center items-center font-semibold text-center">{calculateTotalScore(male.classRecords[0]?.written)}</h1>
+                 <h1 className="w-[10%]  h-full uppercase border border-b-0 border-black border-collapse text-[0.5rem] md:text-[0.6rem] flex justify-center items-center font-semibold text-center">{calculatePercentageScore(calculateTotalScore(male.classRecords[0]?.written), totalWritten).toFixed(1)}</h1>
+                 <h1 className="w-[10%] h-full uppercase border border-b-0 border-black border-collapse text-[0.5rem] md:text-[0.6rem] flex justify-center items-center font-semibold text-center">{calculateWeightedScore(calculatePercentageScore(calculateTotalScore(male.classRecords[0]?.written), totalWritten), writtenWeight).toFixed(0)}%</h1>
+             </div>
+             <div className="w-[28%] uppercase border-b-black border-b text-sm flex justify-center items-center font-semibold text-center">
                 {Array.from({ length: 10 }).map((_, index) => (
-                    <h1 
-                        key={index} 
-                        className="w-[7%] h-full uppercase border border-b-0 border-black border-collapse text-[0.6rem] flex justify-center items-center font-semibold text-center"
-                    >
-                         {male.classRecords[0]?.performance[index]?.score || ""}  {/* Fill with score or empty string */}
-                    </h1>
+                <h1 
+                    key={index} 
+                    className="w-[7%] h-full uppercase border border-b-0 border-black border-collapse text-[0.6rem] flex justify-center items-center font-semibold text-center"
+                >
+                    {male.classRecords[0]?.performance[index]?.score || ""}  {/* Display score or empty string */}
+                </h1>
                 ))}
-                <h1 className="w-[10%]  h-full border border-b-0 border-black border-collapse text-[0.6rem] flex justify-center items-center font-semibold text-center">{calculateTotalScore(male.classRecords[0]?.performance)}</h1>
-                <h1 className="w-[10%]  h-full uppercase border border-b-0 border-black border-collapse text-[0.5rem] md:text-[0.6rem] flex justify-center items-center font-semibold text-center">{calculatePercentageScore(calculateTotalScore(male.classRecords[0]?.performance), totalPerformance).toFixed(1)}</h1>
-                <h1 className="w-[10%] h-full uppercase border border-b-0 border-black border-collapse text-[0.5rem] md:text-[0.6rem] flex justify-center items-center font-semibold text-center">{calculateWeightedScore(calculatePercentageScore(calculateTotalScore(male.classRecords[0]?.performance), totalPerformance), performanceWeight).toFixed(0)}%</h1>
-            </div>
-            <div className="w-[8%] uppercase border border-x-0 border-black border-collapse text-sm leading-relaxed grid grid-cols-3 justify-center items-center font-semibold text-center">
-                <h1 className="h-full uppercase border border-black border-b-0 border-t-0 border-collapse text-[0.5rem] md:text-[0.6rem] flex justify-center items-center  font-semibold text-center">{male?.classRecords?.[0]?.quarterlyExam?.[0]?.score ?? 0}</h1>
-                <h1 className="h-full uppercase border border-black border-b-0 border-t-0 border-collapse text-[0.5rem] md:text-[0.6rem] flex justify-center items-center  font-semibold text-center">{calculatePercentageScore(calculateTotalScore(male.classRecords[0]?.quarterlyExam), totalQE).toFixed(1)}</h1>
-                <h1 className="h-full uppercase border border-black border-b-0 border-t-0 border-collapse text-[0.5rem] md:text-[0.6rem] flex justify-center items-center  font-semibold text-center">{calculateWeightedScore(calculatePercentageScore(calculateTotalScore(male.classRecords[0]?.quarterlyExam), totalQE ?? 0), examWeight?? 0).toFixed(0)}%</h1>
-            </div>
-            <div className="w-[12%] uppercase border border-x-0 border-black border-collapse text-sm leading-relaxed grid grid-cols-2 justify-center items-center font-semibold text-center">
-                <h1 className="h-full uppercase border border-black border-b-0 border-t-0 border-collapse text-xs flex justify-center items-center  font-semibold text-center">
-                    {calculateInitialGrade(
+                 <h1 className="w-[10%] h-full border border-b-0 border-black border-collapse text-[0.6rem] flex justify-center items-center font-semibold text-center">{male.classRecords[0]?.performance[0]?.score || ""}</h1>
+                 <h1 className="w-[10%] h-full uppercase border border-b-0 border-black border-collapse text-[0.5rem] md:text-[0.6rem] flex justify-center items-center font-semibold text-center">{calculatePercentageScore(calculateTotalScore(male.classRecords[0]?.performance), totalPerformance).toFixed(1)}</h1>
+                 <h1 className="w-[10%] h-full uppercase border border-b-0 border-black border-collapse text-[0.5rem] md:text-[0.6rem] flex justify-center items-center font-semibold text-center">{calculateWeightedScore(calculatePercentageScore(calculateTotalScore(male.classRecords[0]?.performance), totalPerformance ?? 0), performanceWeight?? 0).toFixed(0)}%</h1>
+             </div>
+             {learningMode?.toLowerCase() === "face to face" && (
+             <div className="w-[8%] uppercase border border-x-0 border-black border-collapse text-sm leading-relaxed grid grid-cols-3 justify-center items-center font-semibold text-center">
+                 <h1 className="h-full uppercase border border-black border-b-0 border-t-0 border-collapse text-[0.5rem] md:text-[0.6rem] flex justify-center items-center  font-semibold text-center">{male.classRecords[0]?.quarterlyExam[0]?.score}</h1>
+                 <h1 className="h-full uppercase border border-black border-b-0 border-t-0 border-collapse text-[0.5rem] md:text-[0.6rem] flex justify-center items-center  font-semibold text-center">{calculatePercentageScore(calculateTotalScore(male.classRecords[0]?.quarterlyExam), totalQE).toFixed(1)}</h1>
+                 <h1 className="h-full uppercase border border-black border-b-0 border-t-0 border-collapse text-[0.5rem] md:text-[0.6rem] flex justify-center items-center  font-semibold text-center">{calculateWeightedScore(calculatePercentageScore(calculateTotalScore(male.classRecords[0]?.quarterlyExam), totalQE ?? 0), examWeight?? 0).toFixed(0)}%</h1>
+             </div>
+             )}
+             <div className={cn(learningMode === "Face to face" ? "w-[12%]": "w-[20%]" ," uppercase border border-x-0 border-black  text-sm leading-relaxed grid grid-cols-2 justify-center items-center font-semibold text-center")}>
+                <h1 className="h-full uppercase border border-black border-b-0 border-t-0 border-collapse text-xs flex justify-center items-center  font-semibold text-center">{
+                    calculateInitialGrade(
                         calculateWeightedScore(calculatePercentageScore(calculateTotalScore(male.classRecords[0]?.written), totalWritten ?? 0), writtenWeight?? 0),
                         calculateWeightedScore(calculatePercentageScore(calculateTotalScore(male.classRecords[0]?.performance), totalPerformance ?? 0), performanceWeight?? 0),
                         calculateWeightedScore(calculatePercentageScore(calculateTotalScore(male.classRecords[0]?.quarterlyExam), totalQE ?? 0), examWeight?? 0)
@@ -292,17 +306,18 @@ function ClassRecordTemplate({
                     )}
                 </h1>
              </div>
-        </div>
+             
+         </div>
         ))}
         {/* Females */}
         <div className="flex max-w-full bg-gray-300 ">
-            <h1 className="w-[3%] uppercase border border-black border-collapse text-sm font-semibold text-center"></h1>
-            <h1 className="w-[22%] px-1 uppercase  border border-black border-collapse text-xs flex justify-start items-center font-semibold text-left">FEMALE</h1>
-            <div className="w-[27%] uppercase border border-x-0 border-black border-collapse text-sm flex justify-center items-center font-semibold text-center">
+            <h1 className="w-[3%] uppercase border-b-black border-b border-x border-x-black text-sm font-semibold text-center"></h1>
+            <h1 className="w-[22%] px-1 uppercase  border-b-black border-b text-xs flex justify-start items-center font-semibold text-left">FEMALE</h1>
+            <div className="w-[27%] uppercase border-b-black border-b text-sm flex justify-center items-center font-semibold text-center">
                 {Array.from({ length: 10 }).map((_, index) => (
                     <h1 
                         key={index} 
-                        className="w-[7%] h-full uppercase border border-b-0 border-black border-collapse text-[0.6rem] flex justify-center items-center font-semibold text-center"
+                        className="w-[7%] h-full uppercase border border-b-0 border-black border-collapse first:border-l-2 border-collapse text-[0.6rem] flex justify-center items-center font-semibold text-center"
                     >
                     </h1>
                 ))}
@@ -310,7 +325,7 @@ function ClassRecordTemplate({
                 <h1 className="w-[10%]  h-full uppercase border border-b-0 border-black border-collapse text-xs flex justify-center items-center font-semibold text-center"></h1>
                 <h1 className="w-[10%] h-full uppercase border border-b-0 border-black border-collapse text-xs flex justify-center items-center font-semibold text-center"></h1>
             </div>
-            <div className="w-[28%] uppercase border border-x-0 border-black border-collapse text-sm flex justify-center items-center font-semibold text-center">
+            <div className="w-[28%] uppercase border-b-black border-b text-sm flex justify-center items-center font-semibold text-center">
                 {Array.from({ length: 10 }).map((_, index) => (
                     <h1 
                         key={index} 
@@ -318,27 +333,30 @@ function ClassRecordTemplate({
                     >
                     </h1>
                 ))}
-                <h1 className="w-[10%] h-full border border-b-0 border-black border-collapse text-[0.6rem] flex justify-center items-center font-semibold text-center"></h1>
+                <h1 className="w-[10%] h-full uppercase border border-b-0 border-black border-collapse text-[0.6rem] flex justify-center items-center font-semibold text-center"></h1>
                 <h1 className="w-[10%] h-full uppercase border border-b-0 border-black border-collapse text-[0.6rem] flex justify-center items-center font-semibold text-center"></h1>
                 <h1 className="w-[10%] h-full uppercase border border-b-0 border-black border-collapse text-[0.6rem] flex justify-center items-center font-semibold text-center"></h1>
             </div>
+            {learningMode?.toLowerCase() === "face to face" && (
             <div className="w-[8%] uppercase border border-x-0 border-black border-collapse text-sm leading-relaxed grid grid-cols-3 justify-center items-center font-semibold text-center">
                 <h1 className="h-full uppercase border border-black border-b-0 border-t-0 border-collapse text-xs flex justify-center items-center  font-semibold text-center"></h1>
                 <h1 className="h-full uppercase border border-black border-b-0 border-t-0 border-collapse text-xs flex justify-center items-center  font-semibold text-center"></h1>
                 <h1 className="h-full uppercase border border-black border-b-0 border-t-0 border-collapse text-xs flex justify-center items-center  font-semibold text-center"></h1>
             </div>
-            <h1 className="w-[6%] h-full uppercase border  border-black border-b border-collapse text-xs flex justify-center items-start  font-semibold text-center"></h1>
-            <h1 className="w-[6%] h-full uppercase border  border-black border-b  border-collapse text-xs flex justify-center items-start font-semibold text-center"></h1>
+            )}
+
+            <h1 className={cn(learningMode === "Face to face" ? "w-[6%] ": "w-[10%] ", "h-full uppercase border  border-black border-b border-collapse text-xs flex justify-center items-start  font-semibold text-center")}></h1>
+            <h1 className={cn(learningMode === "Face to face" ? "w-[6%] ": "w-[10%] ", "h-full uppercase border  border-black border-b  border-collapse text-xs flex justify-center items-start font-semibold text-center")}></h1>
         </div>
         {females && females.map((female, index)=>(
              <div key={female.lrn} className="flex max-w-full hover:bg-gray-200 ">
-             <h1 className="w-[3%] uppercase border border-black border-collapse text-sm font-semibold text-center">{index+1}</h1>
-             <h1 className="w-[22%] px-1 uppercase  border border-black border-collapse text-xs flex justify-start items-center font-semibold text-left">{female.lastName}, {female.firstName} {female.middleName}</h1>
-             <div className="w-[27%] uppercase border border-x-0 border-black border-collapse text-sm flex justify-center items-center font-semibold text-center">
+             <h1 className="w-[3%] uppercase border-x-black border-x border-b-black border-b text-sm font-semibold text-center">{index+1}</h1>
+             <h1 className="w-[22%] px-1 uppercase  border-b-black border-b text-xs flex justify-start items-center font-semibold text-left">{female.lastName}, {female.firstName} {female.middleName}</h1>
+             <div className="w-[27%] uppercase border-b-black border-b  border-l-black text-sm flex justify-center items-center font-semibold text-center">
                 {Array.from({ length: 10 }).map((_, index) => (
                 <h1 
                     key={index} 
-                    className="w-[7%] h-full uppercase border border-b-0 border-black border-collapse text-[0.6rem] flex justify-center items-center font-semibold text-center"
+                    className="w-[7%] h-full uppercase border border-b-0 border-black first:border-l-2  border-collapse text-[0.6rem] flex justify-center items-center font-semibold text-center"
                 >
                     {female.classRecords[0]?.written[index]?.score || ""}  {/* Display score or empty string */}
                 </h1>
@@ -348,7 +366,7 @@ function ClassRecordTemplate({
                  <h1 className="w-[10%]  h-full uppercase border border-b-0 border-black border-collapse text-[0.5rem] md:text-[0.6rem] flex justify-center items-center font-semibold text-center">{calculatePercentageScore(calculateTotalScore(female.classRecords[0]?.written), totalWritten).toFixed(1)}</h1>
                  <h1 className="w-[10%] h-full uppercase border border-b-0 border-black border-collapse text-[0.5rem] md:text-[0.6rem] flex justify-center items-center font-semibold text-center">{calculateWeightedScore(calculatePercentageScore(calculateTotalScore(female.classRecords[0]?.written), totalWritten), writtenWeight).toFixed(0)}%</h1>
              </div>
-             <div className="w-[28%] uppercase border border-x-0 border-black border-collapse text-sm flex justify-center items-center font-semibold text-center">
+             <div className="w-[28%] uppercase border-b-black border-b text-sm flex justify-center items-center font-semibold text-center">
                 {Array.from({ length: 10 }).map((_, index) => (
                 <h1 
                     key={index} 
@@ -361,12 +379,14 @@ function ClassRecordTemplate({
                  <h1 className="w-[10%] h-full uppercase border border-b-0 border-black border-collapse text-[0.5rem] md:text-[0.6rem] flex justify-center items-center font-semibold text-center">{calculatePercentageScore(calculateTotalScore(female.classRecords[0]?.performance), totalPerformance).toFixed(1)}</h1>
                  <h1 className="w-[10%] h-full uppercase border border-b-0 border-black border-collapse text-[0.5rem] md:text-[0.6rem] flex justify-center items-center font-semibold text-center">{calculateWeightedScore(calculatePercentageScore(calculateTotalScore(female.classRecords[0]?.performance), totalPerformance ?? 0), performanceWeight?? 0).toFixed(0)}%</h1>
              </div>
+             {learningMode?.toLowerCase() === "face to face" && (
              <div className="w-[8%] uppercase border border-x-0 border-black border-collapse text-sm leading-relaxed grid grid-cols-3 justify-center items-center font-semibold text-center">
                  <h1 className="h-full uppercase border border-black border-b-0 border-t-0 border-collapse text-[0.5rem] md:text-[0.6rem] flex justify-center items-center  font-semibold text-center">{female.classRecords[0]?.quarterlyExam[0]?.score}</h1>
                  <h1 className="h-full uppercase border border-black border-b-0 border-t-0 border-collapse text-[0.5rem] md:text-[0.6rem] flex justify-center items-center  font-semibold text-center">{calculatePercentageScore(calculateTotalScore(female.classRecords[0]?.quarterlyExam), totalQE).toFixed(1)}</h1>
                  <h1 className="h-full uppercase border border-black border-b-0 border-t-0 border-collapse text-[0.5rem] md:text-[0.6rem] flex justify-center items-center  font-semibold text-center">{calculateWeightedScore(calculatePercentageScore(calculateTotalScore(female.classRecords[0]?.quarterlyExam), totalQE ?? 0), examWeight?? 0).toFixed(0)}%</h1>
              </div>
-             <div className="w-[12%] uppercase border border-x-0 border-black border-collapse text-sm leading-relaxed grid grid-cols-2 justify-center items-center font-semibold text-center">
+             )}
+             <div className={cn(learningMode === "Face to face" ? "w-[12%]": "w-[20%]" ," uppercase border border-x-0 border-black  text-sm leading-relaxed grid grid-cols-2 justify-center items-center font-semibold text-center")}>
                 <h1 className="h-full uppercase border border-black border-b-0 border-t-0 border-collapse text-xs flex justify-center items-center  font-semibold text-center">{
                     calculateInitialGrade(
                         calculateWeightedScore(calculatePercentageScore(calculateTotalScore(female.classRecords[0]?.written), totalWritten ?? 0), writtenWeight?? 0),

@@ -71,7 +71,7 @@ function ClassRecordDialog({
             <DialogTrigger onClick={()=> setDialogOpen(!isDialogOpen)} className='border shadow-md flex justify-center items-center gap-x-3 bg-gray-400 text-white border-gray-100 rounded-md px-2 py-1'>
               <FaEye  className='size-5 text-gray-300'/> Class Record
             </DialogTrigger>
-            <DialogContent className='max-w-full'>
+            <DialogContent className='max-w-screen-2xl'>
             <DialogHeader className='max-w-full overflow-auto'>
                 <DialogTitle className='text-left text-primary'>Class Record</DialogTitle>
                 <div ref={componentRef} className='p-5'>

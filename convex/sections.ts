@@ -1,6 +1,7 @@
 import { ConvexError, v } from "convex/values";
 import { Id } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
+import { getAuthUserId } from "@convex-dev/auth/server";
 
 export const getSectionsUsingGradeLevel = query({
     args: {
@@ -214,6 +215,32 @@ export const getSchedulesByClassId = query({
             .collect();
     }
 });
+
+export const getSectionsByTeacher = query({
+    args:{
+        sy: v.optional(v.id('schoolYears'))
+    },
+    handler: async(ctx, args) => {
+        const teacherId = await getAuthUserId(ctx)
+        if(!teacherId) throw new ConvexError('No teacher id.')
+        
+        if(!args.sy) return 
+
+        const section = await ctx.db.query('sections')
+            .filter( q => q.eq(q.field("advisorId"), teacherId))
+            .filter( q => q.eq(q.field("schoolYearId"), args.sy))
+            .unique()
+        
+        if(!section || section === null) return
+
+        const gradeLevel = await ctx.db.get(section?.gradeLevelId)
+        
+        return {
+            ...section,
+            gradeLevel: gradeLevel
+        }
+    }
+})
 
 export const getSections = query({
     handler: async (ctx) => {

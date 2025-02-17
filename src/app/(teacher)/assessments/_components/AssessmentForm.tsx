@@ -114,7 +114,7 @@ export const AssessmentForm = ({
             gradeLevel: Number(data.gradeLevel),
             quarter: data.quarter,
             semester: data.semester, // for senior high
-            assessmentNo: data.assessmentNo,
+            assessmentNo: data.assessmentNo, 
             highestScore: data.highestScore,
             classId: [],
             schoolYear: data.schoolYear as Id<'schoolYears'>,
@@ -135,7 +135,8 @@ export const AssessmentForm = ({
                         score: data.highestScore,
                         schoolYearId: sy?._id,
                         subComponent: subComponent,
-                        assessmentId, // ✅ Use the returned assessmentId
+                        assessmentId, // ✅ Use the returned assessmentId,
+                        semester: data.semester
                     });
                 } catch (error) {
                     console.error("Error creating class records:", error);

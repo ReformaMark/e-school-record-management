@@ -75,6 +75,7 @@ export const createStudent = mutation({
             schoolYear: v.string(),
             gradeLevelToEnroll: v.optional(v.string()),
             enrollmentStatus: v.optional(v.string()),
+
         
             // For Returning Student
             lastGradeLevelCompleted: v.optional(v.string()),
@@ -88,7 +89,12 @@ export const createStudent = mutation({
             track: v.optional(v.string())
     },
     handler: async (ctx, args) => {
-        const student = await ctx.db.insert('students', args)
+        const student = await ctx.db.insert('students', 
+          {
+            ...args,
+            semesterToEnroll: args.semester
+
+          })
         return student
     }
 })
@@ -110,27 +116,67 @@ export const updateStudentGradeLevel = mutation({
 
 
 export const getStudentByTeacher = query({
-  handler: async(ctx)=>{
+  args:{
+    sy: v.optional(v.id('schoolYears')),
+    sem: v.optional(v.string())
+  },
+  handler: async(ctx, args)=>{
     const teacherId = await getAuthUserId(ctx)
 
     if(!teacherId){
       throw new ConvexError("No teacher Id.")
     }
 
-    const section = await ctx.db.query('sections')
-      .filter(q => q.eq(q.field('advisorId'), teacherId))
-      .first()
-   
+    if(!args.sy ) return []
+
+    const section =  await ctx.db.query('sections')
+        .filter(q => q.eq(q.field('advisorId'), teacherId))
+        .filter(q => q.eq(q.field('schoolYearId'), args.sy))
+        .first()
+
     if(!section || section === null) {
       return undefined
     }
 
-    const students = await asyncMap(section.students, async (studentId)=>{
-      const student = await ctx.db.get(studentId)
-      return student
-    })
+    const gradelevel = await ctx.db.get(section.gradeLevelId)
+    const level = Number(gradelevel?.level ?? 0)
+    const isSHS = level > 10
 
-    return students as StudentTypes[]
+
+    if(isSHS) {
+      if(args.sem === "1st"){
+          const students = await asyncMap(section.firstSemStudents, async (studentId)=>{
+            const student = await ctx.db.get(studentId)
+            return student
+          })
+      
+          return students as StudentTypes[]
+      } 
+
+      if(args.sem === "2nd") {
+        const students = await asyncMap(section.secondSemStudents, async (studentId)=>{
+          const student = await ctx.db.get(studentId)
+          return student
+        })
+    
+        return students as StudentTypes[]
+      }
+      const students = await asyncMap(section.students, async (studentId)=>{
+        const student = await ctx.db.get(studentId)
+        return student
+      })
+  
+      return students as StudentTypes[]
+      
+    } else {
+      const students = await asyncMap(section.students, async (studentId)=>{
+        const student = await ctx.db.get(studentId)
+        return student
+      })
+  
+      return students as StudentTypes[]
+    }
+
   }
 }) 
 

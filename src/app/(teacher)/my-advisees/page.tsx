@@ -1,27 +1,15 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import React from 'react'
-
-import { Button } from '@/components/ui/button'
-import { File } from 'lucide-react'
+'use client'
 import { StudentTable } from './_components/StudentTable'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-
 function Studentpage() {
+ 
+    
   return (
     
     <div className="container mx-auto p-4">
     <main className="">
-        <div className="flex items-center">
-            <div className="hidden md:flex   ml-auto items-center gap-2">
-               
-                <Button size="sm" variant="outline" className="hidden md:flex  h-7 gap-1">
-                    <File className="h-3.5 w-3.5" />
-                    <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                        Export
-                    </span>
-                </Button>
-            </div>
-        </div>
+       
         <Card x-chunk="dashboard-06-chunk-0">
             <CardHeader>
                 <CardTitle>Advisory Class</CardTitle>

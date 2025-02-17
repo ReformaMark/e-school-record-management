@@ -1,6 +1,6 @@
 
 'use client'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import SectionsCard from './_components/SectionsCard'
 import Loading from '@/app/components/Loading'
@@ -17,6 +17,11 @@ function SectionPage() {
   const latestSY = sy ? sy[0]._id : undefined
   const [selectedSY , setSelectedSY] = useState<Id<'schoolYears'> | undefined>(latestSY)
 
+  useEffect(() => {
+    if (latestSY) {
+        setSelectedSY(latestSY)
+    }
+}, [latestSY])
   const classes = useQuery(api.classes.getTeacherClassesWithSchoolYear, {
     schoolYearId: selectedSY
   })

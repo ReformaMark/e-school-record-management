@@ -27,7 +27,7 @@ function ApplyAssessment({id, assessment}: ApplyAssessmentProps) {
     const handleApply = async () => {
         setIsLoading(true)
         toast.promise(createClassRecords({
-            gradeLevel:assessment.gradeLevel,
+            gradeLevel:assessment.gradeLevel, 
             subjectId: assessment.subjectId,
             quarter: assessment.quarter,
             assessmentNo: assessment.assessmentNo,

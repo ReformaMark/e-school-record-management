@@ -154,6 +154,7 @@ export default defineSchema({
     roomId: v.optional(v.id('rooms')),
     schoolYearId: v.id('schoolYears'),
     isActive: v.boolean(),
+    semester: v.optional(v.string()),
     students: v.array(v.id('students')),
     firstSemStudents: v.array(v.id('students')),
     secondSemStudents: v.array((v.id('students'))),
@@ -366,11 +367,10 @@ export default defineSchema({
       remedialGrade: v.optional(v.number()),
       status: v.optional(v.string())
     })),
+    noOfFailedSub: v.optional(v.number()),
     generalAverage: v.number(),
     semester: v.optional(v.string())
   }),
-
-
   promotion: defineTable({
     from: v.number(),
     to: v.number(),
