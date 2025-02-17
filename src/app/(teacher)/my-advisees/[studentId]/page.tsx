@@ -80,11 +80,11 @@ function Student({
            
             <div className="grid grid-cols-4 mb-5 text-sm md:text-sm font-semibold">
                 {/* <h1 className='col-span-4 md:col-span-2  text-text'>Student Number: <span className='text-sm md:text-lg font-semibold'> {student?} </span></h1> */}
-                <h1 className='col-span-4 md:col-span-2  text-text'>LRN: <span className='text-sm md:text-lg font-normal'> {student?.lrn} </span></h1>
-                <h1 className='col-span-4 md:col-span-2  text-text'>Full Name: <span className='text-sm md:text-lg font-normal'>{student?.lastName}, {student?.firstName} {student?.middleName} </span></h1>      
-                <h1 className='col-span-4 md:col-span-2  text-text'>Grade Level: <span className='text-sm md:text-lg font-normal'>{student?.gradeLevel} </span></h1>           
-                <h1 className='col-span-4 md:col-span-2  text-text'>Adviser: <span className='text-sm md:text-lg font-normal'>{student?.advisor?.firstName} {student?.advisor?.middleName} {student?.advisor?.lastName} </span></h1>           
-                <h1 className='col-span-4 md:col-span-2  text-text'>Section: {student?.sectionDoc.name}</h1> 
+                <h1 className='col-span-4 md:col-span-2  text-text'>LRN: <span className='text-sm  font-normal'> {student?.lrn} </span></h1>
+                <h1 className='col-span-4 md:col-span-2  text-text'>Full Name: <span className='text-sm  font-normal'>{student?.lastName}, {student?.firstName} {student?.middleName} </span></h1>      
+                <h1 className='col-span-4 md:col-span-2  text-text'>Grade Level: <span className='text-sm  font-normal'>{student?.gradeLevel} </span></h1>           
+                <h1 className='col-span-4 md:col-span-2  text-text'>Adviser: <span className='text-sm font-normal'>{student?.advisor?.firstName} {student?.advisor?.middleName} {student?.advisor?.lastName} </span></h1>           
+                <h1 className='col-span-4 md:col-span-2  text-text'>Section: <span className='text-sm font-normal'>{student?.sectionDoc.name}</span></h1> 
                 {student?.gradeLevel === "11"  && (
                     <>
                         <h1 className='col-span-4 md:col-span-2  text-text'>Semister: <span className='text-sm md:text-lg font-normal'> 1st </span></h1>

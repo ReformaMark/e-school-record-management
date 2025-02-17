@@ -7,9 +7,30 @@ import ApplyAssessment from "./ApplyAssessment";
 
 export const AssessmentColumn: ColumnDef<AssessmentTypes>[] = [
  
-      {  id: "gradeLevel", accessorKey: "gradeLevel", header: "Grade Level" },
+      {  id: "gradeLevel", 
+        accessorKey: "gradeLevel",
+        header: "Grade Level",
+          cell: ({ row }) => { 
+          const assessment = row.original
+          return (
+            <div className="">
+              <h3>{assessment.gradeLevel}</h3>
+            </div>
+          )
+        } 
+      },
       {  id: "subject",
         accessorKey: "subject",
+        accessorFn: (row) => {
+          const { subject, quarter, assessmentNo } = row;
+        
+          // Construct the full name including optional middle and extension names
+          return [
+            subject?.name, 
+            quarter, 
+            assessmentNo,
+          ].filter(Boolean).join(" ");
+        },
         header: "Subject",
         cell: ({ row }) => { 
           const assessment = row.original

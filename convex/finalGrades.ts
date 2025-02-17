@@ -21,10 +21,14 @@ export const create = mutation({
     handler: async(ctx, args) =>{
      
         const failedSubjects = args.subjects.filter(subject => subject.finalGrade <= 74)
+        const student = await ctx.db.get(args.studentId)
         const isShs = args.semester ? true : false
         if(!isShs && failedSubjects.length >= 3) {
             await ctx.db.insert('finalGrades',{
                 ...args 
+            })
+            await ctx.db.patch(args.studentId,{
+                enrollmentStatus: 'Can Enroll',
             })
 
             return
@@ -35,7 +39,7 @@ export const create = mutation({
             ...args 
         })
         //To promote the student
-        const student = await ctx.db.get(args.studentId)
+      
         const nextGradeLevel = (Number(student?.gradeLevel) ?? 0) + 1
         if(args.semester) {
             if(args.semester === "1st") {

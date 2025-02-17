@@ -21,8 +21,8 @@ function PerformanceTask({assessments}: QuarterExamPropsTypes) {
                 <DataTable 
                     columns={AssessmentColumn}
                     data={performanceTask}
-                    filter='assessmentNo'
-                    placeholder='by Assessment No'
+                    filter='subject'
+                    placeholder='by subject'
                 />
             ): (
                 <div className="text-gray-500 text-sm text-center py-4">No assigned subject yet.</div>

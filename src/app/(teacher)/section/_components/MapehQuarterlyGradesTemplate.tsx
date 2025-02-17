@@ -31,7 +31,6 @@ export default function MapehQuarterlyGradesTemplate({
     const females = students
         ?.filter(student => student?.sex?.toLowerCase() === 'female')
         .sort((a, b) => (a?.lastName && b?.lastName ? a.lastName.localeCompare(b.lastName) : 0));
-
   return (
     <div className="">
        
@@ -107,7 +106,9 @@ export default function MapehQuarterlyGradesTemplate({
                 
                 </div>
                 {/* map all males alphabeteically */}
-                {males?.map((student, index)=>(
+                {males?.map((student, index)=>{
+                    console.log(student.quarterlyGrades)
+                    return (
                     <div key={student?._id} className="flex border-collapse font-semibold hover:bg-gray-200">
                         <div className="w-[3%] border-collapse text-center text-sm h-auto border border-black">{index + 1}</div>
                     
@@ -118,7 +119,7 @@ export default function MapehQuarterlyGradesTemplate({
                             
                             <div className="w-full flex col-span-2">
                             <h1 className='text-xs text-center w-[20%] border-collapse border border-black'>
-                            {student.quarterlyGrades.length >= 1 ? (
+                            {student.quarterlyGrades.length >= 1 ? student.quarterlyGrades[0].interventionGrade ? (
                                 <TooltipProvider>
                                 <Tooltip>
                                     <TooltipTrigger asChild>
@@ -139,14 +140,14 @@ export default function MapehQuarterlyGradesTemplate({
                                     </TooltipContent>
                                 </Tooltip>
                                 </TooltipProvider> 
-                            ) : getQuarterlyGradeScore(student?.quarterlyGrades, quarter, "Music")}
+                             ) : (getQuarterlyGradeScore(student?.quarterlyGrades, quarter, "Music")?? 0) :getQuarterlyGradeScore(student?.quarterlyGrades, quarter, "Music")}
                             </h1>
                             <h1 className='text-xs text-center w-[20%] border-collapse border border-black'>
-                            {student.quarterlyGrades.length >= 1 ? (
+                            {student.quarterlyGrades.length >= 1 ? student.quarterlyGrades[0].interventionGrade ? (
                                 <TooltipProvider>
                                 <Tooltip>
                                     <TooltipTrigger asChild>
-                                    <h1 className='text-red-500'>{getQuarterlyGrade(student?.quarterlyGrades, quarter, "Arts") }</h1>
+                                    <h1 className='text-red-500'>{student.quarterlyGrades[0].subComponent === "Arts" && student.quarterlyGrades[0].interventionGrade}</h1>
                                     </TooltipTrigger>
                                     <TooltipContent className='max-w-2xl bg-white p-5 space-y-2 shadow-md'>
                                         <Label className='font-semibold'>Intervention Method(s)</Label>
@@ -158,19 +159,19 @@ export default function MapehQuarterlyGradesTemplate({
                                         <div className="mt-2">
 
                                             <Label className='font-semibold'>Remarks</Label>
-                                            <p>{getInterventionRemakrs(student?.quarterlyGrades, quarter, "Arts")}</p>
+                                            <p>{student.quarterlyGrades[0].interventionRemarks}</p>
                                         </div>
                                     </TooltipContent>
                                 </Tooltip>
-                                </TooltipProvider> 
-                            ) : getQuarterlyGradeScore(student?.quarterlyGrades, quarter, "Arts")}
+                                </TooltipProvider>
+                            ) : (getQuarterlyGradeScore(student?.quarterlyGrades, quarter, "Arts")?? 0) :getQuarterlyGradeScore(student?.quarterlyGrades, quarter, "Arts")}
                             </h1>
                             <h1 className='text-xs text-center w-[20%] border-collapse border border-black'>
-                            {student.quarterlyGrades.length >= 1 ? (
+                            {student.quarterlyGrades.length >= 1 ? student.quarterlyGrades[0].interventionGrade ? (
                                 <TooltipProvider>
                                 <Tooltip>
                                     <TooltipTrigger asChild>
-                                    <h1 className='text-red-500'>{getQuarterlyGrade(student?.quarterlyGrades, quarter, "Physical Education") }</h1>
+                                    <h1 className='text-red-500'>{student.quarterlyGrades[0].subComponent === "Physical Education" && student.quarterlyGrades[0].interventionGrade}</h1>
                                     </TooltipTrigger>
                                     <TooltipContent className='max-w-2xl bg-white p-5 space-y-2 shadow-md'>
                                         <Label className='font-semibold'>Intervention Method(s)</Label>
@@ -182,19 +183,20 @@ export default function MapehQuarterlyGradesTemplate({
                                         <div className="mt-2">
 
                                             <Label className='font-semibold'>Remarks</Label>
-                                            <p>{getInterventionRemakrs(student?.quarterlyGrades, quarter, "Physical Education")}</p>
+                                            <p>{student.quarterlyGrades[0].interventionRemarks}</p>
                                         </div>
                                     </TooltipContent>
                                 </Tooltip>
-                                </TooltipProvider> 
-                            ) : getQuarterlyGradeScore(student?.quarterlyGrades, quarter, "Physical Education")}
+                                </TooltipProvider>
+                            ) : (getQuarterlyGradeScore(student?.quarterlyGrades, quarter, "Physical Education")?? 0) :getQuarterlyGradeScore(student?.quarterlyGrades, quarter, "Physical Education")}
+                              
                             </h1>
                             <h1 className='text-xs text-center w-[20%] border-collapse border border-black'>
-                            {student.quarterlyGrades.length >= 1 ? (
+                            {student.quarterlyGrades.length >= 1 ? student.quarterlyGrades[0].interventionGrade ? (
                                 <TooltipProvider>
                                 <Tooltip>
                                     <TooltipTrigger asChild>
-                                    <h1 className='text-red-500'>{getQuarterlyGrade(student?.quarterlyGrades, quarter, "Health") }</h1>
+                                    <h1 className='text-red-500'>{student.quarterlyGrades[0].subComponent === "Health" && student.quarterlyGrades[0].interventionGrade}</h1>
                                     </TooltipTrigger>
                                     <TooltipContent className='max-w-2xl bg-white p-5 space-y-2 shadow-md'>
                                         <Label className='font-semibold'>Intervention Method(s)</Label>
@@ -206,25 +208,26 @@ export default function MapehQuarterlyGradesTemplate({
                                         <div className="mt-2">
 
                                             <Label className='font-semibold'>Remarks</Label>
-                                            <p>{getInterventionRemakrs(student?.quarterlyGrades, quarter, "Health")}</p>
+                                            <p>{student.quarterlyGrades[0].interventionRemarks}</p>
                                         </div>
                                     </TooltipContent>
                                 </Tooltip>
-                                </TooltipProvider> 
-                            ) : getQuarterlyGradeScore(student?.quarterlyGrades, quarter, "Health")}
+                                </TooltipProvider>
+                            ) : (getQuarterlyGradeScore(student?.quarterlyGrades, quarter, "Health")?? 0) :getQuarterlyGradeScore(student?.quarterlyGrades, quarter, "Health")}
+                              
                             </h1>
                             <h1 className='text-xs text-center w-[20%] border-collapse border border-black'>
                             { getAverageForJrh(
-                                getQuarterlyGradeScore(student?.quarterlyGrades, quarter, "Music"),
-                                getQuarterlyGradeScore(student?.quarterlyGrades, quarter, "Arts"),
-                                getQuarterlyGradeScore(student?.quarterlyGrades, quarter, "Physical Education"),
-                                getQuarterlyGradeScore(student?.quarterlyGrades, quarter, "Health")
+                                getQuarterlyGradeScore(student?.quarterlyGrades, quarter, "Music")?? 0,
+                                getQuarterlyGradeScore(student?.quarterlyGrades, quarter, "Arts")?? 0,
+                                getQuarterlyGradeScore(student?.quarterlyGrades, quarter, "Physical Education")?? 0,
+                                getQuarterlyGradeScore(student?.quarterlyGrades, quarter, "Health")?? 0
                             )}
                             </h1>
                             </div>
                         </div>
                     </div>
-                ))}
+                )})}
 
                 {/* Females Row */}
                 <div className="flex border-collapse font-semibold bg-gray-400">
@@ -269,7 +272,7 @@ export default function MapehQuarterlyGradesTemplate({
                             
                             <div className="w-full flex col-span-2">
                             <h1 className='text-xs text-center w-[20%] border-collapse border border-black'>
-                            {student.quarterlyGrades.length >= 1 ? (
+                            {student.quarterlyGrades.length >= 1 ? student.quarterlyGrades[0].interventionGrade ? (
                                 <TooltipProvider>
                                 <Tooltip>
                                     <TooltipTrigger asChild>
@@ -290,7 +293,7 @@ export default function MapehQuarterlyGradesTemplate({
                                     </TooltipContent>
                                 </Tooltip>
                                 </TooltipProvider> 
-                            ) : getQuarterlyGradeScore(student?.quarterlyGrades, quarter, "Music")}
+                             ) : (getQuarterlyGradeScore(student?.quarterlyGrades, quarter, "Music")?? 0) :getQuarterlyGradeScore(student?.quarterlyGrades, quarter, "Music")}
                             </h1>
                             <h1 className='text-xs text-center w-[20%] border-collapse border border-black'>
                             {student.quarterlyGrades.length >= 1 ? student.quarterlyGrades[0].interventionGrade ? (

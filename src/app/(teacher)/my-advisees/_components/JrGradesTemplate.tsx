@@ -1,12 +1,15 @@
 'use client'
 import { QuarterlyGradesWithSubject, StudentWithDetails } from '@/lib/types'
-import { cn, getAverageForJrh, getFinalQuarterlyGrade, getPassFailStatusMAPEH } from '@/lib/utils'
+import { cn, getAverageForJrh, getFinalQuarterlyGrade, getInterventionMethods, getInterventionRemarks, getPassFailStatusMAPEH, hasInterventionGrade } from '@/lib/utils'
 import React, { useMemo } from 'react'
 import FinalizeGradesDialog from './FinalizeGradesDialog'
 import { useQuery } from 'convex/react'
 import { api } from '../../../../../convex/_generated/api'
 import { Doc } from '../../../../../convex/_generated/dataModel'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+
+import { Badge } from '@/components/ui/badge'
+import { Label } from '@/components/ui/label'
 
 interface JrGradesTemplateProps {
     student: StudentWithDetails,
@@ -17,8 +20,7 @@ function JrGradesTemplate({student,sf9}:JrGradesTemplateProps) {
         studentId: student._id,
         sectionId: student.sectionDoc?._id
     })
-
-
+    
     const english = student.quarterlyGrades.filter(s => s.subject.name.toLowerCase() === "english")
     const mathematics = student.quarterlyGrades.filter(s => s.subject.name.toLowerCase() === "mathematics")
     const science = student.quarterlyGrades.filter(s => s.subject.name.toLowerCase() === "science")
@@ -54,13 +56,37 @@ function JrGradesTemplate({student,sf9}:JrGradesTemplateProps) {
         
         // Ensure TypeScript treats grades as a number array (safe cast)
         const validGrades = grades.filter(grade => typeof grade === "number") as number[];
-        
         if (validGrades.length === 0) return "";
         
         // Compute the average
         const total = validGrades.reduce((sum, grade) => sum + grade, 0);
+        return Math.round(total / validGrades.length);
+    };
+
+    const getAverageForMapeh = (quarterlyGrades: QuarterlyGradesWithSubject[], quarter: string): number | string => {
+        // Collect all MAPEH subject averages
+        const quarterGrades = quarterlyGrades.filter(g => g.quarter === quarter)
+        const grades = quarterGrades.map(g => g.interventionGrade ? g.interventionGrade : g.quarterlyGrade)
+
+        if (grades.some(grade => grade === null || grade === undefined)) {
+            return "";
+        }
+        // Ensure TypeScript treats grades as a number array (safe cast)
+        const validGrades = grades.filter(grade => typeof grade === "number") as number[];
+        if (validGrades.length === 0) return "";
+        // Compute the average of MAPEH subjects
+        const total = validGrades.reduce((sum, avg) => sum + avg, 0);
         return total / validGrades.length;
     };
+
+    const mapehAve = (music: number| string, arts: number| string, pe: number| string, health: number| string,): number | string => {
+        const component = [music,arts,pe,health]
+        const notComplete = component.some(c => typeof c === "string")
+        if(notComplete) return "";
+        const validGrades = component.filter(c => typeof c === "number") as number[];
+        const ave = validGrades.reduce((sum, avg) => sum + avg, 0) / 4
+        return Math.round(ave);
+    }
 
     const getPassFailStatus = (quarterlyGrades: QuarterlyGradesWithSubject[]): string => {
         const average = calculateQuarterlyAverage(quarterlyGrades);
@@ -201,7 +227,7 @@ function JrGradesTemplate({student,sf9}:JrGradesTemplateProps) {
         <h1 className={cn(sf9 ? "text-[0.6rem]" : "text-sm" ,' font-semibold text-center ')}>REPORT ON LEARNING PROGRESS AND ACHIEVEMENT</h1>
     
         <div className="grid grid-cols-12 w-full  items-center text-center font-semibold text-xs md:text-sm ">
-            <div className='col-span-4 h-full flex items-center justify-center border border-black'>Learning Areas</div>
+            <div className='col-span-4 h-full flex items-center justify-center border-x border-x-black border-b-black border-b border-t-black border-t'>Learning Areas</div>
             <div className="col-span-4 grid grid-cols-4 text-center items-center ">
                 <div className={cn("col-span-4 border-b border-black border-r border-r-black border-y border-y-black", sf9 ? 'text-xs p-1' : 'p-2')}>Quarter</div>
                 <div className={cn("col-span-1 border-b border-black border-r border-r-black", sf9 ? 'text-xs p-1' : 'p-2')}>1</div>
@@ -217,16 +243,39 @@ function JrGradesTemplate({student,sf9}:JrGradesTemplateProps) {
         <div className="grid grid-cols-12 w-full items-center  text-center font-medium text-sm">
             <div className={cn(sf9 ? 'text-xs p-1' : 'p-2' , 'h-full col-span-4 border-b border-black border-x  text-left')}>English</div>
             {quarter.map((quarter)=>(
-                <div key={`english${quarter}`} className={cn('col-span-1 border-b border-black border-r', sf9 ? 'text-xs p-1' : 'p-2', 'h-full')}>{getFinalQuarterlyGrade(english, quarter)}</div>
+                <div key={`english${quarter}`} className={cn('col-span-1 border-b border-black border-r', sf9 ? 'text-xs p-1' : 'p-2', 'h-full')}>
+                    {hasInterventionGrade(english, quarter) ? (
+                        <TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <span className='text-orange-500'>{getFinalQuarterlyGrade(english, quarter)}</span>
+                                </TooltipTrigger>
+                                <TooltipContent className='max-w-2xl bg-white p-5 space-y-2 shadow-md'>
+                                    <Label className='font-semibold'>Intervention Method(s)</Label>
+                                    <div className="flex items-center justify-center flex-wrap gap-2">
+                                        {getInterventionMethods(english, quarter).map((intUsed, index)=>(
+                                            <Badge key={index + intUsed} className='text-white text-xs'>{intUsed}</Badge>
+                                        ))}
+                                    </div>
+                                    <div className="mt-2">
+                                        <Label className='font-semibold'>Remarks</Label>
+                                        <p>{getInterventionRemarks(english, quarter)}</p>
+                                    </div>
+                                </TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
+                    ) : (
+                        <span>{getFinalQuarterlyGrade(english, quarter)}</span>
+                    )}
+                </div>
             ))}
-           
             {getRemedialGrade(remedialGrades as Doc<'finalGrades'>, "english") === null ? (
-                    <div className={cn( sf9 ? 'text-xs p-1' : 'p-2', 'h-full col-span-2 border-b border-black border-r ')}>{calculateQuarterlyAverage(english)}</div>
+                <div className={cn( sf9 ? 'text-xs p-1' : 'p-2', 'h-full col-span-2 border-b border-black border-r ')}>{calculateQuarterlyAverage(english)}</div>
             ):(
                 <TooltipProvider>
                     <Tooltip>
                         <TooltipTrigger asChild>
-                        <div className={cn( sf9 ? 'text-xs p-1' : 'p-2', 'col-span-2 border-b border-black border-r h-full ')}> {calculateQuarterlyAverage(english)} </div>
+                            <div className={cn( sf9 ? 'text-xs p-1' : 'p-2', 'col-span-2 border-b border-black border-r h-full ')}> {calculateQuarterlyAverage(english)} </div>
                         </TooltipTrigger>
                         <TooltipContent className=' bg-white p-5 space-y-2 shadow-md'>
                             <p>Summer/remedial class Final Grade: {getRemedialGrade(remedialGrades as Doc<'finalGrades'>, "english")} </p>
@@ -239,15 +288,39 @@ function JrGradesTemplate({student,sf9}:JrGradesTemplateProps) {
         <div className="grid grid-cols-12 w-full  items-center  text-center font-medium text-sm">
             <div className={cn(sf9 ? 'text-xs p-1' : 'p-2' , 'h-full col-span-4 border-b border-black border-x  text-left')}>Mathematics</div>
             {quarter.map((quarter)=>(
-                <div key={`mathematics${quarter}`} className={cn('col-span-1 border-b border-black border-r', sf9 ? 'text-xs p-1' : 'p-2', 'h-full')}>{getFinalQuarterlyGrade(mathematics, quarter)}</div>
+                <div key={`mathematics${quarter}`} className={cn('col-span-1 border-b border-black border-r', sf9 ? 'text-xs p-1' : 'p-2', 'h-full')}>
+                    {hasInterventionGrade(mathematics, quarter) ? (
+                        <TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <span className='text-orange-500'>{getFinalQuarterlyGrade(mathematics, quarter)}</span>
+                                </TooltipTrigger>
+                                <TooltipContent className='max-w-2xl bg-white p-5 space-y-2 shadow-md'>
+                                    <Label className='font-semibold'>Intervention Method(s)</Label>
+                                    <div className="flex items-center justify-center flex-wrap gap-2">
+                                        {getInterventionMethods(mathematics, quarter).map((intUsed, index)=>(
+                                            <Badge key={index + intUsed} className='text-white text-xs'>{intUsed}</Badge>
+                                        ))}
+                                    </div>
+                                    <div className="mt-2">
+                                        <Label className='font-semibold'>Remarks</Label>
+                                        <p>{getInterventionRemarks(mathematics, quarter)}</p>
+                                    </div>
+                                </TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
+                    ) : (
+                        <span>{getFinalQuarterlyGrade(mathematics, quarter)}</span>
+                    )}
+                </div>
             ))}
             {getRemedialGrade(remedialGrades as Doc<'finalGrades'>, "mathematics") === null ? (
-                    <div className={cn( sf9 ? 'text-xs p-1' : 'p-2', 'h-full col-span-2 border-b border-black border-r ')}>{calculateQuarterlyAverage(mathematics)}</div>
+                <div className={cn( sf9 ? 'text-xs p-1' : 'p-2', 'h-full col-span-2 border-b border-black border-r ')}>{calculateQuarterlyAverage(mathematics)}</div>
             ):(
                 <TooltipProvider>
                     <Tooltip>
                         <TooltipTrigger asChild>
-                        <div className={cn( sf9 ? 'text-xs p-1' : 'p-2', 'col-span-2 border-b border-black border-r ')}> {calculateQuarterlyAverage(mathematics)} </div>
+                            <div className={cn( sf9 ? 'text-xs p-1' : 'p-2', 'col-span-2 border-b border-black border-r ')}> {calculateQuarterlyAverage(mathematics)} </div>
                         </TooltipTrigger>
                         <TooltipContent className=' bg-white p-5 space-y-2 shadow-md'>
                             <p>Summer/remedial class Final Grade: {getRemedialGrade(remedialGrades as Doc<'finalGrades'>, "mathematics")} </p>
@@ -260,15 +333,39 @@ function JrGradesTemplate({student,sf9}:JrGradesTemplateProps) {
         <div className="grid grid-cols-12 w-full  items-center text-center font-medium text-sm">
             <div className={cn(sf9 ? 'text-xs p-1' : 'p-2' , 'h-full col-span-4 border-b border-black border-x  text-left')}>Science</div>
             {quarter.map((quarter)=>(
-                <div key={`science${quarter}`} className={cn('col-span-1 border-b border-black border-r', sf9 ? 'text-xs p-1' : 'p-2', 'h-full')}>{getFinalQuarterlyGrade(science, quarter)}</div>
+                <div key={`science${quarter}`} className={cn('col-span-1 border-b border-black border-r', sf9 ? 'text-xs p-1' : 'p-2', 'h-full')}>
+                    {hasInterventionGrade(science, quarter) ? (
+                        <TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <span className='text-orange-500'>{getFinalQuarterlyGrade(science, quarter)}</span>
+                                </TooltipTrigger>
+                                <TooltipContent className='max-w-2xl bg-white p-5 space-y-2 shadow-md'>
+                                    <Label className='font-semibold'>Intervention Method(s)</Label>
+                                    <div className="flex items-center justify-center flex-wrap gap-2">
+                                        {getInterventionMethods(science, quarter).map((intUsed, index)=>(
+                                            <Badge key={index + intUsed} className='text-white text-xs'>{intUsed}</Badge>
+                                        ))}
+                                    </div>
+                                    <div className="mt-2">
+                                        <Label className='font-semibold'>Remarks</Label>
+                                        <p>{getInterventionRemarks(science, quarter)}</p>
+                                    </div>
+                                </TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
+                    ) : (
+                        <span>{getFinalQuarterlyGrade(science, quarter)}</span>
+                    )}
+                </div>
             ))}
             {getRemedialGrade(remedialGrades as Doc<'finalGrades'>, "science") === null ? (
-                    <div className={cn( sf9 ? 'text-xs p-1' : 'p-2', 'h-full col-span-2 border-b border-black border-r ')}>{calculateQuarterlyAverage(science)}</div>
+                <div className={cn( sf9 ? 'text-xs p-1' : 'p-2', 'h-full col-span-2 border-b border-black border-r ')}>{calculateQuarterlyAverage(science)}</div>
             ):(
                 <TooltipProvider>
                     <Tooltip>
                         <TooltipTrigger asChild>
-                        <div className={cn( sf9 ? 'text-xs p-1' : 'p-2', 'col-span-2 border-b border-black border-r ')}> {calculateQuarterlyAverage(science)} </div>
+                            <div className={cn( sf9 ? 'text-xs p-1' : 'p-2', 'col-span-2 border-b border-black border-r ')}> {calculateQuarterlyAverage(science)} </div>
                         </TooltipTrigger>
                         <TooltipContent className=' bg-white p-5 space-y-2 shadow-md'>
                             <p>Summer/remedial class Final Grade: {getRemedialGrade(remedialGrades as Doc<'finalGrades'>, "science")} </p>
@@ -281,15 +378,39 @@ function JrGradesTemplate({student,sf9}:JrGradesTemplateProps) {
         <div className="grid grid-cols-12 w-full  items-center  text-center font-medium text-sm">
             <div className={cn(sf9 ? 'text-xs p-1' : 'p-2' , 'h-full col-span-4 border-b border-black border-x  text-left')}>Filipino</div>
             {quarter.map((quarter)=>(
-                <div key={`filipino${quarter}`} className={cn('col-span-1 border-b border-black border-r', sf9 ? 'text-xs p-1' : 'p-2', 'h-full')}>{getFinalQuarterlyGrade(filipino, quarter)}</div>
+                <div key={`filipino${quarter}`} className={cn('col-span-1 border-b border-black border-r', sf9 ? 'text-xs p-1' : 'p-2', 'h-full')}>
+                    {hasInterventionGrade(filipino, quarter) ? (
+                        <TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <span className='text-orange-500'>{getFinalQuarterlyGrade(filipino, quarter)}</span>
+                                </TooltipTrigger>
+                                <TooltipContent className='max-w-2xl bg-white p-5 space-y-2 shadow-md'>
+                                    <Label className='font-semibold'>Intervention Method(s)</Label>
+                                    <div className="flex items-center justify-center flex-wrap gap-2">
+                                        {getInterventionMethods(filipino, quarter).map((intUsed, index)=>(
+                                            <Badge key={index + intUsed} className='text-white text-xs'>{intUsed}</Badge>
+                                        ))}
+                                    </div>
+                                    <div className="mt-2">
+                                        <Label className='font-semibold'>Remarks</Label>
+                                        <p>{getInterventionRemarks(filipino, quarter)}</p>
+                                    </div>
+                                </TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
+                    ) : (
+                        <span>{getFinalQuarterlyGrade(filipino, quarter)}</span>
+                    )}
+                </div>
             ))}
             {getRemedialGrade(remedialGrades as Doc<'finalGrades'>, "filipino") === null ? (
-                    <div className={cn( sf9 ? 'text-xs p-1' : 'p-2', 'h-full col-span-2 border-b border-black border-r ')}>{calculateQuarterlyAverage(filipino)}</div>
+                <div className={cn( sf9 ? 'text-xs p-1' : 'p-2', 'h-full col-span-2 border-b border-black border-r ')}>{calculateQuarterlyAverage(filipino)}</div>
             ):(
                 <TooltipProvider>
                     <Tooltip>
                         <TooltipTrigger asChild>
-                        <div className={cn( sf9 ? 'text-xs p-1' : 'p-2', 'col-span-2 border-b border-black border-r ')}> {calculateQuarterlyAverage(filipino)} </div>
+                            <div className={cn( sf9 ? 'text-xs p-1' : 'p-2', 'col-span-2 border-b border-black border-r ')}> {calculateQuarterlyAverage(filipino)} </div>
                         </TooltipTrigger>
                         <TooltipContent className=' bg-white p-5 space-y-2 shadow-md'>
                             <p>Summer/remedial class Final Grade: {getRemedialGrade(remedialGrades as Doc<'finalGrades'>, "filipino")} </p>
@@ -302,15 +423,39 @@ function JrGradesTemplate({student,sf9}:JrGradesTemplateProps) {
         <div className="grid grid-cols-12 w-full  items-center  text-center font-medium text-sm">
             <div className={cn(sf9 ? 'text-xs p-1' : 'p-2' , 'h-full col-span-4 border-b border-black border-x  text-left')}>Araling Panlipunan</div>
             {quarter.map((quarter)=>(
-                <div key={`ap${quarter}`} className={cn('col-span-1 border-b border-black border-r', sf9 ? 'text-xs p-1' : 'p-2', 'h-full')}>{getFinalQuarterlyGrade(ap, quarter)}</div>
+                <div key={`ap${quarter}`} className={cn('col-span-1 border-b border-black border-r', sf9 ? 'text-xs p-1' : 'p-2', 'h-full')}>
+                    {hasInterventionGrade(ap, quarter) ? (
+                        <TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <span className='text-orange-500'>{getFinalQuarterlyGrade(ap, quarter)}</span>
+                                </TooltipTrigger>
+                                <TooltipContent className='max-w-2xl bg-white p-5 space-y-2 shadow-md'>
+                                    <Label className='font-semibold'>Intervention Method(s)</Label>
+                                    <div className="flex items-center justify-center flex-wrap gap-2">
+                                        {getInterventionMethods(ap, quarter).map((intUsed, index)=>(
+                                            <Badge key={index + intUsed} className='text-white text-xs'>{intUsed}</Badge>
+                                        ))}
+                                    </div>
+                                    <div className="mt-2">
+                                        <Label className='font-semibold'>Remarks</Label>
+                                        <p>{getInterventionRemarks(ap, quarter)}</p>
+                                    </div>
+                                </TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
+                    ) : (
+                        <span>{getFinalQuarterlyGrade(ap, quarter)}</span>
+                    )}
+                </div>
             ))}
             {getRemedialGrade(remedialGrades as Doc<'finalGrades'>, "Araling Panlipunan") === null ? (
-                    <div className={cn( sf9 ? 'text-xs p-1' : 'p-2', 'h-full col-span-2 border-b border-black border-r ')}>{calculateQuarterlyAverage(ap)}</div>
+                <div className={cn( sf9 ? 'text-xs p-1' : 'p-2', 'h-full col-span-2 border-b border-black border-r ')}>{calculateQuarterlyAverage(ap)}</div>
             ):(
                 <TooltipProvider>
                     <Tooltip>
                         <TooltipTrigger asChild>
-                        <div className={cn( sf9 ? 'text-xs p-1' : 'p-2', 'col-span-2 border-b border-black border-r ')}> {calculateQuarterlyAverage(ap)} </div>
+                            <div className={cn( sf9 ? 'text-xs p-1' : 'p-2', 'col-span-2 border-b border-black border-r ')}> {calculateQuarterlyAverage(ap)} </div>
                         </TooltipTrigger>
                         <TooltipContent className=' bg-white p-5 space-y-2 shadow-md'>
                             <p>Summer/remedial class Final Grade: {getRemedialGrade(remedialGrades as Doc<'finalGrades'>, "Araling Panlipunan")} </p>
@@ -323,15 +468,39 @@ function JrGradesTemplate({student,sf9}:JrGradesTemplateProps) {
         <div className="grid grid-cols-12 w-full  items-center  text-center font-medium text-sm">
             <div className={cn(sf9 ? 'text-xs p-1' : 'p-2' , 'h-full col-span-4 border-b border-black border-x  text-left')}>Edukasyon sa Pagpapakatao (EsP)</div>
             {quarter.map((quarter)=>(
-                <div key={`esp${quarter}`} className={cn('col-span-1 border-b border-black border-r', sf9 ? 'text-xs p-1' : 'p-2', 'h-full')}>{getFinalQuarterlyGrade(esp, quarter)}</div>
+                <div key={`esp${quarter}`} className={cn('col-span-1 border-b border-black border-r', sf9 ? 'text-xs p-1' : 'p-2', 'h-full')}>
+                    {hasInterventionGrade(esp, quarter) ? (
+                        <TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <span className='text-orange-500'>{getFinalQuarterlyGrade(esp, quarter)}</span>
+                                </TooltipTrigger>
+                                <TooltipContent className='max-w-2xl bg-white p-5 space-y-2 shadow-md'>
+                                    <Label className='font-semibold'>Intervention Method(s)</Label>
+                                    <div className="flex items-center justify-center flex-wrap gap-2">
+                                        {getInterventionMethods(esp, quarter).map((intUsed, index)=>(
+                                            <Badge key={index + intUsed} className='text-white text-xs'>{intUsed}</Badge>
+                                        ))}
+                                    </div>
+                                    <div className="mt-2">
+                                        <Label className='font-semibold'>Remarks</Label>
+                                        <p>{getInterventionRemarks(esp, quarter)}</p>
+                                    </div>
+                                </TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
+                    ) : (
+                        <span>{getFinalQuarterlyGrade(esp, quarter)}</span>
+                    )}
+                </div>
             ))}
             {getRemedialGrade(remedialGrades as Doc<'finalGrades'>, "Edukasyon sa Pagpapakatao (EsP)") === null ? (
-                    <div className={cn( sf9 ? 'text-xs p-1' : 'p-2', 'h-full col-span-2 border-b border-black border-r ')}>{calculateQuarterlyAverage(esp)}</div>
+                <div className={cn( sf9 ? 'text-xs p-1' : 'p-2', 'h-full col-span-2 border-b border-black border-r ')}>{calculateQuarterlyAverage(esp)}</div>
             ):(
                 <TooltipProvider>
                     <Tooltip>
                         <TooltipTrigger asChild>
-                        <div className={cn( sf9 ? 'text-xs p-1' : 'p-2', 'col-span-2 border-b border-black border-r ')}> {calculateQuarterlyAverage(esp)} </div>
+                            <div className={cn( sf9 ? 'text-xs p-1' : 'p-2', 'col-span-2 border-b border-black border-r ')}> {calculateQuarterlyAverage(esp)} </div>
                         </TooltipTrigger>
                         <TooltipContent className=' bg-white p-5 space-y-2 shadow-md'>
                             <p>Summer/remedial class Final Grade: {getRemedialGrade(remedialGrades as Doc<'finalGrades'>, "Edukasyon sa Pagpapakatao (EsP)")} </p>
@@ -345,15 +514,39 @@ function JrGradesTemplate({student,sf9}:JrGradesTemplateProps) {
             <div className="grid grid-cols-12 w-full  items-center  text-center font-medium text-sm">
                 <div className={cn(sf9 ? 'text-xs p-1' : 'p-2' , 'h-full col-span-4 border-b border-black border-x  text-left')}>Edukasyong Pantahanan at Pangkabuhayan</div>
                 {quarter.map((quarter)=>(
-                    <div key={`epp${quarter}`} className={cn('col-span-1 border-b border-black border-r', sf9 ? 'text-xs p-1' : 'p-2', 'h-full')}>{getFinalQuarterlyGrade(epp, quarter)}</div>
+                    <div key={`epp${quarter}`} className={cn('col-span-1 border-b border-black border-r', sf9 ? 'text-xs p-1' : 'p-2', 'h-full')}>
+                        {hasInterventionGrade(epp, quarter) ? (
+                            <TooltipProvider>
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <span className='text-orange-500'>{getFinalQuarterlyGrade(epp, quarter)}</span>
+                                    </TooltipTrigger>
+                                    <TooltipContent className='max-w-2xl bg-white p-5 space-y-2 shadow-md'>
+                                        <Label className='font-semibold'>Intervention Method(s)</Label>
+                                        <div className="flex items-center justify-center flex-wrap gap-2">
+                                            {getInterventionMethods(epp, quarter).map((intUsed, index)=>(
+                                                <Badge key={index + intUsed} className='text-white text-xs'>{intUsed}</Badge>
+                                            ))}
+                                        </div>
+                                        <div className="mt-2">
+                                            <Label className='font-semibold'>Remarks</Label>
+                                            <p>{getInterventionRemarks(epp, quarter)}</p>
+                                        </div>
+                                    </TooltipContent>
+                                </Tooltip>
+                            </TooltipProvider>
+                        ) : (
+                            <span>{getFinalQuarterlyGrade(epp, quarter)}</span>
+                        )}
+                    </div>
                 ))}
                 {getRemedialGrade(remedialGrades as Doc<'finalGrades'>, "Edukasyong Pantahanan at Pangkabuhayan") === null ? (
-                        <div className={cn( sf9 ? 'text-xs p-1' : 'p-2', 'h-full col-span-2 border-b border-black border-r ')}>{calculateQuarterlyAverage(epp)}</div>
+                    <div className={cn( sf9 ? 'text-xs p-1' : 'p-2', 'h-full col-span-2 border-b border-black border-r ')}>{calculateQuarterlyAverage(epp)}</div>
                 ):(
                     <TooltipProvider>
                         <Tooltip>
                             <TooltipTrigger asChild>
-                            <div className={cn( sf9 ? 'text-xs p-1' : 'p-2', 'col-span-2 border-b border-black border-r ')}> {calculateQuarterlyAverage(epp)} </div>
+                                <div className={cn( sf9 ? 'text-xs p-1' : 'p-2', 'col-span-2 border-b border-black border-r ')}> {calculateQuarterlyAverage(epp)} </div>
                             </TooltipTrigger>
                             <TooltipContent className=' bg-white p-5 space-y-2 shadow-md'>
                                 <p>Summer/remedial class Final Grade: {getRemedialGrade(remedialGrades as Doc<'finalGrades'>, "Edukasyong Pantahanan at Pangkabuhayan")} </p>
@@ -369,15 +562,39 @@ function JrGradesTemplate({student,sf9}:JrGradesTemplateProps) {
             <div className="grid grid-cols-12 w-full  items-center  text-center font-medium text-sm">
                 <div className={cn(sf9 ? 'text-xs p-1' : 'p-2' , 'h-full col-span-4 border-b border-black border-x  text-left')}>Technology and Livelihood Education (TLE)</div>
                 {quarter.map((quarter)=>(
-                    <div key={`tle${quarter}`} className={cn('col-span-1 border-b border-black border-r', sf9 ? 'text-xs p-1' : 'p-2', 'h-full')}>{getFinalQuarterlyGrade(tle, quarter)}</div>
+                    <div key={`tle${quarter}`} className={cn('col-span-1 border-b border-black border-r', sf9 ? 'text-xs p-1' : 'p-2', 'h-full')}>
+                        {hasInterventionGrade(tle, quarter) ? (
+                            <TooltipProvider>
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <span className='text-orange-500'>{getFinalQuarterlyGrade(tle, quarter)}</span>
+                                    </TooltipTrigger>
+                                    <TooltipContent className='max-w-2xl bg-white p-5 space-y-2 shadow-md'>
+                                        <Label className='font-semibold'>Intervention Method(s)</Label>
+                                        <div className="flex items-center justify-center flex-wrap gap-2">
+                                            {getInterventionMethods(tle, quarter).map((intUsed, index)=>(
+                                                <Badge key={index + intUsed} className='text-white text-xs'>{intUsed}</Badge>
+                                            ))}
+                                        </div>
+                                        <div className="mt-2">
+                                            <Label className='font-semibold'>Remarks</Label>
+                                            <p>{getInterventionRemarks(tle, quarter)}</p>
+                                        </div>
+                                    </TooltipContent>
+                                </Tooltip>
+                            </TooltipProvider>
+                        ) : (
+                            <span>{getFinalQuarterlyGrade(tle, quarter)}</span>
+                        )}
+                    </div>
                 ))}
                 {getRemedialGrade(remedialGrades as Doc<'finalGrades'>, "Technology and Livelihood Education (TLE)") === null ? (
-                        <div className={cn( sf9 ? 'text-xs p-1' : 'p-2', 'h-full col-span-2 border-b border-black border-r ')}>{calculateQuarterlyAverage(tle)}</div>
+                    <div className={cn( sf9 ? 'text-xs p-1' : 'p-2', 'h-full col-span-2 border-b border-black border-r ')}>{calculateQuarterlyAverage(tle)}</div>
                 ):(
                     <TooltipProvider>
                         <Tooltip>
                             <TooltipTrigger asChild>
-                            <div className={cn( sf9 ? 'text-xs p-1' : 'p-2', 'col-span-2 border-b border-black border-r ')}> {calculateQuarterlyAverage(tle)} </div>
+                                <div className={cn( sf9 ? 'text-xs p-1' : 'p-2', 'col-span-2 border-b border-black border-r ')}> {calculateQuarterlyAverage(tle)} </div>
                             </TooltipTrigger>
                             <TooltipContent className=' bg-white p-5 space-y-2 shadow-md'>
                                 <p>Summer/remedial class Final Grade: {getRemedialGrade(remedialGrades as Doc<'finalGrades'>, "Technology and Livelihood Education (TLE)")} </p>
@@ -391,28 +608,88 @@ function JrGradesTemplate({student,sf9}:JrGradesTemplateProps) {
        
         <div className={cn("grid grid-cols-12 w-full  items-center  text-center font-medium text-sm")}>
             <div className={cn(sf9 ? 'text-xs p-1' : 'p-2' , 'h-full col-span-4 border-b border-black border-x  text-left')}>MAPEH</div>
-            <div className={cn(sf9 ? 'text-xs p-1':'p-2','col-span-1 border-b border-black border-r p-2 h-full')}>{calculateQuarterlyAverage(music)}</div>
-            <div className={cn(sf9 ? 'text-xs p-1':'p-2','col-span-1 border-b border-black border-r p-2 h-full')}>{calculateQuarterlyAverage(arts)}</div>
-            <div className={cn(sf9 ? 'text-xs p-1':'p-2','col-span-1 border-b border-black border-r p-2 h-full')}>{calculateQuarterlyAverage(pe)}</div>
-            <div className={cn(sf9 ? 'text-xs p-1':'p-2','col-span-1 border-b border-black border-r p-2 h-full')}>{calculateQuarterlyAverage(health)}</div>
+            <div className={cn(sf9 ? 'text-xs p-1':'p-2','col-span-1 border-b border-black border-r p-2 h-full')}>{mapehAve(
+                getAverageForMapeh(music, "1st"),
+                getAverageForMapeh(arts, "1st"),
+                getAverageForMapeh(pe, "1st"),
+                getAverageForMapeh(health, "1st"),
+            )}</div>
+            <div className={cn(sf9 ? 'text-xs p-1':'p-2','col-span-1 border-b border-black border-r p-2 h-full')}>{mapehAve(
+                getAverageForMapeh(music, "2nd"),
+                getAverageForMapeh(arts, "2nd"),
+                getAverageForMapeh(pe, "2nd"),
+                getAverageForMapeh(health, "2nd"),
+            )}</div>
+            <div className={cn(sf9 ? 'text-xs p-1':'p-2','col-span-1 border-b border-black border-r p-2 h-full')}>{mapehAve(
+                getAverageForMapeh(music, "3rd"),
+                getAverageForMapeh(arts, "3rd"),
+                getAverageForMapeh(pe, "3rd"),
+                getAverageForMapeh(health, "3rd"),
+            )}</div>
+            <div className={cn(sf9 ? 'text-xs p-1':'p-2','col-span-1 border-b border-black border-r p-2 h-full')}>{mapehAve(
+                getAverageForMapeh(music, "4th"),
+                getAverageForMapeh(arts, "4th"),
+                getAverageForMapeh(pe, "4th"),
+                getAverageForMapeh(health, "4th"),
+            )}</div>
             {getRemedialGrade(remedialGrades as Doc<'finalGrades'>, "MAPEH") === null ? (
                 <div className={cn(sf9 ? 'text-xs p-1' : 'p-2' ,'col-span-2 border-b border-black border-r h-full')}>{getAverageForJrh(
-                    calculateQuarterlyAverage(music),
-                    calculateQuarterlyAverage(arts),
-                    calculateQuarterlyAverage(pe),
-                    calculateQuarterlyAverage(health)
+                    mapehAve(
+                        getAverageForMapeh(music, "1st"),
+                        getAverageForMapeh(arts, "1st"),
+                        getAverageForMapeh(pe, "1st"),
+                        getAverageForMapeh(health, "1st"),
+                    ),
+                    mapehAve(
+                        getAverageForMapeh(music, "2nd"),
+                        getAverageForMapeh(arts, "2nd"),
+                        getAverageForMapeh(pe, "2nd"),
+                        getAverageForMapeh(health, "2nd"),
+                    ),
+                    mapehAve(
+                        getAverageForMapeh(music, "3rd"),
+                        getAverageForMapeh(arts, "3rd"),
+                        getAverageForMapeh(pe, "3rd"),
+                        getAverageForMapeh(health, "3rd"),
+                    ),
+                    mapehAve(
+                        getAverageForMapeh(music, "4th"),
+                        getAverageForMapeh(arts, "4th"),
+                        getAverageForMapeh(pe, "4th"),
+                        getAverageForMapeh(health, "4th"),
+                    )
                 )}</div>
                 ):(
               
                     <TooltipProvider>
                         <Tooltip>
                             <TooltipTrigger asChild>
-                            <div className={cn(sf9 ? 'text-xs p-1' : 'p-2' ,'col-span-2 border-b border-black border-r h-full')}> {getAverageForJrh(
-                                calculateQuarterlyAverage(music),
-                                calculateQuarterlyAverage(arts),
-                                calculateQuarterlyAverage(pe),
-                                calculateQuarterlyAverage(health)
-                            )}
+                            <div className={cn(sf9 ? 'text-xs p-1' : 'p-2' ,'col-span-2 border-b text-orange-500 border-black border-r h-full')}> {getAverageForJrh(
+                                    mapehAve(
+                                        getAverageForMapeh(music, "1st"),
+                                        getAverageForMapeh(arts, "1st"),
+                                        getAverageForMapeh(pe, "1st"),
+                                        getAverageForMapeh(health, "1st"),
+                                    ),
+                                    mapehAve(
+                                        getAverageForMapeh(music, "2nd"),
+                                        getAverageForMapeh(arts, "2nd"),
+                                        getAverageForMapeh(pe, "2nd"),
+                                        getAverageForMapeh(health, "2nd"),
+                                    ),
+                                    mapehAve(
+                                        getAverageForMapeh(music, "3rd"),
+                                        getAverageForMapeh(arts, "3rd"),
+                                        getAverageForMapeh(pe, "3rd"),
+                                        getAverageForMapeh(health, "3rd"),
+                                    ),
+                                    mapehAve(
+                                        getAverageForMapeh(music, "4th"),
+                                        getAverageForMapeh(arts, "4th"),
+                                        getAverageForMapeh(pe, "4th"),
+                                        getAverageForMapeh(health, "4th"),
+                                    )
+                                )}
                             </div>
                             </TooltipTrigger>
                             <TooltipContent className=' bg-white p-5 space-y-2 shadow-md'>
@@ -436,24 +713,24 @@ function JrGradesTemplate({student,sf9}:JrGradesTemplateProps) {
             {quarter.map((quarter)=>(
                 <div key={`music${quarter}`} className={cn(sf9 ? 'text-xs p-1' : 'p-2' ,'col-span-1 border-b border-black border-r  h-full')}>{getFinalQuarterlyGrade(music, quarter)}</div>
             ))}
-            <div className={cn(sf9 ? 'text-xs p-1' : 'p-2' ,'col-span-2 border-b border-r-black border-r p-2 h-full')}></div>
-            <div className={cn(sf9 ? 'text-xs p-1' : 'p-2' ,'col-span-2 border-b border-r-black border-r p-2 h-full')}></div>
+            <div className={cn(sf9 ? 'text-xs p-1' : 'p-2' ,'col-span-2  border-r-black border-r p-2 h-full')}></div>
+            <div className={cn(sf9 ? 'text-xs p-1' : 'p-2' ,'col-span-2  border-r-black border-r p-2 h-full')}></div>
         </div>
         <div className="grid grid-cols-12 w-full  items-center  text-center font-medium text-sm">
-            <div className={cn(sf9 ? 'text-xs p-1' : 'p-2' ,'col-span-4 border-b border-b-black h-full border-x-black border-x text-center')}>Arts</div>
+            <div className={cn(sf9 ? 'text-xs p-1' : 'p-2' ,'col-span-4  border-b-black h-full border-x-black border-x text-center')}>Arts</div>
             {quarter.map((quarter)=>(
                 <div key={`arts${quarter}`} className={cn(sf9 ? 'text-xs p-1' : 'p-2' ,'col-span-1 border-b border-black border-r  h-full')}>{getFinalQuarterlyGrade(arts, quarter)}</div>
             ))}
-            <div className={cn(sf9 ? 'text-xs p-1' : 'p-2' ,'col-span-2 border-b border-r-black border-r p-2 h-full')}></div>
-            <div className={cn(sf9 ? 'text-xs p-1' : 'p-2' ,'col-span-2 border-b border-r-black border-r p-2 h-full')}></div>
+            <div className={cn(sf9 ? 'text-xs p-1' : 'p-2' ,'col-span-2  border-r-black border-r p-2 h-full')}></div>
+            <div className={cn(sf9 ? 'text-xs p-1' : 'p-2' ,'col-span-2  border-r-black border-r p-2 h-full')}></div>
         </div>
         <div className="grid grid-cols-12 w-full  items-center  text-center font-medium text-sm">
-            <div className={cn(sf9 ? 'text-xs p-1' : 'p-2' ,'col-span-4 border-b border-b-black h-full border-x-black border-x text-center')}>Physical Education</div>
+            <div className={cn(sf9 ? 'text-xs p-1' : 'p-2' ,'col-span-4  border-b-black h-full border-x-black border-x text-center')}>Physical Education</div>
             {quarter.map((quarter)=>(
                 <div key={`pe${quarter}`} className={cn(sf9 ? 'text-xs p-1' : 'p-2' ,'col-span-1 border-b border-black border-r  h-full')}>{getFinalQuarterlyGrade(pe, quarter)}</div>
             ))}
-            <div className={cn(sf9 ? 'text-xs p-1' : 'p-2' ,'col-span-2 border-b border-r-black border-r p-2 h-full')}></div>
-            <div className={cn(sf9 ? 'text-xs p-1' : 'p-2' ,'col-span-2 border-b border-r-black border-r p-2 h-full')}></div>
+            <div className={cn(sf9 ? 'text-xs p-1' : 'p-2' ,'col-span-2  border-r-black border-r p-2 h-full')}></div>
+            <div className={cn(sf9 ? 'text-xs p-1' : 'p-2' ,'col-span-2  border-r-black border-r p-2 h-full')}></div>
         </div>
         <div className="grid grid-cols-12 w-full  items-center  text-center font-medium text-sm border-b border-b-black">
             <div className={cn(sf9 ? 'text-xs p-1' : 'p-2' ,'col-span-4 h-full border-x-black border-x  text-center')}>Health</div>

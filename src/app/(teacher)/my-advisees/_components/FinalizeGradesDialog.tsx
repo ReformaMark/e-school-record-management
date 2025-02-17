@@ -8,6 +8,7 @@ import { useMutation, useQuery } from 'convex/react'
 import { api } from '../../../../../convex/_generated/api'
 import { toast } from 'sonner'
 import { Id } from '../../../../../convex/_generated/dataModel'
+import { cn } from '@/lib/utils'
 
 interface FinalizeGradesDialogProps {
     student:StudentWithDetails,
@@ -24,6 +25,7 @@ function FinalizeGradesDialog({student, averages, generalAverage}:FinalizeGrades
     const [isLoading, setIsLoading ] = useState(false)
     const [isDisabled, setIsDisabled ] = useState(false)
     const promoteStudent = useMutation(api.finalGrades.create)
+
     const isPromoted = useQuery(api.finalGrades.isStudentPromoted,{
         studentId: student._id as Id<'students'>,
         sectionId: student.sectionDoc?._id as Id<'sections'>,
@@ -35,25 +37,21 @@ function FinalizeGradesDialog({student, averages, generalAverage}:FinalizeGrades
 
     const alreadyPromoted = useMemo(() => isPromoted === undefined ? true : isPromoted ,[isPromoted])
 
+    const studentGradeLevel = student.gradeLevelToEnroll
+    const sectionGradeLevel = student.sectionDoc?.gradeLevel?.level
+
+    const isRetained = useMemo(() => isPromoted ? studentGradeLevel === sectionGradeLevel ? true : false : false ,[isPromoted, sectionGradeLevel])
+
     const failedAverages = useMemo(() => {
         if (averages === null) {
             setIsDisabled(true);
             return null;
         }
-        // Check if all averages are numbers
-        const allNumbers = averages.every(
-            (item) => typeof item.finalGrade === "number" && item.finalGrade !== null
-        );
-        
-    
-        if (!allNumbers) {
-            // If any average is not a number, set disabled to true and return null
-            setIsDisabled(true);
-            return null;
-        }
+     
+        const allNumberAverages = averages.filter((item) => (typeof item.finalGrade === "number"))
     
         // Filter averages less than or equal to 74
-        const filteredAverages = averages.filter(
+        const filteredAverages = allNumberAverages.filter(
             (item) => (item.finalGrade as number) <= 74
         );
  
@@ -100,10 +98,10 @@ function FinalizeGradesDialog({student, averages, generalAverage}:FinalizeGrades
             <Tooltip>
                 <TooltipTrigger asChild>
                     <DialogTrigger disabled={ alreadyPromoted || isDisabled === true || isLoading} onClick={()=> setIsOpen(!isOpen)}>
-                        <Button size="default" disabled={ alreadyPromoted || isDisabled === true || isLoading}  className="s self-end h-7 gap-1 bg-blue-600 text-white py-2 ml-auto">
+                        <Button size="default" disabled={ alreadyPromoted || isDisabled === true || isLoading}  className={cn(isRetained && "bg-red-500 disabled:bg-red-500" ," self-end h-7 gap-1 bg-blue-600 text-white py-2 ml-auto")}>
                             <FaLevelUpAlt className="h-3.5 w-3.5" />
                             <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                                {isPromoted ? "Promoted" : "Promotion"}
+                                {isPromoted ? isRetained ? "Retained" :"Promoted" : "Promotion"}
                             </span>
                         </Button>
                     </DialogTrigger>
@@ -128,14 +126,15 @@ function FinalizeGradesDialog({student, averages, generalAverage}:FinalizeGrades
                     <h1>Failed Subject(s):</h1>
                     { failedAverages?.map((fs)=>(
                         <div key={fs.subjectName} className="">
-                            <h1 className='pl-5'>- <strong>{fs.subjectName} - ({fs.subjectName})</strong></h1>
+                            <h1 className='pl-5'>- <strong>{fs.subjectName} - ({fs.finalGrade})</strong></h1>
                         </div>
                     ))}
 
                     <p className='text-sm text-justify'>* Must pass remedial classes for failed competencies in the subjects or learning areas to be allowed to enroll in the next semester. Otherwise the learner must retake the subjects failed.</p>
                 </div>
+              
                 <DialogFooter>
-                    <Button variant={'destructive'} onClick={handlePromote} className=" text-white">Retain</Button>
+                    <Button variant={'default'} onClick={handlePromote} className=" text-white">Conditionally Promote</Button>
                 </DialogFooter>
             </>
         ) :(
@@ -145,14 +144,13 @@ function FinalizeGradesDialog({student, averages, generalAverage}:FinalizeGrades
                     <h1>Failed Subject(s):</h1>
                     { failedAverages?.map((fs)=>(
                         <div key={fs.subjectName} className="">
-                            <h1 className='pl-5'>- <strong>{fs.subjectName} - ({fs.subjectName})</strong></h1>
+                            <h1 className='pl-5'>- <strong>{fs.subjectName} - ({fs.finalGrade})</strong></h1>
                         </div>
                     ))}
-
-                    <p className='text-sm text-justify'>* Must pass remedial classes for failed competencies in the subjects or learning areas to be allowed to enroll in the next semester. Otherwise the learner must retake the subjects failed.</p>
+                    <p className='text-sm text-justify'>* Did not meet expectations in three or more learning areas. Retained in the same grade level.</p>
                 </div>
                 <DialogFooter>
-                    <Button variant={'default'} onClick={handlePromote} className=" text-white">Conditionally Promote</Button>
+                    <Button variant={'destructive'} onClick={handlePromote} className=" text-white">Retain</Button>
                 </DialogFooter>
             </>
         ): (
