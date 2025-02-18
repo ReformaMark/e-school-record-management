@@ -16,27 +16,28 @@ export const create = mutation({
             classId: v.id('classes'),
         })),
         generalAverage: v.number(),
-        semester: v.optional(v.string())
+        semester: v.optional(v.string()),
     },
     handler: async(ctx, args) =>{
      
         const failedSubjects = args.subjects.filter(subject => subject.finalGrade <= 74)
         const student = await ctx.db.get(args.studentId)
         const isShs = args.semester ? true : false
-        if(!isShs && failedSubjects.length >= 3) {
-            await ctx.db.insert('finalGrades',{
-                ...args 
+        if(!isShs && failedSubjects.length >= 3) { // if Junior high and has more than or equal to 3 failed subejcts
+            const id =  await ctx.db.insert('finalGrades',{
+                ...args,
+                promotionType: "Retained"
             })
             await ctx.db.patch(args.studentId,{
                 enrollmentStatus: 'Can Enroll',
             })
-
-            return
+            return id
         }
 
         //To recorrd the grades of the student
-        await ctx.db.insert('finalGrades',{
-            ...args 
+        const id = await ctx.db.insert('finalGrades',{
+            ...args,
+            promotionType: failedSubjects.length >= 1 ? "Conditionally Promoted": "Promoted" 
         })
         //To promote the student
       
@@ -48,7 +49,7 @@ export const create = mutation({
                     semesterToEnroll: "2nd",
                     semester: undefined
                 })
-                return
+                return id
             } else {
               
                 const isGraduated = nextGradeLevel === 13
@@ -56,16 +57,29 @@ export const create = mutation({
                 await ctx.db.patch(args.studentId,{
                     enrollmentStatus: 'Can Enroll',
                     gradeLevelToEnroll: nextGradeLevel.toString(),
-                    gradeLevel: undefined
+                    gradeLevel: undefined,
+                    semesterToEnroll: "1st",
+                    semester: undefined
                 })
-                return
+                return id
             }
         } else {
+            if(nextGradeLevel === 11) {
+                await ctx.db.patch(args.studentId,{
+                    enrollmentStatus: 'Can Enroll',
+                    gradeLevelToEnroll: nextGradeLevel.toString(),
+                    gradeLevel: undefined,
+                    semesterToEnroll: "1st",
+                    semester: undefined
+                })
+            }
             await ctx.db.patch(args.studentId,{
                 enrollmentStatus: 'Can Enroll',
                 gradeLevelToEnroll: nextGradeLevel.toString(),
                 gradeLevel: undefined
             })
+
+            return id
         }
     
    
@@ -92,9 +106,9 @@ export const isStudentPromoted = query({
             .unique()
     
             if(studentFinalGradeExist) {
-                return true
+                return {hasPromoted : true, studentFinalFGrade: studentFinalGradeExist}
             } else {
-                return false
+                return {hasPromoted: false}
             }
         } else {
             const studentFinalGradeExist = await ctx.db.query('finalGrades')
@@ -105,9 +119,9 @@ export const isStudentPromoted = query({
             .unique()
     
             if(studentFinalGradeExist) {
-                return true
+                return {hasPromoted : true, studentFinalFGrade: studentFinalGradeExist}
             } else {
-                return false
+                return {hasPromoted: false}
             }
         }
     
@@ -148,8 +162,12 @@ export const updateStatus = mutation({
     args: {
         finalGradeId: v.id('finalGrades'),
         classId: v.id('classes'),
+        studentId: v.id('students'),
         status: v.string(), // New status to set
-        remedialGrade: v.optional(v.number())
+        remedialGrade: v.optional(v.number()),
+        sem: v.optional(v.string()),
+        gradeLevelToEnroll: v.optional(v.string()),
+        isSHS: v.boolean()
     },
     handler: async (ctx, args) => {
         const finalGrade = await ctx.db.get(args.finalGradeId);
@@ -159,6 +177,21 @@ export const updateStatus = mutation({
         }
 
         if(args.remedialGrade) {
+            if(args.isSHS) {
+                if(args.remedialGrade <= 74){
+                    if(args.sem === "1st"){
+                        await ctx.db.patch(args.studentId, {
+                            semesterToEnroll: "1st" // meaning retained in the same semester
+                        })
+                    } 
+                    if(args.sem === "2nd"){
+                        await ctx.db.patch(args.studentId, {
+                            semesterToEnroll: "2nd", // meaning retained in the same semester
+                            gradeLevelToEnroll: (Number(args.gradeLevelToEnroll) - 1).toString()
+                        })
+                    } 
+                }
+            }
             const updatedSubjects = finalGrade.subjects.map((subject) => {
                 if (subject.classId === args.classId) {
                     return {

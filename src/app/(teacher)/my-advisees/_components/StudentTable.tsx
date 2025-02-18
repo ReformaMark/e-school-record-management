@@ -13,7 +13,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { StudentTypes } from "@/lib/types";
+import { StudentWithSem } from "@/lib/types";
 import { getAge } from "@/lib/utils";
 import { Id } from "../../../../../convex/_generated/dataModel";
 import { useEffect, useState } from "react";
@@ -25,12 +25,8 @@ export const StudentTable = () =>{
     const latestSY = sy ? sy[0]._id : undefined
     const [selectedSY, setSelectedSY] = useState<Id<'schoolYears'> | undefined>(undefined)
 
-    useEffect(() => {
-        if (latestSY) {
-            setSelectedSY(latestSY)
-        }
-    }, [latestSY])
-    const [selectedSem , setSelectedSem] = useState<string | undefined>()
+    
+    const [selectedSem , setSelectedSem] = useState<string | undefined>('1st')
     const students = useQuery(api.students.getStudentByTeacher,{
         sy: selectedSY,
         sem: selectedSem
@@ -42,6 +38,15 @@ export const StudentTable = () =>{
     const gradeLevel = section?.gradeLevel?.level
 
     const isSHS = Number(gradeLevel) > 10
+   
+    useEffect(() => {
+        if (latestSY) {
+            setSelectedSY(latestSY)
+        }
+        if(gradeLevel){
+            setSelectedSem(isSHS ? "1st" : undefined)
+        }
+    }, [latestSY, gradeLevel])
    
 
     const sortedStudents = students?.sort((a, b) => a.lastName.localeCompare(b.lastName)) ?? [];
@@ -89,7 +94,7 @@ export const StudentTable = () =>{
 }
 
 
-export const StudentColumn: ColumnDef<StudentTypes>[]  = [
+export const StudentColumn: ColumnDef<StudentWithSem>[]  = [
     {
         id: "fullName",
         accessorFn: (row) => {
@@ -145,11 +150,13 @@ export const StudentColumn: ColumnDef<StudentTypes>[]  = [
         cell: ({ row }) => {
             const student = row.original
             const birthDate = new Date(student.birthDate);
+            const isSHS = student.isSHS
+            const sem = student.sem
             //full address
             const fulladdress = `${student.currentAddress.houseNum ? student.currentAddress.houseNum : ""} ${student.currentAddress.street ? student.currentAddress.street : ""} ${student.currentAddress.barangay ? `${student.currentAddress.barangay},` : ""} ${student.currentAddress.municipality ? `${student.currentAddress.municipality},`: ""} ${student.currentAddress.province ? student.currentAddress.province: ""}`
           return (
             <div className="flex items-center gap-x-2 ">
-                <Link href={`/my-advisees/${student._id}`} className="">
+                <Link href={`/my-advisees/${student._id}?isSHS=${isSHS}&sem=${sem}`} className="">
                     <FaUserEdit className="size-4 md:size-6 text-gray-400 hover:text-orange-500"/>
                 </Link>
                 <Dialog>

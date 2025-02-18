@@ -51,6 +51,11 @@ export interface PrincipalFormData {
 
 export type StudentTypes = Doc<"students">
 
+export interface StudentWithSem extends Doc<"students"> {
+    isSHS: boolean,
+    sem: string| undefined
+}
+
 export interface StudentsWithEnrollMentTypes extends Doc<"students"> {
     enrollment: Doc<"enrollments">
 }

@@ -14,6 +14,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { useReactToPrint } from 'react-to-print'
 import { IoMdPrint } from 'react-icons/io'
+import SrGradesTemplate from './SrGradesTemplate'
 
 interface SchoolForm9Props {
     student: StudentWithDetails,
@@ -27,7 +28,9 @@ function SchoolForm9({
 }: SchoolForm9Props) {
     const componentRef = useRef(null);
 
-    
+    const gradeLevel = student.sectionDoc?.gradeLevel?.level
+    const isSHS = gradeLevel ?? 0 > 10
+
   const reactToPrintContent = () => {
     return componentRef.current;
   };
@@ -36,7 +39,6 @@ function SchoolForm9({
       documentTitle: `School form 9`,
   
     });
-    
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -55,7 +57,19 @@ function SchoolForm9({
                     <h1 className='font-semibold text-sm font-serif'>TANJAY NATIONAL HIGH SCHOOL (OPAO)</h1>
                     <h1 className='text-xs'>Barangay IX, OPAO, Tanjay City</h1>
                 </div> */}
-                <JrGradesTemplate student={student} sf9={true}/>
+                {isSHS ? (
+                  <>
+                  <div className="mb-3">
+                    <SrGradesTemplate student={student} sem='1st' sf9={true}/>
+                  </div>
+                  <div className="">
+                    <SrGradesTemplate student={student} sem='2nd' sf9={true}/>
+                  </div>
+                  </>
+                ): (
+                  <JrGradesTemplate student={student} sf9={true}/>
+                )}
+              
             </div>
             <div className='text-xs'>
                 <Values sf9={true} studentId={student?._id as Id<'students'>} classId={student?.cLass?._id as Id<'classes'>}/>

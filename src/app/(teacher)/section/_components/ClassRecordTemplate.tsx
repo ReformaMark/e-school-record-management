@@ -211,12 +211,12 @@ function ClassRecordTemplate({
         {/* Males */}
         <div className="flex max-w-full bg-gray-300 ">
             <h1 className="w-[3%] uppercase border-b-black border-b border-x border-x-black text-sm font-semibold text-center"></h1>
-            <h1 className="w-[22%] px-1 uppercase  border-b-black border-b text-xs flex justify-start items-center font-semibold text-left">FEMALE</h1>
+            <h1 className="w-[22%] px-1 uppercase  border-b-black border-b text-xs flex justify-start items-center font-semibold text-left">MALE</h1>
             <div className="w-[27%] uppercase border-b-black border-b text-sm flex justify-center items-center font-semibold text-center">
                 {Array.from({ length: 10 }).map((_, index) => (
                     <h1 
                         key={index} 
-                        className="w-[7%] h-full uppercase border border-b-0 border-black border-collapse first:border-l-2 border-collapse text-[0.6rem] flex justify-center items-center font-semibold text-center"
+                        className="w-[7%] h-full uppercase border border-b-0 border-black border-collapse first:border-l-2 text-[0.6rem] flex justify-center items-center font-semibold text-center"
                     >
                     </h1>
                 ))}
@@ -317,7 +317,7 @@ function ClassRecordTemplate({
                 {Array.from({ length: 10 }).map((_, index) => (
                     <h1 
                         key={index} 
-                        className="w-[7%] h-full uppercase border border-b-0 border-black border-collapse first:border-l-2 border-collapse text-[0.6rem] flex justify-center items-center font-semibold text-center"
+                        className="w-[7%] h-full uppercase border border-b-0 border-black border-collapse first:border-l-2 text-[0.6rem] flex justify-center items-center font-semibold text-center"
                     >
                     </h1>
                 ))}

@@ -33,15 +33,8 @@ export const create = mutation({
         await asyncMap(classes, async(cls) =>{
             const section = await ctx.db.get(cls.sectionId)
             if(!section) return
-            let students = section.students;
-            if(args.semester) {
-                if(args.semester === "1st") {
-                    students = section.firstSemStudents;
-                }
-                if(args.semester === "2nd") {
-                    students = section.secondSemStudents;
-                }
-            }
+            const students = args.semester ? args.semester === "1st" ? section.firstSemStudents : section.secondSemStudents :section.students;
+           
             await asyncMap(students, async(studentId) =>{
                 let hasExistingCR
                 if(args.subComponent){
@@ -71,7 +64,6 @@ export const create = mutation({
                     }
                    
                 }
-               console.log(hasExistingCR)
 
                 if (hasExistingCR) {
                     if (args.type === "Written Works") {

@@ -21,6 +21,7 @@ import { Doc, Id } from '../../../../../convex/_generated/dataModel'
 import Values from '../_components/Values'
 import Attendance from '../_components/Attendance'
 import SchoolForm9 from '../_components/SchoolForm9'
+import { useSearchParams } from 'next/navigation'
 
 function Student({
     params
@@ -30,8 +31,13 @@ function Student({
     }
 }) {
     const [isOpen, setIsOpen] = useState(false)
+    const searchParams = useSearchParams();
+    const isSHS = searchParams.get('isSHS')
+    const sem = searchParams.get('sem')
     const student = useQuery(api.students.getStudentWithDetails,{
         id: params.studentId as Id<'students'>,
+        isSHS: isSHS !== null ? isSHS  : undefined,
+        sem: sem !== null ? sem : undefined
     })
 
     const attendance = useQuery(api.attendance.get, {

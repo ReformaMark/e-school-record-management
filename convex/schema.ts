@@ -367,15 +367,14 @@ export default defineSchema({
       remedialGrade: v.optional(v.number()),
       status: v.optional(v.string())
     })),
-    noOfFailedSub: v.optional(v.number()),
     generalAverage: v.number(),
-    semester: v.optional(v.string())
+    semester: v.optional(v.string()),
+    promotionType: v.optional(v.string())
   }),
   promotion: defineTable({
-    from: v.number(),
-    to: v.number(),
+    finalGradeId: v.id('finalGrades'),
     studentId: v.id('students'),
-    type: v.union(v.literal("regular"), v.literal("conditional"),)
+    type: v.string()
   }),
 
   values: defineTable({

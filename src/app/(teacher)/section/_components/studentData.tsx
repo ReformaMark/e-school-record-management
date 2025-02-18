@@ -384,6 +384,7 @@ export const forRemedial: ColumnDef<FinalGradesWithSubject>[] = [
     cell: ({ row }) => {
         const a = row.original
         const status = row.original.subjectForRemedial.status ?? "Not Enrolled" // Enrolled or Not Enrolled
+        const isSHS = a.semester ? true : false
         const rg = row.original.subjectForRemedial.remedialGrade
         const [isOpen, setIsOpen] = useState<boolean>(false)
         const [enrollmentStatus, setEnrollmentStatus] = useState(status)
@@ -393,13 +394,16 @@ export const forRemedial: ColumnDef<FinalGradesWithSubject>[] = [
         const handleOpen = () =>{
           setIsOpen(!isOpen)
         }
-        console.log(enrollmentStatus)
         const handleSaveStatus = ()=> {
           toast.promise(updateStatus({
             finalGradeId: a._id,
             classId: a.subjectForRemedial.classId,
             status: enrollmentStatus, // New status t
-            remedialGrade: remedialGrade
+            remedialGrade: remedialGrade,
+            isSHS: isSHS,
+            sem: row.original.semester,
+            gradeLevelToEnroll: row.original.student.gradeLevelToEnroll,
+            studentId: row.original.studentId
           }),{
             loading: "Updating status...",
             success: "Status updated successfully.",
