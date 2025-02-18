@@ -114,7 +114,6 @@ export const SectionForm = ({ isEditing = false, section }: SectionFormProps) =>
 
     useEffect(() => {
         if (isEditing && section) {
-
             reset({
                 name: section.name,
                 gradeLevelId: section.gradeLevelId,
@@ -122,6 +121,7 @@ export const SectionForm = ({ isEditing = false, section }: SectionFormProps) =>
                 schoolYearId: section.schoolYearId,
                 roomId: section.roomId,
                 classes: section.classes.map(cls => ({
+                    id: cls._id,
                     subjectId: cls.subjectId,
                     teacherId: cls.teacherId,
                     semester: cls.semester || "",
@@ -210,11 +210,13 @@ export const SectionForm = ({ isEditing = false, section }: SectionFormProps) =>
                 schoolYearId: data.schoolYearId as Id<"schoolYears">,
                 roomId: data.roomId as Id<"rooms">,
                 classes: data.classes.map(cls => ({
-                    ...cls,
+                    ...(cls.id ? { id: cls.id as Id<"classes"> } : {}),
                     subjectId: cls.subjectId as Id<"subjects">,
                     teacherId: cls.teacherId as Id<"users">,
+                    semester: cls.semester,
+                    track: cls.track,
                     schedules: cls.schedules?.map(schedule => ({
-                        ...schedule,
+                        days: schedule.days,
                         roomId: schedule.roomId as Id<"rooms">,
                         schoolPeriodId: schedule.schoolPeriodId as Id<"schoolPeriods">,
                     }))

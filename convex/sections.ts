@@ -1,7 +1,7 @@
+import { getAuthUserId } from "@convex-dev/auth/server";
 import { ConvexError, v } from "convex/values";
 import { Id } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
-import { getAuthUserId } from "@convex-dev/auth/server";
 
 export const getSectionsUsingGradeLevel = query({
     args: {
@@ -38,34 +38,34 @@ export const addStudentToSection = mutation({
         const section = await ctx.db.get(args.sectionId)
         const isShs = args.gradeLevelToEnroll > 10
 
-        if(isShs) {
-            if(args.semesterToEnroll === "1st"){
+        if (isShs) {
+            if (args.semesterToEnroll === "1st") {
                 const sectionStudentsFirst = section?.firstSemStudents
                 sectionStudentsFirst?.push(args.studentId)
 
                 await ctx.db.patch(args.sectionId, {
-                   firstSemStudents: sectionStudentsFirst
+                    firstSemStudents: sectionStudentsFirst
                 })
             }
-            if(args.semesterToEnroll === "2nd"){
+            if (args.semesterToEnroll === "2nd") {
                 const sectionStudentsSecond = section?.secondSemStudents
                 sectionStudentsSecond?.push(args.studentId)
 
                 await ctx.db.patch(args.sectionId, {
-                   secondSemStudents: sectionStudentsSecond
+                    secondSemStudents: sectionStudentsSecond
                 })
             }
         } else {
-       
+
             const sectionStudents = section?.students
-    
+
             sectionStudents?.push(args.studentId)
-    
+
             await ctx.db.patch(args.sectionId, {
                 students: sectionStudents
             })
         }
-      
+
 
     }
 })
@@ -217,24 +217,24 @@ export const getSchedulesByClassId = query({
 });
 
 export const getSectionsByTeacher = query({
-    args:{
+    args: {
         sy: v.optional(v.id('schoolYears'))
     },
-    handler: async(ctx, args) => {
+    handler: async (ctx, args) => {
         const teacherId = await getAuthUserId(ctx)
-        if(!teacherId) throw new ConvexError('No teacher id.')
-        
-        if(!args.sy) return 
+        if (!teacherId) throw new ConvexError('No teacher id.')
+
+        if (!args.sy) return
 
         const section = await ctx.db.query('sections')
-            .filter( q => q.eq(q.field("advisorId"), teacherId))
-            .filter( q => q.eq(q.field("schoolYearId"), args.sy))
+            .filter(q => q.eq(q.field("advisorId"), teacherId))
+            .filter(q => q.eq(q.field("schoolYearId"), args.sy))
             .unique()
-        
-        if(!section || section === null) return
+
+        if (!section || section === null) return
 
         const gradeLevel = await ctx.db.get(section?.gradeLevelId)
-        
+
         return {
             ...section,
             gradeLevel: gradeLevel
@@ -269,11 +269,16 @@ export const getSections = query({
                     .filter(q => q.eq(q.field("classId"), classItem._id))
                     .collect();
 
+
                 return {
-                    ...classItem,
+                    _id: classItem._id,
+                    subjectId: classItem.subjectId,
+                    teacherId: classItem.teacherId,
+                    semester: classItem.semester || "",
+                    track: classItem.track || "",
                     teacher,
                     subject,
-                    schedule: schedules.map(schedule => ({
+                    schedules: schedules.map(schedule => ({
                         days: schedule.day,
                         schoolPeriodId: schedule.schoolPeriodId,
                         roomId: schedule.roomId
@@ -446,6 +451,8 @@ export const update = mutation({
             advisorId: args.advisorId,
             schoolYearId: args.schoolYearId,
             roomId: args.roomId,
+            ...(!section.firstSemStudents ? { firstSemStudents: [] } : {}),
+            ...(!section.secondSemStudents ? { secondSemStudents: [] } : {})
         });
 
         // Get existing classes
@@ -454,20 +461,19 @@ export const update = mutation({
             .filter(q => q.eq(q.field("sectionId"), args.id))
             .collect();
 
-        // Delete classes that are not in the updated list
-        const updatedClassIds = args.classes
-            .filter(c => c.id)
-            .map(c => c.id) as Id<"classes">[];
+        // Create a map of existing class IDs for easier lookup
+        const existingClassMap = new Map(
+            existingClasses.map(cls => [cls._id, cls])
+        );
 
-        for (const existingClass of existingClasses) {
-            if (!updatedClassIds.includes(existingClass._id)) {
-                await ctx.db.delete(existingClass._id);
-            }
-        }
+        // Track which existing classes are still being used
+        const usedClassIds = new Set<Id<"classes">>();
 
+        // Update or create classes
         for (const classData of args.classes) {
-            if (classData.id) {
+            if (classData.id && existingClassMap.has(classData.id)) {
                 // Update existing class
+                usedClassIds.add(classData.id);
                 await ctx.db.patch(classData.id, {
                     subjectId: classData.subjectId,
                     teacherId: classData.teacherId,
@@ -475,7 +481,7 @@ export const update = mutation({
                     track: isSHS ? classData.track : undefined,
                 });
 
-                // Update schedules if they exist
+                // Handle schedules for existing class
                 if (classData.schedules) {
                     // Delete existing schedules
                     const existingSchedules = await ctx.db
@@ -483,19 +489,35 @@ export const update = mutation({
                         .filter(q => q.eq(q.field("classId"), classData.id))
                         .collect();
 
-                    for (const schedule of existingSchedules) {
-                        await ctx.db.delete(schedule._id);
-                    }
+                    // Only update schedules if they've changed
+                    const schedulesHaveChanged = existingSchedules.length !== classData.schedules.length ||
+                        existingSchedules.some((schedule, index) => {
+                            const newSchedule = classData.schedules?.[index];
+                            if (!newSchedule) return true;
 
-                    // Create new schedules
-                    for (const schedule of classData.schedules) {
-                        await ctx.db.insert("schedules", {
-                            day: schedule.days,
-                            schoolPeriodId: schedule.schoolPeriodId,
-                            roomId: schedule.roomId,
-                            classId: classData.id,
-                            teacherId: classData.teacherId
+                            return (
+                                !schedule.day.every((d, i) => d === newSchedule.days[i]) ||
+                                schedule.schoolPeriodId !== newSchedule.schoolPeriodId ||
+                                schedule.roomId !== newSchedule.roomId
+                            );
                         });
+
+                    if (schedulesHaveChanged) {
+                        // Delete old schedules
+                        for (const schedule of existingSchedules) {
+                            await ctx.db.delete(schedule._id);
+                        }
+
+                        // Create new schedules
+                        for (const schedule of classData.schedules) {
+                            await ctx.db.insert("schedules", {
+                                day: schedule.days,
+                                schoolPeriodId: schedule.schoolPeriodId,
+                                roomId: schedule.roomId,
+                                classId: classData.id,
+                                teacherId: classData.teacherId
+                            });
+                        }
                     }
                 }
             } else {
@@ -521,6 +543,24 @@ export const update = mutation({
                         });
                     }
                 }
+            }
+        }
+
+        // Delete classes that are no longer used
+        for (const existingClass of existingClasses) {
+            if (!usedClassIds.has(existingClass._id)) {
+                // Delete associated schedules first
+                const schedules = await ctx.db
+                    .query("schedules")
+                    .filter(q => q.eq(q.field("classId"), existingClass._id))
+                    .collect();
+
+                for (const schedule of schedules) {
+                    await ctx.db.delete(schedule._id);
+                }
+
+                // Then delete the class
+                await ctx.db.delete(existingClass._id);
             }
         }
 

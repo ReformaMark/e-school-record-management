@@ -1,6 +1,6 @@
 "use client"
-import { useParams } from "next/navigation";
 import { useQuery } from "convex/react";
+import { useParams } from "next/navigation";
 import { api } from "../../../../../../../convex/_generated/api";
 import { SectionForm } from "../../_components/section-form";
 
