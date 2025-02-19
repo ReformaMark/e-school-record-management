@@ -10,23 +10,14 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-    DropdownMenu,
-    DropdownMenuCheckboxItem,
-    DropdownMenuContent,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger
-} from "@/components/ui/dropdown-menu";
 
 import { DataTable } from "@/components/data-table";
+import { exportToExcelTeachers } from "@/lib/export-to-excel";
 import { useQuery } from "convex/react";
-import { File, ListFilterIcon } from "lucide-react";
+import { File } from "lucide-react";
 import Link from "next/link";
 import { api } from "../../../../convex/_generated/api";
-import { teacherColumns } from "../../../../data/teachers-data";
 import { ShTeacherColumns } from "./_components/sh-teacher-columns";
-import { exportToExcelTeachers } from "@/lib/export-to-excel";
 
 // Column definitions for the DataTable
 

@@ -1,17 +1,8 @@
 "use client"
 
-import { ColumnDef } from "@tanstack/react-table";
-import { Calendar, Clock, MapPin, MoreHorizontal, Users } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import {
     Dialog,
     DialogContent,
@@ -20,14 +11,14 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog";
-import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { ColumnDef } from "@tanstack/react-table";
+import { Calendar, Clock, MapPin, Users } from "lucide-react";
 
-import Link from "next/link";
 import { useQuery } from "convex/react";
 import { useState } from "react";
-import { Id } from "../../../../../convex/_generated/dataModel";
 import { api } from "../../../../../convex/_generated/api";
+import { Id } from "../../../../../convex/_generated/dataModel";
 
 export type Teacher = {
     id: Id<"users">;
@@ -288,6 +279,8 @@ export const teachersData = [
 
 type SchoolSubjects = Record<"value" | "label", string>;
 
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const schoolSubjects = [
     {
         value: "math",

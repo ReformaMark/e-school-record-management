@@ -268,7 +268,7 @@ export const sectionColumns: ColumnDef<SectionWithDetails>[] = [
     },
     {
         accessorKey: "roomNumber",
-        header: "Room No.",
+        header: "Room Name",
         cell: function Cell({ row }) {
             const roomId = row.original.roomId as Id<"rooms">
 

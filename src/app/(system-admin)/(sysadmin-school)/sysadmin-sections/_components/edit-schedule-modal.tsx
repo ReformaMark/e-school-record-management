@@ -18,7 +18,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { Edit } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface EditScheduleModalProps {
     initialSchedule: {
@@ -44,9 +44,15 @@ export const EditScheduleModal = ({
     rooms
 }: EditScheduleModalProps) => {
     const [open, setOpen] = useState(false);
-    const [days, setDays] = useState<string[]>(initialSchedule.days);
-    const [schoolPeriodId, setSchoolPeriodId] = useState(initialSchedule.schoolPeriodId);
-    const [roomId, setRoomId] = useState(initialSchedule.roomId);
+    const [days, setDays] = useState<string[]>(initialSchedule.days || []);
+    const [schoolPeriodId, setSchoolPeriodId] = useState(initialSchedule?.schoolPeriodId || '');
+    const [roomId, setRoomId] = useState(initialSchedule?.roomId || '');
+
+    useEffect(() => {
+        setDays(initialSchedule?.days || []);
+        setSchoolPeriodId(initialSchedule?.schoolPeriodId || '');
+        setRoomId(initialSchedule?.roomId || '');
+    }, [initialSchedule]);
 
     const handleSubmit = () => {
         onScheduleEdit({
@@ -127,7 +133,7 @@ export const EditScheduleModal = ({
                         type="button"
                         className="w-full text-white"
                         onClick={handleSubmit}
-                        disabled={!days.length || !schoolPeriodId || !roomId}
+                        disabled={!Array.isArray(days) || days.length === 0 || !schoolPeriodId || !roomId}
                     >
                         Update Schedule
                     </Button>

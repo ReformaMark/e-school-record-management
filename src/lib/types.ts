@@ -83,7 +83,7 @@ export interface SectionWithDetails extends Doc<'sections'> {
 interface ClassessWithTeacherSubSched extends Doc<'classes'> {
     teacher: Doc<'users'> | null,
     subject: Doc<'subjects'> | null
-    schedule: Doc<'schedules'>[]
+    schedules: Doc<'schedules'>[]
 }
 export interface SectionWithGradeLevel extends Doc<'sections'> {
     gradeLevel: Doc<'gradeLevels'> | null

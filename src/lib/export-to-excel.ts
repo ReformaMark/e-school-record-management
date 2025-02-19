@@ -90,8 +90,10 @@ export const exportToExcelTeachers = (data: any[], fileName: string) => {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const exportToExcelSections = (data: any[], fileName: string) => {
     const exportData = data.map(item => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const classes = item.classes?.map((cls: any) => {
             // Fix: Access schedules directly from cls and handle array mapping
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const schedules = cls.schedules?.map((schedule: any) => ({
                 days: Array.isArray(schedule.days) ? schedule.days.join(', ') : schedule.days,
                 // Get period and room data from the database IDs
@@ -115,6 +117,7 @@ export const exportToExcelSections = (data: any[], fileName: string) => {
             gradeLevel: item.gradeLevel?.level,
             adviser: `${item.advisor?.lastName}, ${item.advisor?.firstName}`,
             schoolYear: item.schoolYear?.name,
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             classes: classes?.map((cls: any) =>
                 `Subject: ${cls.subject}\nTeacher: ${cls.teacher}\nSchedule: ${cls.schedules}`
             ).join('\n\n')

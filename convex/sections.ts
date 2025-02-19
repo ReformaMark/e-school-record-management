@@ -274,9 +274,12 @@ export const getSections = query({
                     const room = await ctx.db.get(schedule.roomId);
 
                     return {
-                        days: schedule.day,
-                        schoolPeriodId: period?.timeRange || schedule.schoolPeriodId,
-                        roomId: room?.name || schedule.roomId
+                        _id: schedule._id,
+                        day: schedule.day,
+                        schoolPeriodId: schedule.schoolPeriodId,
+                        roomId: schedule.roomId,
+                        timeRange: period?.timeRange,
+                        roomName: room?.name
                     };
                 }));
 
@@ -502,20 +505,24 @@ export const update = mutation({
                             const newSchedule = classData.schedules?.[index];
                             if (!newSchedule) return true;
 
+                            // Compare arrays properly
+                            const daysChanged = schedule.day.length !== newSchedule.days.length ||
+                                !schedule.day.every(day => newSchedule.days.includes(day));
+
                             return (
-                                !schedule.day.every((d, i) => d === newSchedule.days[i]) ||
+                                daysChanged ||
                                 schedule.schoolPeriodId !== newSchedule.schoolPeriodId ||
                                 schedule.roomId !== newSchedule.roomId
                             );
                         });
 
                     if (schedulesHaveChanged) {
-                        // Delete old schedules
+                        // Delete old schedules first
                         for (const schedule of existingSchedules) {
                             await ctx.db.delete(schedule._id);
                         }
 
-                        // Create new schedules
+                        // Create new schedules with updated data
                         for (const schedule of classData.schedules) {
                             await ctx.db.insert("schedules", {
                                 day: schedule.days,

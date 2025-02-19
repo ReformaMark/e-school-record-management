@@ -126,7 +126,11 @@ export const SectionForm = ({ isEditing = false, section }: SectionFormProps) =>
                     teacherId: cls.teacherId,
                     semester: cls.semester || "",
                     track: cls.track || "",
-                    schedules: cls.schedule || []
+                    schedules: cls.schedules?.map(schedule => ({
+                        days: schedule.day,
+                        schoolPeriodId: schedule.schoolPeriodId,
+                        roomId: schedule.roomId
+                    })) || []
                 }))
             });
 
@@ -492,10 +496,11 @@ export const SectionForm = ({ isEditing = false, section }: SectionFormProps) =>
                                                                         roomId: ""
                                                                     }}
                                                                     onScheduleEdit={(schedule) => {
-                                                                        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                                                                        const schedules = watch(`classes.${index}.schedules`) || [];
-                                                                        // Replace the first schedule with the edited one
-                                                                        setValue(`classes.${index}.schedules`, [schedule]);
+                                                                        setValue(`classes.${index}.schedules`, [{
+                                                                            days: Array.isArray(schedule.days) ? schedule.days : [schedule.days],
+                                                                            schoolPeriodId: schedule.schoolPeriodId,
+                                                                            roomId: schedule.roomId
+                                                                        }]);
                                                                     }}
                                                                     schoolPeriods={schoolPeriods || []}
                                                                     rooms={rooms || []}
@@ -519,10 +524,14 @@ export const SectionForm = ({ isEditing = false, section }: SectionFormProps) =>
                                                                     className="flex items-center justify-between p-2 bg-gray-50 rounded-md"
                                                                 >
                                                                     <div className="space-y-1">
-                                                                        <div className="text-sm font-medium">{schedule.days.join(", ")}</div>
+                                                                        <div className="text-sm font-medium">
+                                                                            {Array.isArray(schedule.days)
+                                                                                ? schedule.days.join(", ")
+                                                                                : schedule.days}
+                                                                        </div>
                                                                         <div className="text-sm text-muted-foreground">
-                                                                            {schoolPeriods?.find((p) => p._id === schedule.schoolPeriodId)?.timeRange} |
-                                                                            {rooms?.find((r) => r._id === schedule.roomId)?.name}
+                                                                            {schoolPeriods?.find(p => p._id === schedule.schoolPeriodId)?.timeRange} |
+                                                                            {rooms?.find(r => r._id === schedule.roomId)?.name}
                                                                         </div>
                                                                     </div>
                                                                     <Button
@@ -530,11 +539,11 @@ export const SectionForm = ({ isEditing = false, section }: SectionFormProps) =>
                                                                         variant="ghost"
                                                                         size="sm"
                                                                         onClick={() => {
-                                                                            const schedules = watch(`classes.${index}.schedules`)
+                                                                            const schedules = watch(`classes.${index}.schedules`);
                                                                             setValue(
                                                                                 `classes.${index}.schedules`,
-                                                                                schedules?.filter((_, i) => i !== scheduleIndex),
-                                                                            )
+                                                                                schedules?.filter((_, i) => i !== scheduleIndex)
+                                                                            );
                                                                         }}
                                                                     >
                                                                         <Trash className="h-4 w-4" />
