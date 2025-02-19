@@ -35,17 +35,34 @@ function FinalizeGradesDialog({student, averages, generalAverage}:FinalizeGrades
 
     const isShs = Number(student.sectionDoc?.gradeLevel?.level ?? 0) > 10
 
-    const alreadyPromoted = useMemo(() => isPromoted === undefined ? true : isPromoted ,[isPromoted])
+    const alreadyPromoted = useMemo(() => isPromoted === undefined ? true : isPromoted.hasPromoted ,[isPromoted])
 
     const studentGradeLevel = student.gradeLevelToEnroll
+    const studentSem = student.semesterToEnroll
     const sectionGradeLevel = student.sectionDoc?.gradeLevel?.level
+    const classSem = student.cLass?.semester
 
-    const isRetained = useMemo(() => isPromoted ? studentGradeLevel === sectionGradeLevel ? true : false : false ,[isPromoted, sectionGradeLevel])
+    const isRetained = useMemo(() => isPromoted?.hasPromoted ? isShs ? studentSem === classSem && true : studentGradeLevel === sectionGradeLevel ? true : false : false ,[isPromoted, sectionGradeLevel])
 
     const failedAverages = useMemo(() => {
         if (averages === null) {
             setIsDisabled(true);
             return null;
+        }
+
+        const notAllNumbers = averages.some((item) => typeof item.finalGrade === 'string')
+
+        const noScore = averages.some((item)=> item.finalGrade === "")
+        if(noScore) {
+            setIsDisabled(true)
+
+            return []
+        }
+      
+        if(notAllNumbers){
+            setIsDisabled(true)
+
+            return []
         }
      
         const allNumberAverages = averages.filter((item) => (typeof item.finalGrade === "number"))
@@ -82,7 +99,7 @@ function FinalizeGradesDialog({student, averages, generalAverage}:FinalizeGrades
             subjects: removeClassIdUndefined ?? [],
             schoolYearId: student.cLass?.schoolYearId,
             generalAverage: typeof generalAverage === 'string' ? 0 : generalAverage,
-            semester: student.cLass?.semester
+            semester: student.cLass?.semester,
         }),{
             loading: "Promoting student...",
             success: "Student promoted successfully.",
@@ -99,9 +116,9 @@ function FinalizeGradesDialog({student, averages, generalAverage}:FinalizeGrades
                 <TooltipTrigger asChild>
                     <DialogTrigger disabled={ alreadyPromoted || isDisabled === true || isLoading} onClick={()=> setIsOpen(!isOpen)}>
                         <Button size="default" disabled={ alreadyPromoted || isDisabled === true || isLoading}  className={cn(isRetained && "bg-red-500 disabled:bg-red-500" ," self-end h-7 gap-1 bg-blue-600 text-white py-2 ml-auto")}>
-                            <FaLevelUpAlt className="h-3.5 w-3.5" />
+                            <FaLevelUpAlt className="h-m3.5 w-3.5" />
                             <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                                {isPromoted ? isRetained ? "Retained" :"Promoted" : "Promotion"}
+                                {isPromoted ? isPromoted.studentFinalFGrade?.promotionType : "Promotion"}
                             </span>
                         </Button>
                     </DialogTrigger>
@@ -119,41 +136,59 @@ function FinalizeGradesDialog({student, averages, generalAverage}:FinalizeGrades
             
         </DialogHeader>
         
-        { failedAverages && failedAverages?.length >= 1 ? failedAverages.length  >= 3 && isShs ? (
-            <>
-                <div className="space-y-3">
-                    <p>{studentName} has <strong>failed ({ failedAverages?.length})</strong> of his subjects.</p>
-                    <h1>Failed Subject(s):</h1>
-                    { failedAverages?.map((fs)=>(
-                        <div key={fs.subjectName} className="">
-                            <h1 className='pl-5'>- <strong>{fs.subjectName} - ({fs.finalGrade})</strong></h1>
+        {failedAverages && failedAverages.length >= 1 ? (
+            isShs ? (
+                <>
+                    <div className="space-y-3">
+                        <p>{studentName} has <strong>failed ({failedAverages.length})</strong> of his subjects.</p>
+                        <h1>Failed Subject(s):</h1>
+                        {failedAverages.map((fs) => (
+                            <div key={fs.subjectName} className="">
+                                <h1 className='pl-5'>- <strong>{fs.subjectName} - ({fs.finalGrade})</strong></h1>
+                            </div>
+                        ))}
+                        <p className='text-sm text-justify'>* Must pass remedial classes for failed competencies in the subjects or learning areas to be allowed to enroll in the next semester. Otherwise, the learner must retake the subjects failed.</p>
+                    </div>
+                    <DialogFooter>
+                        <Button variant={'default'} onClick={handlePromote} className=" text-white">Conditionally Promote</Button>
+                    </DialogFooter>
+                </>
+            ) : (
+                failedAverages.length >= 3 ? (
+                    <>
+                        <div className="space-y-3">
+                            <p>{studentName} has <strong>failed ({failedAverages.length})</strong> of his subjects.</p>
+                            <h1>Failed Subject(s):</h1>
+                            {failedAverages.map((fs) => (
+                                <div key={fs.subjectName} className="">
+                                    <h1 className='pl-5'>- <strong>{fs.subjectName} - ({fs.finalGrade})</strong></h1>
+                                </div>
+                            ))}
+                            <p className='text-sm text-justify'>* Did not meet expectations in three or more learning areas. Retained in the same grade level.</p>
                         </div>
-                    ))}
-
-                    <p className='text-sm text-justify'>* Must pass remedial classes for failed competencies in the subjects or learning areas to be allowed to enroll in the next semester. Otherwise the learner must retake the subjects failed.</p>
-                </div>
-              
-                <DialogFooter>
-                    <Button variant={'default'} onClick={handlePromote} className=" text-white">Conditionally Promote</Button>
-                </DialogFooter>
-            </>
-        ) :(
-            <>
-                <div className="space-y-3">
-                    <p>{studentName} has <strong>failed ({ failedAverages?.length})</strong> of his subjects.</p>
-                    <h1>Failed Subject(s):</h1>
-                    { failedAverages?.map((fs)=>(
-                        <div key={fs.subjectName} className="">
-                            <h1 className='pl-5'>- <strong>{fs.subjectName} - ({fs.finalGrade})</strong></h1>
+                        <DialogFooter>
+                            <Button variant={'destructive'} onClick={handlePromote} className=" text-white">Retain</Button>
+                        </DialogFooter>
+                    </>
+                ) : (
+                    <>
+                        <div className="space-y-3">
+                            <p>{studentName} has <strong>failed ({failedAverages.length})</strong> of his subjects.</p>
+                            <h1>Failed Subject(s):</h1>
+                            {failedAverages.map((fs) => (
+                                <div key={fs.subjectName} className="">
+                                    <h1 className='pl-5'>- <strong>{fs.subjectName} - ({fs.finalGrade})</strong></h1>
+                                </div>
+                            ))}
+                            <p className='text-sm text-justify'>*Must enroll in remedial classes for that subject(s) to improve their grade</p>
                         </div>
-                    ))}
-                    <p className='text-sm text-justify'>* Did not meet expectations in three or more learning areas. Retained in the same grade level.</p>
-                </div>
-                <DialogFooter>
-                    <Button variant={'destructive'} onClick={handlePromote} className=" text-white">Retain</Button>
-                </DialogFooter>
-            </>
-        ): (
+                        <DialogFooter>
+                            <Button variant={'default'} onClick={handlePromote} className=" text-white">Conditionally Promote</Button>
+                        </DialogFooter>
+                    </>
+                )
+            )
+        ) : (
             <>
                 <p className='capitalize'>{studentName} has passed all his subjects.</p>
                 <DialogFooter>

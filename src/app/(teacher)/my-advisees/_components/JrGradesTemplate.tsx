@@ -20,7 +20,6 @@ function JrGradesTemplate({student,sf9}:JrGradesTemplateProps) {
         studentId: student._id,
         sectionId: student.sectionDoc?._id
     })
-    
     const english = student.quarterlyGrades.filter(s => s.subject.name.toLowerCase() === "english")
     const mathematics = student.quarterlyGrades.filter(s => s.subject.name.toLowerCase() === "mathematics")
     const science = student.quarterlyGrades.filter(s => s.subject.name.toLowerCase() === "science")

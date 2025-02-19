@@ -3,7 +3,7 @@ import { ConvexError, v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { asyncMap } from "convex-helpers";
-import { StudentsWithEnrollMentTypes, StudentTypes } from "@/lib/types";
+import { StudentsWithEnrollMentTypes, StudentTypes, StudentWithSem } from "@/lib/types";
 import { Id } from "./_generated/dataModel";
 
 export const getStudent = query({
@@ -147,34 +147,51 @@ export const getStudentByTeacher = query({
       if(args.sem === "1st"){
           const students = await asyncMap(section.firstSemStudents, async (studentId)=>{
             const student = await ctx.db.get(studentId)
-            return student
+            return {
+              ...student,
+              isSHS: isSHS,
+              sem: args.sem
+            }
           })
       
-          return students as StudentTypes[]
+          return students as StudentWithSem[]
       } 
 
       if(args.sem === "2nd") {
         const students = await asyncMap(section.secondSemStudents, async (studentId)=>{
           const student = await ctx.db.get(studentId)
-          return student
+          return {
+            ...student,
+            isSHS: isSHS,
+            sem: args.sem
+          }
         })
     
-        return students as StudentTypes[]
+        return students as StudentWithSem[]
       }
+
       const students = await asyncMap(section.students, async (studentId)=>{
         const student = await ctx.db.get(studentId)
-        return student
+       return {
+              ...student,
+              isSHS: isSHS,
+              sem: args.sem
+            }
       })
   
-      return students as StudentTypes[]
+      return students as StudentWithSem[]
       
     } else {
       const students = await asyncMap(section.students, async (studentId)=>{
         const student = await ctx.db.get(studentId)
-        return student
+        return {
+          ...student,
+          isSHS: isSHS,
+          sem: args.sem
+        }
       })
   
-      return students as StudentTypes[]
+      return students as StudentWithSem[]
     }
 
   }
@@ -252,7 +269,9 @@ export const studentsInMasterList = query({
 
 export const getStudentWithDetails = query({
   args:{
-    id: v.optional(v.id('students'))
+    id: v.optional(v.id('students')),
+    isSHS: v.optional(v.string()),
+    sem: v.optional(v.string())
    
   }, handler: async(ctx, args) => {
     if(!args.id) throw new ConvexError('No student Id.')
@@ -265,11 +284,16 @@ export const getStudentWithDetails = query({
     const latestSY = schoolYear[0]._id
 
     const teacherSections = await ctx.db.query('sections')
-      .withIndex('by_advisorId')
+      .filter(q => q.eq(q.field('advisorId'), teacherId))
       .filter(q => q.eq(q.field('schoolYearId'), latestSY))
       .collect();
 
-    const studentSection = teacherSections.find( c => c.students.find(s => s === student._id))
+    const studentSection = teacherSections.find( c => {
+      const students = args.isSHS === "true" ? args.sem === "1st" ? c.firstSemStudents : c.secondSemStudents : c.students
+      const a =  students.find(s => s === student._id)
+      return a
+    })
+
     if(!studentSection) throw new ConvexError('No section found for the student')
 
     const gradeLevel = await ctx.db.get(studentSection?.gradeLevelId)
@@ -279,6 +303,7 @@ export const getStudentWithDetails = query({
     .filter(q => q.eq(q.field('sectionId'), studentSection._id))
     .filter(q => q.eq(q.field('teacherId'), teacherId))
     .first()
+
 
     const classes = await ctx.db.query('classes').filter(q => q.eq(q.field('sectionId'), studentSection._id)).collect()
 
@@ -301,6 +326,8 @@ export const getStudentWithDetails = query({
     .collect()
 
     const filtererdQG = quarterlyGrades.filter(qg => classIds.find(c=> c === qg.classId))
+
+    console.log("filtered:",filtererdQG)
 
     const qgWithSubject = await asyncMap(filtererdQG, async(qg)=>{
       const cLAss = await ctx.db.get(qg.classId)

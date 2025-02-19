@@ -64,7 +64,7 @@ function FinalGradeSHSTemplate({
                         <h1 className="w-[34%] flex justify-center items-center text-center uppercase border border-collapse border-black">{semester === "1st" ? "First" : "Third"} Quarter</h1>
             
             
-                        <h1 className="w-[34%] flex justify-center items-center text-center uppercase border border-collapse border-black">{semester === "2nd" ? "Second" : "Fourth"} Quarter</h1>
+                        <h1 className="w-[34%] flex justify-center items-center text-center uppercase border border-collapse border-black">{semester === "2nd" ? "Fourth" : "Second"} Quarter</h1>
             
                 
                         <h1 className="w-[18%] font-semibold text-xs py-2 flex justify-center items-center text-center uppercase border border-collapse border-black">

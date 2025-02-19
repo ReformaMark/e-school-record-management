@@ -111,6 +111,7 @@ export const needIntervention = query({
         if(!cls) return []
         const section = await ctx.db.get(cls?.sectionId)
         if(!section) return []
+        if(!args.gradeLevel) return []
         
         const quarterlyGrades = await ctx.db.query('quarterlyGrades')
         .filter(q => q.eq(q.field('gradeLevel'), args.gradeLevel))
@@ -119,7 +120,10 @@ export const needIntervention = query({
         .filter(q => q.eq(q.field('needsIntervention'), true))
         .collect();
 
-      const studentWithQG = await asyncMap(section.students, async (studentId) => {
+        const isSHS = args.gradeLevel > 10
+        const students = isSHS ? cls.semester === "1st" ? section.firstSemStudents : section.secondSemStudents : section.students
+
+      const studentWithQG = await asyncMap(students, async (studentId) => {
         const student = await ctx.db.get(studentId);
         if (!student) return null; // Return null instead of []
       
