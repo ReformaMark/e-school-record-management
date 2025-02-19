@@ -3,6 +3,8 @@ import { ColumnDef } from "@tanstack/react-table"
 import { PencilIcon, PlusCircle } from "lucide-react"
 import Link from "next/link"
 import { Doc, Id } from "../convex/_generated/dataModel"
+import { useQuery } from "convex/react"
+import { api } from "../convex/_generated/api"
 
 interface ClassessWithTeacherSubSched extends Doc<'classes'> {
     teacher: Doc<'users'> | null,
@@ -267,11 +269,17 @@ export const sectionColumns: ColumnDef<SectionWithDetails>[] = [
     {
         accessorKey: "roomNumber",
         header: "Room No.",
-        cell: ({ row }) => {
-            const schoolYear = row.original.schoolYear?.sy
+        cell: function Cell({ row }) {
+            const roomId = row.original.roomId as Id<"rooms">
+
+            const room = useQuery(api.classroom.getRoomById, {
+                roomId: roomId
+            })
+
+            if (!room) return <div>No room assigned</div>
             return (
                 <div>
-                    {schoolYear}
+                    {room.name}
                 </div>
             )
         }

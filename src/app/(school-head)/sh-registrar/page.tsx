@@ -119,7 +119,7 @@ const SchoolHeadRegistrarPage = () => {
                         <DataTable
                             columns={registrarColumnsInSchoolHead}
                             // @ts-expect-error slight type error
-                            data={registrars ?? []}
+                            data={filteredRegistrars}
                             filter="firstName"
                             placeholder="by first name"
                         />

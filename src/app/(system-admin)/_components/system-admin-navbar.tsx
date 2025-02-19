@@ -1,6 +1,12 @@
 'use client'
-import Logo from '@/../public/images/tanjayLogo.png'
+import Logo from '@/../public/images/tanjayLogo.png';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Separator } from '@/components/ui/separator';
 import {
     Sheet,
@@ -10,26 +16,19 @@ import {
     SheetTitle,
     SheetTrigger
 } from "@/components/ui/sheet";
+import { useCurrentUser } from '@/features/current/api/use-current-user';
+import { useAuthActions } from '@convex-dev/auth/react';
 import { School2Icon } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { BiLogOut } from 'react-icons/bi';
 import { FaChalkboardTeacher } from 'react-icons/fa';
-import { FaRegMessage, FaUserTie } from "react-icons/fa6";
+import { FaUserTie } from "react-icons/fa6";
 import { GiHamburgerMenu } from 'react-icons/gi';
-import { IoMdNotificationsOutline } from 'react-icons/io';
 import { MdOutlineDashboard, MdOutlineSupportAgent } from 'react-icons/md';
 import { PiStudent } from 'react-icons/pi';
 import { SidebarSection } from './sidebar-section';
-import { useCurrentUser } from '@/features/current/api/use-current-user';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { useAuthActions } from '@convex-dev/auth/react';
 
 export const SystemAdminNavbar = () => {
     const pathname = usePathname()
@@ -45,11 +44,11 @@ export const SystemAdminNavbar = () => {
             <div className="flex items-center gap-x-1 px-3 md:w-[20%] ">
                 <Image src={Logo} alt='' className='w-16 h-10 object-contain' />
                 <h1 className='hidden md:block text-textWhite  text-center  md:text-sm uppercase font-medium leading-relaxed'>Tanjay National High School</h1>
-            </div>  
+            </div>
 
             <div className="flex items-center gap-x-5">
-                <FaRegMessage className='size-4' />
-                <IoMdNotificationsOutline className='size-6' />
+                {/* <FaRegMessage className='size-4' /> */}
+                {/* <IoMdNotificationsOutline className='size-6' /> */}
 
                 <div className="hidden md:flex items-center gap-x-3">
                     <DropdownMenu>

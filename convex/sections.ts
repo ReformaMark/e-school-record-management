@@ -263,11 +263,22 @@ export const getSections = query({
                 const teacher = await ctx.db.get(classItem.teacherId);
                 const subject = await ctx.db.get(classItem.subjectId);
 
-                // Get schedules for this class
                 const schedules = await ctx.db
                     .query("schedules")
                     .filter(q => q.eq(q.field("classId"), classItem._id))
                     .collect();
+
+                // Fetch schedule details
+                const schedulesWithDetails = await Promise.all(schedules.map(async (schedule) => {
+                    const period = await ctx.db.get(schedule.schoolPeriodId);
+                    const room = await ctx.db.get(schedule.roomId);
+
+                    return {
+                        days: schedule.day,
+                        schoolPeriodId: period?.timeRange || schedule.schoolPeriodId,
+                        roomId: room?.name || schedule.roomId
+                    };
+                }));
 
 
                 return {
@@ -278,11 +289,7 @@ export const getSections = query({
                     track: classItem.track || "",
                     teacher,
                     subject,
-                    schedules: schedules.map(schedule => ({
-                        days: schedule.day,
-                        schoolPeriodId: schedule.schoolPeriodId,
-                        roomId: schedule.roomId
-                    }))
+                    schedules: schedulesWithDetails
                 };
             }));
 

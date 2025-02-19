@@ -17,7 +17,7 @@ import { ColumnDef } from "@tanstack/react-table";
 const roomTypes = {
     REGULAR: "Regular Classroom",
     LABORATORY: "Science Laboratory",
-    COMPUTER_LAB: "Computer Laboratory"
+    COMPUTER_LABORATORY: "Computer Laboratory"
 } as const;
 
 const ClassroomColumns: ColumnDef<RoomWithTeacher>[] = [

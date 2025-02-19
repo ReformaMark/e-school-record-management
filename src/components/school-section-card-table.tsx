@@ -10,6 +10,11 @@ import {
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { sectionColumns } from "../../data/section-data";
+import { Doc } from "../../convex/_generated/dataModel";
+
+interface SchoolSectionCardTableProps {
+    sections: Doc<"sections">,
+}
 
 export const SchoolSectionCardTable = () => {
     const sections = useQuery(api.sections.getSections)

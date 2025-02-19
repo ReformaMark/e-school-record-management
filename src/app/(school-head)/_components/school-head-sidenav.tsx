@@ -57,6 +57,13 @@ export const SchoolHeadSideNav = () => {
                     </Link>
 
                     <Link
+                        href="/sh-schedule"
+                        className={`${pathname === '/sh-schedule' ? "bg-background/50 text-white" : "bg-transparent"} text-white flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}
+                    >
+                        Schedules
+                    </Link>
+
+                    <Link
                         href="/sh-classrooms"
                         className={`${pathname === '/sh-classrooms' ? "bg-background/50 text-white" : "bg-transparent"}  flex items-center text-white py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}
                     >
@@ -82,6 +89,13 @@ export const SchoolHeadSideNav = () => {
                         className={`${pathname === '/sh-subjects' ? "bg-background/50 text-white" : "bg-transparent"}  flex items-center text-white py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}
                     >
                         Subjects
+                    </Link>
+
+                    <Link
+                        href="/sh-interventions"
+                        className={`${pathname === '/sh-interventions' ? "bg-background/50 text-white" : "bg-transparent"} text-white flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}
+                    >
+                        Interventions
                     </Link>
 
 

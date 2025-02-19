@@ -2,6 +2,12 @@
 import Logo from '@/../public/images/tanjayLogo.png';
 import { SidebarSection } from '@/app/(system-admin)/_components/sidebar-section';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Separator } from '@/components/ui/separator';
 import {
     Sheet,
@@ -11,20 +17,26 @@ import {
     SheetTitle,
     SheetTrigger
 } from "@/components/ui/sheet";
+import { useCurrentUser } from '@/features/current/api/use-current-user';
+import { useAuthActions } from '@convex-dev/auth/react';
 import { School2Icon } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { BiLogOut } from 'react-icons/bi';
 import { FaChalkboardTeacher } from 'react-icons/fa';
-import { FaRegMessage } from "react-icons/fa6";
 import { GiHamburgerMenu } from 'react-icons/gi';
-import { IoMdNotificationsOutline } from 'react-icons/io';
 import { MdOutlineDashboard, MdOutlineReport, MdOutlineSupportAgent } from 'react-icons/md';
 import { PiStudent } from 'react-icons/pi';
 
 export const SchoolHeadNavbar = () => {
     const pathname = usePathname()
+    const { user, isLoading } = useCurrentUser()
+    const { signOut } = useAuthActions()
+
+    if (isLoading) {
+        return null;
+    }
 
     return (
         <nav className='w-full h-fit z-50 shadow-md py-5 fixed flex justify-between items-center pr-3 sm:pr-5 md:pr-10 lg:pr-10 bg-primary text-white'>
@@ -34,17 +46,34 @@ export const SchoolHeadNavbar = () => {
             </div>
 
             <div className="flex items-center gap-x-5">
-                <FaRegMessage className='size-4 text-textWhite' />
-                <IoMdNotificationsOutline className='size-6 text-textWhite' />
+                {/* <FaRegMessage className='size-4 text-textWhite' /> */}
+                {/* <IoMdNotificationsOutline className='size-6 text-textWhite' /> */}
                 <div className="hidden md:flex items-center gap-x-3">
-                    <Avatar>
-                        <AvatarImage src="https://github.com/shadcn.png" />
-                        <AvatarFallback className='text-textWhite'>CN</AvatarFallback>
-                    </Avatar>
-                    <div className="text-center text-textWhite">
-                        <h3 className='text-sm '>Surname, Firstname MI.</h3>
-                        <h6 className='text-xs text-left'>School Head</h6>
-                    </div>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger>
+                            <div className="flex items-center gap-x-3">
+                                <Avatar>
+                                    <AvatarImage src={user?.image || ""} />
+                                    <AvatarFallback
+                                        className='bg-sky-500 text-white'
+                                    >{user?.firstName?.charAt(0)}{user?.lastName?.charAt(0)}</AvatarFallback>
+                                </Avatar>
+                                <div className="text-center">
+                                    <h3 className='text-sm'>{user?.lastName}, {user?.firstName} {user?.middleName}</h3>
+                                    <h6 className='text-xs text-left text-white/70'>School Head</h6>
+                                </div>
+                            </div>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent>
+                            <DropdownMenuItem
+                                onClick={() => signOut()}
+                                className="cursor-pointer"
+                            >
+                                <BiLogOut className="mr-2 h-4 w-4" />
+                                <span>Logout</span>
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
                 </div>
                 <div className="md:hidden">
                     <Sheet>
