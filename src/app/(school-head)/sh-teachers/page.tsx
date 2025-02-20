@@ -10,21 +10,14 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-    DropdownMenu,
-    DropdownMenuCheckboxItem,
-    DropdownMenuContent,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger
-} from "@/components/ui/dropdown-menu";
 
 import { DataTable } from "@/components/data-table";
+import { exportToExcelTeachers } from "@/lib/export-to-excel";
 import { useQuery } from "convex/react";
-import { File, ListFilterIcon } from "lucide-react";
+import { File } from "lucide-react";
 import Link from "next/link";
 import { api } from "../../../../convex/_generated/api";
-import { teacherColumns } from "../../../../data/teachers-data";
+import { ShTeacherColumns } from "./_components/sh-teacher-columns";
 
 // Column definitions for the DataTable
 
@@ -51,7 +44,7 @@ const SchoolHeadTeachersPage = () => {
             <main className="space-y-4">
                 <div className="flex items-center">
                     <div className="ml-auto flex items-center gap-2">
-                        <DropdownMenu>
+                        {/* <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Button variant="outline" size="sm" className="h-7 gap-1">
                                     <ListFilterIcon className="h-3.5 w-3.5" />
@@ -70,8 +63,13 @@ const SchoolHeadTeachersPage = () => {
                                     Subject Teacher
                                 </DropdownMenuCheckboxItem>
                             </DropdownMenuContent>
-                        </DropdownMenu>
-                        <Button size="sm" variant="outline" className="h-7 gap-1">
+                        </DropdownMenu> */}
+                        <Button
+                            size="sm"
+                            variant="outline"
+                            className="h-7 gap-1"
+                            onClick={() => exportToExcelTeachers(teachers || [], "teachers")}
+                        >
                             <File className="h-3.5 w-3.5" />
                             <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
                                 Export
@@ -100,7 +98,7 @@ const SchoolHeadTeachersPage = () => {
                     <CardContent>
                         {teachers ? (
                             <DataTable
-                                columns={teacherColumns}
+                                columns={ShTeacherColumns}
                                 data={teachers}
                                 filter="firstName"
                                 placeholder="Search teachers..."

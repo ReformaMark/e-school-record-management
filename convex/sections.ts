@@ -263,11 +263,25 @@ export const getSections = query({
                 const teacher = await ctx.db.get(classItem.teacherId);
                 const subject = await ctx.db.get(classItem.subjectId);
 
-                // Get schedules for this class
                 const schedules = await ctx.db
                     .query("schedules")
                     .filter(q => q.eq(q.field("classId"), classItem._id))
                     .collect();
+
+                // Fetch schedule details
+                const schedulesWithDetails = await Promise.all(schedules.map(async (schedule) => {
+                    const period = await ctx.db.get(schedule.schoolPeriodId);
+                    const room = await ctx.db.get(schedule.roomId);
+
+                    return {
+                        _id: schedule._id,
+                        day: schedule.day,
+                        schoolPeriodId: schedule.schoolPeriodId,
+                        roomId: schedule.roomId,
+                        timeRange: period?.timeRange,
+                        roomName: room?.name
+                    };
+                }));
 
 
                 return {
@@ -278,11 +292,7 @@ export const getSections = query({
                     track: classItem.track || "",
                     teacher,
                     subject,
-                    schedules: schedules.map(schedule => ({
-                        days: schedule.day,
-                        schoolPeriodId: schedule.schoolPeriodId,
-                        roomId: schedule.roomId
-                    }))
+                    schedules: schedulesWithDetails
                 };
             }));
 
@@ -495,20 +505,24 @@ export const update = mutation({
                             const newSchedule = classData.schedules?.[index];
                             if (!newSchedule) return true;
 
+                            // Compare arrays properly
+                            const daysChanged = schedule.day.length !== newSchedule.days.length ||
+                                !schedule.day.every(day => newSchedule.days.includes(day));
+
                             return (
-                                !schedule.day.every((d, i) => d === newSchedule.days[i]) ||
+                                daysChanged ||
                                 schedule.schoolPeriodId !== newSchedule.schoolPeriodId ||
                                 schedule.roomId !== newSchedule.roomId
                             );
                         });
 
                     if (schedulesHaveChanged) {
-                        // Delete old schedules
+                        // Delete old schedules first
                         for (const schedule of existingSchedules) {
                             await ctx.db.delete(schedule._id);
                         }
 
-                        // Create new schedules
+                        // Create new schedules with updated data
                         for (const schedule of classData.schedules) {
                             await ctx.db.insert("schedules", {
                                 day: schedule.days,

@@ -11,6 +11,7 @@ import { useQuery } from "convex/react";
 import { api } from "../../../../../../convex/_generated/api";
 import { ColumnDef } from "@tanstack/react-table";
 import { SectionWithDetails } from "../../../../../../data/section-data";
+import { Id } from "../../../../../../convex/_generated/dataModel";
 
 const sectionColumns: ColumnDef<SectionWithDetails>[] = [
     {
@@ -46,12 +47,18 @@ const sectionColumns: ColumnDef<SectionWithDetails>[] = [
     },
     {
         accessorKey: "roomNumber",
-        header: "Room No.",
-        cell: ({ row }) => {
-            const schoolYear = row.original.schoolYear?.sy
+        header: "Room Name",
+        cell: function Cell({ row }) {
+            const roomId = row.original.roomId as Id<"rooms">
+
+            const room = useQuery(api.classroom.getRoomById, {
+                roomId: roomId
+            })
+
+            if (!room) return <div>No room assigned</div>
             return (
                 <div>
-                    {schoolYear}
+                    {room.name}
                 </div>
             )
         }

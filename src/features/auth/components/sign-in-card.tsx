@@ -28,9 +28,9 @@ export const SignInCard = ({
 
     const onSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
-        
+
         if (pending) return;
-        
+
         setPending(true);
         setError("");
 
@@ -41,15 +41,15 @@ export const SignInCard = ({
                 flow: "signIn"
             });
             setError("");
-            
+
         } catch (error) {
             console.error("Sign in error:", error);
-            
+
             if (error instanceof Error) {
                 if (error.message.includes("Failed to fetch")) {
                     setError("Connection error. Please check your internet connection and try again.");
                 } else {
-                    setError(error.message);
+                    setError("Invalid email or password");
                 }
             } else {
                 setError("Invalid email or password");

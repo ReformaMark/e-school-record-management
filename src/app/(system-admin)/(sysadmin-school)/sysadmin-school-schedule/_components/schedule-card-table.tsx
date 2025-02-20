@@ -19,8 +19,15 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import { cn } from "@/lib/utils";
 
-export const ScheduleCardTable = () => {
+interface ScheduleCardTableProps {
+    isSH?: boolean;
+}
+
+export const ScheduleCardTable = ({
+    isSH
+}: ScheduleCardTableProps) => {
     const [selectedDay, setSelectedDay] = useState<string>("all");
     const [filterType, setFilterType] = useState<"teacher" | "room">("teacher");
     const schedules = useQuery(api.schedules.get) as { day: string }[] | undefined;
@@ -33,7 +40,7 @@ export const ScheduleCardTable = () => {
         : schedules;
 
     return (
-        <Card className="xl:col-span-2">
+        <Card className={cn(!isSH ? "xl:col-span-2" : "xl:col-span-3")}>
             <CardHeader>
                 <div className="flex justify-between items-center">
                     <div>

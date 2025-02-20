@@ -141,3 +141,12 @@ export const getAvailableRooms = query({
         }));
     }
 });
+
+export const getRoomById = query({
+    args: {
+        roomId: v.id("rooms")
+    },
+    handler: async (ctx, args) => {
+        return await ctx.db.get(args.roomId)
+    }
+})

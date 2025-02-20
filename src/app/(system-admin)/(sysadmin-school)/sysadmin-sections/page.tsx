@@ -1,19 +1,21 @@
-import {
-    DropdownMenu,
-    DropdownMenuCheckboxItem,
-    DropdownMenuContent,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger
-} from "@/components/ui/dropdown-menu";
-
+"use client"
 import { SchoolSectionCardTable } from "@/components/school-section-card-table";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { FileIcon, ListFilterIcon, PlusCircleIcon } from "lucide-react";
+import { FileIcon, PlusCircleIcon } from "lucide-react";
 import Link from "next/link";
+import { api } from "../../../../../convex/_generated/api";
+import { useQuery } from "convex/react";
+import { exportToExcelSections } from "@/lib/export-to-excel";
 
 const SystemAdminSectionsPage = () => {
+    const sections = useQuery(api.sections.getSections);
+
+    const handleExport = () => {
+        if (!sections) return;
+        exportToExcelSections(sections, 'sections');
+    };
+
     return (
         // <div className="flex min-h-screen w-full flex-col">
         //     <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
@@ -53,7 +55,7 @@ const SystemAdminSectionsPage = () => {
             <main className="space-y-4">
                 <div className="flex items-center">
                     <div className="ml-auto flex items-center gap-2">
-                        <DropdownMenu>
+                        {/* <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Button variant="outline" size="sm" className="h-7 gap-1">
                                     <ListFilterIcon className="h-3.5 w-3.5" />
@@ -72,9 +74,15 @@ const SystemAdminSectionsPage = () => {
                                     Old
                                 </DropdownMenuCheckboxItem>
                             </DropdownMenuContent>
-                        </DropdownMenu>
+                        </DropdownMenu> */}
 
-                        <Button size="sm" variant="outline" className="h-7 gap-1">
+                        <Button
+                            size="sm"
+                            variant="outline"
+                            className="h-7 gap-1"
+                            onClick={handleExport}
+                            disabled={!sections}
+                        >
                             <FileIcon className="h-3.5 w-3.5" />
                             <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
                                 Export
