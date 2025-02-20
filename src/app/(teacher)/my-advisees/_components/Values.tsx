@@ -17,12 +17,14 @@ import { cn } from '@/lib/utils';
 interface ValuesProps {
     studentId: Id<'students'>,
     classId: Id<'classes'>,
-    sf9?: boolean
+    sf9?: boolean,
+    isSHS?: boolean | string
 }
 function Values({
     sf9,
     studentId,
-    classId
+    classId,
+    isSHS
 }: ValuesProps) {
     const [isEditing, setIsEditing] = useState(false);
     const value = useQuery(api.values.get, {studentId: studentId, classId: classId})
@@ -158,8 +160,8 @@ function Values({
             <div className="grid grid-cols-12 items-center text-center font-medium text-sm border border-black">
                 <div  className={cn(sf9 ? "text-xs col-span-3": "col-span-4",' flex items-center justify-center  h-full border-r border-r-black ')}>Maka-Diyos</div>
                 <div className={cn(sf9 ? "col-span-5" : "col-span-4" ,' h-full border-r border-r-black')}>
-                    <p className={cn(sf9 ? "p-1 text-[0.6rem]": "p-2", "border-b border-black")}>Expresses one&apos;s spiritual beliefs while respecting the spiritual beliefs of others.</p>
-                    <p className={cn(sf9 ? "p-1 text-[0.6rem]": "p-2")}>Shows adherence to ethical principles by upholding truth in all undertakings.</p>
+                    <p className={cn(sf9 ? "p-1 text-[0.6rem]": "p-2", "border-b border-black leading-[1.5] text-left")}>Expresses one&apos;s spiritual beliefs while respecting the spiritual beliefs of others.</p>
+                    <p className={cn(sf9 ? "p-1 text-[0.6rem]": "p-2 ", "leading-[1.5] text-left")}>Shows adherence to ethical principles by upholding truth in all undertakings.</p>
                 </div>
                 <div className="col-span-4  h-full">
                    
@@ -263,7 +265,7 @@ function Values({
                                 />
                             </div>
                         ):(
-                            <div className="grid grid-cols-4 h-1/2">
+                            <div className="grid grid-cols-4 h-1/2 text-xs">
                                 <h1 className='flex justify-center items-center '>{value?.makaDyos.first.first}</h1>
                                 <h1 className='flex justify-center items-center border-l border-l-black '>{value?.makaDyos.first.second}</h1>
                                 <h1 className='flex justify-center items-center border-l border-l-black'>{value?.makaDyos.first.third}</h1>
@@ -372,7 +374,7 @@ function Values({
                                 />
                             </div>
                         ):(
-                            <div className="grid grid-cols-4 h-1/2 border-t border-t-black">
+                            <div className="grid grid-cols-4 h-1/2 border-t border-t-black text-xs">
                                 <h1 className='flex justify-center items-center '>{value?.makaDyos.second.first}</h1>
                                 <h1 className='flex justify-center items-center  border-l border-l-black'>{value?.makaDyos.second.second}</h1>
                                 <h1 className='flex justify-center items-center  border-l border-l-black'>{value?.makaDyos.second.third}</h1>
@@ -385,9 +387,9 @@ function Values({
             {/* Makatao */}
             <div className="grid grid-cols-12 items-center text-center font-medium text-sm border-b border-b-black border-x border-x-black">
                 <div  className={cn(sf9 ? "text-xs col-span-3": "col-span-4",' flex items-center justify-center  h-full border-r border-r-black ')}>Maka-Tao</div>
-                <div className={cn(sf9 ? "col-span-5" : "col-span-4" ,' h-full border-r border-r-black')}>
-                    <p className={cn(sf9 ? "p-1 text-[0.6rem]": "p-2", "border-b border-black")}>Is sensitive to individual, social, and cultural differences.</p>
-                    <p className={cn(sf9 ? "p-1 text-[0.6rem]": "p-2")}>Demonstrates contributions towards solidarity.</p>
+                <div className={cn(sf9 ? "col-span-5" : "col-span-4" ,' h-full border-r border-r-black text-left')}>
+                    <p className={cn(sf9 ? "p-1 text-[0.6rem]": "p-2", "border-b border-black leading-[1.5]")}>Is sensitive to individual, social, and cultural differences.</p>
+                    <p className={cn(sf9 ? "p-1 text-[0.6rem]": "p-2", "leading-[1.5]")}>Demonstrates contributions towards solidarity.</p>
                 </div>
                 <div className="col-span-4  h-full">
                 {isEditing ? (
@@ -490,7 +492,7 @@ function Values({
                                 />
                             </div>
                         ):(
-                            <div className="grid grid-cols-4 h-1/2 ">
+                            <div className="grid grid-cols-4 h-1/2 text-xs">
                                 <h1 className='flex justify-center items-center '>{value?.makaTao.first.first}</h1>
                                 <h1 className='flex justify-center items-center border-l border-l-black'>{value?.makaTao.first.second}</h1>
                                 <h1 className='flex justify-center items-center border-l border-l-black'>{value?.makaTao.first.third}</h1>
@@ -597,7 +599,7 @@ function Values({
                             />
                         </div>
                     ):(
-                        <div className="grid grid-cols-4 h-1/2  border-t border-t-black">
+                        <div className="grid grid-cols-4 h-1/2  border-t border-t-black text-xs">
                             <h1 className='flex justify-center items-center '>{value?.makaTao.second.first}</h1>
                             <h1 className='flex justify-center items-center border-l border-l-black'>{value?.makaTao.second.second}</h1>
                             <h1 className='flex justify-center items-center border-l border-l-black'>{value?.makaTao.second.third}</h1>
@@ -611,7 +613,7 @@ function Values({
             <div className="grid grid-cols-12 items-center text-center font-medium text-sm  border-x border-x-black">
                 <div  className={cn(sf9 ? "text-xs col-span-3": "col-span-4",' flex items-center justify-center  h-full border-r border-r-black ')}>Maka-Kalikasan</div>
                 <div className={cn(sf9 ? "col-span-5" : "col-span-4" ,' h-full border-r border-r-black')}>
-                    <p className={cn(sf9 ? "p-1 text-[0.6rem]": "p-2", "")}>Cares for the environment and utilizes resources wisely, judiciously, and economically.</p>
+                    <p className={cn(sf9 ? "p-1 text-[0.6rem]": "p-2", "text-left leading-[1.5]")}>Cares for the environment and utilizes resources wisely, judiciously, and economically.</p>
                     
                 </div>
                 <div className="col-span-4 h-full">
@@ -715,7 +717,7 @@ function Values({
                             />
                         </div>
                     ):(
-                        <div className="grid grid-cols-4 h-full">
+                        <div className="grid grid-cols-4 h-full text-xs">
                             <h1 className='flex justify-center items-center '>{value?.makakalikasan.first.first}</h1>
                             <h1 className='flex justify-center items-center border-l border-l-black'>{value?.makakalikasan.first.second}</h1>
                             <h1 className='flex justify-center items-center border-l border-l-black'>{value?.makakalikasan.first.third}</h1>
@@ -730,8 +732,8 @@ function Values({
             <div className="grid grid-cols-12 items-center text-center font-medium text-sm border border-black">
                 <div  className={cn(sf9 ? "text-xs col-span-3": "col-span-4",' flex items-center justify-center  h-full border-r border-r-black ')}>Maka-Bansa</div>
                 <div className={cn(sf9 ? "col-span-5" : "col-span-4" ,' h-full border-r border-r-black')}>
-                    <p className={cn(sf9 ? "p-1 text-[0.6rem]": "p-2", "border-b border-black")}>Demonstrates pride in being a Filipino; exercises the rights and responsibilities of a Filipino citizen.</p>
-                    <p className={cn(sf9 ? "p-1 text-[0.6rem]": "p-2")}>Demonstrates appropriate behavior in carrying out activities in school, community, and country.</p>
+                    <p className={cn(sf9 ? "p-1 text-[0.6rem]": "p-2", "border-b border-black text-left leading-[1.5]")}>Demonstrates pride in being a Filipino; exercises the rights and responsibilities of a Filipino citizen.</p>
+                    <p className={cn(sf9 ? "p-1 text-[0.6rem]": "p-2", "text-left leading-[1.5]")}>Demonstrates appropriate behavior in carrying out activities in school, community, and country.</p>
                 </div>
                 <div className="col-span-4 h-full ">
                 {isEditing ? (
@@ -834,7 +836,7 @@ function Values({
                                 />
                             </div>
                         ):(
-                            <div className="grid grid-cols-4 h-1/2 border-b border-b-black">
+                            <div className="grid grid-cols-4 h-1/2 border-b border-b-black text-xs">
                                 <h1 className='flex justify-center items-center '>{value?.makaBansa.first.first}</h1>
                                 <h1 className='flex justify-center items-center border-l border-l-black'>{value?.makaBansa.first.second}</h1>
                                 <h1 className='flex justify-center items-center border-l border-l-black'>{value?.makaBansa.first.third}</h1>
@@ -941,8 +943,8 @@ function Values({
                             />
                         </div>
                     ):(
-                        <div className="grid grid-cols-4 h-1/2">
-                        <h1 className='flex justify-center items-center '>{value?.makaBansa.second.first}</h1>
+                        <div className="grid grid-cols-4 h-1/2 text-xs">
+                            <h1 className='flex justify-center items-center '>{value?.makaBansa.second.first}</h1>
                             <h1 className='flex justify-center items-center border-l border-l-black'>{value?.makaBansa.second.second}</h1>
                             <h1 className='flex justify-center items-center border-l border-l-black'>{value?.makaBansa.second.third}</h1>
                             <h1 className='flex justify-center items-center border-l border-l-black'>{value?.makaBansa.second.fourth}</h1>
@@ -953,6 +955,25 @@ function Values({
                 </div>
             </div>
         </div>
+        {isSHS ? (
+        <div className="grid grid-cols-2 border-black border border-b-0">
+            <h1 className='col-span-2 py-1 font-serif text-center  font-semibold border-b-black border-b bg-gray-200'>Observed Values</h1>
+             <div className="flex flex-col justify-start items-center border-r-black border-r">
+                 <h1 className='text-[0.6rem] text-center font-semibold border-b w-full border-b-black py-1'>Marking</h1>
+                 <h2 className='text-[0.6rem] text-center border-b w-full  border-b-black py-1'>AO</h2>
+                 <h2 className='text-[0.6rem] text-center border-b w-full  border-b-black py-1'>SO</h2>
+                 <h2 className='text-[0.6rem] text-center border-b w-full  border-b-black py-1'>RO</h2>
+                 <h2 className='text-[0.6rem] text-center border-b w-full  border-b-black py-1'>NO</h2>
+             </div>
+             <div className="flex flex-col justify-start items-center ">
+                 <h1 className='text-[0.6rem] text-center font-semibold w-full border-b  border-b-black py-1'>Non-Numerical Rating</h1>
+                 <h2 className='text-[0.6rem] text-center w-full  border-b  border-b-black py-1'>Always observed</h2>
+                 <h2 className='text-[0.6rem] text-center w-full border-b  border-b-black py-1'>Sometimes Observed</h2>
+                 <h2 className='text-[0.6rem] text-center w-full border-b  border-b-black py-1'>Rarely Observed</h2>
+                 <h2 className='text-[0.6rem] text-center w-full border-b  border-b-black py-1'>Not Observed</h2>
+             </div>
+         </div>
+        ): (
         <div className="grid grid-cols-2 mt-5">
             <div className="flex flex-col justify-start items-center">
                 <h1 className='text-sm font-semibold'>Marking</h1>
@@ -969,6 +990,43 @@ function Values({
                 <h2 className='text-sm text-left'>Not Observed</h2>
             </div>
         </div>
+        )}
+      
+        {sf9 && (
+        <div className="border border-black ">
+            <h1 className='text-center font-semibold font-serif py-1 border-b-black border-b text-[0.6rem]'>Learner Progress and Achievement</h1>
+            <div className="grid grid-cols-3 font-semibold border-b border-b-black text-center text-[0.6rem]">
+                <h1 className='py-1'>Descriptors</h1>
+                <h1 className="border-x-black border-x py-1">Grade Scaling</h1>
+                <h1 className='py-1'>Remarks</h1>
+            </div>
+            <div className="grid grid-cols-3 border-b border-b-black text-center text-[0.6rem]">
+                <h1 className='py-1'>Outstanding</h1>
+                <h1 className="border-x-black border-x py-1">90-100</h1>
+                <h1 className='py-1'>Passed</h1>
+            </div>
+            <div className="grid grid-cols-3 border-b border-b-black text-center text-[0.6rem]">
+                <h1 className='py-1'>Very Satisfactory</h1>
+                <h1 className="border-x-black border-x py-1">85-89</h1>
+                <h1 className='py-1'>Passed</h1>
+            </div>
+            <div className="grid grid-cols-3 border-b border-b-black text-center text-[0.6rem]">
+                <h1 className='py-1'>Satisfactory</h1>
+                <h1 className="border-x-black border-x py-1">80-84</h1>
+                <h1 className='py-1'>Passed</h1>
+            </div>
+            <div className="grid grid-cols-3 border-b border-b-black text-center text-[0.6rem]">
+                <h1 className='py-1'>Fairly Satisfactory</h1>
+                <h1 className="border-x-black border-x py-1">75-79</h1>
+                <h1 className='py-1'>Passed</h1>
+            </div>
+            <div className="grid grid-cols-3 border-b border-b-black text-center text-[0.6rem]">
+                <h1 className='py-1'>Did Not Meet Expect</h1>
+                <h1 className="border-x-black border-x py-1">Below 76</h1>
+                <h1 className='py-1'>Failed</h1>
+            </div>
+        </div>
+        )}
     </form>
     </Form>
     </div>

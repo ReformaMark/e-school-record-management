@@ -58,9 +58,9 @@ function SrGradesTemplate({
         {!sf9 ? (
             <h1 className='text-center'>LEARNER&apos;S PROGRESS REPORT CARD</h1>
          ): (
-            <h1 className='text-left font-semibold'>{sem} Semester</h1>
+            <h1 className='text-left text-xs font-semibold'>{sem} Semester</h1>
          )}
-        <div className={`max-w-full flex ${sf9 ? 'text-[0.6rem]' : 'text-lg'} bg-gray-300 border border-black`}>
+        <div className={`max-w-full flex ${sf9 ? 'text-[0.6rem]' : 'text-lg'} bg-gray-200 border border-black`}>
             <div className="w-[60%] font-bold flex items-center justify-center">
                 <h1>Subject</h1>
             </div>
@@ -76,22 +76,22 @@ function SrGradesTemplate({
                 <h1>Final Grade</h1>
             </div>
         </div>
-        <div className={`max-w-full flex ${sf9 ? 'text-[0.6rem]' : 'text-lg'} font-bold bg-gray-300 border border-black`}>
+        <div className={`max-w-full flex ${sf9 ? 'text-[0.6rem]' : 'text-lg'} font-bold bg-gray-200 border border-black`}>
             <div className="w-[60%] flex items-center justify-start px-2 py-1">
                 <h1>Core Subjects</h1>
             </div>
         </div>
         {coreSubjects && coreSubjects.map((clss)=>(
-            <div key={clss._id} className={`max-w-full flex ${sf9 ? 'text-[0.6rem]' : 'text-lg'} border-black`}>
-                <div className="w-[60%] font-bold flex items-center justify-start py-1 px-2 border border-black">
+            <div key={clss._id} className={`max-w-full flex ${sf9 ? 'text-[0.6rem]' : 'text-lg'} border border-black`}>
+                <div className="w-[60%] font-bold flex items-center justify-start py-1 px-2 border-r-black border-r">
                     <h1>{clss.subject.name}</h1>
                 </div>
-                <div className="w-[25%] grid grid-cols-2 items-center font-bold border-y border-y-black">
-                <h1 className='text-center my-auto border-r h-full border-black content-center'>{getStudentGrade(student.quarterlyGrades, clss._id, sem === "1st" ? "1st" : "3rd")}</h1>
-                <h1 className='text-center my-auto h-full content-center'>{getStudentGrade(student.quarterlyGrades, clss._id, sem === "1st" ? "2nd" : "4th")}</h1>
+                <div className="w-[25%] grid grid-cols-2 items-center font-bold border-r-black border-r">
+                    <h1 className='text-center my-auto  h-full content-center border-r-black border-r'>{getStudentGrade(student.quarterlyGrades, clss._id, sem === "1st" ? "1st" : "3rd")}</h1>
+                    <h1 className='text-center my-auto h-full content-center'>{getStudentGrade(student.quarterlyGrades, clss._id, sem === "1st" ? "2nd" : "4th")}</h1>
                 
                 </div>
-                <div className="w-[15%] font-bold text-center border border-black">
+                <div className="w-[15%] font-bold text-center ">
                     {getRemedialGrade(remedialGrades as Doc<'finalGrades'>, clss.subject.name) === null ? (
                         <h1 className='text-center my-auto h-full content-center'>{getAverageForShs(
                         getStudentGrade(student.quarterlyGrades, clss._id,  sem === "1st" ? "1st" : "3rd"),
@@ -117,22 +117,22 @@ function SrGradesTemplate({
             </div>
         ))}
        
-         <div className={`max-w-full flex ${sf9 ? 'text-[0.6rem]' : 'text-lg'} font-bold bg-gray-300 border border-black`}>
+         <div className={`max-w-full flex ${sf9 ? 'text-[0.6rem]' : 'text-lg'} font-bold bg-gray-200 border border-black`}>
             <div className="w-[60%] flex items-center justify-start px-2 py-1">
                 <h1>Applied & Specialized Subjects</h1>
             </div>
         </div>
         {appliedAndSpecialied && appliedAndSpecialied.map((s)=>(
-            <div key={s._id} className={`max-w-full flex ${sf9 ? 'text-[0.6rem]' : 'text-lg'} border-black`}>
-                <div className="w-[60%] font-bold flex items-center justify-start py-1 px-2 border border-black">
+            <div key={s._id} className={`max-w-full flex ${sf9 ? 'text-[0.6rem]' : 'text-lg'} border border-black`}>
+                <div className="w-[60%] font-bold flex items-center justify-start py-1 px-2 border-r-black border-r">
                     <h1>{s.subject.name}</h1>
                 </div>
-                <div className="w-[25%] grid grid-cols-2 items-center font-bold border-y border-y-black">
-                <h1 className='text-center my-auto border-r h-full border-black content-center'>{getStudentGrade(student.quarterlyGrades, s._id, sem === "1st" ? "1st" : "3rd")}</h1>
-                <h1 className='text-center my-auto h-full content-center'>{getStudentGrade(student.quarterlyGrades, s._id, sem === "1st" ? "2nd" : "4th")}</h1>
+                <div className="w-[25%] grid grid-cols-2 items-center font-bold border-r-black border-r">
+                    <h1 className='text-center my-auto  h-full content-center border-r-black border-r'>{getStudentGrade(student.quarterlyGrades, s._id, sem === "1st" ? "1st" : "3rd")}</h1>
+                    <h1 className='text-center my-auto h-full content-center'>{getStudentGrade(student.quarterlyGrades, s._id, sem === "1st" ? "2nd" : "4th")}</h1>
                 
                 </div>
-                <div className="w-[15%] font-bold text-center border border-black">
+                <div className="w-[15%] font-bold text-center">
                     {getRemedialGrade(remedialGrades as Doc<'finalGrades'>, s.subject.name) === null ? (
                         <h1 className='text-center my-auto h-full content-center'>{getAverageForShs(
                         getStudentGrade(student.quarterlyGrades, s._id,  sem === "1st" ? "1st" : "3rd"),
@@ -157,8 +157,8 @@ function SrGradesTemplate({
             </div>
         ))}
 
-        <div className={`max-w-full flex ${sf9 ? 'text-[0.6rem]' : 'text-lg'} font-bold border border-black py-1`}>
-            <div className={`w-[85%] text-right tracking-widest ${sf9 ? 'text-[0.6rem]' : 'text-xl'} border-r border-r-black px-2`}>General Average for this Semester</div>
+        <div className={`max-w-full flex ${sf9 ? 'text-[0.6rem]' : 'text-lg'} font-bold border border-black `}>
+            <div className={`w-[85%] text-right tracking-widest ${sf9 ? 'text-[0.6rem]' : 'text-xl'} border-r border-r-black px-2 py-1`}>General Average for this Semester</div>
             <div className="w-[15%] content-center text-center">{genAve}</div>
         </div>
     </div>
