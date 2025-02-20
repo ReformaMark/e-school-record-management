@@ -16,6 +16,7 @@ import { useReactToPrint } from 'react-to-print'
 import { IoMdPrint } from 'react-icons/io'
 import SrGradesTemplate from './SrGradesTemplate'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import SF9FrontTemplate from './SF9FrontTemplate'
 
 interface SchoolForm9Props {
     student: StudentWithDetails,
@@ -56,22 +57,13 @@ function SchoolForm9({
               </TabsList>
             </TabsList>
             <TabsContent value='front'>
-              <div ref={componentRef} className='grid grid-cols-2 gap-x-10 p-10  text-black bg-white w-fit'>
-                
+              <div ref={componentRef} className=''>
+                  <SF9FrontTemplate student={student}  />
               </div>
             </TabsContent>
             <TabsContent value='back'>
               <div ref={componentRef} className='grid grid-cols-2 gap-x-10 p-10  text-black bg-white w-fit'>
                   <div className="">
-                      {/* <div className="text-center">
-                          <Image src={KNGLogo} alt='Kagawaran ng Edukaston' height={100} width={100} className=' mx-auto object-contain size-12'/>
-                          <h1  className='text-xs font-serif font-semibold'>Republic of the Philippines</h1>
-                          <h1  className='text-xs'>Department of Education</h1>
-                          <h1 className='text-xs'>Central Visayas</h1>
-                          <h1 className='text-xs'>Division of Tanjay City</h1>
-                          <h1 className='font-semibold text-sm font-serif'>TANJAY NATIONAL HIGH SCHOOL (OPAO)</h1>
-                          <h1 className='text-xs'>Barangay IX, OPAO, Tanjay City</h1>
-                          </div> */}
                       {isSHS ? (
                       
                         <>

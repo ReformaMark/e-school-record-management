@@ -123,7 +123,7 @@ export interface StudentsWithQuarterlyGrade extends Doc<'students'> {
 export interface StudentWithDetails extends Doc<'students'> {
     quarterlyGrades: QuarterlyGradesWithSubject[],
     sectionDoc: SectionWithGradeLevel | null,
-    cLass: Doc<'classes'> | null;
+    cLass: ClassWithSchoolYear;
     advisor: Doc<'users'> | null;
     subjects: ClassWithSubject[];
 }
@@ -134,6 +134,9 @@ export interface QuarterlyGradesWithSubject extends Doc<'quarterlyGrades'> {
 
 export interface ClassWithSubject extends Doc<'classes'> {
     subject: Doc<'subjects'>
+}
+export interface ClassWithSchoolYear extends Doc<'classes'> {
+    schoolYear: Doc<'schoolYears'> 
 }
 
 export interface FinalGradesWithSubject extends Doc<'finalGrades'>{

@@ -304,6 +304,10 @@ export const getStudentWithDetails = query({
     .filter(q => q.eq(q.field('teacherId'), teacherId))
     .first()
 
+    if(teacherClasses === null) throw new ConvexError('No class found.')
+
+    const sy = await ctx.db.get(teacherClasses.schoolYearId)
+    if(sy === null) throw new ConvexError('No school Year found.')
 
     const classes = await ctx.db.query('classes').filter(q => q.eq(q.field('sectionId'), studentSection._id)).collect()
 
@@ -347,7 +351,10 @@ export const getStudentWithDetails = query({
       ...student,
       quarterlyGrades: notNull,
       sectionDoc: {...studentSection, gradeLevel: gradeLevel},
-      cLass: teacherClasses,
+      cLass: {
+        ...teacherClasses,
+        schoolYear: sy
+      },
       advisor: teacher,
       subjects: filterSubject
     }

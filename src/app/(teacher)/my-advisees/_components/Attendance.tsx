@@ -13,14 +13,16 @@ import { AttendanceFormschema } from '@/lib/validation/values-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from 'sonner'
 import { Input } from '@/components/ui/input';
+import { cn } from '@/lib/utils';
 
 interface AttendanceProps{
     studentId: Id<'students'>,
     classId: Id<'classes'>,
-    attendance: Doc<'attendance'>
+    attendance: Doc<'attendance'>,
+    sf9?: boolean
 }
 
-function Attendance({studentId, classId, attendance}: AttendanceProps) {
+function Attendance({studentId, classId, attendance, sf9}: AttendanceProps) {
     const [isEditing, setIsEditing] = useState(false);
   
     const addAttendance = useMutation(api.attendance.add)
@@ -169,6 +171,8 @@ function Attendance({studentId, classId, attendance}: AttendanceProps) {
     
   return (
     <div className="">
+        {!sf9 && (
+        
         <div className="flex justify-end">
             {!isEditing && (
                 <Button
@@ -185,6 +189,7 @@ function Attendance({studentId, classId, attendance}: AttendanceProps) {
                 </Button>
             )}
         </div>
+        )}
     <Form {...form}> 
         <form onSubmit={form.handleSubmit(onSubmit)}>
         <div className="flex justify-end">
@@ -203,91 +208,13 @@ function Attendance({studentId, classId, attendance}: AttendanceProps) {
             )}
       </div>
         
-        <h1 className=' text-sm md:text-lg font-bold text-center mb-4'>ATTENDANCE RECORD</h1>
+    <h1 className={cn(sf9 ? "mb-0 text-xs" : "mb-4 text-sm", '  md:text-lg uppercase font-semibold font-serif tracking-wide text-center ')}>ATTENDANCE RECORD</h1>
             <div className="overflow-x-auto text-xs md:text-sm">
-                {/* <table className="table-auto w-full text-left border-collapse border border-black">
-                    <thead className='bg-gray-100'>
-                        <tr>
-                            <th className='border border-black p-2'>Month</th>
-                            <th className='border border-black p-2'>Days Present</th>
-                            <th className='border border-black p-2'>Days Absent</th>
-                            <th className='border border-black p-2'>Total School Days</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td className='border border-black p-2'>June</td>
-                            <td className='border border-black p-2'>20</td>
-                            <td className='border border-black p-2'>0</td>
-                            <td className='border border-black p-2'>20</td>
-                        </tr>
-                        <tr>
-                            <td className='border border-black p-2'>July</td>
-                            <td className='border border-black p-2'>22</td>
-                            <td className='border border-black p-2'>1</td>
-                            <td className='border border-black p-2'>23</td>
-                        </tr>
-                        <tr>
-                            <td className='border border-black p-2'>August</td>
-                            <td className='border border-black p-2'>20</td>
-                            <td className='border border-black p-2'>0</td>
-                            <td className='border border-black p-2'>20</td>
-                        </tr>
-                        <tr>
-                            <td className='border border-black p-2'>September</td>
-                            <td className='border border-black p-2'>21</td>
-                            <td className='border border-black p-2'>2</td>
-                            <td className='border border-black p-2'>23</td>
-                        </tr>
-                        <tr>
-                            <td className='border border-black p-2'>October</td>
-                            <td className='border border-black p-2'>19</td>
-                            <td className='border border-black p-2'>1</td>
-                            <td className='border border-black p-2'>20</td>
-                        </tr>
-                        <tr>
-                            <td className='border border-black p-2'>November</td>
-                            <td className='border border-black p-2'>22</td>
-                            <td className='border border-black p-2'>0</td>
-                            <td className='border border-black p-2'>22</td>
-                        </tr>
-                        <tr>
-                            <td className='border border-black p-2'>December</td>
-                            <td className='border border-black p-2'>18</td>
-                            <td className='border border-black p-2'>0</td>
-                            <td className='border border-black p-2'>18</td>
-                        </tr>
-                        <tr>
-                            <td className='border border-black p-2'>January</td>
-                            <td className='border border-black p-2'>22</td>
-                            <td className='border border-black p-2'>1</td>
-                            <td className='border border-black p-2'>23</td>
-                        </tr>
-                        <tr>
-                            <td className='border border-black p-2'>February</td>
-                            <td className='border border-black p-2'>20</td>
-                            <td className='border border-black p-2'>0</td>
-                            <td className='border border-black p-2'>20</td>
-                        </tr>
-                        <tr>
-                            <td className='border border-black p-2'>March</td>
-                            <td className='border border-black p-2'>23</td>
-                            <td className='border border-black p-2'>0</td>
-                            <td className='border border-black p-2'>23</td>
-                        </tr>
-                        <tr>
-                            <td className='border border-black p-2'>April</td>
-                            <td className='border border-black p-2'>N/A</td>
-                            <td className='border border-black p-2'>N/A</td>
-                            <td className='border border-black p-2'>N/A</td>
-                        </tr>
-                    </tbody>
-                </table> */}
                 <div className="grid grid-cols-12">
                     <div className="col-span-3 border-y-black border-y p-1  border-x-black border-x">
 
                     </div>
-                    <div className="border-y-black border-y col-span-7 grid grid-cols-12">
+                    <div className={cn(sf9 ? "text-[0.5rem]" : "text-sm","border-y-black border-y col-span-7 grid grid-cols-12")}>
                         <div className="h-full border-r-black border-r text-center font-semibold p-1">Jul</div>
                         <div className="h-full border-r-black border-r text-center font-semibold p-1">Aug</div>
                         <div className="h-full border-r-black border-r text-center font-semibold p-1">Sep</div>
