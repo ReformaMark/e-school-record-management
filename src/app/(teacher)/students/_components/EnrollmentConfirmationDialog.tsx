@@ -42,7 +42,7 @@ export default function EnrollmentConfirmationDialog({
     }
     //get the sections of the grade level
     const sections = useQuery(api.sections.getSectionsUsingGradeLevel, {
-        gradeLevel: gradelevel ? `Grade ${gradeLevel}` : undefined
+        gradeLevel: gradelevel ? `Grade ${gradelevel}` : undefined
     })
     const handleEnroll = () => {
         setIsLoading(true)
