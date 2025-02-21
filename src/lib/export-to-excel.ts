@@ -152,3 +152,61 @@ export const exportToExcelSections = (data: any[], fileName: string) => {
 
     XLSX.writeFile(wb, fullFileName);
 };
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const exportToExcelStudents = (data: any[], fileName: string) => {
+    const exportData = data.map(item => ({
+        "LRN": item.lrn || "N/A",
+        "First Name": item.firstName,
+        "Middle Name": item.middleName || "",
+        "Last Name": item.lastName,
+        "Birth Date": new Date(item.birthDate).toLocaleDateString(),
+        "Gender": item.sex,
+        "Grade Level": item.enrollmentStatus === "Enrolled"
+            ? item.gradeLevel
+            : `${item.gradeLevelToEnroll} (For Enrollment)`,
+        "Birth Place": item.birthPlace || "N/A",
+        "Address": item.currentAddress?.completeAddress || "N/A",
+        "Enrollment Status": item.enrollmentStatus,
+        "Student Type": item.returning === "Yes"
+            ? "Returning"
+            : item.als === "Yes"
+                ? "ALS"
+                : "Regular",
+        "Parent/Guardian": `${item.fatherFirstName || ""} ${item.fatherLastName || ""} / ${item.motherFirstName || ""} ${item.motherLastName || ""}`.trim(),
+        "Contact": item.fatherContact || item.motherContact || item.guardianContact || "N/A",
+        "School Year": item.schoolYear || "N/A"
+    }));
+
+    const ws = XLSX.utils.json_to_sheet(exportData);
+
+    const colWidths = [
+        { wch: 15 },  // LRN
+        { wch: 15 },  // First Name
+        { wch: 15 },  // Middle Name
+        { wch: 15 },  // Last Name
+        { wch: 12 },  // Birth Date
+        { wch: 10 },  // Gender
+        { wch: 20 },  // Grade Level
+        { wch: 20 },  // Birth Place
+        { wch: 40 },  // Address
+        { wch: 15 },  // Enrollment Status
+        { wch: 12 },  // Student Type
+        { wch: 30 },  // Parent/Guardian
+        { wch: 15 },  // Contact
+        { wch: 12 },  // School Year
+    ];
+
+    ws['!cols'] = colWidths;
+
+    // Create workbook and append worksheet
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Students');
+
+    // Generate filename with date
+    const date = new Date().toISOString().split('T')[0];
+    const fullFileName = `${fileName}_${date}.xlsx`;
+
+    // Save file
+    XLSX.writeFile(wb, fullFileName);
+}

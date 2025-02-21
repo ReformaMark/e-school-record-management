@@ -4,6 +4,8 @@ import "@/lib/globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { SchoolRegistrarNavbar } from "./_components/school-registrar-navbar";
 import { SchoolRegistrarSideNav } from "./_components/school-registrar-sidenav";
+import { ConvexAuthNextjsServerProvider } from "@convex-dev/auth/nextjs/server";
+import { ConvexClientProvider } from "../components/convex-client-provider";
 
 export const metadata: Metadata = {
     title: "School Registrar",
@@ -16,19 +18,23 @@ const SchoolHeadLayout = ({
     children: React.ReactNode
 }) => {
     return (
-        <html className="h-full" lang="en">
-            <body className="bg-background relative">
-                <Toaster />
+        <ConvexAuthNextjsServerProvider>
+            <ConvexClientProvider>
+                <html className="h-full" lang="en">
+                    <body className="bg-background relative">
+                        <Toaster />
 
-                <SchoolRegistrarNavbar />
+                        <SchoolRegistrarNavbar />
 
-                <SchoolRegistrarSideNav />
+                        <SchoolRegistrarSideNav />
 
-                <div className="w-full md:absolute md:right-0 md:top-[80px] md:w-[80%] z-0">
-                    {children}
-                </div>
-            </body>
-        </html>
+                        <div className="w-full md:absolute md:right-0 md:top-[80px] md:w-[80%] z-0">
+                            {children}
+                        </div>
+                    </body>
+                </html>
+            </ConvexClientProvider>
+        </ConvexAuthNextjsServerProvider>
     )
 }
 

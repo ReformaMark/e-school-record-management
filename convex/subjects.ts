@@ -10,7 +10,7 @@ export const getSubjects = query({
             .query('subjects')
             .order("desc")
             .collect()
-        const subWithGLevel = await asyncMap(subjects, async(s)=>{
+        const subWithGLevel = await asyncMap(subjects, async (s) => {
             const gradeLevel = await ctx.db.get(s.gradeLevelId)
             return {
                 ...s,

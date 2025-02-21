@@ -1,105 +1,138 @@
-import {
-    Breadcrumb,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbList,
-    BreadcrumbPage,
-    BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
+"use client"
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
     DropdownMenu,
-    DropdownMenuCheckboxItem,
     DropdownMenuContent,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
+    DropdownMenuItem,
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { DataTable } from "@/components/data-table";
-import { File, ListFilterIcon } from "lucide-react";
-import Link from "next/link";
-import { studentColumns, studentsData } from "../../../../data/students-data";
+import { exportToExcelStudents } from "@/lib/export-to-excel";
+import { useQuery } from "convex/react";
+import { FileIcon } from "lucide-react";
+import { useState } from "react";
+import { api } from "../../../../convex/_generated/api";
+import { studentColumns } from "../../../../data/students-data";
 
 const SystemAdminStudentsPage = () => {
+    const [selectedTab, setSelectedTab] = useState("Enrolled");
+    const [studentType, setStudentType] = useState("all");
+    const [gradeLevel, setGradeLevel] = useState("all");
+
+    const students = useQuery(api.students.getAllStudents, {
+        enrollmentStatus: selectedTab,
+        studentType: studentType,
+        gradeLevel: gradeLevel === "all" ? undefined : gradeLevel
+    });
+
+    if (!students) {
+        return (
+            <div className="container mx-auto p-4 text-black">
+                <div>Loading students...</div>
+            </div>
+        );
+    }
+
+    const handleExport = () => {
+        if (!students) return;
+        exportToExcelStudents(students, "students_list");
+    };
+
     return (
         <div className="container mx-auto p-4">
-            <Breadcrumb className="hidden md:flex">
-                <BreadcrumbList>
-                    <BreadcrumbItem>
-                        <BreadcrumbLink asChild>
-                            <Link href="/sysadmin">Dashboard</Link>
-                        </BreadcrumbLink>
-                    </BreadcrumbItem>
-                    <BreadcrumbSeparator />
-                    <BreadcrumbItem>
-                        <BreadcrumbPage>Students</BreadcrumbPage>
-                    </BreadcrumbItem>
-                </BreadcrumbList>
-            </Breadcrumb>
-
             <main className="space-y-4">
-                <div className="flex items-center">
-                    <div className="ml-auto flex items-center gap-2">
+                <div className="flex items-center justify-between">
+                    <Tabs value={selectedTab} onValueChange={setSelectedTab}>
+                        <TabsList>
+                            <TabsTrigger value="Enrolled">Enrolled</TabsTrigger>
+                            <TabsTrigger value="Can Enroll">Can Enroll</TabsTrigger>
+                        </TabsList>
+                    </Tabs>
+
+                    <div className="flex items-center gap-2">
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <Button variant="outline" size="sm" className="h-7 gap-1">
-                                    <ListFilterIcon className="h-3.5 w-3.5" />
-                                    <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                                        Filter
-                                    </span>
+                                <Button variant="outline" size="sm">
+                                    {studentType === "all" ? "All Types" :
+                                        studentType === "normal" ? "Regular" :
+                                            studentType === "returning" ? "Returning" : "ALS"}
                                 </Button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                                <DropdownMenuLabel>Filter by</DropdownMenuLabel>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuCheckboxItem checked>
-                                    Active
-                                </DropdownMenuCheckboxItem>
-                                <DropdownMenuCheckboxItem>
-                                    Graduated
-                                </DropdownMenuCheckboxItem>
+                            <DropdownMenuContent>
+                                <DropdownMenuItem onClick={() => setStudentType("all")}>
+                                    All Types
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => setStudentType("normal")}>
+                                    Regular
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => setStudentType("returning")}>
+                                    Returning
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => setStudentType("als")}>
+                                    ALS
+                                </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
-                        <Button size="sm" variant="outline" className="h-7 gap-1">
-                            <File className="h-3.5 w-3.5" />
+
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="outline" size="sm">
+                                    {gradeLevel === "all" ? "All Grades" : `Grade ${gradeLevel}`}
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent>
+                                <DropdownMenuItem onClick={() => setGradeLevel("all")}>
+                                    All Grades
+                                </DropdownMenuItem>
+                                {["7", "8", "9", "10", "11", "12"].map(level => (
+                                    <DropdownMenuItem
+                                        key={level}
+                                        onClick={() => setGradeLevel(level)}
+                                    >
+                                        Grade {level}
+                                    </DropdownMenuItem>
+                                ))}
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+
+                        <Button
+                            size="sm"
+                            variant="outline"
+                            className="h-7 gap-1"
+                            onClick={handleExport}
+                            disabled={!students}
+                        >
+                            <FileIcon className="h-3.5 w-3.5" />
                             <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
                                 Export
                             </span>
                         </Button>
-                        {/* <Link
-                            href="/sysadmin-students/sysadmin-add-student"
-                            className={cn("", buttonVariants({
-                                variant: "default",
-                                size: "sm",
-                                className: "text-white h-7 gap-1 w-full p-2"
-                            }))}>
-                            <PlusCircleIcon className="h-3.5 w-3.5" />
-                            <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                                Add a student
-                            </span>
-                        </Link> */}
                     </div>
                 </div>
 
-                <Card x-chunk="dashboard-06-chunk-0">
+                <Card>
                     <CardHeader>
-                        <CardTitle>Students</CardTitle>
-                        <CardDescription>Manage the list of students.</CardDescription>
+                        <CardTitle>Students ({students.length})</CardTitle>
+                        <CardDescription>
+                            {selectedTab === "enrolled" ? "Currently enrolled students" : "Students eligible for enrollment"}
+                        </CardDescription>
                     </CardHeader>
                     <CardContent>
                         <DataTable
                             columns={studentColumns}
-                            data={studentsData}
+                            data={students}
                             filter="firstName"
-                            placeholder="students by first name"
+                            placeholder="Filter students by first name..."
                         />
                     </CardContent>
                 </Card>
             </main>
         </div>
-    )
-}
+    );
+};
 
 export default SystemAdminStudentsPage;

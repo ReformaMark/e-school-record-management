@@ -1,6 +1,11 @@
 // Dummy data for students
 // TO ADD: Year level (1st, 2nd, 3rd and Grade 10)
 
+import { Badge } from "@/components/ui/badge";
+import { StudentTypes } from "@/lib/types";
+import { ColumnDef } from "@tanstack/react-table";
+import { format } from "date-fns";
+
 
 export const studentsData = [
     {
@@ -40,7 +45,7 @@ export const studentsData = [
         gender: "Male",
         address: "789 Quezon Ave, Manila, Philippines",
         yearLevel: "Grade 9",
-        strand:'',
+        strand: '',
         parentGuardianName: "Anna Garcia",
         parentGuardianContact: "+639112233445"
     },
@@ -54,7 +59,7 @@ export const studentsData = [
         gender: "Female",
         address: "101 Bonifacio Rd, Marikina, Philippines",
         yearLevel: "Grade 10",
-        strand:'',
+        strand: '',
         parentGuardianName: "David Domingo",
         parentGuardianContact: "+639155566677"
     },
@@ -68,7 +73,7 @@ export const studentsData = [
         gender: "Male",
         address: "202 Aguinaldo Ln, Pasig City, Philippines",
         yearLevel: "Grade 7",
-        strand:'',
+        strand: '',
         parentGuardianName: "Jennifer Santos",
         parentGuardianContact: "+639199988877"
     },
@@ -82,7 +87,7 @@ export const studentsData = [
         gender: "Female",
         address: "303 Mabuhay St, Quezon City, Philippines",
         yearLevel: "Grade 8",
-        strand:'',
+        strand: '',
         parentGuardianName: "Kevin Dela Rosa",
         parentGuardianContact: "+639166666666"
     },
@@ -96,7 +101,7 @@ export const studentsData = [
         gender: "Male",
         address: "404 P. Burgos St, San Juan, Philippines",
         yearLevel: "Grade 9",
-        strand:'',
+        strand: '',
         parentGuardianName: "Lisa Cruz",
         parentGuardianContact: "+639177777777"
     },
@@ -110,7 +115,7 @@ export const studentsData = [
         gender: "Female",
         address: "505 Panganiban Rd, Caloocan City, Philippines",
         yearLevel: "Grade 10",
-        strand:'',
+        strand: '',
         parentGuardianName: "Brian Lazaro",
         parentGuardianContact: "+639188888888"
     },
@@ -124,7 +129,7 @@ export const studentsData = [
         gender: "Male",
         address: "606 Nicanor St, Las Piñas, Philippines",
         yearLevel: "Grade 7",
-        strand:'',
+        strand: '',
         parentGuardianName: "Karen Mendoza",
         parentGuardianContact: "+639199999999"
     },
@@ -138,7 +143,7 @@ export const studentsData = [
         gender: "Female",
         address: "707 Katipunan Ave, Quezon City, Philippines",
         yearLevel: "Grade 8",
-        strand:'',
+        strand: '',
         parentGuardianName: "Richard Gonzales",
         parentGuardianContact: "+639122222222"
     },
@@ -152,7 +157,7 @@ export const studentsData = [
         gender: "Male",
         address: "808 Taft Ave, Pasay City, Philippines",
         yearLevel: "Grade 9",
-        strand:'',
+        strand: '',
         parentGuardianName: "Carol White",
         parentGuardianContact: "+639133333333"
     },
@@ -166,7 +171,7 @@ export const studentsData = [
         gender: "Male",
         address: "909 Araneta Ave, Mandaluyong, Philippines",
         yearLevel: "Grade 10",
-        strand:'',
+        strand: '',
         parentGuardianName: "Susan Martin",
         parentGuardianContact: "+639144444444"
     },
@@ -180,7 +185,7 @@ export const studentsData = [
         gender: "Female",
         address: "1010 Ortigas Ave, Mandaluyong, Philippines",
         yearLevel: "Grade 7",
-        strand:'',
+        strand: '',
         parentGuardianName: "James Harris",
         parentGuardianContact: "+639155555555"
     },
@@ -194,7 +199,7 @@ export const studentsData = [
         gender: "Male",
         address: "1111 Ayala Ave, Makati City, Philippines",
         yearLevel: "Grade 8",
-        strand:'',
+        strand: '',
         parentGuardianName: "Laura Taylor",
         parentGuardianContact: "+639166666666"
     },
@@ -208,7 +213,7 @@ export const studentsData = [
         gender: "Female",
         address: "1212 Roxas Blvd, Manila, Philippines",
         yearLevel: "Grade 9",
-        strand:'',
+        strand: '',
         parentGuardianName: "Michael Lewis",
         parentGuardianContact: "+639177777777"
     },
@@ -222,7 +227,7 @@ export const studentsData = [
         gender: "Male",
         address: "1313 Commonwealth Ave, Quezon City, Philippines",
         yearLevel: "Grade 10",
-        strand:'',
+        strand: '',
         parentGuardianName: "Rebecca Walker",
         parentGuardianContact: "+639188888888"
     }
@@ -230,7 +235,7 @@ export const studentsData = [
 
 
 
-export const studentColumns = [
+export const studentColumns: ColumnDef<StudentTypes>[] = [
     {
         accessorKey: "lrn",
         header: "LRN"
@@ -245,18 +250,53 @@ export const studentColumns = [
     },
     {
         accessorKey: "birthDate",
-        header: "Birth Date"
+        header: "Birth Date",
+        cell: ({ row }) => {
+            const date = new Date(row.getValue("birthDate"));
+            return format(date, "MMM dd, yyyy");
+        }
     },
     {
-        accessorKey: "gender",
+        accessorKey: "sex",
         header: "Gender"
     },
     {
-        accessorKey: "yearLevel",
-        header: "Year Level"
+        accessorKey: "gradeLevel",
+        header: "Year Level",
+        cell: ({ row }) => {
+            const student = row.original;
+            const isEnrolled = student.enrollmentStatus === "Enrolled"
+
+            return (
+                <div>
+                    {isEnrolled ? (
+                        student.gradeLevel || "N/A"
+                    ) : (
+                        <div className="flex items-center gap-1">
+                            {student.gradeLevelToEnroll || "N/A"}
+                            <Badge variant="outline" className="ml-2 text-white font-normal bg-blue-500">
+                                For Enrollment
+                            </Badge>
+                        </div>
+                    )}
+                </div>
+            )
+        }
     },
     {
-        accessorKey: "parentGuardianName",
-        header: "Parent/Guardian"
+        accessorKey: "parent",
+        header: "Parent/Guardian",
+        cell: ({ row }) => {
+
+            const gradeLevel = row.original
+
+            return (
+                <div className="fle flex-col">
+                    <h1>{gradeLevel.fatherFirstName} {gradeLevel.fatherLastName}</h1>
+                    <h1>{gradeLevel.motherFirstName} {gradeLevel.motherLastName}</h1>
+                    <h1>{gradeLevel.guardianFirstName} {gradeLevel.guardianLastName}</h1>
+                </div>
+            )
+        },
     }
 ];
