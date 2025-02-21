@@ -1,6 +1,12 @@
 'use client'
 import Logo from '@/../public/images/tanjayLogo.png';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Separator } from '@/components/ui/separator';
 import {
     Sheet,
@@ -19,12 +25,6 @@ import { BiLogOut } from 'react-icons/bi';
 import { GiHamburgerMenu } from 'react-icons/gi';
 import { MdOutlineDashboard, MdOutlineReport } from 'react-icons/md';
 import { PiStudent } from 'react-icons/pi';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 
 export const SchoolRegistrarNavbar = () => {
     const pathname = usePathname()

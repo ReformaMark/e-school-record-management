@@ -5,7 +5,7 @@ import { useConvexAuth } from "convex/react"
 import { useRouter } from "next/navigation"
 import { useEffect } from "react"
 
-export function TeacherGuard({ children }: { children: React.ReactNode }) {
+export function RegistrarGuard({ children }: { children: React.ReactNode }) {
     const router = useRouter()
     const { isAuthenticated, isLoading: isAuthLoading } = useConvexAuth()
     const { data: role, isLoading: isRoleLoading } = useCheckRole()
@@ -18,20 +18,20 @@ export function TeacherGuard({ children }: { children: React.ReactNode }) {
             }
 
             // Based on schema.ts roles: "admin", "teacher", "school-head", "staff"
-            if (role !== "teacher") {
+            if (role !== "staff") {
                 // Redirect non-admin users to appropriate routes
                 switch (role) {
+                    case "teacher":
+                        router.push("/dashboard")
+                        break
                     case "admin":
                         router.push("/sysadmin")
                         break
                     case "school-head":
                         router.push("/school-head")
                         break
-                    case "staff":
-                        router.push("/sr-dashboard")
-                        break
                     default:
-                        router.push("/")
+                        router.push("/auth")
                 }
                 return
             }
@@ -44,7 +44,7 @@ export function TeacherGuard({ children }: { children: React.ReactNode }) {
     }
 
     // Only render children if authenticated and system admin
-    if (isAuthenticated && role === "teacher") {
+    if (isAuthenticated && role === "staff") {
         return <>{children}</>
     }
 

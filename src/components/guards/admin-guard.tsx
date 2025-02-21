@@ -1,9 +1,9 @@
 "use client"
 
+import { useCheckRole } from "@/features/current/api/use-check-role"
+import { useConvexAuth } from "convex/react"
 import { useRouter } from "next/navigation"
 import { useEffect } from "react"
-import { useConvexAuth } from "convex/react"
-import { useCheckRole } from "@/features/current/api/use-check-role"
 
 export function SystemAdminGuard({ children }: { children: React.ReactNode }) {
     const router = useRouter()
