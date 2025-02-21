@@ -28,7 +28,7 @@ export function SystemAdminGuard({ children }: { children: React.ReactNode }) {
                         router.push("/school-head")
                         break
                     case "staff":
-                        router.push("/staff")
+                        router.push("/sr-dashboard")
                         break
                     default:
                         router.push("/auth")

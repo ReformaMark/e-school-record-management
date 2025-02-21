@@ -83,12 +83,14 @@ export const SchoolHeadNavbar = () => {
                                 <SheetTitle >
                                     <div className="flex items-center gap-x-3">
                                         <Avatar>
-                                            <AvatarImage src="https://github.com/shadcn.png" />
-                                            <AvatarFallback className='text-text'>CN</AvatarFallback>
+                                            <AvatarImage src={user?.image || ""} />
+                                            <AvatarFallback
+                                                className='bg-sky-500 text-white'
+                                            >{user?.firstName?.charAt(0)}{user?.lastName?.charAt(0)}</AvatarFallback>
                                         </Avatar>
-                                        <div className="text-center text-textWhite">
-                                            <h3 className='text-sm '>Surname, Firstname MI.</h3>
-                                            <h6 className='text-xs text-left text-primary-foreground'>Teacher</h6>
+                                        <div className="text-center">
+                                            <h3 className='text-sm'>{user?.lastName}, {user?.firstName} {user?.middleName}</h3>
+                                            <h6 className='text-xs text-left text-white/70'>School Head</h6>
                                         </div>
                                     </div>
 
@@ -171,12 +173,12 @@ export const SchoolHeadNavbar = () => {
                                 </Link>
                             </div>
 
-                            <SheetFooter className='mt-auto'>
-                                <Link href={'/assessments'} className={`${pathname === '/assessments' ? "bg-[#0087ba] text-white" : "bg-transparent"} text-textWhite  flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}>
-                                    <BiLogOut
-                                        className='size-4 w-10' />
-                                    <h1 className='tracking-wider'>Logout</h1>
-                                </Link>
+                            <SheetFooter className='mt-auto flex flex-row items-center'>
+                                <BiLogOut
+                                    className='size-4 w-10'
+                                    onClick={() => signOut()}
+                                />
+                                <h1 className='tracking-wider'>Logout</h1>
                             </SheetFooter>
                         </SheetContent>
                     </Sheet>
