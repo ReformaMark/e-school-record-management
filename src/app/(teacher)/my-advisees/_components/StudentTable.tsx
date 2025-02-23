@@ -46,7 +46,7 @@ export const StudentTable = () =>{
         if(gradeLevel){
             setSelectedSem(isSHS ? "1st" : undefined)
         }
-    }, [latestSY, gradeLevel])
+    }, [isSHS, latestSY, gradeLevel])
    
 
     const sortedStudents = students?.sort((a, b) => a.lastName.localeCompare(b.lastName)) ?? [];

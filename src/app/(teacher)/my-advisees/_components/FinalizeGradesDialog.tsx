@@ -42,7 +42,7 @@ function FinalizeGradesDialog({student, averages, generalAverage}:FinalizeGrades
     const sectionGradeLevel = student.sectionDoc?.gradeLevel?.level
     const classSem = student.cLass?.semester
 
-    const isRetained = useMemo(() => isPromoted?.hasPromoted ? isShs ? studentSem === classSem && true : studentGradeLevel === sectionGradeLevel ? true : false : false ,[isPromoted, sectionGradeLevel])
+    const isRetained = useMemo(() => isPromoted?.hasPromoted ? isShs ? studentSem === classSem && true : studentGradeLevel === sectionGradeLevel ? true : false : false ,[studentSem, classSem, isShs, studentGradeLevel,isPromoted, sectionGradeLevel])
 
     const failedAverages = useMemo(() => {
         if (averages === null) {

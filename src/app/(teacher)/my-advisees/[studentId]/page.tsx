@@ -22,6 +22,7 @@ import Values from '../_components/Values'
 import Attendance from '../_components/Attendance'
 import SchoolForm9 from '../_components/SchoolForm9'
 import { useSearchParams } from 'next/navigation'
+import SF10Template from '../_components/SF10Template'
 
 function Student({
     params
@@ -31,6 +32,7 @@ function Student({
     }
 }) {
     const [isOpen, setIsOpen] = useState(false)
+    const [sf10Open, setSF10Open] = useState(false)
     const searchParams = useSearchParams();
     const isSHS = searchParams.get('isSHS')
     const sem = searchParams.get('sem')
@@ -77,7 +79,7 @@ function Student({
                             <DropdownMenuItem onClick={()=>setIsOpen(true)}>
                                 School Form 9 (SF9)
                             </DropdownMenuItem>
-                            <DropdownMenuItem>School Form 10 (SF10)</DropdownMenuItem>
+                            <DropdownMenuItem onClick={()=>setSF10Open(true)}>School Form 10 (SF10)</DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </div>
@@ -104,7 +106,10 @@ function Student({
             </div> 
 
             {student && (
-                <SchoolForm9 student={student} setIsOpen={setIsOpen} isOpen={isOpen}/>
+                <>
+                    <SchoolForm9 student={student} setIsOpen={setIsOpen} isOpen={isOpen}/>
+                    <SF10Template student={student} setIsOpen={setSF10Open} isOpen={sf10Open}/>
+                </>
             )}
        
           
