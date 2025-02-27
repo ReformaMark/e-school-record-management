@@ -152,3 +152,33 @@ interface SubjectForRemedial {
     forRemedial: boolean;
     status: string | undefined
 }
+
+interface SubjectsWithClass {
+    cLass: Doc<'classes'>;
+    subject: Doc<'subjects'>;
+    status: string | undefined;
+    remedialGrade: number | undefined;
+    classId: Id<"classes">;
+    subjectName: string;
+    finalGrade: number;
+    forRemedial: boolean;
+}
+
+export interface FinalGradesWithDetails extends Doc<'finalGrades'> {
+    schoolYear:  Doc<'schoolYears'>,
+    advisor:  Doc<'users'>,
+    section:  SectionWithGradeLevel,
+    subjectsWithClass: SubjectsWithClass[],
+    quarterlyGrades: QuarterlyGradesWithSubject[],
+}
+
+export interface ForRemedial{
+    cLass: Doc<'classes'>;
+    subject: Doc<'subjects'>;
+    status: string | undefined;
+    remedialGrade: number | undefined;
+    classId: Id<"classes">;
+    subjectName: string;
+    finalGrade: number;
+    forRemedial: boolean;
+}

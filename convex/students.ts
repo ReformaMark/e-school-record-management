@@ -331,8 +331,6 @@ export const getStudentWithDetails = query({
 
     const filtererdQG = quarterlyGrades.filter(qg => classIds.find(c => c === qg.classId))
 
-    console.log("filtered:", filtererdQG)
-
     const qgWithSubject = await asyncMap(filtererdQG, async (qg) => {
       const cLAss = await ctx.db.get(qg.classId)
       if (!cLAss) return null

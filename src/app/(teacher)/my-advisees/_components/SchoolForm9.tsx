@@ -31,7 +31,8 @@ function SchoolForm9({
     const componentRef = useRef(null);
 
     const gradeLevel = student.sectionDoc?.gradeLevel?.level
-    const isSHS = gradeLevel ?? 0 > 10 
+    const isSHS = gradeLevel === "11" || gradeLevel === "12" 
+
   const reactToPrintContent = () => {
     return componentRef.current;
   };

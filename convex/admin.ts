@@ -37,3 +37,18 @@ export const fetchPrincipals = query({
         return principals;
     },
 });
+
+export const principal = query({
+    args: { 
+
+       type: v.string(),
+    },
+    handler: async (ctx, args) => {   
+        return await ctx.db
+            .query("users")
+            .filter((q) => q.eq(q.field("role"), "school-head"))
+            .filter((q) => q.eq(q.field("schoolHeadType"), args.type))
+            .order("desc")
+            .first();
+    }
+})

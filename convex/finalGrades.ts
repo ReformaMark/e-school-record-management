@@ -244,3 +244,71 @@ export const remedialGrades = query({
         return studentFinalGrades
     }
 })
+
+export const getFinalGradesForSF10 = query({
+    args:{
+        studentId: v.id('students')
+    },
+    handler: async(ctx, args) =>{
+        const finalsGrades = await ctx.db.query('finalGrades')
+            .filter(q => q.eq(q.field('studentId'), args.studentId))
+            .collect()
+
+        const studentQuarterlyGrades = await ctx.db.query('quarterlyGrades')
+            .filter(q => q.eq(q.field('studentId'), args.studentId))
+            .collect()
+
+
+        const finalGradesWithDetails = await asyncMap(finalsGrades, async(fg) =>{
+            if(!fg.schoolYearId) return 
+            if(!fg.advisorId) return 
+            if(!fg.sectionId) return 
+            const schoolYear = await ctx.db.get(fg.schoolYearId)
+            const advisor = await ctx.db.get(fg.advisorId)
+            const section = await ctx.db.get(fg.sectionId)
+            if(!schoolYear) return 
+            if(!advisor) return
+            if(!section) return
+            const gradeLevel = await ctx.db.get(section.gradeLevelId)
+            const subjects = await asyncMap(fg.subjects, async(s) =>{
+                const cLass = await ctx.db.get(s.classId)
+                if(!cLass) return
+                const subject = await ctx.db.get(cLass.subjectId)
+                if(!subject) return
+                return {
+                    ...s,
+                    cLass: cLass,
+                    subject: subject
+                }
+            })
+            const filteredSubjects = subjects.filter(s => s !== undefined)
+            const filtererdQG = studentQuarterlyGrades.filter(qg => fg.subjects.find(c => c.classId === qg.classId))
+
+            const qgWithSubject = await asyncMap(filtererdQG, async (qg) => {
+                const cLAss = await ctx.db.get(qg.classId)
+                if (!cLAss) return null
+                const subject = await ctx.db.get(cLAss.subjectId)
+                if (!subject) return null
+          
+                return {
+                  ...qg,
+                  subject: subject
+                }
+              })
+          
+              const notNull = qgWithSubject.filter(item => item !== null)
+            return {
+                ...fg,
+                schoolYear: schoolYear,
+                advisor: advisor,
+                section: {...section, gradeLevel: gradeLevel},
+                subjectsWithClass: filteredSubjects,
+                quarterlyGrades: notNull
+            }
+        })
+
+        const filteredFG = finalGradesWithDetails.filter(fg => fg !== undefined)
+
+        return filteredFG
+    }
+})

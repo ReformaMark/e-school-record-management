@@ -131,7 +131,7 @@ export const studentColumn: ColumnDef<Student>[]  = [
                         </div>
                       </div>
                     </div>
-                    <h1 className="py-1 text-center shadow-sm bg-primary-foreground rounded-md text-textWhite">Show more details</h1>
+                  
                     </DialogContent>
                 </Dialog>
               <Link href={`/my-advisees/${student.id}`} className="">

@@ -222,7 +222,7 @@ export const StudentColumn: ColumnDef<StudentWithSem>[]  = [
                             </div>
                         </div>
                     </div>
-                    <Link href={'#'} className="py-1 text-center shadow-sm bg-primary-foreground rounded-md text-xs md:text-sm text-textWhite">Show more details</Link>
+                    {/* <Link href={'#'} className="py-1 text-center shadow-sm bg-primary-foreground rounded-md text-xs md:text-sm text-textWhite">Show more details</Link> */}
                     </DialogContent>
                 </Dialog>
                

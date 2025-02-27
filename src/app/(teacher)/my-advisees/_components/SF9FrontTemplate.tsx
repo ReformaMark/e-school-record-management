@@ -1,3 +1,4 @@
+'use client'
 import React, { useEffect, useState } from 'react'
 import { StudentWithDetails } from '@/lib/types'
 import Attendance from './Attendance'
@@ -6,30 +7,45 @@ import { api } from '../../../../../convex/_generated/api'
 import { Doc, Id } from '../../../../../convex/_generated/dataModel'
 import Image from 'next/image'
 import KagawaranngEdukasyon from '@/../public/images/kagawaran-ng-edukasyon-logo.png'
-import { cn } from '@/lib/utils'
 
 interface SF9FrontTemplateProps{
     student: StudentWithDetails
     
 }
 function SF9FrontTemplate({student}: SF9FrontTemplateProps) {
-   
+  
     const attendance = useQuery(api.attendance.get, {
         studentId: student?._id,
         classId: student?.cLass?._id
     })
     const [isSHS, setIsSHS] = useState<boolean>(false)
+    const [principalN, setPrincipalN] = useState<string>("")
+    const principal = useQuery(api.admin.principal, {
+        type: isSHS ? "senior-high" : "junior-high"
+    });
+
+
     useEffect(()=>{
-        if(Number(student.sectionDoc?.gradeLevel?.level ?? 0) > 10) {
+        if(student.sectionDoc?.gradeLevel?.level === "11" || student.sectionDoc?.gradeLevel?.level === "12") {
             setIsSHS(true)
         }
-    },[student])
-    console.log(isSHS)
-  function getStudentAge(birthday: string): number {
-    const birthDate = new Date(birthday);
-    const today = new Date();
-    let age = today.getFullYear() - birthDate.getFullYear();
-    const monthDifference = today.getMonth() - birthDate.getMonth();
+
+        console.log(student.sectionDoc?.gradeLevel?.level)
+        if(principal) {
+            const principalName = principal?.firstName + " " + principal?.middleName + " " + principal?.lastName
+            setPrincipalN(principalName);
+        }
+    },[student, principal])
+
+    function getStudentAge(birthday: string): number {
+        const birthDate = new Date(birthday);
+        const today = new Date();
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const monthDifference = today.getMonth() - birthDate.getMonth();
+
+        if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < birthDate.getDate())) {
+            age--;
+        }
 
     if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < birthDate.getDate())) {
       age--;
@@ -72,8 +88,8 @@ function SF9FrontTemplate({student}: SF9FrontTemplateProps) {
                 <div className="">
                     <h1 className='my-7'>Approved:</h1>
                     <div className="grid grid-cols-2 gap-x-16 items-baseline">
-                        <h1 className='border-b-black border-b'></h1>
-                        <h1  className='border-b-black border-b'></h1>
+                        <h1 className='border-b-black border-b'>{}</h1>
+                        <h1 className='border-b-black border-b'>{}</h1>
                         <h1  className='text-center'>Principal</h1>
                         <h1  className='text-center'>Teacher</h1>
                     </div>
@@ -124,9 +140,13 @@ function SF9FrontTemplate({student}: SF9FrontTemplateProps) {
                         <h1 className='col-span-4 flex gap-x-2'>Sex:  <span className='font-normal border-b-black border-b flex-1 px-2 inline-block'>{student.sex}</span></h1>
                         <h1 className='col-span-5 flex gap-x-2'>Grade:  <span className='font-normal border-b-black border-b flex-1 px-2 inline-block'>{student.sectionDoc?.gradeLevel?.level}</span></h1>
                         <h1 className='col-span-7 flex gap-x-2'>Section:  <span className='font-normal border-b-black border-b flex-1 px-2 inline-block'>{student.sectionDoc?.name}</span></h1>
-                        <h1 className={cn(isSHS ? "block" :"hidden" ,'col-span-12 flex gap-x-2')}>Curriculum: <span className='font-normal border-b-black border-b flex-1 px-2 inline-block'>K to 12 Basic Education Curicculum</span></h1>
+                        {isSHS && (
+                        <h1 className='col-span-12 flex gap-x-2'>Curriculum: <span className='font-normal border-b-black border-b flex-1 px-2 inline-block'>K to 12 Basic Education Curriculum</span></h1>
+                        )}
                         <h1 className='col-span-12 flex gap-x-2'>School Year: <span className='font-normal border-b-black border-b flex-1 px-2 inline-block'>{student.cLass.schoolYear.sy}</span></h1>
-                        <h1 className={cn(isSHS ? "block" :"hidden" ,'col-span-12 flex gap-x-2')} >Track/ Strand: <span className='font-normal border-b-black border-b flex-1 px-2 inline-block'>{student.cLass?.track}/{student.strand}</span></h1>
+                        {isSHS && (
+                            <h1 className='col-span-12 flex gap-x-2'>Track/ Strand: <span className='font-normal border-b-black border-b flex-1 px-2 inline-block'>{student.cLass?.track}/{student.strand}</span></h1>
+                        )}
                     </div>
                 </div>
                 <div className="col-span-3 pl-20 font-semibold mt-10">
@@ -134,8 +154,8 @@ function SF9FrontTemplate({student}: SF9FrontTemplateProps) {
                     <p className="text-sm text-justify"><span className='mr-4'></span>This report card shows the ability and progress your child has made in different learning areas as well as his/her core values.  </p>
                     <p className="text-sm"><span className='mr-4'></span>The school welcomes you should you desire to know more about your child&apos;s progress.</p>
                     <div className="grid grid-cols-2 gap-x-10 mt-10">
-                        <h1 className='border-b-black border-b'></h1>
-                        <h1 className='border-b-black border-b'></h1>
+                        <h1 className='border-b-black border-b text-center capitalize font-medium'>{principalN}</h1>
+                        <h1 className='border-b-black border-b text-center capitalize font-medium'>{student.advisor?.firstName} {student.advisor?.middleName} {student.advisor?.lastName}</h1>
                         <h1 className='text-center'>Principal</h1>
                         <h1 className='text-center'>Teacher</h1>
                     </div>
