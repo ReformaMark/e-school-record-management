@@ -6,6 +6,7 @@ import { ChartContainer, ChartTooltip } from "@/components/ui/chart"
 import { useQuery } from "convex/react"
 import { api } from "../../../../../convex/_generated/api"
 import { Id } from "../../../../../convex/_generated/dataModel"
+import { InterventionStatsPanel } from "./intervention-stats-panel"
 
 interface CombinedInterventionChartProps {
     studentId: Id<"students">
@@ -63,6 +64,54 @@ export function CombinedInterventionChart({
         );
     }
 
+    const calculateStats = (grades: any[]) => {
+        const interventionGrades = grades.filter(g => g.needsIntervention);
+        const totalInterventions = interventionGrades.length;
+
+        let averageImprovement = 0;
+        let successRate = 0;
+        const interventionMethods = new Map<string, number>();
+
+        if (totalInterventions > 0) {
+            // Calculate improvements
+            const improvements = interventionGrades.map(g =>
+                g.interventionGrade - g.quarterlyGrade
+            );
+            averageImprovement =
+                improvements.reduce((a, b) => a + b, 0) / improvements.length;
+
+            // Calculate success rate
+            const successfulInterventions = interventionGrades.filter(
+                g => g.interventionGrade > g.quarterlyGrade
+            ).length;
+            successRate = (successfulInterventions / totalInterventions) * 100;
+
+            // Count intervention methods
+            interventionGrades.forEach(g => {
+                g.interventionUsed.forEach((method: string) => {
+                    interventionMethods.set(
+                        method,
+                        (interventionMethods.get(method) || 0) + 1
+                    );
+                });
+            });
+        }
+
+        // Get top 3 most used interventions
+        const mostUsedInterventions = Array.from(interventionMethods.entries())
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 3)
+            .map(([method]) => method);
+
+        return {
+            totalInterventions,
+            averageImprovement,
+            successRate,
+            mostUsedInterventions
+        };
+    };
+
+
     // Combine and format data for comparison
     const chartData = studentData.grades.map(grade => ({
         quarter: `Q${grade.quarter}`,
@@ -90,76 +139,80 @@ export function CombinedInterventionChart({
                 </CardDescription>
             </CardHeader>
             <CardContent>
-                <div className="w-full overflow-x-auto">
-                    <div className="min-w-[300px]">
-                        <ChartContainer config={chartConfig} className="h-[300px]">
-                            <BarChart
-                                accessibilityLayer
-                                data={chartData}
-                                margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-                            >
-                                <XAxis
-                                    dataKey="quarter"
-                                    tickLine={false}
-                                    axisLine={false}
-                                    tickMargin={10}
-                                    stroke="hsl(142, 76%, 36%)"
-                                />
-                                <YAxis
-                                    tickLine={false}
-                                    axisLine={false}
-                                    stroke="hsl(142, 76%, 36%)"
-                                    domain={[0, 100]}
-                                    ticks={[0, 20, 40, 60, 80, 100]}
-                                />
-                                <ChartTooltip
-                                    cursor={false}
-                                    content={({ active, payload }) => {
-                                        if (active && payload && payload.length) {
-                                            return (
-                                                <div className="rounded-lg border bg-background p-2 shadow-sm">
-                                                    <div className="grid grid-cols-1 gap-2">
-                                                        <div className="flex flex-col">
-                                                            <span className="text-[0.70rem] uppercase text-muted-foreground">
-                                                                {payload[0].payload.quarter}
-                                                            </span>
-                                                            <span className="font-bold text-muted-foreground">
-                                                                Actual: {payload[0].payload.actual}
-                                                            </span>
-                                                            {payload[0].payload.intervention && (
+                <div className="space-y-4">
+                    <InterventionStatsPanel stats={calculateStats(studentData.grades)} />
+
+                    <div className="w-full overflow-x-auto">
+                        <div className="min-w-[300px]">
+                            <ChartContainer config={chartConfig} className="h-[300px]">
+                                <BarChart
+                                    accessibilityLayer
+                                    data={chartData}
+                                    margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                                >
+                                    <XAxis
+                                        dataKey="quarter"
+                                        tickLine={false}
+                                        axisLine={false}
+                                        tickMargin={10}
+                                        stroke="hsl(142, 76%, 36%)"
+                                    />
+                                    <YAxis
+                                        tickLine={false}
+                                        axisLine={false}
+                                        stroke="hsl(142, 76%, 36%)"
+                                        domain={[0, 100]}
+                                        ticks={[0, 20, 40, 60, 80, 100]}
+                                    />
+                                    <ChartTooltip
+                                        cursor={false}
+                                        content={({ active, payload }) => {
+                                            if (active && payload && payload.length) {
+                                                return (
+                                                    <div className="rounded-lg border bg-background p-2 shadow-sm">
+                                                        <div className="grid grid-cols-1 gap-2">
+                                                            <div className="flex flex-col">
+                                                                <span className="text-[0.70rem] uppercase text-muted-foreground">
+                                                                    {payload[0].payload.quarter}
+                                                                </span>
                                                                 <span className="font-bold text-muted-foreground">
-                                                                    After Intervention: {payload[0].payload.intervention}
+                                                                    Actual: {payload[0].payload.actual}
                                                                 </span>
-                                                            )}
-                                                            {payload[0].payload.intervention && (
-                                                                <span className="text-[0.70rem] text-muted-foreground">
-                                                                    Improvement: {(payload[0].payload.intervention - payload[0].payload.actual).toFixed(1)}%
-                                                                </span>
-                                                            )}
+                                                                {payload[0].payload.intervention && (
+                                                                    <span className="font-bold text-muted-foreground">
+                                                                        After Intervention: {payload[0].payload.intervention}
+                                                                    </span>
+                                                                )}
+                                                                {payload[0].payload.intervention && (
+                                                                    <span className="text-[0.70rem] text-muted-foreground">
+                                                                        Improvement: {(payload[0].payload.intervention - payload[0].payload.actual).toFixed(1)}%
+                                                                    </span>
+                                                                )}
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                            );
-                                        }
-                                        return null;
-                                    }}
-                                />
-                                <Legend
-                                    verticalAlign="top"
-                                    height={36}
-                                />
-                                <Bar
-                                    dataKey="actual"
-                                    fill="var(--color-actual)"
-                                    radius={[4, 4, 0, 0]}
-                                />
-                                <Bar
-                                    dataKey="intervention"
-                                    fill="var(--color-intervention)"
-                                    radius={[4, 4, 0, 0]}
-                                />
-                            </BarChart>
-                        </ChartContainer>
+                                                );
+                                            }
+                                            return null;
+                                        }}
+                                    />
+                                    <Legend
+                                        verticalAlign="top"
+                                        height={36}
+                                    />
+                                    <Bar
+                                        dataKey="actual"
+                                        fill="var(--color-actual)"
+                                        radius={[4, 4, 0, 0]}
+                                    />
+                                    <Bar
+                                        dataKey="intervention"
+                                        fill="var(--color-intervention)"
+                                        radius={[4, 4, 0, 0]}
+                                    />
+                                </BarChart>
+                            </ChartContainer>
+                        </div>
                     </div>
                 </div>
             </CardContent>
