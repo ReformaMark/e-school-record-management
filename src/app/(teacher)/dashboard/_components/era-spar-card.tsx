@@ -23,7 +23,7 @@ export const EraSparCard = () => {
     });
 
     // Get subjects for selected class
-    const subjects = useQuery(api.subjects.getTeacherSubjects);
+    // const subjects = useQuery(api.subjects.getTeacherSubjects);
 
     if (!classes) {
         return (

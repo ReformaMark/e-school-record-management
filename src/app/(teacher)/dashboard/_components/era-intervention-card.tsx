@@ -3,14 +3,38 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { useQuery } from "convex/react"
 import { useState } from "react"
-import { ActualInterventionPerformanceChart } from "./actual-intervention-performance-chart"
 import { ActualPerformanceChart } from "./actual-performance-chart"
+import { ActualInterventionPerformanceChart } from "./actual-intervention-performance-chart"
 import { CombinedInterventionChart } from "./combined-intervention-chart"
+import { Id } from "../../../../../convex/_generated/dataModel"
+import { api } from "../../../../../convex/_generated/api"
 
 export default function EraInterventionCard() {
-    const [selectedStudent, setSelectedStudent] = useState("1")
-    const [selectedSubject, setSelectedSubject] = useState("math")
+    const [selectedClass, setSelectedClass] = useState<Id<"classes"> | null>(null);
+    const [selectedStudent, setSelectedStudent] = useState<Id<"students"> | null>(null);
+    const [selectedSubject, setSelectedSubject] = useState<Id<"subjects"> | null>(null);
+
+    // Get teacher's classes with section details
+    const classes = useQuery(api.classes.getTeacherClasses);
+
+    // Get students for selected class 
+    const studentsWithGrades = useQuery(api.students.getStudentsWithGrades, {
+        classId: selectedClass ?? undefined,
+        subjectId: selectedSubject ?? undefined
+    });
+
+    if (!classes) {
+        return (
+            <Card>
+                <CardHeader>
+                    <CardTitle>Intervention Analytics and Reports</CardTitle>
+                </CardHeader>
+                <CardContent>Loading...</CardContent>
+            </Card>
+        );
+    }
 
     return (
         <Card>
@@ -18,46 +42,96 @@ export default function EraInterventionCard() {
                 <CardTitle>Intervention Analytics and Reports</CardTitle>
             </CardHeader>
             <CardContent>
-                <div className="flex space-x-4 mb-6">
-                    <Select value={selectedStudent} onValueChange={setSelectedStudent}>
-                        <SelectTrigger className="w-[180px]">
-                            <SelectValue placeholder="Select Student" />
+                <div className="flex flex-col space-y-4 md:flex-row md:space-x-4 md:space-y-0 mb-6">
+                    <Select
+                        value={selectedClass?.toString() ?? ""}
+                        onValueChange={(value) => {
+                            setSelectedClass(value as Id<"classes">);
+                            setSelectedStudent(null); // Reset student when class changes
+                            setSelectedSubject(null); // Reset subject when class changes
+                        }}
+                    >
+                        <SelectTrigger className="w-[200px]">
+                            <SelectValue placeholder="Select Section" />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="1">John Doe</SelectItem>
-                            <SelectItem value="2">Jane Smith</SelectItem>
-                            <SelectItem value="3">Bob Johnson</SelectItem>
+                            {classes.map((cls) => (
+                                <SelectItem
+                                    key={cls?._id}
+                                    value={cls?._id as string}
+                                >
+                                    {cls?.section?.name} - {cls?.subject?.name}
+                                </SelectItem>
+                            ))}
                         </SelectContent>
                     </Select>
-                    <Select value={selectedSubject} onValueChange={setSelectedSubject}>
-                        <SelectTrigger className="w-[180px]">
-                            <SelectValue placeholder="Select Subject" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="math">Mathematics</SelectItem>
-                            <SelectItem value="science">Science</SelectItem>
-                            <SelectItem value="english">English</SelectItem>
-                        </SelectContent>
-                    </Select>
+
+                    {selectedClass && (
+                        <Select
+                            value={selectedStudent?.toString() ?? ""}
+                            onValueChange={(value) => {
+                                setSelectedStudent(value as Id<"students">);
+                                // Automatically set subject to the class subject
+                                const selectedClassData = classes.find(c => c?._id === selectedClass);
+                                if (selectedClassData) {
+                                    setSelectedSubject(selectedClassData.subjectId);
+                                }
+                            }}
+                        >
+                            <SelectTrigger className="w-[200px]">
+                                <SelectValue placeholder="Select Student" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {studentsWithGrades?.map((student) => (
+                                    <SelectItem
+                                        key={student.id}
+                                        value={student.id}
+                                    >
+                                        {student.name}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    )}
                 </div>
 
-                <Tabs defaultValue="actual" className="space-y-4">
-                    <TabsList className="flex flex-wrap justify-start gap-2 mb-[96px] md:mb-3">
-                        <TabsTrigger value="actual" className="flex-grow sm:flex-grow-0">Actual</TabsTrigger>
-                        <TabsTrigger value="actual-intervention" className="flex-grow sm:flex-grow-0">Actual Intervention</TabsTrigger>
-                        <TabsTrigger value="combined" className="flex-grow sm:flex-grow-0">Combined</TabsTrigger>
-                    </TabsList>
-                    <TabsContent value="actual">
-                        <ActualPerformanceChart studentId={selectedStudent} subject={selectedSubject} />
-                    </TabsContent>
-                    <TabsContent value="actual-intervention">
-                        <ActualInterventionPerformanceChart studentId={selectedStudent} subject={selectedSubject} />
-                    </TabsContent>
-                    <TabsContent value="combined">
-                        <CombinedInterventionChart studentId={selectedStudent} subject={selectedSubject} />
-                    </TabsContent>
-                </Tabs>
+                {selectedStudent && selectedSubject && selectedClass && (
+                    <Tabs defaultValue="actual" className="space-y-4">
+                        <TabsList className="flex flex-wrap justify-start gap-2 mb-[96px] md:mb-3">
+                            <TabsTrigger value="actual" className="flex-grow sm:flex-grow-0">
+                                Actual
+                            </TabsTrigger>
+                            <TabsTrigger value="actual-intervention" className="flex-grow sm:flex-grow-0">
+                                Actual Intervention
+                            </TabsTrigger>
+                            <TabsTrigger value="combined" className="flex-grow sm:flex-grow-0">
+                                Combined
+                            </TabsTrigger>
+                        </TabsList>
+                        <TabsContent value="actual">
+                            <ActualPerformanceChart
+                                studentId={selectedStudent}
+                                subjectId={selectedSubject}
+                                classId={selectedClass}
+                            />
+                        </TabsContent>
+                        <TabsContent value="actual-intervention">
+                            <ActualInterventionPerformanceChart
+                                studentId={selectedStudent}
+                                subjectId={selectedSubject}
+                                classId={selectedClass}
+                            />
+                        </TabsContent>
+                        <TabsContent value="combined">
+                            <CombinedInterventionChart
+                                studentId={selectedStudent}
+                                subjectId={selectedSubject}
+                                classId={selectedClass}
+                            />
+                        </TabsContent>
+                    </Tabs>
+                )}
             </CardContent>
-        </Card >
-    )
+        </Card>
+    );
 }
