@@ -9,12 +9,11 @@ import {
 } from "@/components/ui/breadcrumb"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
-import { FormGenerationCard } from "@/app/(system-admin)/_components/form-generation-card"
 import { StudentDistribution } from "@/app/(system-admin)/_components/student-distribution"
 import { StudentEnrollmentTrends } from "@/app/(system-admin)/_components/student-enrollment-trends"
 import { StudentPerformance } from "@/app/(system-admin)/_components/student-performance"
-import { GraduationCap, Users } from "lucide-react"
 import { useQuery } from "convex/react"
+import { GraduationCap, Users } from "lucide-react"
 import { api } from "../../../../convex/_generated/api"
 
 const SchoolRegistrarPage = () => {
@@ -62,7 +61,7 @@ const SchoolRegistrarPage = () => {
             </div>
 
             <div className="grid gap-6 md:grid-cols-2">
-                <FormGenerationCard />
+                {/* <FormGenerationCard /> */}
 
                 <StudentEnrollmentTrends />
 

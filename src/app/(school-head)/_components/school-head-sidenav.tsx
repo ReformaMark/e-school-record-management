@@ -4,7 +4,7 @@ import { School2Icon } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { FaChalkboardTeacher } from "react-icons/fa"
-import { MdOutlineDashboard, MdOutlineReport, MdOutlineSupportAgent } from 'react-icons/md'
+import { MdOutlineDashboard, MdOutlineSupportAgent } from 'react-icons/md'
 import { PiStudent } from 'react-icons/pi'
 
 export const SchoolHeadSideNav = () => {

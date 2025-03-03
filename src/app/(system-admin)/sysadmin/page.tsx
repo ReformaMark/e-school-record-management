@@ -12,7 +12,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { useQuery } from "convex/react"
 import { GraduationCap, School, UserCheck, Users } from "lucide-react"
 import { api } from "../../../../convex/_generated/api"
-import { FormGenerationCard } from "../_components/form-generation-card"
 import { InterventionEffectiveness } from "../_components/intervention-effectiveness"
 import { StudentDistribution } from "../_components/student-distribution"
 import { StudentPerformance } from "../_components/student-performance"
@@ -116,7 +115,7 @@ const SystemAdminPage = () => {
             <div className="grid gap-6 md:grid-cols-2">
                 <StudentPerformance />
 
-                <FormGenerationCard />
+                {/* <FormGenerationCard /> */}
 
                 <StudentDistribution />
 

@@ -9,7 +9,6 @@ import {
 } from "@/components/ui/breadcrumb"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
-import { FormGenerationCard } from "@/app/(system-admin)/_components/form-generation-card"
 import { InterventionEffectiveness } from "@/app/(system-admin)/_components/intervention-effectiveness"
 import { StudentDistribution } from "@/app/(system-admin)/_components/student-distribution"
 import { StudentEnrollmentTrends } from "@/app/(system-admin)/_components/student-enrollment-trends"
@@ -84,7 +83,7 @@ const SchoolHeadPage = () => {
 
                 <InterventionEffectiveness />
 
-                <FormGenerationCard />
+                {/* <FormGenerationCard /> */}
 
                 <StudentDistribution />
             </div>

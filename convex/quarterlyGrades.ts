@@ -197,51 +197,90 @@ export const getStudentInterventionGrades = query({
 
 export const getInterventionStats = query({
     args: {
-      teacherId: v.optional(v.id("users")),
-      subjectFilter: v.optional(v.string()),
-      yearLevelFilter: v.optional(v.string())
+        teacherId: v.optional(v.id("users")),
+        subjectFilter: v.optional(v.string()),
+        yearLevelFilter: v.optional(v.string())
     },
     handler: async (ctx, args) => {
-      const teacherId = args.teacherId ?? await getAuthUserId(ctx);
-      if (!teacherId) throw new ConvexError("Not authenticated");
-  
-      // Get teacher's classes
-      const classes = await ctx.db
-        .query("classes")
-        .filter(q => q.eq(q.field("teacherId"), teacherId))
-        .collect();
-  
-      // Get all quarterly grades for these classes
-      const grades = await Promise.all(classes.map(async cls => {
-        const classGrades = await ctx.db.query("quarterlyGrades")
-          .filter(q => q.eq(q.field("classId"), cls._id))
-          .collect();
-  
-        const subject = await ctx.db.get(cls.subjectId);
-        const section = await ctx.db.get(cls.sectionId);
-        
-        return {
-          classId: cls._id,
-          subjectName: subject?.name || "",
-          yearLevel: section?.gradeLevelId || "",
-          grades: classGrades.map(g => ({
-            quarter: g.quarter,
-            originalGrade: g.quarterlyGrade,
-            interventionGrade: g.interventionGrade,
-            needsIntervention: g.needsIntervention
-          }))
-        };
-      }));
-  
-      // Apply filters
-      let filteredData = grades;
-      if (args.subjectFilter && args.subjectFilter !== "all") {
-        filteredData = filteredData.filter(g => g.subjectName.toLowerCase() === args.subjectFilter);
-      }
-      if (args.yearLevelFilter && args.yearLevelFilter !== "all") {
-        filteredData = filteredData.filter(g => g.yearLevel === args.yearLevelFilter);
-      }
-  
-      return filteredData;
+        const teacherId = args.teacherId ?? await getAuthUserId(ctx);
+        if (!teacherId) throw new ConvexError("Not authenticated");
+
+        // Get teacher's classes
+        const classes = await ctx.db
+            .query("classes")
+            .filter(q => q.eq(q.field("teacherId"), teacherId))
+            .collect();
+
+        // Get all quarterly grades for these classes
+        const grades = await Promise.all(classes.map(async cls => {
+            const classGrades = await ctx.db.query("quarterlyGrades")
+                .filter(q => q.eq(q.field("classId"), cls._id))
+                .collect();
+
+            const subject = await ctx.db.get(cls.subjectId);
+            const section = await ctx.db.get(cls.sectionId);
+
+            return {
+                classId: cls._id,
+                subjectName: subject?.name || "",
+                yearLevel: section?.gradeLevelId || "",
+                grades: classGrades.map(g => ({
+                    quarter: g.quarter,
+                    originalGrade: g.quarterlyGrade,
+                    interventionGrade: g.interventionGrade,
+                    needsIntervention: g.needsIntervention
+                }))
+            };
+        }));
+
+        // Apply filters
+        let filteredData = grades;
+        if (args.subjectFilter && args.subjectFilter !== "all") {
+            filteredData = filteredData.filter(g => g.subjectName.toLowerCase() === args.subjectFilter);
+        }
+        if (args.yearLevelFilter && args.yearLevelFilter !== "all") {
+            filteredData = filteredData.filter(g => g.yearLevel === args.yearLevelFilter);
+        }
+
+        return filteredData;
     }
-  });
+});
+
+export const getInterventionEffectiveness = query({
+    handler: async (ctx) => {
+        // Get all quarterly grades that had interventions
+        const grades = await ctx.db
+            .query("quarterlyGrades")
+            .filter(q => q.neq(q.field("interventionGrade"), undefined))
+            .collect();
+
+        // Group by quarter and calculate averages
+        const quarterlyStats = grades.reduce((acc, grade) => {
+            const quarter = grade.quarter;
+            if (!acc[quarter]) {
+                acc[quarter] = {
+                    withIntervention: [],
+                    withoutIntervention: []
+                };
+            }
+
+            acc[quarter].withoutIntervention.push(grade.quarterlyGrade);
+            acc[quarter].withIntervention.push(grade.interventionGrade || grade.quarterlyGrade);
+
+            return acc;
+        }, {} as Record<string, { withIntervention: number[]; withoutIntervention: number[] }>);
+
+        // Calculate averages for each quarter
+        return Object.entries(quarterlyStats)
+            .map(([quarter, stats]) => ({
+                name: quarter,
+                withIntervention:
+                    stats.withIntervention.reduce((sum, grade) => sum + grade, 0) /
+                    stats.withIntervention.length,
+                withoutIntervention:
+                    stats.withoutIntervention.reduce((sum, grade) => sum + grade, 0) /
+                    stats.withoutIntervention.length
+            }))
+            .sort((a, b) => a.name.localeCompare(b.name));
+    }
+});
