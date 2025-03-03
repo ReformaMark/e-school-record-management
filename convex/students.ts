@@ -439,7 +439,7 @@ export const getStudentPerformanceOverview = query({
       };
     };
 
-    // Initialize performance object with type safety
+    // Initialize performance data
     const performance: PerformanceData = {
       "7": { passing: 0, failing: 0 },
       "8": { passing: 0, failing: 0 },
@@ -449,18 +449,38 @@ export const getStudentPerformanceOverview = query({
       "12": { passing: 0, failing: 0 }
     };
 
-    // Process grades with proper type checking
+    // Group grades by student
+    const studentGrades = new Map<string, { grades: number[]; gradeLevel: string }>();
+
     grades.forEach(grade => {
       const student = students.find(s => s._id === grade.studentId);
       if (!student || !student.gradeLevel) return;
 
-      const gradeLevel = student.gradeLevel as GradeLevel;
-      if (gradeLevel in performance) {
-        if (grade.quarterlyGrade >= 75) {
-          performance[gradeLevel].passing++;
-        } else {
-          performance[gradeLevel].failing++;
-        }
+      if (!studentGrades.has(grade.studentId)) {
+        studentGrades.set(grade.studentId, {
+          grades: [],
+          gradeLevel: student.gradeLevel
+        });
+      }
+
+      // Use intervention grade if available
+      const finalGrade = grade.interventionGrade || grade.quarterlyGrade;
+      studentGrades.get(grade.studentId)?.grades.push(finalGrade);
+    });
+
+    // Calculate averages and update performance counts
+    studentGrades.forEach((data, studentId) => {
+      const gradeLevel = data.gradeLevel as GradeLevel;
+      if (!(gradeLevel in performance)) return;
+
+      // Calculate student's average
+      const average = data.grades.reduce((sum, grade) => sum + grade, 0) / data.grades.length;
+
+      // Update performance counts
+      if (average >= 75) {
+        performance[gradeLevel].passing++;
+      } else {
+        performance[gradeLevel].failing++;
       }
     });
 
