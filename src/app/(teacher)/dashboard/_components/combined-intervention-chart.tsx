@@ -1,9 +1,9 @@
 "use client"
 
-import { Bar, BarChart, Legend, XAxis, YAxis } from "recharts"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { ChartContainer, ChartTooltip } from "@/components/ui/chart"
 import { useQuery } from "convex/react"
+import { Bar, BarChart, Legend, XAxis, YAxis } from "recharts"
 import { api } from "../../../../../convex/_generated/api"
 import { Id } from "../../../../../convex/_generated/dataModel"
 import { InterventionStatsPanel } from "./intervention-stats-panel"
@@ -64,6 +64,7 @@ export function CombinedInterventionChart({
         );
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const calculateStats = (grades: any[]) => {
         const interventionGrades = grades.filter(g => g.needsIntervention);
         const totalInterventions = interventionGrades.length;
@@ -88,12 +89,14 @@ export function CombinedInterventionChart({
 
             // Count intervention methods
             interventionGrades.forEach(g => {
-                g.interventionUsed.forEach((method: string) => {
-                    interventionMethods.set(
-                        method,
-                        (interventionMethods.get(method) || 0) + 1
-                    );
-                });
+                if (g.interventionUsed && Array.isArray(g.interventionUsed)) {
+                    g.interventionUsed.forEach((method: string) => {
+                        interventionMethods.set(
+                            method,
+                            (interventionMethods.get(method) || 0) + 1
+                        );
+                    });
+                }
             });
         }
 

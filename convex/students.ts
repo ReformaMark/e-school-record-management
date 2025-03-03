@@ -4,7 +4,6 @@ import { getAuthUserId } from "@convex-dev/auth/server";
 import { asyncMap } from "convex-helpers";
 import { ConvexError, v } from "convex/values";
 import { mutation, query } from "./_generated/server";
-import { Id } from "./_generated/dataModel";
 
 export const getStudent = query({
   handler: async (ctx) => {
@@ -514,10 +513,10 @@ export const getStudentsWithGrades = query({
       if (!section) return [];
 
       // Get students based on semester
-      const studentIds = selectedClass.semester === "1st" ? 
-        section.firstSemStudents : 
-        selectedClass.semester === "2nd" ? 
-          section.secondSemStudents : 
+      const studentIds = selectedClass.semester === "1st" ?
+        section.firstSemStudents :
+        selectedClass.semester === "2nd" ?
+          section.secondSemStudents :
           section.students;
 
       // Get the class ID for this subject if subjectId is provided
@@ -559,5 +558,79 @@ export const getStudentsWithGrades = query({
     }
 
     return [];
+  }
+});
+
+export const getTeacherStudentsCount = query({
+  handler: async (ctx) => {
+    const teacherId = await getAuthUserId(ctx);
+    if (!teacherId) throw new ConvexError("No teacher ID");
+
+    const teacherClasses = await ctx.db
+      .query("classes")
+      .filter(q => q.eq(q.field("teacherId"), teacherId))
+      .collect();
+
+    const counts = {
+      totalStudents: 0,
+      atRiskStudents: 0,
+      pendingInterventions: 0
+    };
+
+    const uniqueStudents = new Set();
+    const atRiskStudents = new Set();
+    const needsIntervention = new Set();
+
+    await Promise.all(teacherClasses.map(async (cls) => {
+      const grades = await ctx.db
+        .query("quarterlyGrades")
+        .filter(q => q.eq(q.field("classId"), cls._id))
+        .collect();
+
+      // Group grades by student
+      const studentGrades = new Map();
+      grades.forEach(grade => {
+        if (!studentGrades.has(grade.studentId)) {
+          studentGrades.set(grade.studentId, []);
+        }
+        studentGrades.get(grade.studentId).push(grade);
+      });
+
+      // Process each student's grades
+      studentGrades.forEach((grades, studentId) => {
+        uniqueStudents.add(studentId);
+
+        let totalGrade = 0;
+        let gradeCount = 0;
+
+        // @ts-expect-error slight type issue
+        grades.forEach(grade => {
+          // Check for pending interventions
+          if (grade.needsIntervention === true &&
+            !grade.interventionGrade &&
+            (!grade.interventionUsed || grade.interventionUsed.length === 0) &&
+            !grade.interventionRemarks) {
+            needsIntervention.add(studentId);
+          }
+
+          // Calculate average using intervention grades when available
+          const finalGrade = grade.interventionGrade || grade.quarterlyGrade;
+          totalGrade += finalGrade;
+          gradeCount++;
+        });
+
+        // Calculate average and check if at risk
+        const average = totalGrade / gradeCount;
+        if (average < 75) {
+          atRiskStudents.add(studentId);
+        }
+      });
+    }));
+
+    return {
+      totalStudents: uniqueStudents.size,
+      atRiskStudents: atRiskStudents.size,
+      pendingInterventions: needsIntervention.size
+    };
   }
 });

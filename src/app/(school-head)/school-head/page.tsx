@@ -14,9 +14,8 @@ import { InterventionEffectiveness } from "@/app/(system-admin)/_components/inte
 import { StudentDistribution } from "@/app/(system-admin)/_components/student-distribution"
 import { StudentEnrollmentTrends } from "@/app/(system-admin)/_components/student-enrollment-trends"
 import { StudentPerformance } from "@/app/(system-admin)/_components/student-performance"
-import { GraduationCap, UserCheck, Users } from "lucide-react"
-import { schoolStats } from "../../../../data/school-data"
 import { useQuery } from "convex/react"
+import { GraduationCap, UserCheck, Users } from "lucide-react"
 import { api } from "../../../../convex/_generated/api"
 
 const SchoolHeadPage = () => {

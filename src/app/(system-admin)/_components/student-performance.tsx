@@ -11,15 +11,6 @@ import {
 import { useQuery } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 
-const studentPerformanceData = [
-  { name: 'Grade 7', passing: 150, failing: 20 },
-  { name: 'Grade 8', passing: 140, failing: 25 },
-  { name: 'Grade 9', passing: 160, failing: 15 },
-  { name: 'Grade 10', passing: 130, failing: 30 },
-  { name: 'Grade 11', passing: 50, failing: 120 },
-  { name: 'Grade 12', passing: 75, failing: 80 },
-];
-
 const chartConfig = {
   passing: {
     label: "Passing",

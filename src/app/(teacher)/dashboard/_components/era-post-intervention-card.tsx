@@ -1,13 +1,10 @@
 "use client"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useState } from "react"
-import { AllSubjectsYearLevelsChart } from "./all-subjects-year-levels-chart"
 import { ByYearLevelChart } from "./by-lear-level-chart"
 import { BySubjectChart } from "./by-subject-chart"
-import { BySubjectYearLevelChart } from "./by-subject-year-level-chart"
 // import { AllSubjectsYearLevelsChart } from "@/components/era/all-subjects-year-levels-chart"
 // import { BySubjectChart } from "@/components/era/by-subject-chart"
 // import { ByYearLevelChart } from "@/components/era/by-year-level-chart"

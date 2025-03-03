@@ -18,15 +18,6 @@ import { useMemo } from "react";
 import { useQuery } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 
-const studentDistributionData = [
-    { name: "grade7", value: 300, fill: "var(--color-grade7)" },
-    { name: "grade8", value: 250, fill: "var(--color-grade8)" },
-    { name: "grade9", value: 230, fill: "var(--color-grade9)" },
-    { name: "grade10", value: 220, fill: "var(--color-grade10)" },
-    { name: "grade11", value: 200, fill: "var(--color-grade11)" },
-    { name: "grade12", value: 180, fill: "var(--color-grade12)" }
-]
-
 const chartConfig = {
     grade7: {
         label: "Grade 7",
