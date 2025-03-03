@@ -16,7 +16,7 @@ export const EraSparCard = () => {
     // Get teacher's classes with section details
     const classes = useQuery(api.classes.getTeacherClasses);
 
-    // Get students for selected class
+    // Get students for selected class 
     const studentsWithGrades = useQuery(api.students.getStudentsWithGrades, {
         classId: selectedClass ?? undefined,
         subjectId: selectedSubject ?? undefined
@@ -36,6 +36,10 @@ export const EraSparCard = () => {
         );
     }
 
+    // console.log(`Classes: ${JSON.stringify(classes)}`);
+    console.log(`Students: ${JSON.stringify(studentsWithGrades)}`);
+    // console.log(`Subjects: ${JSON.stringify(subjects)}`);
+
     return (
         <Card>
             <CardHeader>
@@ -43,8 +47,8 @@ export const EraSparCard = () => {
             </CardHeader>
             <CardContent>
                 <div className="flex flex-col space-y-4 md:flex-row md:space-x-4 md:space-y-0 mb-6">
-                    <Select 
-                        value={selectedClass?.toString() ?? ""} 
+                    <Select
+                        value={selectedClass?.toString() ?? ""}
                         onValueChange={(value) => {
                             setSelectedClass(value as Id<"classes">);
                             setSelectedStudent(null); // Reset student when class changes
@@ -56,8 +60,8 @@ export const EraSparCard = () => {
                         </SelectTrigger>
                         <SelectContent>
                             {classes.map((cls) => (
-                                <SelectItem 
-                                    key={cls._id} 
+                                <SelectItem
+                                    key={cls._id}
                                     value={cls._id}
                                 >
                                     {cls.section?.name} - {cls.subject?.name}
@@ -67,8 +71,8 @@ export const EraSparCard = () => {
                     </Select>
 
                     {selectedClass && (
-                        <Select 
-                            value={selectedStudent?.toString() ?? ""} 
+                        <Select
+                            value={selectedStudent?.toString() ?? ""}
                             onValueChange={(value) => {
                                 setSelectedStudent(value as Id<"students">);
                                 // Automatically set subject to the class subject
@@ -83,8 +87,8 @@ export const EraSparCard = () => {
                             </SelectTrigger>
                             <SelectContent>
                                 {studentsWithGrades?.map((student) => (
-                                    <SelectItem 
-                                        key={student.id} 
+                                    <SelectItem
+                                        key={student.id}
                                         value={student.id}
                                     >
                                         {student.name}
@@ -95,10 +99,12 @@ export const EraSparCard = () => {
                     )}
                 </div>
 
-                {selectedStudent && selectedSubject && (
-                    <StudentPerformanceChart 
-                        studentId={selectedStudent} 
+                {selectedStudent && selectedSubject && selectedClass && (
+                    <StudentPerformanceChart
+                        studentId={selectedStudent}
                         subjectId={selectedSubject}
+                        classId={selectedClass}
+                        key={`${selectedStudent}-${selectedSubject}-${selectedClass}`}
                     />
                 )}
             </CardContent>

@@ -10,31 +10,70 @@ import { Id } from "../../../../../convex/_generated/dataModel"
 interface StudentPerformanceChartProps {
     studentId: Id<"students">
     subjectId: Id<"subjects">
+    classId: Id<"classes">
 }
 
 export function StudentPerformanceChart({
     studentId,
-    subjectId
+    subjectId,
+    classId
 }: StudentPerformanceChartProps) {
     const students = useQuery(api.students.getStudentsWithGrades, {
+        classId,
         subjectId
     });
 
     const subject = useQuery(api.subjects.getById, { id: subjectId });
 
+    console.log('Students Data:', students);
+    console.log('Selected Student:', studentId);
+    console.log('Selected Class:', classId);
+    console.log('Selected Subject:', subjectId);
+
     if (!students || !subject) {
-        return <div>Loading...</div>;
+        return (
+            <Card className="lg:w-fit">
+                <CardHeader>
+                    <CardTitle className="text-text">Student Performance</CardTitle>
+                    <CardDescription className="text-muted-foreground">
+                        Loading data...
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <div className="flex items-center justify-center h-[200px]">
+                        Loading...
+                    </div>
+                </CardContent>
+            </Card>
+        );
     }
 
     const studentData = students.find(s => s.id === studentId);
-    if (!studentData) {
-        return <div>No data found for this student</div>;
+
+    if (!studentData || !studentData.grades || studentData.grades.length === 0) {
+        return (
+            <Card className="lg:w-fit">
+                <CardHeader>
+                    <CardTitle className="text-text">Student Performance</CardTitle>
+                    <CardDescription className="text-muted-foreground">
+                        {subject.name}
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <div className="flex items-center justify-center h-[200px]">
+                        No grades recorded for this student yet
+                    </div>
+                </CardContent>
+            </Card>
+        );
     }
 
-    const chartData = studentData.grades.map(grade => ({
-        quarter: `Q${grade.quarter}`,
-        score: grade.quarterlyGrade
-    })).sort((a, b) => a.quarter.localeCompare(b.quarter));
+    const chartData = studentData.grades
+        .map(grade => ({
+            quarter: `Q${grade.quarter}`,
+            score: grade.quarterlyGrade
+        }))
+        .sort((a, b) => a.quarter.localeCompare(b.quarter));
 
     const chartConfig = {
         score: {
