@@ -1,3 +1,5 @@
+"use client"
+
 import {
     Breadcrumb,
     BreadcrumbItem,
@@ -14,8 +16,12 @@ import { StudentEnrollmentTrends } from "@/app/(system-admin)/_components/studen
 import { StudentPerformance } from "@/app/(system-admin)/_components/student-performance"
 import { GraduationCap, UserCheck, Users } from "lucide-react"
 import { schoolStats } from "../../../../data/school-data"
+import { useQuery } from "convex/react"
+import { api } from "../../../../convex/_generated/api"
 
 const SchoolHeadPage = () => {
+    const counts = useQuery(api.users.getCounts);
+
     return (
         <div className="container mx-auto py-6 px-4">
             <Breadcrumb className="hidden md:flex mb-6">
@@ -31,33 +37,40 @@ const SchoolHeadPage = () => {
             </Breadcrumb>
 
             <div className="grid gap-4 md:grid-cols-3 mb-8">
-                <Card className="bg-[#A3C6C4] text-white border-none">
+                <Card className="bg-[#6C7A89] text-white border-none">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">Total Registrars</CardTitle>
                         <UserCheck className="h-4 w-4 text-white" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">{schoolStats.totalRegistrars}</div>
+                        <div className="text-2xl font-bold">
+                            {counts?.totalRegistrars || 0}
+                        </div>
                         <p className="text-xs text-white">School Registrars</p>
                     </CardContent>
                 </Card>
-                <Card className="bg-[#6C7A89] text-white border-none">
+
+                <Card className="bg-[#354649] text-white border-none">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">Total Teachers</CardTitle>
                         <Users className="h-4 w-4 text-white" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">{schoolStats.totalTeachers}</div>
-                        <p className="text-xs text-white">Class Advisers and Subject Teachers</p>
+                        <div className="text-2xl font-bold">
+                            {counts?.totalTeachers || 0}
+                        </div>
                     </CardContent>
                 </Card>
-                <Card className="bg-[#354649] text-white border-none">
+
+                <Card className="bg-[#6C7A89] text-white border-none">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">Total Students</CardTitle>
                         <GraduationCap className="h-4 w-4 text-white" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">{schoolStats.totalStudents}</div>
+                        <div className="text-2xl font-bold">
+                            {counts?.totalStudents || 0}
+                        </div>
                         <p className="text-xs text-white">Enrolled Students</p>
                     </CardContent>
                 </Card>

@@ -3,20 +3,38 @@
 import { Bar, BarChart, XAxis, YAxis } from "recharts"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
+import { useQuery } from "convex/react"
+import { api } from "../../../../../convex/_generated/api"
+import { Id } from "../../../../../convex/_generated/dataModel"
 
 interface StudentPerformanceChartProps {
-    studentId: string
-    subject: string
+    studentId: Id<"students">
+    subjectId: Id<"subjects">
 }
 
-export function StudentPerformanceChart({ studentId, subject }: StudentPerformanceChartProps) {
+export function StudentPerformanceChart({
+    studentId,
+    subjectId
+}: StudentPerformanceChartProps) {
+    const students = useQuery(api.students.getStudentsWithGrades, {
+        subjectId
+    });
 
-    const data = [
-        { quarter: "1st Quarter", score: 85 },
-        { quarter: "2nd Quarter", score: 88 },
-        { quarter: "3rd Quarter", score: 92 },
-        { quarter: "4th Quarter", score: 90 },
-    ]
+    const subject = useQuery(api.subjects.getById, { id: subjectId });
+
+    if (!students || !subject) {
+        return <div>Loading...</div>;
+    }
+
+    const studentData = students.find(s => s.id === studentId);
+    if (!studentData) {
+        return <div>No data found for this student</div>;
+    }
+
+    const chartData = studentData.grades.map(grade => ({
+        quarter: `Q${grade.quarter}`,
+        score: grade.quarterlyGrade
+    })).sort((a, b) => a.quarter.localeCompare(b.quarter));
 
     const chartConfig = {
         score: {
@@ -25,19 +43,19 @@ export function StudentPerformanceChart({ studentId, subject }: StudentPerforman
         },
     }
 
-    console.log(studentId);
-
     return (
         <Card className="lg:w-fit">
             <CardHeader>
                 <CardTitle className="text-text">Student Performance</CardTitle>
-                <CardDescription className="text-muted-foreground">Quarterly scores for {subject}</CardDescription>
+                <CardDescription className="text-muted-foreground">
+                    Quarterly scores for {subject.name}
+                </CardDescription>
             </CardHeader>
             <CardContent>
                 <div className="w-full overflow-x-auto">
                     <div className="min-w-[300px]">
                         <ChartContainer config={chartConfig} className="h-[200px] sm:h-[300px]">
-                            <BarChart accessibilityLayer data={data}>
+                            <BarChart accessibilityLayer data={chartData}>
                                 <XAxis
                                     dataKey="quarter"
                                     tickLine={false}
@@ -56,7 +74,11 @@ export function StudentPerformanceChart({ studentId, subject }: StudentPerforman
                                     cursor={false}
                                     content={<ChartTooltipContent />}
                                 />
-                                <Bar dataKey="score" fill="var(--color-score)" radius={[4, 4, 0, 0]} />
+                                <Bar
+                                    dataKey="score"
+                                    fill="var(--color-score)"
+                                    radius={[4, 4, 0, 0]}
+                                />
                             </BarChart>
                         </ChartContainer>
                     </div>

@@ -1,9 +1,9 @@
 
-import { ConvexError, v } from "convex/values";
-import { mutation, query } from "./_generated/server";
+import { StudentsWithEnrollMentTypes, StudentWithSem } from "@/lib/types";
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { asyncMap } from "convex-helpers";
-import { StudentsWithEnrollMentTypes, StudentTypes, StudentWithSem } from "@/lib/types";
+import { ConvexError, v } from "convex/values";
+import { mutation, query } from "./_generated/server";
 import { Id } from "./_generated/dataModel";
 
 export const getStudent = query({
@@ -400,4 +400,164 @@ export const getAllStudents = query({
 
     return students;
   },
+});
+
+export const getStudentDistribution = query({
+  handler: async (ctx) => {
+    const students = await ctx.db
+      .query("students")
+      .filter(q => q.eq(q.field("enrollmentStatus"), "Enrolled"))
+      .collect();
+
+    const distribution = {
+      grade7: students.filter(s => s.gradeLevel === "7").length,
+      grade8: students.filter(s => s.gradeLevel === "8").length,
+      grade9: students.filter(s => s.gradeLevel === "9").length,
+      grade10: students.filter(s => s.gradeLevel === "10").length,
+      grade11: students.filter(s => s.gradeLevel === "11").length,
+      grade12: students.filter(s => s.gradeLevel === "12").length,
+    };
+
+    return distribution;
+  },
+});
+
+export const getStudentPerformanceOverview = query({
+  handler: async (ctx) => {
+    const students = await ctx.db.query("students")
+      .filter(q => q.eq(q.field("enrollmentStatus"), "Enrolled"))
+      .collect();
+
+    const grades = await ctx.db.query("quarterlyGrades")
+      .withIndex("by_studentId")
+      .collect();
+
+    type GradeLevel = "7" | "8" | "9" | "10" | "11" | "12";
+    type PerformanceData = {
+      [key in GradeLevel]: {
+        passing: number;
+        failing: number;
+      };
+    };
+
+    // Initialize performance object with type safety
+    const performance: PerformanceData = {
+      "7": { passing: 0, failing: 0 },
+      "8": { passing: 0, failing: 0 },
+      "9": { passing: 0, failing: 0 },
+      "10": { passing: 0, failing: 0 },
+      "11": { passing: 0, failing: 0 },
+      "12": { passing: 0, failing: 0 }
+    };
+
+    // Process grades with proper type checking
+    grades.forEach(grade => {
+      const student = students.find(s => s._id === grade.studentId);
+      if (!student || !student.gradeLevel) return;
+
+      const gradeLevel = student.gradeLevel as GradeLevel;
+      if (gradeLevel in performance) {
+        if (grade.quarterlyGrade >= 75) {
+          performance[gradeLevel].passing++;
+        } else {
+          performance[gradeLevel].failing++;
+        }
+      }
+    });
+
+    return Object.entries(performance).map(([grade, stats]) => ({
+      name: `Grade ${grade}`,
+      passing: stats.passing,
+      failing: stats.failing
+    }));
+  }
+});
+
+export const getEnrollmentTrends = query({
+  handler: async (ctx) => {
+    const schoolYears = await ctx.db.query('schoolYears')
+      .order('asc')
+      .collect();
+
+    const trends = await Promise.all(
+      schoolYears.map(async (sy) => {
+        const enrollments = await ctx.db.query('enrollments')
+          .filter(q => q.eq(q.field('schoolYearId'), sy._id))
+          .collect();
+
+        return {
+          year: sy.sy || sy.batchName,
+          students: enrollments.length
+        };
+      })
+    );
+
+    return trends;
+  }
+});
+
+export const getStudentsWithGrades = query({
+  args: {
+    classId: v.optional(v.id("classes")),
+    subjectId: v.optional(v.id("subjects"))
+  },
+  handler: async (ctx, args) => {
+    const teacherId = await getAuthUserId(ctx);
+    if (!teacherId) throw new ConvexError("No teacher ID");
+
+    if (args.classId) {
+      // Get section for selected class
+      const selectedClass = await ctx.db.get(args.classId);
+      if (!selectedClass) return [];
+
+      const section = await ctx.db.get(selectedClass.sectionId);
+      if (!section) return [];
+
+      // Get students based on semester
+      const studentIds = selectedClass.semester === "1st" ? 
+        section.firstSemStudents : 
+        selectedClass.semester === "2nd" ? 
+          section.secondSemStudents : 
+          section.students;
+
+      // Get the class ID for this subject if subjectId is provided
+      let classId = args.classId;
+      if (args.subjectId) {
+        const classForSubject = await ctx.db
+          .query("classes")
+          .filter(q => q.and(
+            q.eq(q.field("subjectId"), args.subjectId),
+            q.eq(q.field("sectionId"), section._id)
+          ))
+          .first();
+        if (classForSubject) {
+          classId = classForSubject._id;
+        }
+      }
+
+      const studentsWithGrades = await asyncMap(studentIds, async (studentId) => {
+        const student = await ctx.db.get(studentId);
+        if (!student) return null;
+
+        // Get quarterly grades using the correct classId
+        const quarterlyGrades = await ctx.db
+          .query("quarterlyGrades")
+          .filter(q => q.and(
+            q.eq(q.field("studentId"), studentId),
+            q.eq(q.field("classId"), classId)
+          ))
+          .collect();
+
+        return {
+          id: student._id,
+          name: `${student.lastName}, ${student.firstName}`,
+          grades: quarterlyGrades
+        };
+      });
+
+      return studentsWithGrades.filter(s => s !== null);
+    }
+
+    return [];
+  }
 });

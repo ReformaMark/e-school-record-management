@@ -65,9 +65,9 @@ function DashboardPage() {
 
       <EraSparCard />
 
-      <EraInterventionCard />
+      {/* <EraInterventionCard /> */}
 
-      <EraPostInterventionCard />
+      {/* <EraPostInterventionCard /> */}
     </div>
   )
 }

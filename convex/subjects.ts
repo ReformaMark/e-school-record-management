@@ -260,3 +260,70 @@ export const getSubjectWithGradeLevel = query({
         return subjectsWithGradeLevel;
     }
 });
+
+export const getTeacherSubjects = query({
+    handler: async (ctx) => {
+        const teacherId = await getAuthUserId(ctx);
+        if (!teacherId) throw new ConvexError("No teacher ID");
+
+        // Get all classes taught by this teacher
+        const teacherClasses = await ctx.db
+            .query("classes")
+            .filter(q => q.eq(q.field("teacherId"), teacherId))
+            .collect();
+
+        // Filter unique subjects using Set to avoid duplicates
+        const uniqueSubjects = new Map();
+
+        // Get subject details with grade level
+        await Promise.all(teacherClasses.map(async (cls) => {
+            // Skip if we already processed this subject
+            if (uniqueSubjects.has(cls.subjectId.toString())) return;
+
+            const subject = await ctx.db.get(cls.subjectId);
+            if (!subject) return;
+
+            const gradeLevel = await ctx.db.get(subject.gradeLevelId);
+            if (!gradeLevel) return;
+
+            // Get applied grade weights for this subject
+            const appliedWeights = await ctx.db
+                .query("appliedGradeWeigths")
+                .filter(q => q.and(
+                    q.eq(q.field("teacherId"), teacherId),
+                    q.eq(q.field("subjectId"), subject._id)
+                ))
+                .first();
+
+            uniqueSubjects.set(cls.subjectId.toString(), {
+                _id: subject._id,
+                name: subject.name,
+                subjectCode: subject.subjectCode,
+                subjectCategory: subject.subjectCategory || "core", // Default to core if not specified
+                gradeLevel: gradeLevel,
+                gradeWeights: subject.gradeWeights,
+                appliedWeights: appliedWeights || null
+            });
+        }));
+
+        return Array.from(uniqueSubjects.values());
+    }
+});
+
+export const getById = query({
+    args: {
+        id: v.id("subjects")
+    },
+    handler: async (ctx, args) => {
+        const subject = await ctx.db.get(args.id);
+        if (!subject) return null;
+
+        // Get grade level information
+        const gradeLevel = await ctx.db.get(subject.gradeLevelId);
+
+        return {
+            ...subject,
+            gradeLevel: gradeLevel || null
+        };
+    }
+});
