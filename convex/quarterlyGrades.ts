@@ -194,3 +194,54 @@ export const getStudentInterventionGrades = query({
         })).sort((a, b) => a.quarter.localeCompare(b.quarter));
     }
 });
+
+export const getInterventionStats = query({
+    args: {
+      teacherId: v.optional(v.id("users")),
+      subjectFilter: v.optional(v.string()),
+      yearLevelFilter: v.optional(v.string())
+    },
+    handler: async (ctx, args) => {
+      const teacherId = args.teacherId ?? await getAuthUserId(ctx);
+      if (!teacherId) throw new ConvexError("Not authenticated");
+  
+      // Get teacher's classes
+      const classes = await ctx.db
+        .query("classes")
+        .filter(q => q.eq(q.field("teacherId"), teacherId))
+        .collect();
+  
+      // Get all quarterly grades for these classes
+      const grades = await Promise.all(classes.map(async cls => {
+        const classGrades = await ctx.db.query("quarterlyGrades")
+          .filter(q => q.eq(q.field("classId"), cls._id))
+          .collect();
+  
+        const subject = await ctx.db.get(cls.subjectId);
+        const section = await ctx.db.get(cls.sectionId);
+        
+        return {
+          classId: cls._id,
+          subjectName: subject?.name || "",
+          yearLevel: section?.gradeLevelId || "",
+          grades: classGrades.map(g => ({
+            quarter: g.quarter,
+            originalGrade: g.quarterlyGrade,
+            interventionGrade: g.interventionGrade,
+            needsIntervention: g.needsIntervention
+          }))
+        };
+      }));
+  
+      // Apply filters
+      let filteredData = grades;
+      if (args.subjectFilter && args.subjectFilter !== "all") {
+        filteredData = filteredData.filter(g => g.subjectName.toLowerCase() === args.subjectFilter);
+      }
+      if (args.yearLevelFilter && args.yearLevelFilter !== "all") {
+        filteredData = filteredData.filter(g => g.yearLevel === args.yearLevelFilter);
+      }
+  
+      return filteredData;
+    }
+  });

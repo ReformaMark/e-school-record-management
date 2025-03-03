@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/card"
 import { GraduationCapIcon, UserCheckIcon, Users2Icon } from "lucide-react"
 import EraInterventionCard from "./_components/era-intervention-card"
-import EraPostInterventionCard from "./_components/era-post-intervention-card"
 import { EraSparCard } from "./_components/era-spar-card"
 function DashboardPage() {
   return (
@@ -67,7 +66,7 @@ function DashboardPage() {
 
       <EraInterventionCard />
 
-      <EraPostInterventionCard />
+      {/* <EraPostInterventionCard /> */}
     </div>
   )
 }
