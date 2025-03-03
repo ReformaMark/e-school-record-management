@@ -61,10 +61,10 @@ export const EraSparCard = () => {
                         <SelectContent>
                             {classes.map((cls) => (
                                 <SelectItem
-                                    key={cls._id}
-                                    value={cls._id}
+                                    key={cls?._id}
+                                    value={cls?._id as string}
                                 >
-                                    {cls.section?.name} - {cls.subject?.name}
+                                    {cls?.section?.name} - {cls?.subject?.name}
                                 </SelectItem>
                             ))}
                         </SelectContent>
@@ -76,7 +76,7 @@ export const EraSparCard = () => {
                             onValueChange={(value) => {
                                 setSelectedStudent(value as Id<"students">);
                                 // Automatically set subject to the class subject
-                                const selectedClassData = classes.find(c => c._id === selectedClass);
+                                const selectedClassData = classes.find(c => c?._id === selectedClass);
                                 if (selectedClassData) {
                                     setSelectedSubject(selectedClassData.subjectId);
                                 }
