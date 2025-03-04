@@ -144,6 +144,43 @@ export default defineSchema({
     dateWithdrawn: v.optional(v.string()),
     status: v.string(),
     enrolledBy: v.id('users'),
+    gradeLevel: v.optional(v.string()),
+    elegibilityForEnrollment: v.optional(v.object({
+      esCompleter: v.optional(v.object({
+        completer: v.boolean(),
+        genAve: v.number(),
+        citation: v.optional(v.string())
+      })),
+      hsCompleter: v.optional(v.object({
+        completer: v.boolean(),
+        genAve: v.number(),
+      
+      })),
+      jhsCompleter: v.optional(v.object({
+        completer: v.boolean(),
+        genAve: v.number(),
+      })),
+      peptPasser: v.optional(v.object({
+        passer: v.boolean(),
+        rating: v.number()
+        
+      })),
+      alsPasser: v.optional(v.object({
+        passer: v.boolean(),
+        rating: v.number()
+
+      })),
+      others: v.optional(v.object({
+        description: v.string()
+      })),
+      date: v.string(),
+      school: v.string(),
+      schoolId: v.optional(v.string()),
+      schoolAddress: v.string(),
+      dateOfExam: v.optional(v.string()),
+      communityLearningCenter: v.optional(v.string())
+    }))
+
   }),
 
   sections: defineTable({

@@ -105,7 +105,7 @@ export default function SHSSubjectsTemplate({finalGrades, level, sem}: SHSSubjec
             </div>
         </div>
         <div className="">
-            <RemedialTemplate forRemedial={forRemedial} filteredFinalGrade={filteredFinalGrade}/>
+            <RemedialTemplate forRemedial={forRemedial} filteredFinalGrade={filteredFinalGrade} isSHS={level ? Number(level) > 10 ? true : false : false}/>
         </div>
     </div>
   )

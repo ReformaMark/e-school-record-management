@@ -231,11 +231,12 @@ export const updateStatus = mutation({
 
 export const remedialGrades = query({
     args:{
-        studentId: v.id('students'),
+        studentId: v.optional(v.id('students')),
         sectionId: v.optional(v.id('sections'))
     },
     handler: async(ctx, args) =>{
         if(!args.sectionId) return null
+        if(!args.studentId) return null
         const studentFinalGrades = await ctx.db.query('finalGrades')
         .filter(q => q.eq(q.field('sectionId'), args.sectionId))
         .filter(q => q.eq(q.field('studentId'), args.studentId))

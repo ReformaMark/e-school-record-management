@@ -262,45 +262,45 @@ export const getPassFailStatusMAPEH = (average?: number | string): string => {
 };
 
 export const getFinalQuarterlyGrade = (
-    quarterlyGrades: QuarterlyGradesWithSubject[],
+    quarterlyGrades: QuarterlyGradesWithSubject[] | undefined,
     quarter: string
 ): number | null => {
     // Find the quarterly grade for the given quarter
-    const grade = quarterlyGrades.find(qg => qg.quarter === quarter);
+    const grade = quarterlyGrades?.find(qg => qg.quarter === quarter);
   
     // Return interventionGrade if available, otherwise quarterlyGrade
     return grade ? grade.interventionGrade ?? grade.quarterlyGrade : null;
 };
 
 export const hasInterventionGrade = (
-  quarterlyGrades: QuarterlyGradesWithSubject[],
+  quarterlyGrades: QuarterlyGradesWithSubject[] | undefined,
   quarter: string
 ): boolean => {
   // Find the quarterly grade for the given quarter
-  const grade = quarterlyGrades.find(qg => qg.quarter === quarter);
+  const grade = quarterlyGrades?.find(qg => qg.quarter === quarter);
 
   // Return interventionGrade if available, otherwise quarterlyGrade
   return grade ? grade.interventionGrade ? true : false : false;
 };
 
 export const getInterventionMethods = (
-  quarterlyGrades: QuarterlyGradesWithSubject[],
+  quarterlyGrades: QuarterlyGradesWithSubject[] | undefined,
   quarter: string
 ): string[] => {
   // Find the quarterly grade for the given quarter
-  const grade = quarterlyGrades.find(qg => qg.quarter === quarter);
+  const grade = quarterlyGrades?.find(qg => qg.quarter === quarter);
 
   // Return intervention methods if available, otherwise return an empty array
   return grade && grade.interventionUsed ? grade.interventionUsed : [];
 };
 
 export const getInterventionRemarks = (
-  quarterlyGrades: QuarterlyGradesWithSubject[],
+  quarterlyGrades: QuarterlyGradesWithSubject[] | undefined,
   quarter: string,
 
 ): string => {
   // Find the quarterly grade for the given quarter and subject
-  const grade = quarterlyGrades.find(qg => qg.quarter === quarter);
+  const grade = quarterlyGrades?.find(qg => qg.quarter === quarter);
 
   // Return intervention remarks if available, otherwise return an empty string
   return grade && grade.interventionRemarks ? grade.interventionRemarks : "";

@@ -1,6 +1,7 @@
 import { ConvexError, v } from "convex/values";
-import { mutation } from "./_generated/server";
+import { mutation, query } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
+import { asyncMap } from "convex-helpers";
 
 export const addEnrollment = mutation({
     args:{
@@ -32,4 +33,37 @@ export const addEnrollment = mutation({
             semester: args.sem
         })
     },
+})
+
+export const shsAdmission = query({
+    args:{
+        studentId: v.id('students')
+    },
+    handler: async(ctx,args) =>{
+        const enrollments = await ctx.db.query('enrollments').filter(q => q.eq(q.field('studentId'), args.studentId)).collect()
+        
+        const enrll = await asyncMap(enrollments, async(enrollment)=>{
+            const section = await ctx.db.get(enrollment.sectionId)
+            if(!section) return undefined
+            const gradeLevel = await ctx.db.get(section.gradeLevelId)
+            if(!gradeLevel) return undefined
+
+            const gradeEleven = gradeLevel.level === "11"
+
+            if(gradeEleven){
+                return {
+                    ...enrollment,
+                    section: section,
+                    gradeLevel: gradeLevel
+                }
+            } else {
+                return undefined
+            }
+        })
+
+        const filterdEnrollment = enrll.find(e => e !== undefined)
+
+        return filterdEnrollment
+
+    }
 })
