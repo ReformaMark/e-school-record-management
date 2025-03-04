@@ -3,14 +3,26 @@
 import { Bar, BarChart, XAxis, YAxis } from "recharts"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
+import { useQuery } from "convex/react";
+import { api } from "../../../../../convex/_generated/api";
 
 export function AllSubjectsYearLevelsChart() {
-    const data = [
-        { subject: "Math", preIntervention: 75, postIntervention: 85 },
-        { subject: "Science", preIntervention: 70, postIntervention: 82 },
-        { subject: "English", preIntervention: 80, postIntervention: 88 },
-        { subject: "History", preIntervention: 72, postIntervention: 80 },
-    ]
+    const stats = useQuery(api.quarterlyGrades.getInterventionStats, {});
+
+    if (!stats) return <div>Loading...</div>;
+
+    const processedData = stats.reduce((acc, curr) => {
+        const subjectData = acc.find(d => d.subject === curr.subjectName);
+        if (!subjectData) {
+            acc.push({
+                subject: curr.subjectName,
+                preIntervention: curr.grades.reduce((sum, g) => sum + g.originalGrade, 0) / curr.grades.length,
+                postIntervention: curr.grades.reduce((sum, g) => sum + (g.interventionGrade || g.originalGrade), 0) / curr.grades.length
+            });
+        }
+        return acc;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    }, [] as any[]);
 
     const chartConfig = {
         preIntervention: {
@@ -33,7 +45,7 @@ export function AllSubjectsYearLevelsChart() {
                 <div className="w-full overflow-x-auto">
                     <div className="min-w-[300px]">
                         <ChartContainer config={chartConfig} className="h-[300px] sm:h-[400px]">
-                            <BarChart accessibilityLayer data={data}>
+                            <BarChart accessibilityLayer data={processedData}>
                                 <XAxis
                                     dataKey="subject"
                                     tickLine={false}

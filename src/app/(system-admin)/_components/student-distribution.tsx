@@ -15,15 +15,8 @@ import {
     ChartTooltipContent,
 } from "@/components/ui/chart";
 import { useMemo } from "react";
-
-const studentDistributionData = [
-    { name: "grade7", value: 300, fill: "var(--color-grade7)" },
-    { name: "grade8", value: 250, fill: "var(--color-grade8)" },
-    { name: "grade9", value: 230, fill: "var(--color-grade9)" },
-    { name: "grade10", value: 220, fill: "var(--color-grade10)" },
-    { name: "grade11", value: 200, fill: "var(--color-grade11)" },
-    { name: "grade12", value: 180, fill: "var(--color-grade12)" }
-]
+import { useQuery } from "convex/react";
+import { api } from "../../../../convex/_generated/api";
 
 const chartConfig = {
     grade7: {
@@ -40,7 +33,7 @@ const chartConfig = {
     },
     grade10: {
         label: "Grade 10",
-        color: "hsl(var(--pieChart-4))",
+        color: "hsl(var(--chart-1))",
     },
     grade11: {
         label: "Grade 11",
@@ -55,9 +48,40 @@ const chartConfig = {
     }
 } satisfies ChartConfig
 export const StudentDistribution = () => {
+    const distributionData = useQuery(api.students.getStudentDistribution);
+
+    const studentDistributionData = useMemo(() => {
+        if (!distributionData) return [];
+
+        return [
+            { name: "grade7", value: distributionData.grade7, fill: "var(--color-grade7)" },
+            { name: "grade8", value: distributionData.grade8, fill: "var(--color-grade8)" },
+            { name: "grade9", value: distributionData.grade9, fill: "var(--color-grade9)" },
+            { name: "grade10", value: distributionData.grade10, fill: "var(--color-grade10)" },
+            { name: "grade11", value: distributionData.grade11, fill: "var(--color-grade11)" },
+            { name: "grade12", value: distributionData.grade12, fill: "var(--color-grade12)" }
+        ];
+    }, [distributionData]);
+
     const totalStudents = useMemo(() => {
-        return studentDistributionData.reduce((acc, curr) => acc + curr.value, 0);
-    }, [])
+        if (!distributionData) return 0;
+        return Object.values(distributionData).reduce((acc, curr) => acc + curr, 0);
+    }, [distributionData]);
+
+    if (!distributionData) {
+        return (
+            <Card className="bg-white">
+                <CardHeader>
+                    <CardTitle className="text-primary">Student Distribution (Current S.Y.)</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <div className="flex items-center justify-center h-[250px]">
+                        Loading...
+                    </div>
+                </CardContent>
+            </Card>
+        );
+    }
 
     return (
         <Card className="bg-white">

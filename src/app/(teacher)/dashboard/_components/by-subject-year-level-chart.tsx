@@ -2,7 +2,9 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
+import { useQuery } from "convex/react"
 import { Line, LineChart, XAxis, YAxis } from "recharts"
+import { api } from "../../../../../convex/_generated/api"
 
 interface BySubjectYearLevelChartProps {
     subject: string
@@ -10,14 +12,21 @@ interface BySubjectYearLevelChartProps {
 }
 
 export function BySubjectYearLevelChart({ subject, yearLevel }: BySubjectYearLevelChartProps) {
-    const data = [
-        { week: 1, preIntervention: 70, postIntervention: 72 },
-        { week: 2, preIntervention: 72, postIntervention: 75 },
-        { week: 3, preIntervention: 75, postIntervention: 80 },
-        { week: 4, preIntervention: 78, postIntervention: 85 },
-        { week: 5, preIntervention: 80, postIntervention: 88 },
-        { week: 6, preIntervention: 82, postIntervention: 90 },
-    ]
+    const stats = useQuery(api.quarterlyGrades.getInterventionStats, {
+        subjectFilter: subject,
+        yearLevelFilter: yearLevel
+    });
+
+    if (!stats) return <div>Loading...</div>;
+
+    // Process weekly data
+    const processedData = stats.flatMap(stat =>
+        stat.grades.map((g, idx) => ({
+            week: idx + 1,
+            preIntervention: g.originalGrade,
+            postIntervention: g.interventionGrade || g.originalGrade
+        }))
+    );
 
     const chartConfig = {
         preIntervention: {
@@ -40,7 +49,7 @@ export function BySubjectYearLevelChart({ subject, yearLevel }: BySubjectYearLev
                 <div className="w-full overflow-x-auto">
                     <div className="min-w-[300px]">
                         <ChartContainer config={chartConfig} className="h-[300px] sm:h-[400px]">
-                            <LineChart accessibilityLayer data={data}>
+                            <LineChart accessibilityLayer data={processedData}>
                                 <XAxis
                                     dataKey="week"
                                     tickLine={false}

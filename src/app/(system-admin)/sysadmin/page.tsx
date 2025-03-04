@@ -1,3 +1,5 @@
+"use client"
+
 import {
     Breadcrumb,
     BreadcrumbItem,
@@ -7,14 +9,23 @@ import {
 } from "@/components/ui/breadcrumb"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
+import { useQuery } from "convex/react"
 import { GraduationCap, School, UserCheck, Users } from "lucide-react"
-import { schoolStats } from "../../../../data/school-data"
-import { FormGenerationCard } from "../_components/form-generation-card"
+import { api } from "../../../../convex/_generated/api"
 import { InterventionEffectiveness } from "../_components/intervention-effectiveness"
 import { StudentDistribution } from "../_components/student-distribution"
 import { StudentPerformance } from "../_components/student-performance"
 
 const SystemAdminPage = () => {
+    const principals = useQuery(api.users.list, { role: "school-head" }) || [];
+    const counts = useQuery(api.users.getCounts);
+
+    const activeJHPrincipal = principals.find(p =>
+        p.isActive && p.schoolHeadType === "junior-high"
+    );
+    const activeSHPrincipal = principals.find(p =>
+        p.isActive && p.schoolHeadType === "senior-high"
+    );
 
     return (
         <div className="p-4">
@@ -30,44 +41,72 @@ const SystemAdminPage = () => {
                 </BreadcrumbList>
             </Breadcrumb>
 
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 mb-8">
                 <Card className="bg-[#A3C6C4] text-white border-none">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Current Principal</CardTitle>
+                        <CardTitle className="text-sm font-medium">Junior High Principal</CardTitle>
                         <School className="h-4 w-4 text-white" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">{schoolStats.principal}</div>
-                        <p className="text-xs text-white">School Head</p>
+                        <div className="text-2xl font-bold">
+                            {activeJHPrincipal ?
+                                `${activeJHPrincipal.lastName}, ${activeJHPrincipal.firstName}` :
+                                "Not Assigned"}
+                        </div>
+                        <p className="text-xs text-white">Junior High School Head</p>
                     </CardContent>
                 </Card>
+
+                {/* Senior High Principal Card */}
+                <Card className="bg-[#354649] text-white border-none">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">Senior High Principal</CardTitle>
+                        <School className="h-4 w-4 text-white" />
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-2xl font-bold">
+                            {activeSHPrincipal ?
+                                `${activeSHPrincipal.lastName}, ${activeSHPrincipal.firstName}` :
+                                "Not Assigned"}
+                        </div>
+                        <p className="text-xs text-white">Senior High School Head</p>
+                    </CardContent>
+                </Card>
+
                 <Card className="bg-[#6C7A89] text-white border-none">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">Total Registrars</CardTitle>
                         <UserCheck className="h-4 w-4 text-white" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">{schoolStats.totalRegistrars}</div>
+                        <div className="text-2xl font-bold">
+                            {counts?.totalRegistrars || 0}
+                        </div>
                         <p className="text-xs text-white">School Registrars</p>
                     </CardContent>
                 </Card>
+
                 <Card className="bg-[#354649] text-white border-none">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">Total Teachers</CardTitle>
                         <Users className="h-4 w-4 text-white" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">{schoolStats.totalTeachers}</div>
-                        <p className="text-xs text-white">Class Advisers and Subject Teachers</p>
+                        <div className="text-2xl font-bold">
+                            {counts?.totalTeachers || 0}
+                        </div>
                     </CardContent>
                 </Card>
-                <Card className="bg-[#A3C6C4] text-white border-none">
+
+                <Card className="bg-[#6C7A89] text-white border-none">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">Total Students</CardTitle>
                         <GraduationCap className="h-4 w-4 text-white" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">{schoolStats.totalStudents}</div>
+                        <div className="text-2xl font-bold">
+                            {counts?.totalStudents || 0}
+                        </div>
                         <p className="text-xs text-white">Enrolled Students</p>
                     </CardContent>
                 </Card>
@@ -76,7 +115,7 @@ const SystemAdminPage = () => {
             <div className="grid gap-6 md:grid-cols-2">
                 <StudentPerformance />
 
-                <FormGenerationCard />
+                {/* <FormGenerationCard /> */}
 
                 <StudentDistribution />
 

@@ -1,25 +1,10 @@
 "use client"
-import { CartesianGrid, Line, LineChart, XAxis } from "recharts";
 
-import {
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle
-} from "@/components/ui/card";
-import {
-    ChartConfig,
-    ChartContainer,
-    ChartTooltip,
-    ChartTooltipContent,
-} from "@/components/ui/chart";
-
-const interventionEffectivenessData = [
-    { name: 'Jan', withIntervention: 85, withoutIntervention: 20 },
-    { name: 'Feb', withIntervention: 88, withoutIntervention: 43 },
-    { name: 'Mar', withIntervention: 90, withoutIntervention: 33 },
-    { name: 'Apr', withIntervention: 92, withoutIntervention: 19 },
-];
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ChartConfig, ChartContainer, ChartTooltip } from "@/components/ui/chart";
+import { useQuery } from "convex/react";
+import { Bar, BarChart, CartesianGrid, Legend, XAxis, YAxis } from "recharts";
+import { api } from "../../../../convex/_generated/api";
 
 const chartConfig = {
     withIntervention: {
@@ -30,66 +15,105 @@ const chartConfig = {
         label: "Without Intervention",
         color: "hsl(var(--chart-destruction))",
     },
-} satisfies ChartConfig
+} satisfies ChartConfig;
 
 export const InterventionEffectiveness = () => {
+    const interventionData = useQuery(api.quarterlyGrades.getInterventionEffectiveness);
+
+    if (!interventionData) {
+        return (
+            <Card className="bg-white">
+                <CardHeader>
+                    <CardTitle className="text-primary">Intervention Effectiveness</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <div className="flex items-center justify-center h-[200px]">
+                        Loading...
+                    </div>
+                </CardContent>
+            </Card>
+        );
+    }
+
     return (
         <Card className="bg-white">
             <CardHeader>
                 <CardTitle className="text-primary">Intervention Effectiveness</CardTitle>
             </CardHeader>
             <CardContent>
-                <ChartContainer config={chartConfig} className="h-full w-full">
-                    <LineChart
+                <ChartContainer config={chartConfig} className="h-[300px] w-full">
+                    <BarChart
                         accessibilityLayer
-                        data={interventionEffectivenessData}
+                        data={interventionData}
                         margin={{
-                            left: 12,
-                            right: 12,
+                            top: 20,
+                            right: 30,
+                            left: 20,
+                            bottom: 5,
                         }}
                     >
-                        <CartesianGrid vertical={false} />
+                        <CartesianGrid strokeDasharray="3 3" />
                         <XAxis
                             dataKey="name"
                             tickLine={false}
                             tickMargin={10}
                             axisLine={false}
-                            tickFormatter={(value) => value.slice(0, 3)}
+                            tickFormatter={(value) => `Q${value}`}
                         />
-                        <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
-                        <Line
-                            dataKey="withIntervention"
-                            type="monotone"
-                            stroke="var(--color-withIntervention)"
-                            strokeWidth={2}
-                            dot={false}
+                        <YAxis
+                            domain={[0, 100]}
+                            tickLine={false}
+                            axisLine={false}
+                            tickFormatter={(value) => `${value}%`}
                         />
-                        <Line
+                        <ChartTooltip
+                            cursor={false}
+                            content={({ active, payload }) => {
+                                if (active && payload && payload.length) {
+                                    return (
+                                        <div className="rounded-lg border bg-background p-2 shadow-sm">
+                                            <div className="grid grid-cols-2 gap-2">
+                                                <div className="flex flex-col">
+                                                    <span className="text-[0.70rem] uppercase text-muted-foreground">
+                                                        Q{payload[0].payload.name}
+                                                    </span>
+                                                    <span className="font-bold text-muted-foreground">
+                                                        {/* @ts-expect-error slight type issue */}
+                                                        Original: {payload[0]?.value.toFixed(1)}%
+                                                    </span>
+                                                    <span className="font-bold text-muted-foreground">
+                                                        {/* @ts-expect-error slight type issue */}
+                                                        After Intervention: {payload[1]?.value.toFixed(1)}%
+                                                    </span>
+                                                    <span className="text-[0.70rem] text-muted-foreground">
+                                                        {/* @ts-expect-error slight type issue */}
+                                                        Improvement: {(payload[1]?.value - payload[0]?.value).toFixed(1)}%
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    );
+                                }
+                                return null;
+                            }}
+                        />
+                        <Legend
+                            verticalAlign="top"
+                            height={36}
+                        />
+                        <Bar
                             dataKey="withoutIntervention"
-                            type="monotone"
-                            stroke="var(--color-withoutIntervention"
-                            strokeWidth={2}
-                            dot={false}
+                            fill="var(--color-withoutIntervention)"
+                            radius={[4, 4, 0, 0]}
                         />
-                    </LineChart>
+                        <Bar
+                            dataKey="withIntervention"
+                            fill="var(--color-withIntervention)"
+                            radius={[4, 4, 0, 0]}
+                        />
+                    </BarChart>
                 </ChartContainer>
             </CardContent>
         </Card>
-        // <Card>
-        //     <CardHeader>Intervention Effectiveness</CardHeader>
-        //     <CardContent>
-        //         <ResponsiveContainer width="100%" height={300}>
-        //             <LineChart data={interventionEffectivenessData}>
-        //                 <CartesianGrid strokeDasharray="3 3" />
-        //                 <XAxis dataKey="name" />
-        //                 <YAxis />
-        //                 <Tooltip />
-        //                 <Legend />
-        //                 <Line type="monotone" dataKey="withIntervention" stroke="#8884d8" />
-        //                 <Line type="monotone" dataKey="withoutIntervention" stroke="#82ca9d" />
-        //             </LineChart>
-        //         </ResponsiveContainer>
-        //     </CardContent>
-        // </Card>
-    )
-}
+    );
+};

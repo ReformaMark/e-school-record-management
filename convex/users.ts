@@ -556,3 +556,95 @@ export const fetchRegistrars = query({
         return registrars
     }
 })
+
+// Add this new query after your existing queries
+export const list = query({
+    args: {
+        role: v.optional(UserRole),
+        isActive: v.optional(v.boolean()),
+        schoolHeadType: v.optional(v.union(
+            v.literal("junior-high"),
+            v.literal("senior-high")
+        ))
+    },
+    handler: async (ctx, args) => {
+        let query = ctx.db.query("users");
+
+        // Filter by role if provided
+        if (args.role) {
+            query = query.filter(q =>
+                q.eq(q.field("role"), args.role)
+            );
+        }
+
+        // Filter by active status if provided
+        if (args.isActive !== undefined) {
+            query = query.filter(q =>
+                q.eq(q.field("isActive"), args.isActive)
+            );
+        }
+
+        // Filter by school head type if provided
+        if (args.schoolHeadType) {
+            query = query.filter(q =>
+                q.eq(q.field("schoolHeadType"), args.schoolHeadType)
+            );
+        }
+
+        const users = await query.collect();
+
+        return users.map(user => ({
+            _id: user._id,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            middleName: user.middleName,
+            email: user.email,
+            role: user.role,
+            isActive: user.isActive ?? false,
+            schoolHeadType: user.schoolHeadType,
+            department: user.department,
+            imageStorageId: user.imageStorageId
+        }));
+    }
+});
+
+export const getCounts = query({
+    handler: async (ctx) => {
+        // Get total registrars
+        const registrars = await ctx.db
+            .query("users")
+            .filter((q) =>
+                q.and(
+                    q.eq(q.field("role"), "staff"),
+                    q.eq(q.field("department"), "Registrar's Office"),
+                    q.eq(q.field("isActive"), true)
+                )
+            )
+            .collect();
+
+        // Get total teachers
+        const teachers = await ctx.db
+            .query("users")
+            .filter((q) =>
+                q.and(
+                    q.eq(q.field("role"), "teacher"),
+                    q.eq(q.field("isActive"), true)
+                )
+            )
+            .collect();
+
+        // Get total students
+        const students = await ctx.db
+            .query("students")
+            .filter(q =>
+                q.eq(q.field("enrollmentStatus"), "Enrolled")
+            )
+            .collect();
+
+        return {
+            totalRegistrars: registrars.length,
+            totalTeachers: teachers.length,
+            totalStudents: students.length
+        };
+    }
+});

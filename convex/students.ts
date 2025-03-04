@@ -1,10 +1,9 @@
 
-import { ConvexError, v } from "convex/values";
-import { mutation, query } from "./_generated/server";
+import { StudentsWithEnrollMentTypes, StudentWithSem } from "@/lib/types";
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { asyncMap } from "convex-helpers";
-import { StudentsWithEnrollMentTypes, StudentTypes, StudentWithSem } from "@/lib/types";
-import { Id } from "./_generated/dataModel";
+import { ConvexError, v } from "convex/values";
+import { mutation, query } from "./_generated/server";
 
 export const getStudent = query({
   handler: async (ctx) => {
@@ -400,4 +399,258 @@ export const getAllStudents = query({
 
     return students;
   },
+});
+
+export const getStudentDistribution = query({
+  handler: async (ctx) => {
+    const students = await ctx.db
+      .query("students")
+      .filter(q => q.eq(q.field("enrollmentStatus"), "Enrolled"))
+      .collect();
+
+    const distribution = {
+      grade7: students.filter(s => s.gradeLevel === "7").length,
+      grade8: students.filter(s => s.gradeLevel === "8").length,
+      grade9: students.filter(s => s.gradeLevel === "9").length,
+      grade10: students.filter(s => s.gradeLevel === "10").length,
+      grade11: students.filter(s => s.gradeLevel === "11").length,
+      grade12: students.filter(s => s.gradeLevel === "12").length,
+    };
+
+    return distribution;
+  },
+});
+
+export const getStudentPerformanceOverview = query({
+  handler: async (ctx) => {
+    const students = await ctx.db.query("students")
+      .filter(q => q.eq(q.field("enrollmentStatus"), "Enrolled"))
+      .collect();
+
+    const grades = await ctx.db.query("quarterlyGrades")
+      .withIndex("by_studentId")
+      .collect();
+
+    type GradeLevel = "7" | "8" | "9" | "10" | "11" | "12";
+    type PerformanceData = {
+      [key in GradeLevel]: {
+        passing: number;
+        failing: number;
+      };
+    };
+
+    // Initialize performance data
+    const performance: PerformanceData = {
+      "7": { passing: 0, failing: 0 },
+      "8": { passing: 0, failing: 0 },
+      "9": { passing: 0, failing: 0 },
+      "10": { passing: 0, failing: 0 },
+      "11": { passing: 0, failing: 0 },
+      "12": { passing: 0, failing: 0 }
+    };
+
+    // Group grades by student
+    const studentGrades = new Map<string, { grades: number[]; gradeLevel: string }>();
+
+    grades.forEach(grade => {
+      const student = students.find(s => s._id === grade.studentId);
+      if (!student || !student.gradeLevel) return;
+
+      if (!studentGrades.has(grade.studentId)) {
+        studentGrades.set(grade.studentId, {
+          grades: [],
+          gradeLevel: student.gradeLevel
+        });
+      }
+
+      // Use intervention grade if available
+      const finalGrade = grade.interventionGrade || grade.quarterlyGrade;
+      studentGrades.get(grade.studentId)?.grades.push(finalGrade);
+    });
+
+    // Calculate averages and update performance counts
+    studentGrades.forEach((data, studentId) => {
+      const gradeLevel = data.gradeLevel as GradeLevel;
+      if (!(gradeLevel in performance)) return;
+
+      // Calculate student's average
+      const average = data.grades.reduce((sum, grade) => sum + grade, 0) / data.grades.length;
+
+      // Update performance counts
+      if (average >= 75) {
+        performance[gradeLevel].passing++;
+      } else {
+        performance[gradeLevel].failing++;
+      }
+    });
+
+    return Object.entries(performance).map(([grade, stats]) => ({
+      name: `Grade ${grade}`,
+      passing: stats.passing,
+      failing: stats.failing
+    }));
+  }
+});
+
+export const getEnrollmentTrends = query({
+  handler: async (ctx) => {
+    const schoolYears = await ctx.db.query('schoolYears')
+      .order('asc')
+      .collect();
+
+    const trends = await Promise.all(
+      schoolYears.map(async (sy) => {
+        const enrollments = await ctx.db.query('enrollments')
+          .filter(q => q.eq(q.field('schoolYearId'), sy._id))
+          .collect();
+
+        return {
+          year: sy.sy || sy.batchName,
+          students: enrollments.length
+        };
+      })
+    );
+
+    return trends;
+  }
+});
+
+export const getStudentsWithGrades = query({
+  args: {
+    classId: v.optional(v.id("classes")),
+    subjectId: v.optional(v.id("subjects"))
+  },
+  handler: async (ctx, args) => {
+    const teacherId = await getAuthUserId(ctx);
+    if (!teacherId) throw new ConvexError("No teacher ID");
+
+    if (args.classId) {
+      // Get section for selected class
+      const selectedClass = await ctx.db.get(args.classId);
+      if (!selectedClass) return [];
+
+      const section = await ctx.db.get(selectedClass.sectionId);
+      if (!section) return [];
+
+      // Get students based on semester
+      const studentIds = selectedClass.semester === "1st" ?
+        section.firstSemStudents :
+        selectedClass.semester === "2nd" ?
+          section.secondSemStudents :
+          section.students;
+
+      // Get the class ID for this subject if subjectId is provided
+      let classId = args.classId;
+      if (args.subjectId) {
+        const classForSubject = await ctx.db
+          .query("classes")
+          .filter(q => q.and(
+            q.eq(q.field("subjectId"), args.subjectId),
+            q.eq(q.field("sectionId"), section._id)
+          ))
+          .first();
+        if (classForSubject) {
+          classId = classForSubject._id;
+        }
+      }
+
+      const studentsWithGrades = await asyncMap(studentIds, async (studentId) => {
+        const student = await ctx.db.get(studentId);
+        if (!student) return null;
+
+        // Get quarterly grades using the correct classId
+        const quarterlyGrades = await ctx.db
+          .query("quarterlyGrades")
+          .filter(q => q.and(
+            q.eq(q.field("studentId"), studentId),
+            q.eq(q.field("classId"), classId)
+          ))
+          .collect();
+
+        return {
+          id: student._id,
+          name: `${student.lastName}, ${student.firstName}`,
+          grades: quarterlyGrades
+        };
+      });
+
+      return studentsWithGrades.filter(s => s !== null);
+    }
+
+    return [];
+  }
+});
+
+export const getTeacherStudentsCount = query({
+  handler: async (ctx) => {
+    const teacherId = await getAuthUserId(ctx);
+    if (!teacherId) throw new ConvexError("No teacher ID");
+
+    const teacherClasses = await ctx.db
+      .query("classes")
+      .filter(q => q.eq(q.field("teacherId"), teacherId))
+      .collect();
+
+    const counts = {
+      totalStudents: 0,
+      atRiskStudents: 0,
+      pendingInterventions: 0
+    };
+
+    const uniqueStudents = new Set();
+    const atRiskStudents = new Set();
+    const needsIntervention = new Set();
+
+    await Promise.all(teacherClasses.map(async (cls) => {
+      const grades = await ctx.db
+        .query("quarterlyGrades")
+        .filter(q => q.eq(q.field("classId"), cls._id))
+        .collect();
+
+      // Group grades by student
+      const studentGrades = new Map();
+      grades.forEach(grade => {
+        if (!studentGrades.has(grade.studentId)) {
+          studentGrades.set(grade.studentId, []);
+        }
+        studentGrades.get(grade.studentId).push(grade);
+      });
+
+      // Process each student's grades
+      studentGrades.forEach((grades, studentId) => {
+        uniqueStudents.add(studentId);
+
+        let totalGrade = 0;
+        let gradeCount = 0;
+
+        // @ts-expect-error slight type issue
+        grades.forEach(grade => {
+          // Check for pending interventions
+          if (grade.needsIntervention === true &&
+            !grade.interventionGrade &&
+            (!grade.interventionUsed || grade.interventionUsed.length === 0) &&
+            !grade.interventionRemarks) {
+            needsIntervention.add(studentId);
+          }
+
+          // Calculate average using intervention grades when available
+          const finalGrade = grade.interventionGrade || grade.quarterlyGrade;
+          totalGrade += finalGrade;
+          gradeCount++;
+        });
+
+        // Calculate average and check if at risk
+        const average = totalGrade / gradeCount;
+        if (average < 75) {
+          atRiskStudents.add(studentId);
+        }
+      });
+    }));
+
+    return {
+      totalStudents: uniqueStudents.size,
+      atRiskStudents: atRiskStudents.size,
+      pendingInterventions: needsIntervention.size
+    };
+  }
 });

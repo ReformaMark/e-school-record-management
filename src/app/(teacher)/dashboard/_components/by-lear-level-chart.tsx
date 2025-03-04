@@ -3,20 +3,74 @@
 import { Bar, BarChart, XAxis, YAxis } from "recharts"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
+import { useQuery } from "convex/react"
+import { api } from "../../../../../convex/_generated/api"
+import { Id } from "../../../../../convex/_generated/dataModel"
 
 interface ByYearLevelChartProps {
   yearLevel: string
 }
 
 export function ByYearLevelChart({ yearLevel }: ByYearLevelChartProps) {
-  const data = [
-    { yearLevel: "Grade 7", preIntervention: 70, postIntervention: 80 },
-    { yearLevel: "Grade 8", preIntervention: 75, postIntervention: 85 },
-    { yearLevel: "Grade 9", preIntervention: 72, postIntervention: 82 },
-    { yearLevel: "Grade 10", preIntervention: 72, postIntervention: 82 },
-    { yearLevel: "Grade 11", preIntervention: 72, postIntervention: 82 },
-    { yearLevel: "Grade 12", preIntervention: 72, postIntervention: 82 },
-  ]
+  const stats = useQuery(api.quarterlyGrades.getInterventionStats, {
+    yearLevelFilter: yearLevel
+  });
+
+  const gradeLevels = useQuery(api.gradeLevel.get);
+
+  if (!stats || !gradeLevels) return <div>Loading...</div>;
+
+  // Group and aggregate data by year level
+  const processedData = stats.reduce((acc, curr) => {
+    const gradeLevel = gradeLevels.find(g => g._id === (curr.yearLevel as Id<"gradeLevels">));
+    const yearLevelName = gradeLevel?.level || 'Unknown Grade';
+
+    // Find or create year level entry
+    let yearData = acc.find(d => d.yearLevel === yearLevelName);
+
+    if (!yearData) {
+      yearData = {
+        yearLevel: yearLevelName,
+        totalPreIntervention: 0,
+        totalPostIntervention: 0,
+        validGradesCount: 0
+      };
+      acc.push(yearData);
+    }
+
+    // Only include valid grades in calculations
+    const validGrades = curr.grades.filter(g =>
+      g.originalGrade != null && !isNaN(g.originalGrade)
+    );
+
+    if (validGrades.length > 0) {
+      yearData.totalPreIntervention += validGrades.reduce(
+        (sum, g) => sum + g.originalGrade, 0
+      );
+      yearData.totalPostIntervention += validGrades.reduce(
+        (sum, g) => sum + (g.interventionGrade || g.originalGrade), 0
+      );
+      yearData.validGradesCount += validGrades.length;
+    }
+
+    return acc;
+  }, [] as Array<{
+    yearLevel: string;
+    totalPreIntervention: number;
+    totalPostIntervention: number;
+    validGradesCount: number;
+  }>);
+
+  // Calculate averages for final display
+  const finalData = processedData.map(d => ({
+    yearLevel: d.yearLevel,
+    preIntervention: d.validGradesCount > 0
+      ? d.totalPreIntervention / d.validGradesCount
+      : 0,
+    postIntervention: d.validGradesCount > 0
+      ? d.totalPostIntervention / d.validGradesCount
+      : 0
+  }));
 
   const chartConfig = {
     preIntervention: {
@@ -29,6 +83,9 @@ export function ByYearLevelChart({ yearLevel }: ByYearLevelChartProps) {
     },
   }
 
+  console.log(`Year Level: ${yearLevel}`);
+  console.log('Processed Data:', processedData);
+
   return (
     <Card className="lg:w-fit">
       <CardHeader>
@@ -39,7 +96,7 @@ export function ByYearLevelChart({ yearLevel }: ByYearLevelChartProps) {
         <div className="w-full overflow-x-auto">
           <div className="min-w-[300px]">
             <ChartContainer config={chartConfig} className="h-[300px] sm:h-[400px]">
-              <BarChart accessibilityLayer data={data}>
+              <BarChart accessibilityLayer data={finalData}>
                 <XAxis
                   dataKey="yearLevel"
                   tickLine={false}

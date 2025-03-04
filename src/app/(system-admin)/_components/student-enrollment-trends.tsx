@@ -1,34 +1,49 @@
 "use client"
 
-import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
+import {
+    ChartConfig,
+    ChartContainer,
+    ChartTooltip,
+    ChartTooltipContent
+} from "@/components/ui/chart"
+import { useQuery } from "convex/react"
+import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts"
+import { api } from "../../../../convex/_generated/api"
 
 export const StudentEnrollmentTrends = () => {
-    const enrollmentData = [
-        { year: 2018, students: 800 },
-        { year: 2019, students: 900 },
-        { year: 2020, students: 500 },
-        { year: 2021, students: 700 },
-        { year: 2022, students: 1200 },
-    ]
+    const enrollmentData = useQuery(api.students.getEnrollmentTrends);
+
+    if (!enrollmentData) {
+        return (
+            <Card className="bg-white">
+                <CardHeader>
+                    <CardTitle className="text-text">Student Enrollment Trends</CardTitle>
+                    <CardDescription>Historical enrollment data</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <div className="flex items-center justify-center h-[200px]">
+                        Loading...
+                    </div>
+                </CardContent>
+            </Card>
+        );
+    }
 
     const chartConfig = {
         students: {
             label: "Students",
             color: "hsl(var(--pieChart-3))",
         }
-    } satisfies ChartConfig
+    } satisfies ChartConfig;
 
     return (
         <Card className="bg-white">
             <CardHeader>
                 <CardTitle className="text-text">Student Enrollment Trends</CardTitle>
-                <CardDescription>Number of students enrolled from 2018 to 2022</CardDescription>
+                <CardDescription>Historical enrollment data</CardDescription>
             </CardHeader>
             <CardContent>
-                {/* <div className="w-full overflow-x-auto">
-                    <div className="min-w-[300px]"> */}
                 <ChartContainer config={chartConfig}>
                     <LineChart accessibilityLayer data={enrollmentData}>
                         <CartesianGrid strokeDasharray="3 3" />
@@ -41,6 +56,7 @@ export const StudentEnrollmentTrends = () => {
                         <YAxis
                             tickLine={false}
                             axisLine={false}
+                            tickFormatter={(value) => `${value}`}
                         />
                         <ChartTooltip content={<ChartTooltipContent />} />
                         <Line
@@ -53,9 +69,7 @@ export const StudentEnrollmentTrends = () => {
                         />
                     </LineChart>
                 </ChartContainer>
-                {/* </div>
-                </div> */}
             </CardContent>
         </Card>
-    )
-}
+    );
+};

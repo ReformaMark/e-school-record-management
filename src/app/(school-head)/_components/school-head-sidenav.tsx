@@ -4,7 +4,7 @@ import { School2Icon } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { FaChalkboardTeacher } from "react-icons/fa"
-import { MdOutlineDashboard, MdOutlineReport, MdOutlineSupportAgent } from 'react-icons/md'
+import { MdOutlineDashboard, MdOutlineSupportAgent } from 'react-icons/md'
 import { PiStudent } from 'react-icons/pi'
 
 export const SchoolHeadSideNav = () => {
@@ -101,10 +101,10 @@ export const SchoolHeadSideNav = () => {
 
                 </SidebarSection>
 
-                <Link href={'/sh-complaints'} className={`${pathname === '/sh-complaints' ? "bg-background/50 text-white" : "bg-transparent"}  flex items-center text-white py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}>
+                {/* <Link href={'/sh-complaints'} className={`${pathname === '/sh-complaints' ? "bg-background/50 text-white" : "bg-transparent"}  flex items-center text-white py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}>
                     <MdOutlineReport className='size-5 w-10' />
                     <h1 className='tracking-wider'>Complaints</h1>
-                </Link>
+                </Link> */}
             </div>
         </main>
     )

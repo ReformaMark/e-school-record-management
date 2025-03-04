@@ -133,7 +133,9 @@ export default defineSchema({
     strand: v.optional(v.string()),
     track: v.optional(v.string())
 
-  }).index('by_section', ['section']),
+  }).index('by_section', ['section'])
+    .index('by_lastName', ['lastName'])
+    .index('by_enrollmentStatus', ['enrollmentStatus']),
 
   enrollments: defineTable({
     studentId: v.id('students'),
@@ -194,7 +196,10 @@ export default defineSchema({
     students: v.array(v.id('students')),
     firstSemStudents: v.array(v.id('students')),
     secondSemStudents: v.array((v.id('students'))),
-  }).index('by_advisorId', ['advisorId']),
+  })
+    .index('by_advisorId', ['advisorId'])
+    .index('by_schoolYear', ['schoolYearId'])
+    .index('by_gradeLevel', ['gradeLevelId']),
 
   classes: defineTable({
     subjectId: v.id('subjects'),
@@ -270,7 +275,10 @@ export default defineSchema({
     interventionGrade: v.optional(v.number()),
     interventionUsed: v.optional(v.array(v.string())), // ex. Big book, General remarks
     interventionRemarks: v.optional(v.string()) // ex. “Math 9 2nd competency big book with sample activities. Will check the progress of the student through checking the answers of the big book activities.”
-  }),
+  })
+    .index("by_studentId", ["studentId"])
+    .index("by_classId", ["classId"])
+    .index("by_teacherId", ["teacherId"]),
 
   interventions: defineTable({
     name: v.string(),

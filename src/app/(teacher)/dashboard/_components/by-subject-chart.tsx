@@ -3,19 +3,68 @@
 import { Bar, BarChart, XAxis, YAxis } from "recharts"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
+import { useQuery } from "convex/react"
+import { api } from "../../../../../convex/_generated/api"
 
 interface BySubjectChartProps {
     subject: string
 }
 
 export function BySubjectChart({ subject }: BySubjectChartProps) {
-    const data = [
-        { subject: "Math", preIntervention: 75, postIntervention: 93 },
-        { subject: "Science", preIntervention: 75, postIntervention: 90 },
-        { subject: "English", preIntervention: 80, postIntervention: 89 },
-        { subject: "History", preIntervention: 79, postIntervention: 92 },
-        { subject: "MAPEH", preIntervention: 78, postIntervention: 98 },
-    ]
+    const stats = useQuery(api.quarterlyGrades.getInterventionStats, {
+        subjectFilter: subject
+    });
+
+    if (!stats) return <div>Loading...</div>;
+
+    // Group and aggregate data by subject
+    const processedData = stats.reduce((acc, curr) => {
+        // Find or create subject entry
+        let subjectData = acc.find(d => d.subject === curr.subjectName);
+
+        if (!subjectData) {
+            subjectData = {
+                subject: curr.subjectName,
+                totalPreIntervention: 0,
+                totalPostIntervention: 0,
+                validGradesCount: 0
+            };
+            acc.push(subjectData);
+        }
+
+        // Only include valid grades in calculations
+        const validGrades = curr.grades.filter(g =>
+            g.originalGrade != null && !isNaN(g.originalGrade)
+        );
+
+        if (validGrades.length > 0) {
+            subjectData.totalPreIntervention += validGrades.reduce(
+                (sum, g) => sum + g.originalGrade, 0
+            );
+            subjectData.totalPostIntervention += validGrades.reduce(
+                (sum, g) => sum + (g.interventionGrade || g.originalGrade), 0
+            );
+            subjectData.validGradesCount += validGrades.length;
+        }
+
+        return acc;
+    }, [] as Array<{
+        subject: string;
+        totalPreIntervention: number;
+        totalPostIntervention: number;
+        validGradesCount: number;
+    }>);
+
+    // Calculate averages for final display
+    const finalData = processedData.map(d => ({
+        subject: d.subject,
+        preIntervention: d.validGradesCount > 0
+            ? d.totalPreIntervention / d.validGradesCount
+            : 0,
+        postIntervention: d.validGradesCount > 0
+            ? d.totalPostIntervention / d.validGradesCount
+            : 0
+    }));
 
     const chartConfig = {
         preIntervention: {
@@ -29,7 +78,7 @@ export function BySubjectChart({ subject }: BySubjectChartProps) {
     }
 
     return (
-        <Card className=" lg:w-fit">
+        <Card className="lg:w-fit">
             <CardHeader>
                 <CardTitle className="text-text">Performance by Subject: {subject}</CardTitle>
                 <CardDescription className="text-muted-foreground">Comparison of pre and post-intervention performance for {subject} across year levels</CardDescription>
@@ -38,7 +87,7 @@ export function BySubjectChart({ subject }: BySubjectChartProps) {
                 <div className="w-full overflow-x-auto">
                     <div className="min-w-[300px]">
                         <ChartContainer config={chartConfig} className="h-[300px] sm:h-[400px]">
-                            <BarChart accessibilityLayer data={data}>
+                            <BarChart accessibilityLayer data={finalData}>
                                 <XAxis
                                     dataKey="subject"
                                     tickLine={false}
