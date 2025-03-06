@@ -71,13 +71,13 @@ const SystemAdminListPage = () => {
                             <DropdownMenuContent align="end">
                                 <DropdownMenuLabel>Filter by Status</DropdownMenuLabel>
                                 <DropdownMenuSeparator />
-                                <DropdownMenuCheckboxItem 
+                                <DropdownMenuCheckboxItem
                                     checked={showActive}
                                     onCheckedChange={setShowActive}
                                 >
                                     Active
                                 </DropdownMenuCheckboxItem>
-                                <DropdownMenuCheckboxItem 
+                                <DropdownMenuCheckboxItem
                                     checked={showInactive}
                                     onCheckedChange={setShowInactive}
                                 >
@@ -114,6 +114,7 @@ const SystemAdminListPage = () => {
                     <CardContent>
                         <DataTable
                             columns={sysadminColumns}
+                            // @ts-expect-error slight type issue
                             data={filteredAdmins || []}
                             filter="firstName"
                             placeholder="administrators by first name"

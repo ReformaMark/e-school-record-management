@@ -15,8 +15,9 @@ import { useRouter } from "next/navigation"
 import { useState } from "react"
 
 import { AuthFlow } from "../types"
+import { useAuthActions } from "@convex-dev/auth/react"
 
-export const SignUpCard = ({
+export const SignUpCardRegister = ({
     setState
 }: {
     setState: (state: AuthFlow) => void
@@ -24,19 +25,51 @@ export const SignUpCard = ({
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [confirmPassword, setConfirmPassword] = useState("");
+    // const [birthDate, setBirthDate] = useState("");
 
+    const [confirmPassword, setConfirmPassword] = useState("");
+    const { signIn } = useAuthActions()
     const [pending, setPending] = useState<boolean>(false);
     const [error, setError] = useState("");
 
     const router = useRouter()
 
-    const onSignUp = (e: React.FormEvent<HTMLFormElement>) => {
+    const onSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
 
         setPending(true)
 
-        setError("")
+        const role = "admin"
+        const firstName = "System"
+        const lastName = "Administrator"
+
+        try {
+            await signIn("password", {
+                email,
+                firstName,
+                lastName,
+                password,
+                role,
+                // birthDate,
+                flow: "signUp"
+            });
+            setError("");
+
+        } catch (error) {
+            console.error("Sign in error:", error);
+
+            if (error instanceof Error) {
+                if (error.message.includes("Failed to fetch")) {
+                    setError("Connection error. Please check your internet connection and try again.");
+                } else {
+                    setError("Invalid email or password");
+                }
+            } else {
+                setError("Invalid email or password");
+            }
+        } finally {
+            setPending(false);
+        }
     }
 
     return (

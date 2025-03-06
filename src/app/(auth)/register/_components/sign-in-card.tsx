@@ -1,5 +1,3 @@
-import { AuthFlow } from "../types"
-import { TriangleAlertIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
     Card,
@@ -9,8 +7,12 @@ import {
     CardTitle
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { useState } from "react"
+import { Separator } from "@/components/ui/separator"
+import { AuthFlow } from "@/features/auth/types"
 import { useAuthActions } from "@convex-dev/auth/react"
+import { TriangleAlertIcon } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { useState } from "react"
 
 export const SignInCard = ({
     //eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -25,6 +27,8 @@ export const SignInCard = ({
     //eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [error, setError] = useState("");
     const { signIn } = useAuthActions()
+
+    const router = useRouter()
 
     const onSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
@@ -111,24 +115,24 @@ export const SignInCard = ({
                             Continue
                         </Button>
                     </form>
-                    {/* <Separator />
-                <div className="space-y-1">
-                    <p className="text-sm text-muted-foreground">
-                        Don&apos;t have an account? <span
-                            className="text-primary hover:underline cursor-pointer"
-                            onClick={() => setState("signUp")}>
-                            Sign up
-                        </span>
-                    </p>
+                    <Separator />
+                    <div className="space-y-1">
+                        <p className="text-sm text-muted-foreground">
+                            Don&apos;t have an account? <span
+                                className="text-primary hover:underline cursor-pointer"
+                                onClick={() => setState("signUp")}>
+                                Sign up
+                            </span>
+                        </p>
 
-                    <p className="block lg:hidden text-sm text-muted-foreground">
-                        Changed your mind? <span
-                            className="text-primary hover:underline cursor-pointer"
-                            onClick={() => router.push("/")}>
-                            Go back to homepage.
-                        </span>
-                    </p>
-                </div> */}
+                        <p className="block lg:hidden text-sm text-muted-foreground">
+                            Changed your mind? <span
+                                className="text-primary hover:underline cursor-pointer"
+                                onClick={() => router.push("/")}>
+                                Go back to homepage.
+                            </span>
+                        </p>
+                    </div>
                 </CardContent>
             </Card>
         </div>

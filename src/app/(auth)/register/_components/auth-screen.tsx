@@ -1,13 +1,13 @@
 "use client"
 
 import { useState } from "react"
-import { AuthFlow } from "../types"
+import { SignInCard } from "./sign-in-card"
+import { SignUpCard } from "./sign-up-card"
 import { useConvexAuth } from "convex/react"
 import { RoleCheck } from "@/components/guards/logged-in"
-import { SignInCardRegister } from "./sign-in-card-register"
-import { SignUpCardRegister } from "./sign-up-card-register"
+import { AuthFlow } from "@/features/auth/types"
 
-export const AuthScreenRegister = () => {
+export const AuthScreen = () => {
     const [state, setState] = useState<AuthFlow>("signIn")
     const { isAuthenticated } = useConvexAuth()
 
@@ -48,7 +48,7 @@ export const AuthScreenRegister = () => {
 
                 <div className="h-full flex items-center justify-center ">
                     <div className="md:h-auto md:w-[420px]">
-                        {state === "signIn" ? <SignInCardRegister setState={setState} /> : <SignUpCardRegister setState={setState} />}
+                        {state === "signIn" ? <SignInCard setState={setState} /> : <SignUpCard setState={setState} />}
                     </div>
                 </div>
             </div>
