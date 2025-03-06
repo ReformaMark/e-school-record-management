@@ -12,8 +12,8 @@ export default defineSchema({
     email: v.string(),
     emailVerified: v.optional(v.boolean()),
     image: v.optional(v.string()),
-    contactNumber: v.string(),
-    birthDate: v.string(),
+    contactNumber: v.optional(v.string()),
+    birthDate: v.optional(v.string()),
 
     // Role and Status
     role: v.union(
@@ -156,7 +156,7 @@ export default defineSchema({
       hsCompleter: v.optional(v.object({
         completer: v.boolean(),
         genAve: v.number(),
-      
+
       })),
       jhsCompleter: v.optional(v.object({
         completer: v.boolean(),
@@ -165,7 +165,7 @@ export default defineSchema({
       peptPasser: v.optional(v.object({
         passer: v.boolean(),
         rating: v.number()
-        
+
       })),
       alsPasser: v.optional(v.object({
         passer: v.boolean(),

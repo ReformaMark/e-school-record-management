@@ -9,10 +9,10 @@ const CustomPassword = Password({
       lastName: params.lastName as string,
       role: params.role as "admin" | "teacher" | "school-head" | "staff",
       isActive: true,
-      department: (params.department as string) ?? null,
-      specialization: (params.specialization as string) ?? null,
-      yearsOfExperience: (params.yearsOfExperience as number) ?? null,
-      birthDate: params.birthDate as string,
+      // department: (params.department as string) ?? null,
+      // specialization: (params.specialization as string) ?? null,
+      // yearsOfExperience: (params.yearsOfExperience as number) ?? null,
+      // birthDate: params.birthDate as string,
     };
   },
 });

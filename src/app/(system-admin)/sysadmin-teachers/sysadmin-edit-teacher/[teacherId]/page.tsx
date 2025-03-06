@@ -86,9 +86,9 @@ const SystemAdminEditTeacherPage = ({ params }: { params: { teacherId: string } 
             setValue('firstName', teacher.firstName);
             setValue('middleName', teacher.middleName || '');
             setValue('lastName', teacher.lastName);
-            setValue('contactNumber', teacher.contactNumber);
+            setValue('contactNumber', teacher.contactNumber || '');
             setValue('employeeId', teacher.employeeId || '');
-            setValue('birthDate', teacher.birthDate);
+            setValue('birthDate', teacher.birthDate || '');
             setValue('gender', teacher.gender || '');
 
             // Academic Info
