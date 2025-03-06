@@ -59,7 +59,8 @@ export const EditAssessmentForm = ({
 }) => {
     
     const [ dialogOpen, setDialogOpen ] = useState(false)
-    const [selectedGLevel, setSelectedGLevel] = useState<string>(assessment.gradeLevel.toString())
+    const gLevel = `Grade ${assessment.gradeLevel.toString()}`
+    const [selectedGLevel, setSelectedGLevel] = useState<string>(gLevel)
     const [selectedQuarter, setSelectedQuarter] = useState<string>(assessment.quarter)
     const [selectedSubjectId, setSelectedSubjectId] = useState<Id<'subjects'> | undefined>(assessment.subjectId)
     const [isLoading, setIsLoading] = useState<boolean>(false)
@@ -68,6 +69,9 @@ export const EditAssessmentForm = ({
     const {classes} = useClasses()
     const teacherGradeLevels = Array.from(new Set(classes?.map((cl) => cl?.section?.gradeLevel?.level)));
     const gradelevels = teacherGradeLevels.filter(level => level !== undefined)
+
+    console.log("gradelevels:", gradelevels)
+    console.log("selectedGLevel:", selectedGLevel)
 
     const teacherSubjects = Array.from(new Set(classes?.map((cl) => cl?.subject?.name)));
     const subjects = useQuery(api.subjects.getSubjects);
@@ -82,7 +86,7 @@ export const EditAssessmentForm = ({
         resolver: zodResolver(AssessmentFormSchema),
         defaultValues:{
             type: type,
-            gradeLevel: assessment?.gradeLevel?.toString(),
+            gradeLevel: gLevel,
             quarter: assessment?.quarter, 
             semester: assessment.semester, // for senior high
             assessmentNo: assessment?.assessmentNo ,
@@ -161,6 +165,7 @@ export const EditAssessmentForm = ({
                                                         }}
                                                         value={field.value?.toString()} 
                                                         disabled
+                                                      
                                                     >
                                                         
                                                         <SelectTrigger>
@@ -168,7 +173,7 @@ export const EditAssessmentForm = ({
                                                         </SelectTrigger>
                                                         <SelectContent>
                                                             {gradelevels.map((level) => (
-                                                                <SelectItem key={`${level}`} value={level}>{level}</SelectItem>
+                                                                <SelectItem key={`${level}`} value={`${level}`}>{level}</SelectItem>
                                                             ))}
                                                         </SelectContent>
                                                     </Select>
@@ -338,7 +343,7 @@ export const EditAssessmentForm = ({
                                 <Button 
                                     variant={'ghost'} 
                                     onClick={()=>{
-                                        setSelectedGLevel(assessment.gradeLevel.toString())
+                                        setSelectedGLevel(gLevel)
                                         setSelectedQuarter(assessment.quarter)
                                         setSelectedSubjectId(assessment.subjectId)
                                         setDialogOpen(false)}} 

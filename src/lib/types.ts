@@ -84,7 +84,7 @@ interface ClassessWithTeacherSubSched extends Doc<'classes'> {
     teacher: Doc<'users'> | null,
     subject: Doc<'subjects'> | null
     schedules: Doc<'schedules'>[]
-}
+} 
 export interface SectionWithGradeLevel extends Doc<'sections'> {
     gradeLevel: Doc<'gradeLevels'> | null
 }

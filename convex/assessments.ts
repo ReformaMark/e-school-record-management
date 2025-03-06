@@ -70,7 +70,7 @@ export const getAssessmentsBySubject = query({
 export const addWrittenWorks = mutation({
     args:{
         type: v.string(), // ww, pp, qe
-        gradeLevel: v.number(),
+        gradeLevel: v.string(),
         quarter: v.string(), 
         semester: v.optional(v.string()), // for senior high
         assessmentNo: v.number(),
@@ -85,19 +85,21 @@ export const addWrittenWorks = mutation({
         if(!teacherId){
             throw new ConvexError('No teacher Id.')
         }
+
+        const NumberGlevel = Number(args.gradeLevel = args.gradeLevel.replace('Grade ', ''));
        
         if(args.type === 'Quarterly Assessment'){
             const quarterLyAssemessments = await ctx.db.query('assessments')
             .filter(q => q.eq(q.field('type'), args.type))
             .filter(q => q.eq(q.field('quarter'), args.quarter))
-            .filter(q => q.eq(q.field('gradeLevel'), args.gradeLevel))
+            .filter(q => q.eq(q.field('gradeLevel'),NumberGlevel))
             .filter(q => q.eq(q.field('subjectId'), args.subjectId))
             .collect()
             if(args.subComponent){
                 const hasQA = await ctx.db.query('assessments')
                 .filter(q => q.eq(q.field('type'), args.type))
                 .filter(q => q.eq(q.field('quarter'), args.quarter))
-                .filter(q => q.eq(q.field('gradeLevel'), args.gradeLevel))
+                .filter(q => q.eq(q.field('gradeLevel'), NumberGlevel))
                 .filter(q => q.eq(q.field('subjectId'), args.subjectId))
                 .filter(q => q.eq(q.field('subComponent'), args.subComponent))
                 .unique()
@@ -108,7 +110,7 @@ export const addWrittenWorks = mutation({
                     const assessment = await ctx.db.insert('assessments', {
                         type: args.type,
                         teacherId: teacherId,
-                        gradeLevel: args.gradeLevel,
+                        gradeLevel: NumberGlevel,
                         semester: args.semester,
                         assessmentNo: args.assessmentNo,
                         highestScore: args.highestScore,
@@ -127,7 +129,7 @@ export const addWrittenWorks = mutation({
                     const assessment = await ctx.db.insert('assessments', {
                         type: args.type,
                         teacherId: teacherId,
-                        gradeLevel: args.gradeLevel,
+                        gradeLevel: NumberGlevel,
                         semester: args.semester,
                         assessmentNo: args.assessmentNo,
                         highestScore: args.highestScore,
@@ -144,7 +146,7 @@ export const addWrittenWorks = mutation({
             const assessment = await ctx.db.insert('assessments', {
                 type: args.type,
                 teacherId: teacherId,
-                gradeLevel: args.gradeLevel,
+                gradeLevel: NumberGlevel,
                 semester: args.semester,
                 assessmentNo: args.assessmentNo,
                 highestScore: args.highestScore,

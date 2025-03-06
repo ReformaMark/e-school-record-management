@@ -111,7 +111,7 @@ export const AssessmentForm = ({
         toast.promise(
           addWrittenWorks({
             type: assessmment,
-            gradeLevel: Number(data.gradeLevel),
+            gradeLevel: data.gradeLevel,
             quarter: data.quarter,
             semester: data.semester, // for senior high
             assessmentNo: data.assessmentNo, 
@@ -127,7 +127,7 @@ export const AssessmentForm = ({
             if(data.createClassRecords === 'yes') {
                 try {
                     await createClassRecords({
-                        gradeLevel: Number(data.gradeLevel),
+                        gradeLevel: Number(data.gradeLevel.replace('Grade ', '')),
                         subjectId: data.subject as Id<"subjects">,
                         quarter: data.quarter,
                         assessmentNo: data.assessmentNo,
