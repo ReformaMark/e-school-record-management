@@ -138,7 +138,7 @@ export const getStudentByTeacher = query({
     }
 
     const gradelevel = await ctx.db.get(section.gradeLevelId)
-    const level = Number(gradelevel?.level ?? 0)
+    const level = Number(gradelevel?.level.replace("Grade", "") ?? 0)
     const isSHS = level > 10
 
 

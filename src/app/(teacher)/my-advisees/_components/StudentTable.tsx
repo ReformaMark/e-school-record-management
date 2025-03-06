@@ -31,6 +31,10 @@ export const StudentTable = () =>{
         sy: selectedSY,
         sem: selectedSem
     })
+
+    console.log(selectedSY)
+    console.log(selectedSem)
+    console.log(students)
     const section = useQuery(api.sections.getSectionsByTeacher, {
         sy: latestSY
     })
