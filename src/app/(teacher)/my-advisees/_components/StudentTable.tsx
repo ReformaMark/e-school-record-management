@@ -37,7 +37,7 @@ export const StudentTable = () =>{
 
     const gradeLevel = section?.gradeLevel?.level
 
-    const isSHS = Number(gradeLevel) > 10
+    const isSHS = gradeLevel === "Grade 11" || gradeLevel === "Grade 12"
    
     useEffect(() => {
         if (latestSY) {
