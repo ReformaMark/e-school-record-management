@@ -15,7 +15,7 @@ function NeedsImprovement({
     cls: ClassesWithDetails
 }) {
     const studentNeedsIntervention = useQuery(api.quarterlyGrades.needIntervention, {
-        gradeLevel: Number(section?.gradeLevel?.level),
+        gradeLevel: Number(section?.gradeLevel?.level.replace("Grade", "")),
         classId: cls._id,
         needsIntervention: true
     })
