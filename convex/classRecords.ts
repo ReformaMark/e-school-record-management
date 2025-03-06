@@ -35,6 +35,7 @@ export const create = mutation({
             if(!section) return
             const students = args.semester ? args.semester === "1st" ? section.firstSemStudents : section.secondSemStudents :section.students;
            
+            console.log(students)
             await asyncMap(students, async(studentId) =>{
                 let hasExistingCR
                 if(args.subComponent){

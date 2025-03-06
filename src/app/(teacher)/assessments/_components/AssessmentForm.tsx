@@ -125,6 +125,7 @@ export const AssessmentForm = ({
             loading: "Adding new assessment...",
             success: async (assessmentId) => {
             if(data.createClassRecords === 'yes') {
+            console.log("creating classrecord")
                 try {
                     await createClassRecords({
                         gradeLevel: Number(data.gradeLevel.replace('Grade ', '')),
@@ -204,7 +205,7 @@ export const AssessmentForm = ({
                                                         </SelectTrigger>
                                                         <SelectContent>
                                                             {gradelevels.map((level) => (
-                                                                <SelectItem key={level} value={level.toString()}>{level}</SelectItem>
+                                                                <SelectItem key={level} value={level}>{level}</SelectItem>
                                                             ))}
                                                         </SelectContent>
                                                     </Select>
@@ -214,7 +215,7 @@ export const AssessmentForm = ({
                                             )}
                                         />
                                     </div>
-                                    {Number(selectedGLevel) > 10 && (
+                                    {(selectedGLevel === "Grade 11" || selectedGLevel === "Grade 12") && (
                                          <div className="grid gap-2">
                                          <FormField
                                              name="semester"
@@ -261,7 +262,7 @@ export const AssessmentForm = ({
                                                             <SelectValue placeholder="Select a Quarter" />
                                                         </SelectTrigger>
                                                         <SelectContent>
-                                                        {Number(selectedGLevel) > 10 ? semester === "2nd" ? (
+                                                        {(selectedGLevel === "Grade 11" || selectedGLevel === "Grade 12") ? semester === "2nd" ? (
                                                             <>
                                                                 <SelectItem  value={"3rd"}>3rd</SelectItem>
                                                                 <SelectItem  value={"4th"}>4th</SelectItem>
