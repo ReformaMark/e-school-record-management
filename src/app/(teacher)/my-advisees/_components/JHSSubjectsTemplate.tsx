@@ -15,7 +15,7 @@ interface JHSSubjectsTemplateProps {
     sf10?: boolean
 }
 function JHSSubjectsTemplate( {finalGrades, level, sf10}:JHSSubjectsTemplateProps) {
-    const filteredFinalGrade = finalGrades?.find(fg => fg.section.gradeLevel?.level === level)
+    const filteredFinalGrade = finalGrades?.find(fg => fg.section.gradeLevel?.level === `Grade ${level}`)
     const schoolYear = filteredFinalGrade ?` ${new Date(filteredFinalGrade.schoolYear.startDate).getFullYear()}-${new Date(filteredFinalGrade.schoolYear.endDate).getFullYear()}` : null
    
     const advisorName = filteredFinalGrade ? `${filteredFinalGrade.advisor.firstName} ${filteredFinalGrade.advisor.middleName} ${filteredFinalGrade.advisor.lastName}` : ""
@@ -25,6 +25,7 @@ function JHSSubjectsTemplate( {finalGrades, level, sf10}:JHSSubjectsTemplateProp
         studentId: filteredFinalGrade?.studentId,
         sectionId: filteredFinalGrade?.sectionId
     })
+
 
     const english = filteredFinalGrade?.quarterlyGrades.filter(s => s.subject.name.toLowerCase() === "english")
     const mathematics = filteredFinalGrade?.quarterlyGrades.filter(s => s.subject.name.toLowerCase() === "mathematics")

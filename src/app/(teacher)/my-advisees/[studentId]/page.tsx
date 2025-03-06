@@ -122,7 +122,7 @@ function Student({
                 </TabsList>
                 {/* Grades Content */}
                 
-                {student?.sectionDoc.gradeLevel.level === "11" ||student?.sectionDoc.gradeLevel.level === "12" ? (
+                {student?.sectionDoc.gradeLevel.level === "Grade 11" || student?.sectionDoc.gradeLevel.level === "Grade 12" ? (
                     <TabsContent value="grades" className='text-xs md:text-sm w-full gap-x-10'>
                         <Tabs defaultValue="1st">
                             <TabsList>

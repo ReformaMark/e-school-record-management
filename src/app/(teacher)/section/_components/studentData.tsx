@@ -877,7 +877,7 @@ export const studentMasterList: ColumnDef<StudentsWithEnrollMentTypes>[] = [
     header: "Enrollment Date",
     accessorKey: "dateEnrolled",
     cell: ({ row }) => {
-      const enrollmentDate = row.original.enrollment.dateEnrolled
+      const enrollmentDate = row.original.enrollment?.dateEnrolled
 
       return (
         <h1>{enrollmentDate ? enrollmentDate : ""}</h1>

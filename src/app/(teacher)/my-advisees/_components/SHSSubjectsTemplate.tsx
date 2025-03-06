@@ -9,7 +9,7 @@ interface SHSSubjectsTemplateProps {
     sem?: '1st' | '2nd' | '3rd' | '4th'
 }
 export default function SHSSubjectsTemplate({finalGrades, level, sem}: SHSSubjectsTemplateProps) { 
-    const filteredFinalGrade = finalGrades?.find(fg => fg.section.gradeLevel?.level === level && fg.semester === sem)
+    const filteredFinalGrade = finalGrades?.find(fg => fg.section.gradeLevel?.level === `Grade ${level}` && fg.semester === sem)
     const schoolYear = filteredFinalGrade ?` ${new Date(filteredFinalGrade.schoolYear.startDate).getFullYear()}-${new Date(filteredFinalGrade.schoolYear.endDate).getFullYear()}` : null
     const semester = filteredFinalGrade ? filteredFinalGrade.semester  : null
     const section =  filteredFinalGrade ? filteredFinalGrade.section.name  : null

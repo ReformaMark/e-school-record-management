@@ -44,7 +44,7 @@ function SF10Template({student,isOpen,setIsOpen}: SF10TemplateProps) {
     const schoolId = shsEnrollments?.elegibilityForEnrollment?.schoolId
  
     const gradeLevel = student.sectionDoc?.gradeLevel?.level
-    const isSHS = gradeLevel === "11" || gradeLevel === "12" 
+    const isSHS = gradeLevel === "Grade 11" || gradeLevel === "Grade 12" 
   const reactToPrintContent = () => {
     return componentRef.current;
   };

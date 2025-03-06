@@ -255,6 +255,8 @@ export const getFinalGradesForSF10 = query({
             .filter(q => q.eq(q.field('studentId'), args.studentId))
             .collect()
 
+            console.log(args.studentId)
+
         const studentQuarterlyGrades = await ctx.db.query('quarterlyGrades')
             .filter(q => q.eq(q.field('studentId'), args.studentId))
             .collect()
