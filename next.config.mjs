@@ -13,6 +13,10 @@ const nextConfig = {
             {
                 protocol: 'https',
                 hostname: 'enduring-impala-308.convex.cloud',
+            },
+            {
+                protocol: 'https',
+                hostname: 'sleek-oyster-512.convex.cloud',
             }
         ]
     }

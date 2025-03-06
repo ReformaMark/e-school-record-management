@@ -76,7 +76,7 @@ export const subjectSchema = z.object({
 export type SubjectFormData = z.infer<typeof subjectSchema>;
 
 export const AddSubjectsCard = () => {
-    const [gradeLevel, setGradeLevel] = useState(0)
+    const [gradeLevel, setGradeLevel] = useState<string>("Grade 7")
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm<SubjectFormData>({
         resolver: zodResolver(subjectSchema),
         // defaultValues: {
@@ -93,7 +93,8 @@ export const AddSubjectsCard = () => {
         "Edukasyon sa Pagpapakatao",
         "MAPEH",
         "Edukasyong Pantahanan at Pangkabuhayan",
-        "Technology and Livelihood Education (TLE)"
+        "Technology and Livelihood Education (TLE)",
+        "Computer Programming"
     ];
 
     const { mutate: createSubject, isPending } = useMutation({
@@ -106,12 +107,13 @@ export const AddSubjectsCard = () => {
         }
     });
 
-    const sortGradeLevels = gradeLevels?.sort((a,b) => Number(a.level) - Number(b.level))
+    const sortGradeLevels = gradeLevels?.sort((a, b) => Number(a.level) - Number(b.level))
 
     const findGradeLevel = () => {
         const gradeLevel = gradeLevels?.find(level => level._id === getValues('gradeLevelId'));
-        return gradeLevel ? Number(gradeLevel.level) : 0;
+        return gradeLevel?.level || "Grade 7"
     };
+
     // const isMapeh = watch("isMapeh");
 
     // const handleMapehChange = (checked: boolean) => {
@@ -136,7 +138,8 @@ export const AddSubjectsCard = () => {
         });
     };
 
-    const isShs = gradeLevel > 10
+    const isShs = gradeLevel === "Grade 11" || gradeLevel === "Grade 12";
+
     // const components = ["music", "arts", "pe", "health"] as const;
 
     return (
@@ -150,9 +153,9 @@ export const AddSubjectsCard = () => {
                     <div className="space-y-2">
                         <Label>Grade Level</Label>
                         <Select onValueChange={(value) => {
-                            setValue("gradeLevelId", value)      
-                            setGradeLevel(findGradeLevel())          
-                            }}>
+                            setValue("gradeLevelId", value)
+                            setGradeLevel(findGradeLevel())
+                        }}>
                             <SelectTrigger>
                                 <SelectValue placeholder="Select Grade Level" />
                             </SelectTrigger>
@@ -173,39 +176,39 @@ export const AddSubjectsCard = () => {
                     </div>
                     {isShs ? (
                         <div className="space-y-2">
-                         <Label>Subject Name</Label>
-                         <Input {...register("name")} />
-                         {errors.name && (
-                             <p className="text-sm text-red-500">{errors.name.message}</p>
-                         )}
+                            <Label>Subject Name</Label>
+                            <Input {...register("name")} />
+                            {errors.name && (
+                                <p className="text-sm text-red-500">{errors.name.message}</p>
+                            )}
                         </div>
-                    ): (
+                    ) : (
                         // to ensure the format of subject names
                         <div className="space-y-2">
-                        <Label>Subject Name</Label>
-                        <Select onValueChange={(value) => {
-                            setValue("name", value)                
+                            <Label>Subject Name</Label>
+                            <Select onValueChange={(value) => {
+                                setValue("name", value)
                             }}>
-                            <SelectTrigger>
-                                <SelectValue placeholder="Select Subect" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {subjects?.map((subect) => (
-                                    <SelectItem
-                                        key={subect}
-                                        value={subect}
-                                    >
-                                        {subect}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                        {errors.name && (
-                            <p className="text-sm text-red-500">{errors.name.message}</p>
-                        )}
-                    </div>
-                    ) }
-                   
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Select Subect" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {subjects?.map((subect) => (
+                                        <SelectItem
+                                            key={subect}
+                                            value={subect}
+                                        >
+                                            {subect}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                            {errors.name && (
+                                <p className="text-sm text-red-500">{errors.name.message}</p>
+                            )}
+                        </div>
+                    )}
+
 
                     <div className="space-y-2">
                         <Label>Subject Code</Label>
@@ -215,7 +218,7 @@ export const AddSubjectsCard = () => {
                         )}
                     </div>
 
-                  
+
 
                     <div className="space-y-2">
                         <Label>Category</Label>
