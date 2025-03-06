@@ -15,7 +15,7 @@ function MapehQuarterlyGradesTab({
     }) {
         
         const studentQuarterlyGrades = useQuery(api.quarterlyGrades.get,{
-            gradeLevel: Number(cls?.section?.gradeLevel?.level),
+            gradeLevel: Number(cls?.section?.gradeLevel?.level.replace("Grade", "")),
             classId: cls._id
         })
  

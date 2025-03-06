@@ -18,10 +18,12 @@ function QuarterlyGradesTemplate({
     cls: ClassesWithDetails
    }) {
     const studentQuarterlyGrades = useQuery(api.quarterlyGrades.get,{
-        gradeLevel: Number(section?.gradeLevel?.level),
+        gradeLevel: Number(section.gradeLevel?.level.replace("Grade", "")),
         classId: cls._id,
         needsIntervention: true
     })
+
+    console.log(studentQuarterlyGrades)
     const schoolYear =  cls.schoolYear?.sy
     const subjectName = cls.subject?.name
     const males = studentQuarterlyGrades

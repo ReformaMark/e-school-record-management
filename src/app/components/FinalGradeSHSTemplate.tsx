@@ -24,7 +24,7 @@ function FinalGradeSHSTemplate({
     const semester = cls.semester
 
     const studentQuarterlyGrades = useQuery(api.quarterlyGrades.get,{
-        gradeLevel: Number(section.gradeLevel?.level),
+        gradeLevel: Number(section.gradeLevel?.level.replace("Grade", "")),
         classId: cls._id,
         semester: semester
     })
@@ -32,7 +32,8 @@ function FinalGradeSHSTemplate({
     const males = studentQuarterlyGrades
     ?.filter(student => student?.sex?.toLowerCase() === 'male')
     .sort((a, b) => (a?.lastName && b?.lastName ? a.lastName.localeCompare(b.lastName) : 0));
-  
+    
+    console.log(males)
   const females = studentQuarterlyGrades
     ?.filter(student => student?.sex?.toLowerCase() === 'female')
     .sort((a, b) => (a?.lastName && b?.lastName ? a.lastName.localeCompare(b.lastName) : 0));

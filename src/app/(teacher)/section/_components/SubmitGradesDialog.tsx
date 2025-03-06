@@ -60,7 +60,7 @@ function SubmitGradesDialog({isSGOpen, setIsSGOpen ,studentsWithDetails, subject
   function handleSubmit (){
     toast.promise(submitQuarterlyGrade({
       studentId: studentsWithDetails._id,
-      gradeLevel: Number(section?.gradeLevel?.level),
+      gradeLevel: Number(section?.gradeLevel?.level.replace("Grade", "")),
       classId: classRecord.classId,
       quarter: classRecord.quarter,
       quarterlyGrade: transmutedGrade, // score

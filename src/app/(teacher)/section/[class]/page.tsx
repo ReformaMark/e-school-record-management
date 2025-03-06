@@ -109,7 +109,7 @@ function Section({params}:{params: {class: string}}) {
 
           {/* Grade summary */}
           <TabsContent value="grades-summary" className='min-h-screen border-2 p-5 '>
-            {cls && Number(cls.section?.gradeLevel?.level) === 11 || Number(cls?.section?.gradeLevel?.level) === 12 ? (
+            {cls && cls.section?.gradeLevel?.level === "Grade 11" || cls?.section?.gradeLevel?.level === "Grade 12" ? (
               <FinalGradeSHSTemplate cls={cls as ClassesWithDetails} section={cls?.section as SectionWithGradeLevel} subject={cls?.subject as Doc<'subjects'>}/>
             ) : cls && cls.section !== null && cls.subject?.name?.toUpperCase() !== "MAPEH" ? (
               <QuarterlyGradesTemplate cls={cls as ClassesWithDetails} section={cls.section}/>
