@@ -863,7 +863,7 @@ function EnrollmentForm({onClose}: {onClose: () => void}) {
                                 control={form.control}
                                 render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Street/Subd.</FormLabel>
+                                    <FormLabel>House No.</FormLabel>
                                     <FormControl>
                                     <Input 
                                         placeholder="Enter your house number" 

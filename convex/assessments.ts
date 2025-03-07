@@ -178,7 +178,7 @@ export const getTheHighestAssessmentNo = query({
 
         if(args.subComponent){
             const assessment = await ctx.db.query('assessments')
-            .filter(q => q.eq(q.field('gradeLevel'), Number(args.gradeLevel)))
+            .filter(q => q.eq(q.field('gradeLevel'), Number(args.gradeLevel?.replace('Grade ', ''))))
             .filter(q => q.eq(q.field('subjectId'), args.subjectId))
             .filter(q => q.eq(q.field('type'), args.type))
             .filter(q => q.eq(q.field('teacherId'), teacherId))
@@ -193,7 +193,7 @@ export const getTheHighestAssessmentNo = query({
         } else {
             if(args.semester) {
                 const assessment = await ctx.db.query('assessments')
-                .filter(q => q.eq(q.field('gradeLevel'), Number(args.gradeLevel)))
+                .filter(q => q.eq(q.field('gradeLevel'), Number(args.gradeLevel?.replace('Grade ', ''))))
                 .filter(q => q.eq(q.field('subjectId'), args.subjectId))
                 .filter(q => q.eq(q.field('type'), args.type))
                 .filter(q => q.eq(q.field('teacherId'), teacherId))
@@ -207,7 +207,7 @@ export const getTheHighestAssessmentNo = query({
                 }
             }
             const assessment = await ctx.db.query('assessments')
-            .filter(q => q.eq(q.field('gradeLevel'), Number(args.gradeLevel)))
+            .filter(q => q.eq(q.field('gradeLevel'), Number(args.gradeLevel?.replace('Grade ', ''))))
             .filter(q => q.eq(q.field('subjectId'), args.subjectId))
             .filter(q => q.eq(q.field('type'), args.type))
             .filter(q => q.eq(q.field('teacherId'), teacherId))
@@ -219,8 +219,6 @@ export const getTheHighestAssessmentNo = query({
                 assessments: filteredAssessment
             }
         }
-       
-      
     }
 });
 

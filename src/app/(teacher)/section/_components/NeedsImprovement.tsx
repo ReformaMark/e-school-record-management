@@ -1,11 +1,12 @@
 'use client'
-import React from 'react'
+import React, { useState } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { DataTable } from '@/components/data-table'
 import { forImprovementsColumns } from './studentData'
 import { useQuery } from 'convex/react'
 import { api } from '../../../../../convex/_generated/api'
 import { ClassesWithDetails, SectionWithGradeLevel, StudentsWithQuarterlyGrades } from '@/lib/types'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 function NeedsImprovement({
     section,
@@ -14,6 +15,8 @@ function NeedsImprovement({
     section: SectionWithGradeLevel
     cls: ClassesWithDetails
 }) {
+    const [selectedSubComponent ,setSelectedSubComponent] = useState<string>("Music")
+    const isMapeh = cls.subject?.name.toLocaleUpperCase() === 'MAPEH'
     const studentNeedsIntervention = useQuery(api.quarterlyGrades.needIntervention, {
         gradeLevel: Number(section?.gradeLevel?.level.replace("Grade", "")),
         classId: cls._id,
@@ -25,14 +28,22 @@ function NeedsImprovement({
         studentNeedsIntervention: StudentsWithQuarterlyGrades[]
       ) => {
         const filteredGrades = studentNeedsIntervention.map((student) => {
+            if(isMapeh){
+                const quarterlyGrade = student.quarterlyGrades.find(grade => grade.quarter === quarter && grade.subComponent === selectedSubComponent)
+                if(quarterlyGrade === undefined) return null
 
-            const quarterlyGrade = student.quarterlyGrades.find(grade => grade.quarter === quarter)
+                return {
+                    ...student,
+                    quarterlyGrade: quarterlyGrade
+                }
+            } else {
+                const quarterlyGrade = student.quarterlyGrades.find(grade => grade.quarter === quarter)
+                if(quarterlyGrade === undefined) return null
 
-            if(quarterlyGrade === undefined) return null
-
-            return {
-                ...student,
-                quarterlyGrade: quarterlyGrade
+                return {
+                    ...student,
+                    quarterlyGrade: quarterlyGrade
+                }
             }
         });
 
@@ -49,26 +60,30 @@ function NeedsImprovement({
   return (
     <div>
         <Tabs defaultValue={semester ? semester === "2nd" ? "3rd" : "1st" : "1st"} className='w-full'>
-            <TabsList  className='space-x-3 bg-transparent'>
-            {semester ? semester === "1st" ? (
-                <>
-                  <TabsTrigger value='1st'  className='font-medium text-xs md:text-md shadow-md border-b-2 data-[state=active]:border-b-primary data-[state=active]:text-primary' >1st</TabsTrigger>
-                  <TabsTrigger value='2nd' className='font-medium text-xs md:text-md shadow-md border-b-2 data-[state=active]:border-b-primary data-[state=active]:text-primary' >2nd</TabsTrigger>  
-                </>
-            ): (
-                <>
-                <TabsTrigger value='3rd' className='font-medium text-xs md:text-md shadow-md border-b-2 data-[state=active]:border-b-primary data-[state=active]:text-primary' >3rd</TabsTrigger>
-                <TabsTrigger value='4th' className='font-medium text-xs md:text-md shadow-md border-b-2 data-[state=active]:border-b-primary data-[state=active]:text-primary' >4th</TabsTrigger>
-                </>
-            ): (
-                <>
+            <div className="flex justify-between ">
+               
+                <TabsList  className='space-x-3 bg-transparent '>
+                {semester ? semester === "1st" ? (
+                    <>
                     <TabsTrigger value='1st'  className='font-medium text-xs md:text-md shadow-md border-b-2 data-[state=active]:border-b-primary data-[state=active]:text-primary' >1st</TabsTrigger>
-                    <TabsTrigger value='2nd' className='font-medium text-xs md:text-md shadow-md border-b-2 data-[state=active]:border-b-primary data-[state=active]:text-primary' >2nd</TabsTrigger>
+                    <TabsTrigger value='2nd' className='font-medium text-xs md:text-md shadow-md border-b-2 data-[state=active]:border-b-primary data-[state=active]:text-primary' >2nd</TabsTrigger>  
+                    </>
+                ): (
+                    <>
                     <TabsTrigger value='3rd' className='font-medium text-xs md:text-md shadow-md border-b-2 data-[state=active]:border-b-primary data-[state=active]:text-primary' >3rd</TabsTrigger>
                     <TabsTrigger value='4th' className='font-medium text-xs md:text-md shadow-md border-b-2 data-[state=active]:border-b-primary data-[state=active]:text-primary' >4th</TabsTrigger>
-                </>
-            )}
-            </TabsList>
+                    </>
+                ): (
+                    <>
+                        <TabsTrigger value='1st'  className='font-medium text-xs md:text-md shadow-md border-b-2 data-[state=active]:border-b-primary data-[state=active]:text-primary' >1st</TabsTrigger>
+                        <TabsTrigger value='2nd' className='font-medium text-xs md:text-md shadow-md border-b-2 data-[state=active]:border-b-primary data-[state=active]:text-primary' >2nd</TabsTrigger>
+                        <TabsTrigger value='3rd' className='font-medium text-xs md:text-md shadow-md border-b-2 data-[state=active]:border-b-primary data-[state=active]:text-primary' >3rd</TabsTrigger>
+                        <TabsTrigger value='4th' className='font-medium text-xs md:text-md shadow-md border-b-2 data-[state=active]:border-b-primary data-[state=active]:text-primary' >4th</TabsTrigger>
+                    </>
+                )}
+                </TabsList>
+                {isMapeh && <SelectMapeh setSelectedSubComponent={setSelectedSubComponent} />}
+            </div>
             <TabsContent value="1st">
                 <DataTable
                 
@@ -108,3 +123,25 @@ function NeedsImprovement({
 }
 
 export default NeedsImprovement
+
+
+const SelectMapeh = ({setSelectedSubComponent}:{
+    
+    setSelectedSubComponent: (value: string) => void;
+}) =>{
+    return(
+        <div className="col-span-1">
+            <Select defaultValue={'Music'} onValueChange={(value)=>{setSelectedSubComponent(value)}}>
+                <SelectTrigger className='w-40'>
+                    <SelectValue placeholder="Select component" />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectItem value="Music">Music</SelectItem>
+                    <SelectItem value="Arts">Arts</SelectItem>
+                    <SelectItem value="Physical Education">Physical Education</SelectItem>
+                    <SelectItem value="Health">Health</SelectItem>
+                </SelectContent>
+            </Select>
+        </div>
+    )
+}
