@@ -1,4 +1,3 @@
-import { AddScheduleCard } from "./_components/add-schedule-card";
 import { ScheduleCardTable } from "./_components/schedule-card-table";
 
 
