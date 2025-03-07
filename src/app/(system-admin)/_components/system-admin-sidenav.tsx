@@ -82,10 +82,10 @@ export const SystemAdminSidenav = () => {
                     </Link>
 
                     <Link
-                        href="/sysadmin-school-schedule"
-                        className={`${pathname === '/sysadmin-school-schedule' ? "bg-background/50 text-white" : "bg-transparent"} text-white flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}
+                        href="/sysadmin-grade-levels"
+                        className={`${pathname === '/sysadmin-grade-levels' ? "bg-background/50 text-white" : "bg-transparent"} text-white flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}
                     >
-                        Schedules
+                        Grade Levels
                     </Link>
 
                     <Link
@@ -94,22 +94,6 @@ export const SystemAdminSidenav = () => {
                     >
                         Classrooms
                     </Link>
-
-                    <Link
-                        href="/sysadmin-sections"
-                        className={`${pathname === '/sysadmin-sections' ? "bg-background/50 text-white" : "bg-transparent"} text-white flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}
-                    >
-                        Sections
-                    </Link>
-
-                    <Link
-                        href="/sysadmin-grade-levels"
-                        className={`${pathname === '/sysadmin-grade-levels' ? "bg-background/50 text-white" : "bg-transparent"} text-white flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}
-                    >
-                        Grade Levels
-                    </Link>
-
-
 
                     {/* <Link
                         href="/sysadmin-time-period"
@@ -123,6 +107,20 @@ export const SystemAdminSidenav = () => {
                         className={`${pathname === '/sysadmin-subjects' ? "bg-background/50 text-white" : "bg-transparent"} text-white flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}
                     >
                         Subjects
+                    </Link>
+
+                    <Link
+                        href="/sysadmin-sections"
+                        className={`${pathname === '/sysadmin-sections' ? "bg-background/50 text-white" : "bg-transparent"} text-white flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}
+                    >
+                        Sections
+                    </Link>
+
+                    <Link
+                        href="/sysadmin-school-schedule"
+                        className={`${pathname === '/sysadmin-school-schedule' ? "bg-background/50 text-white" : "bg-transparent"} text-white flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}
+                    >
+                        Schedules
                     </Link>
 
                     <Link
