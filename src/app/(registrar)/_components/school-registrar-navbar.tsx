@@ -23,7 +23,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { BiLogOut } from 'react-icons/bi';
 import { GiHamburgerMenu } from 'react-icons/gi';
-import { MdOutlineDashboard, MdOutlineReport } from 'react-icons/md';
+import { MdOutlineDashboard } from 'react-icons/md';
 import { PiStudent } from 'react-icons/pi';
 
 export const SchoolRegistrarNavbar = () => {
@@ -107,10 +107,10 @@ export const SchoolRegistrarNavbar = () => {
                                     <h1 className='tracking-wider'>Students</h1>
                                 </Link>
 
-                                <Link href={'/sr-documents'} className={`${pathname === '/sr-documents' ? "bg-background/50 text-white" : "bg-transparent"} text-white flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}>
+                                {/* <Link href={'/sr-documents'} className={`${pathname === '/sr-documents' ? "bg-background/50 text-white" : "bg-transparent"} text-white flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}>
                                     <MdOutlineReport className='size-5 w-10' />
                                     <h1 className='tracking-wider'>Documents</h1>
-                                </Link>
+                                </Link> */}
                             </div>
 
                             <SheetFooter className='mt-auto flex flex-row items-center'>
