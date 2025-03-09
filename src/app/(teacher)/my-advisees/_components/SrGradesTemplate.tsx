@@ -82,7 +82,7 @@ function SrGradesTemplate({
             </div>
         </div>
         {coreSubjects && coreSubjects.map((clss)=>(
-            <div key={clss._id} className={`max-w-full flex ${sf9 ? 'text-[0.6rem]' : 'text-lg'} border border-black`}>
+            <div key={clss._id} className={`max-w-full flex ${sf9 ? 'text-[0.6rem] leading-[0.65rem]' : 'text-lg'} border border-black`}>
                 <div className="w-[60%] font-bold flex items-center justify-start py-1 px-2 border-r-black border-r">
                     <h1>{clss.subject.name}</h1>
                 </div>

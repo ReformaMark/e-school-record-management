@@ -143,7 +143,7 @@ function SF10Template({student,isOpen,setIsOpen}: SF10TemplateProps) {
                                 <Checkbox 
                                     id="highSchoolCompleter" 
                                     className='rounded-none border-black border size-4 ml-0 ' 
-                                    checked={hsCompleter ? hsCompleter.completer === true ? true : false  : false}
+                                
                                                                 />
                                 <Label htmlFor="highSchoolCompleter" className='ml-[-15px] text-[0.6rem]'>High School Completer*</Label>
 
@@ -154,7 +154,8 @@ function SF10Template({student,isOpen,setIsOpen}: SF10TemplateProps) {
                                 <Checkbox 
                                     id="juniorHighSchoolCompleter" 
                                     className='rounded-none checked:bg-transparent bg-transparent' 
-                                    checked={jhsCompleter ? jhsCompleter.completer === true ? true : false : false}
+                                    disabled={false}
+                                   
                                     />
                                 <Label htmlFor="juniorHighSchoolCompleter" className='ml-[-15px] text-[0.6rem]'>Junior High School Completer*</Label>
 
@@ -167,7 +168,7 @@ function SF10Template({student,isOpen,setIsOpen}: SF10TemplateProps) {
                                 <Checkbox 
                                     id="elemSchoolCompleter" 
                                     className='rounded-none border-black border size-4 ml-0 ' 
-                                    checked={esCompleter ? esCompleter.completer === true ? true : false  : false}
+                                   
                                 />
                                 <Label htmlFor="elemSchoolCompleter" className='ml-[-15px] text-[0.6rem]'>Elementary School Completer*</Label>
 
@@ -201,7 +202,7 @@ function SF10Template({student,isOpen,setIsOpen}: SF10TemplateProps) {
                             <Checkbox 
                                 id="peptPasser" 
                                 className='rounded-none ml-0 ' 
-                                checked={peptPasser ? peptPasser.passer === true ? true : false : false}
+                               
                                 />
                             <Label htmlFor="peptPasser" className='ml-[-15px] text-[0.6rem]'>PEPT Passer*</Label>
 
@@ -211,7 +212,7 @@ function SF10Template({student,isOpen,setIsOpen}: SF10TemplateProps) {
                             <Checkbox 
                                 id="alsAEPasser" 
                                 className='rounded-none ml-0 ' 
-                                checked={alsPasser ? alsPasser.passer === true ? true : false : false}
+                         
                                 />
                             <Label htmlFor="alsAEPasser" className='ml-[-15px] text-[0.6rem]'>ALS A&E Passer*</Label>
 
@@ -222,7 +223,7 @@ function SF10Template({student,isOpen,setIsOpen}: SF10TemplateProps) {
                             <Checkbox
                                     id="others" 
                                     className='rounded-none ml-0' 
-                                    checked={others ? others.description ? true : false : false}
+                                  
                                 />
                                 <Label htmlFor="others" className='ml-[-15px] text-[0.6rem]'>Others*</Label>
                             </div>

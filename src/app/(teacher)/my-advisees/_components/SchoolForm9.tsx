@@ -68,11 +68,12 @@ function SchoolForm9({
                       {isSHS ? (
                       
                         <>
-                        <h1 className='text-center text-[0.6rem] font-semibold'>LEARNER&apos;S PROGRESS REPORT CARD</h1>
                         <div className="mb-3">
+                          <h1 className='text-center text-xs'>REPORT ON LEARNING PROGRESS AND ACHIEVEMENT</h1>
                           <SrGradesTemplate student={student} sem='1st' sf9={true}/>
                         </div>
                         <div className="">
+                          <h1 className='text-center text-xs'>REPORT ON LEARNING PROGRESS AND ACHIEVEMENT</h1>
                           <SrGradesTemplate student={student} sem='2nd' sf9={true}/>
                         </div>
                         </>

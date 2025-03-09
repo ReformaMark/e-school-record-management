@@ -957,21 +957,21 @@ function Values({
             </div>
         </div>
         {isSHS ? (
-        <div className="grid grid-cols-2 border-black border border-b-0">
-            <h1 className='col-span-2 py-1 font-serif text-center  font-semibold border-b-black border-b bg-gray-200'>Observed Values</h1>
-             <div className="flex flex-col justify-start items-center border-r-black border-r">
-                 <h1 className='text-xs text-center font-semibold border-b w-full border-b-black py-1'>Marking</h1>
-                 <h2 className='text-[0.6rem] text-center border-b w-full  border-b-black '>AO</h2>
-                 <h2 className='text-[0.6rem] text-center border-b w-full  border-b-black '>SO</h2>
-                 <h2 className='text-[0.6rem] text-center border-b w-full  border-b-black '>RO</h2>
-                 <h2 className='text-[0.6rem] text-center border-b w-full  border-b-black '>NO</h2>
+        <div className="grid grid-cols-2 mt-5">
+           
+             <div className="flex flex-col justify-start items-center ">
+                 <h1 className='text-xs text-center font-semibold border-b w-full  py-1'>Marking</h1>
+                 <h2 className='text-[0.6rem] text-center w-full  '>AO</h2>
+                 <h2 className='text-[0.6rem] text-center  w-full   '>SO</h2>
+                 <h2 className='text-[0.6rem] text-center  w-full  '>RO</h2>
+                 <h2 className='text-[0.6rem] text-center  w-full  '>NO</h2>
              </div>
              <div className="flex flex-col justify-start items-center ">
-                 <h1 className='text-[0.6rem] text-center font-semibold w-full border-b  border-b-black py-1'>Non-Numerical Rating</h1>
-                 <h2 className='text-[0.6rem] text-center w-full  border-b  border-b-black '>Always observed</h2>
-                 <h2 className='text-[0.6rem] text-center w-full border-b  border-b-black '>Sometimes Observed</h2>
-                 <h2 className='text-[0.6rem] text-center w-full border-b  border-b-black '>Rarely Observed</h2>
-                 <h2 className='text-[0.6rem] text-center w-full border-b  border-b-black '>Not Observed</h2>
+                 <h1 className='text-xs text-center font-semibold w-full  py-1'>Non-Numerical Rating</h1>
+                 <h2 className='text-[0.6rem] text-center w-full  '>Always observed</h2>
+                 <h2 className='text-[0.6rem] text-center w-full  '>Sometimes Observed</h2>
+                 <h2 className='text-[0.6rem] text-center w-full  '>Rarely Observed</h2>
+                 <h2 className='text-[0.6rem] text-center w-full  '>Not Observed</h2>
              </div>
          </div>
         ): (
@@ -994,36 +994,36 @@ function Values({
         )}
       
         {sf9 && isSHS && (
-        <div className="border border-black ">
-            <h1 className='text-center font-semibold font-serif py-1 border-b-black border-b text-xs'>Learner Progress and Achievement</h1>
-            <div className="grid grid-cols-3 font-semibold border-b border-b-black text-center text-[0.6rem]">
+        <div className=" mt-5">
+           
+            <div className="grid grid-cols-3 font-semibold text-center text-xs">
                 <h1 className='py-1'>Descriptors</h1>
-                <h1 className="border-x-black border-x py-1">Grade Scaling</h1>
+                <h1 className=" py-1">Grade Scaling</h1>
                 <h1 className='py-1'>Remarks</h1>
             </div>
-            <div className="grid grid-cols-3 border-b border-b-black text-center text-[0.6rem]">
+            <div className="grid grid-cols-3  text-center text-xs">
                 <h1 className=''>Outstanding</h1>
-                <h1 className="border-x-black border-x ">90-100</h1>
+                <h1 className=" ">90-100</h1>
                 <h1 className=''>Passed</h1>
             </div>
-            <div className="grid grid-cols-3 border-b border-b-black text-center text-[0.6rem]">
+            <div className="grid grid-cols-3  text-center text-xs">
                 <h1 className=''>Very Satisfactory</h1>
-                <h1 className="border-x-black border-x ">85-89</h1>
+                <h1 className=" ">85-89</h1>
                 <h1 className=''>Passed</h1>
             </div>
-            <div className="grid grid-cols-3 border-b border-b-black text-center text-[0.6rem]">
+            <div className="grid grid-cols-3  text-center text-xs">
                 <h1 className=''>Satisfactory</h1>
-                <h1 className="border-x-black border-x ">80-84</h1>
+                <h1 className=" ">80-84</h1>
                 <h1 className=''>Passed</h1>
             </div>
-            <div className="grid grid-cols-3 border-b border-b-black text-center text-[0.6rem]">
+            <div className="grid grid-cols-3  text-center text-xs">
                 <h1 className=''>Fairly Satisfactory</h1>
-                <h1 className="border-x-black border-x ">75-79</h1>
+                <h1 className="">75-79</h1>
                 <h1 className=''>Passed</h1>
             </div>
-            <div className="grid grid-cols-3 border-b border-b-black text-center text-[0.6rem]">
+            <div className="grid grid-cols-3  text-center text-xs">
                 <h1 className=''>Did Not Meet Expect</h1>
-                <h1 className="border-x-black border-x ">Below 76</h1>
+                <h1 className=" ">Below 76</h1>
                 <h1 className=''>Failed</h1>
             </div>
         </div>
