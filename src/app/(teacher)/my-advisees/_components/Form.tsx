@@ -26,6 +26,7 @@ function EnrollmentForm({onClose}: {onClose: () => void}) {
     const [formStep, setFormStep] = useState(0);
     const [isLoading, setIsLoading] = useState(false);
     const [withLrn, setWithLrn] = useState<string>('');
+    const [computedAge, setComputedAge] = useState<number>(0);
     const [sameAsCurrent, setSameAsCurrent] = useState<boolean>(true);
     const createStudent = useMutation(api.students.createStudent)
     const form = useForm<z.infer<typeof EnrollmentFormSchema>>({
@@ -102,6 +103,19 @@ function EnrollmentForm({onClose}: {onClose: () => void}) {
       })
       const { trigger, getValues, setValue, reset }= form
 
+
+    const computeAge = (birthDate: Date | undefined) => {
+        if (!birthDate) return 0;
+        const today = new Date();
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const monthDifference = today.getMonth() - birthDate.getMonth();
+
+        if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < birthDate.getDate())) {
+            age--;
+        }
+
+        return age;
+    };
 
       //Validate the form for each step
       const handleNextClick = async () => {
@@ -544,7 +558,10 @@ function EnrollmentForm({onClose}: {onClose: () => void}) {
                                                 mode="single"
                                                 captionLayout="dropdown-buttons"
                                                 selected={field.value ? new Date(field.value) : undefined}
-                                                onSelect={field.onChange}
+                                                onSelect={(value) => {
+                                                    field.onChange(value)
+                                                    setComputedAge(computeAge(value))
+                                                }}
                                                 fromYear={1960}
                                                 toYear={2030}
                                             />
@@ -615,6 +632,8 @@ function EnrollmentForm({onClose}: {onClose: () => void}) {
                                         {...field} 
                                         name='age'
                                         type='number'
+                                        disabled
+                                        value={computedAge}
                                     />
                                     </FormControl>
                                     <FormMessage/>

@@ -19,6 +19,7 @@ import { Id } from "../../../../../convex/_generated/dataModel";
 import { useEffect, useState } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from "@/components/ui/label";
+import EnrollmentStatus from "./EnrollmentStatus";
 
 export const StudentTable = () =>{
     const sy = useQuery(api.schoolYear.get)
@@ -32,9 +33,6 @@ export const StudentTable = () =>{
         sem: selectedSem
     })
 
-    console.log(selectedSY)
-    console.log(selectedSem)
-    console.log(students)
     const section = useQuery(api.sections.getSectionsByTeacher, {
         sy: latestSY
     })
@@ -156,6 +154,7 @@ export const StudentColumn: ColumnDef<StudentWithSem>[]  = [
             const birthDate = new Date(student.birthDate);
             const isSHS = student.isSHS
             const sem = student.sem
+            const enrollmentStatus = student.enrollmentStatus
             //full address
             const fulladdress = `${student.currentAddress.houseNum ? student.currentAddress.houseNum : ""} ${student.currentAddress.street ? student.currentAddress.street : ""} ${student.currentAddress.barangay ? `${student.currentAddress.barangay},` : ""} ${student.currentAddress.municipality ? `${student.currentAddress.municipality},`: ""} ${student.currentAddress.province ? student.currentAddress.province: ""}`
           return (
@@ -169,8 +168,13 @@ export const StudentColumn: ColumnDef<StudentWithSem>[]  = [
                     </DialogTrigger>
                     <DialogContent className='max-w-6xl max-h-screen overflow-auto text-primary'>
                     <DialogHeader>
-                        <DialogTitle>
-                            Student Profile
+                        <DialogTitle className="flex items-center justify-between">
+                            <div className="">
+                                Student Profile
+                            </div>
+                            <div className="">
+                            <EnrollmentStatus enrollmentStatus={enrollmentStatus as string} student={student} />
+                            </div>
                         </DialogTitle>
                     </DialogHeader>
                     <div className="">
