@@ -291,10 +291,22 @@ export const studentColumns: ColumnDef<StudentTypes>[] = [
             const gradeLevel = row.original
 
             return (
-                <div className="fle flex-col">
-                    <h1>{gradeLevel.fatherFirstName} {gradeLevel.fatherLastName}</h1>
-                    <h1>{gradeLevel.motherFirstName} {gradeLevel.motherLastName}</h1>
-                    <h1>{gradeLevel.guardianFirstName} {gradeLevel.guardianLastName}</h1>
+                <div className="flex flex-col space-y-1">
+                    {
+                        gradeLevel.fatherFirstName && gradeLevel.fatherLastName ? (
+                            <p className="text-sm">{gradeLevel.fatherFirstName} {gradeLevel.fatherLastName}</p>
+                        ) : <p className="text-sm text-muted-foreground">Father: not assigned</p>
+                    }
+                    {
+                        gradeLevel.motherFirstName && gradeLevel.motherLastName ? (
+                            <p className="text-sm">{gradeLevel.motherFirstName} {gradeLevel.motherLastName}</p>
+                        ) : <p className="text-sm text-muted-foreground">Mother: not assigned</p>
+                    }
+                    {
+                        gradeLevel.guardianFirstName && gradeLevel.guardianLastName ? (
+                            <p className="text-sm">{gradeLevel.guardianFirstName} {gradeLevel.guardianLastName}</p>
+                        ) : <p className="text-sm text-muted-foreground">Guardian: not assigned</p>
+                    }
                 </div>
             )
         },
