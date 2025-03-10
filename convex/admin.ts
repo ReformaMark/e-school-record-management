@@ -1,5 +1,6 @@
-import { v } from "convex/values";
+import { ConvexError, v } from "convex/values";
 import { mutation, query } from "./_generated/server";
+import { getAuthUserId } from "@convex-dev/auth/server";
 
 export const fetchAdmins = query({
     args: {},
@@ -50,5 +51,24 @@ export const principal = query({
             .filter((q) => q.eq(q.field("schoolHeadType"), args.type))
             .order("desc")
             .first();
+    }
+})
+
+
+export const removeAdmin = mutation({
+    args: {
+        id: v.id("users")
+    },
+    handler: async (ctx, args) => {
+        // Only admin can remove users
+        const adminId = await getAuthUserId(ctx);
+        if (!adminId) throw new ConvexError("Not authenticated");
+
+        const admin = await ctx.db.get(adminId);
+        if (!admin || admin.role !== "admin") {
+            throw new ConvexError("Unauthorized - Only admins can remove users");
+        }
+
+        return await ctx.db.delete(args.id);
     }
 })
