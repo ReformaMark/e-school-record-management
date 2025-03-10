@@ -24,7 +24,7 @@ const SchoolHeadLayout = ({
                 <html className="h-full" lang="en">
                     <body className="bg-[#E0E7E9] relative">
                         <SchoolHeadGuard>
-                            <Toaster />
+                            <Toaster richColors />
 
                             <SchoolHeadNavbar />
 

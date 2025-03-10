@@ -86,7 +86,9 @@ export const teacherColumns: ColumnDef<Teacher>[] = [
                                 : specialization === "physical-education" ? "Physical Education"
                                     : specialization === "science" ? "Science"
                                         : specialization === "history" ? "History"
-                                            : "No specialization assigned"
+                                            : specialization === "Technology and Livelihood Education" ? "Technology and Livelihood Education"
+                                                : specialization === "Edukasyong Pantahanan at Pangkabuhayan" ? "Edukasyong Pantahanan at Pangkabuhayan"
+                                                    : specialization
                     }
                 </div>
             )
@@ -308,5 +310,13 @@ export const schoolSubjects = [
     {
         value: "physical-education",
         label: "Physical Education",
+    },
+    {
+        value: "Technology and Livelihood Education",
+        label: "Technology and Livelihood Education",
+    },
+    {
+        value: "Edukasyong Pantahanan at Pangkabuhayan",
+        label: "Edukasyong Pantahanan at Pangkabuhayan",
     },
 ] satisfies SchoolSubjects[];
