@@ -22,7 +22,9 @@ import { registrarColumns } from "./_components/registrar-columns";
 
 const SystemAdminRegistrarPage = () => {
     const registrars = useQuery(api.users.fetchRegistrars);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [showActive, setShowActive] = useState(true);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [showInactive, setShowInactive] = useState(true);
 
     const filteredRegistrars = registrars?.filter(registrar => {

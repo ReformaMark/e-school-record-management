@@ -87,6 +87,7 @@ const ActionCell = ({ principal }: { principal: Principal }) => {
 
                 toast.success("Principal has been deleted")
             } catch (error) {
+                console.error(error)
                 toast.error("Failed to delete principal")
             }
         }

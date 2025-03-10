@@ -89,6 +89,7 @@ const ActionCell = ({ admin }: { admin: Admin }) => {
 
                 toast.success(`Successfully deleted ${admin.firstName} ${admin.lastName}`)
             } catch (error) {
+                console.error(error)
                 toast.error("Failed to delete administrator")
             }
         }

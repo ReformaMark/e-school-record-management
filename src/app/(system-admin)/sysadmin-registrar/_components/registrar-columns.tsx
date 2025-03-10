@@ -63,6 +63,7 @@ const ActionCell = ({ registrar }: { registrar: Registrar }) => {
                 })
 
                 toast.success("Registrar deleted successfully!")
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
             } catch (error) {
                 toast.error("Failed to delete registrar")
             }
