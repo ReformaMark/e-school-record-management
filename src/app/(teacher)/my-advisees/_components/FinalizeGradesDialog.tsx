@@ -33,7 +33,7 @@ function FinalizeGradesDialog({student, averages, generalAverage}:FinalizeGrades
         semester: student.cLass?.semester
     })
 
-    const isShs = Number(student.sectionDoc?.gradeLevel?.level ?? 0) > 10
+    const isShs = Number(student.sectionDoc?.gradeLevel?.level.replace("Grade","") ?? 0) > 10
 
     const alreadyPromoted = useMemo(() => isPromoted === undefined ? true : isPromoted.hasPromoted ,[isPromoted])
 
@@ -49,10 +49,13 @@ function FinalizeGradesDialog({student, averages, generalAverage}:FinalizeGrades
             setIsDisabled(true);
             return null;
         }
+        const noEPP = averages.filter(item => item.subjectName != 'Edukasyong Pantahanan at Pangkabuhayan')
 
-        const notAllNumbers = averages.some((item) => typeof item.finalGrade === 'string')
+        const notAllNumbers = noEPP.some((item) => typeof item.finalGrade === 'string')
+        console.log(notAllNumbers)
 
-        const noScore = averages.some((item)=> item.finalGrade === "")
+        const noScore = noEPP.some((item)=> item.finalGrade === "")
+
         if(noScore) {
             setIsDisabled(true)
 
@@ -65,7 +68,7 @@ function FinalizeGradesDialog({student, averages, generalAverage}:FinalizeGrades
             return []
         }
      
-        const allNumberAverages = averages.filter((item) => (typeof item.finalGrade === "number"))
+        const allNumberAverages = noEPP.filter((item) => (typeof item.finalGrade === "number"))
     
         // Filter averages less than or equal to 74
         const filteredAverages = allNumberAverages.filter(
@@ -109,6 +112,8 @@ function FinalizeGradesDialog({student, averages, generalAverage}:FinalizeGrades
         setIsLoading(false)
     }
 
+    console.log(isDisabled)
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <TooltipProvider>
@@ -118,7 +123,7 @@ function FinalizeGradesDialog({student, averages, generalAverage}:FinalizeGrades
                         <Button size="default" disabled={ alreadyPromoted || isDisabled === true || isLoading}  className={cn(isRetained && "bg-red-500 disabled:bg-red-500" ," self-end h-7 gap-1 bg-blue-600 text-white py-2 ml-auto")}>
                             <FaLevelUpAlt className="h-m3.5 w-3.5" />
                             <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                                {isPromoted ? isPromoted.studentFinalFGrade?.promotionType : "Promotion"}
+                                {isPromoted ? isPromoted.hasPromoted ? isPromoted.studentFinalFGrade?.promotionType : "Promotion" : "Promotion"}
                             </span>
                         </Button>
                     </DialogTrigger>

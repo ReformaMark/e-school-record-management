@@ -57,7 +57,7 @@ function SF9FrontTemplate({student}: SF9FrontTemplateProps) {
   }
   return (
     <div className='grid grid-cols-2 gap-x-10 p-10  text-black  w-full '>
-        <div className="">
+        <div className={cn(isSHS ? "py-10" : "py-0")}>
             
             <Attendance attendance={attendance as Doc<'attendance'>} studentId={student?._id as Id<'students'>} classId={student?.cLass?._id as Id<'classes'>} sf9={true}/>
 
@@ -113,17 +113,17 @@ function SF9FrontTemplate({student}: SF9FrontTemplateProps) {
          
         </div>
         <div className="font-serif">
-            <div className="grid grid-cols-12">
+            <div className="grid grid-cols-12 py-10">
                 <div className="flex justify-end items-start col-span-2">
                     <Image src={DivOfTanjayLogo} alt='Division of Tanjay City' width={100} height={100} className='size-20 object-contain'/>
                 </div>
                 {isSHS ? (
-                    <div className="col-span-8 text-center flex flex-col items-center px-10 text-[1rem] ">
-                       <h1 className='text-lg'>Republic of the Philippines</h1>
-                       <h1 className='text-[1rem]'>DEPARTMENT OF EDUCATION</h1>
+                    <div className="col-span-8 text-center flex flex-col items-center text-xs ">
+                       <h1 className='text-sm'>Republic of the Philippines</h1>
+                       <h1 className='text-sm'>DEPARTMENT OF EDUCATION</h1>
                        <h1 className='text-center'>Region VII</h1>
                        <h1 className=' w-full'>Division of Tanjay City</h1>
-                       <h1 className=' w-full'>TANJAY NATIONAL HIGH SCHOOL (OPAO)</h1>
+                       <h1 className=' w-full font-semibold'>TANJAY NATIONAL HIGH SCHOOL (OPAO)</h1>
                        <h1 className='text-center mb-2 mt-1'>Barangay IX, Tanjay City</h1>
                     </div>
                 ): (

@@ -119,7 +119,7 @@ export default function MapehQuarterlyGradesTemplate({
                             
                             <div className="w-full flex col-span-2">
                             <h1 className='text-xs text-center w-[20%] border-collapse border border-black'>
-                            {student.quarterlyGrades.length >= 1 ? student.quarterlyGrades.find(grade => grade.subComponent === "Music")?.interventionGrade ? (
+                            {student.quarterlyGrades.length >= 1 ? student.quarterlyGrades.find(grade => grade.subComponent === "Music" && grade.quarter === quarter)?.needsIntervention === true ? (
                                 <TooltipProvider>
                                     <Tooltip>
                                         <TooltipTrigger asChild>
@@ -142,7 +142,7 @@ export default function MapehQuarterlyGradesTemplate({
                             ) : (getQuarterlyGradeScore(student?.quarterlyGrades, quarter, "Music") ?? 0) : getQuarterlyGradeScore(student?.quarterlyGrades, quarter, "Music")}
                             </h1>
                             <h1 className='text-xs text-center w-[20%] border-collapse border border-black'>
-                            {student.quarterlyGrades.length >= 1 ? student.quarterlyGrades.find(grade => grade.subComponent === "Arts")?.interventionGrade ? (
+                            {student.quarterlyGrades.length >= 1 ? student.quarterlyGrades.find(grade => grade.subComponent === "Arts" && grade.quarter === quarter)?.interventionGrade ? (
                                 <TooltipProvider>
                                 <Tooltip>
                                     <TooltipTrigger asChild>
@@ -166,7 +166,7 @@ export default function MapehQuarterlyGradesTemplate({
                             ) : (getQuarterlyGradeScore(student?.quarterlyGrades, quarter, "Arts")?? 0) :getQuarterlyGradeScore(student?.quarterlyGrades, quarter, "Arts")}
                             </h1>
                             <h1 className='text-xs text-center w-[20%] border-collapse border border-black'>
-                            {student.quarterlyGrades.length >= 1 ? student.quarterlyGrades.find(grade => grade.subComponent === "Physical Education")?.interventionGrade ? (
+                            {student.quarterlyGrades.length >= 1 ? student.quarterlyGrades.find(grade => grade.subComponent === "Physical Education" && grade.quarter === quarter)?.interventionGrade ? (
                                 <TooltipProvider>
                                     <Tooltip>
                                         <TooltipTrigger asChild>
@@ -190,7 +190,7 @@ export default function MapehQuarterlyGradesTemplate({
                               
                             </h1>
                             <h1 className='text-xs text-center w-[20%] border-collapse border border-black'>
-                            {student.quarterlyGrades.length >= 1 ? student.quarterlyGrades.find(grade => grade.subComponent === "Health")?.interventionGrade ? (
+                            {student.quarterlyGrades.length >= 1 ? student.quarterlyGrades.find(grade => grade.subComponent === "Health" && grade.quarter === quarter)?.interventionGrade ? (
                                 <TooltipProvider>
                                     <Tooltip>
                                         <TooltipTrigger asChild>

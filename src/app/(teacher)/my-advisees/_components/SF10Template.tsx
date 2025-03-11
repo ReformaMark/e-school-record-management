@@ -147,7 +147,7 @@ function SF10Template({student,isOpen,setIsOpen}: SF10TemplateProps) {
                                                                 />
                                 <Label htmlFor="highSchoolCompleter" className='ml-[-15px] text-[0.6rem]'>High School Completer*</Label>
 
-                                <h1 className='flex w-1/3 items-baseline'>Gen. Ave: <input type="text" value={hsCompleter ? hsCompleter.genAve : ""} className='border-b border-b-black flex-1 w-1/3 px-3 h-3' /></h1>
+                                <h1 className='flex w-1/3 items-baseline'>Gen. Ave: <input type="number"  className='border-b border-b-black flex-1 w-1/3 px-3 h-3' /></h1>
                             </div>
                             <div className="col-span-5 flex gap-x-5 text-[0.55rem]">
 
@@ -159,7 +159,7 @@ function SF10Template({student,isOpen,setIsOpen}: SF10TemplateProps) {
                                     />
                                 <Label htmlFor="juniorHighSchoolCompleter" className='ml-[-15px] text-[0.6rem]'>Junior High School Completer*</Label>
 
-                                <h1 className='flex w-1/3 items-baseline'>Gen. Ave: <input type="text" value={jhsCompleter ? jhsCompleter.genAve : ""} className='border-b border-b-black flex-1 w-1/3 px-3 h-3' /></h1>
+                                <h1 className='flex w-1/3 items-baseline'>Gen. Ave: <input type="number"   className='border-b border-b-black flex-1 w-1/3 px-3 h-3' /></h1>
                             </div>
                         </div>
                         ):(
@@ -175,22 +175,22 @@ function SF10Template({student,isOpen,setIsOpen}: SF10TemplateProps) {
                             
                             </div>
                             
-                            <h1 className='col-span-4 flex gap-x-3 w-1/2 items-baseline '>Gen. Ave: <input type="text" value={esCompleter ? esCompleter.genAve : ""} className='border-b border-b-black flex-1 text-center w-1/3 px-3 h-3' /></h1>
-                            <h1 className='col-span-4 flex gap-x-3 items-baseline '>Citation(if Any): <input type="text" value={esCompleter ? esCompleter.citation : ""} className='border-b border-b-black text-center  flex-1 w-1/3 px-3 h-3' /></h1>
+                            <h1 className='col-span-4 flex gap-x-3 w-1/2 items-baseline '>Gen. Ave: <input type="number"  className='border-b border-b-black flex-1 text-center w-1/3 px-3 h-3' /></h1>
+                            <h1 className='col-span-4 flex gap-x-3 items-baseline '>Citation(if Any): <input type="text"  className='border-b border-b-black text-center  flex-1 w-1/3 px-3 h-3' /></h1>
                             
                         </div>
                         )}
                         {isSHS ? (
                         <div className="grid grid-cols-12 text-[0.55rem]  mt-[-4px]">
-                            <h1 className='flex gap-x-1 items-baseline col-span-5'>Date of Gradeuation/Completion (MM/DD/YYYY): <input type="text" value={dateOfGraduation ? formatDateString(dateOfGraduation) : ""} className='border-b border-b-black flex-1  h-3 w-1/3 px-3' /></h1>
-                            <h1 className='flex gap-x-1 items-baseline col-span-3'>Name of School: <input type="text" value={schoolGraduated ? schoolGraduated : ""} className='border-b border-b-black line-clamp-1 flex-1 w-1/3 px-3 h-3' /></h1>
-                            <h1 className='flex gap-x-1 items-baseline col-span-4'>School Address: <input type="text" value={schoolGraduatedAddress ? schoolGraduatedAddress : ""} className='border-b line-clamp-1 border-b-black flex-1 w-1/3 px-3  h-3' /></h1>
+                            <h1 className='flex gap-x-1 items-baseline col-span-5'>Date of Gradeuation/Completion (MM/DD/YYYY): <input type="text"  className='border-b border-b-black flex-1  h-3 w-1/3 px-3' /></h1>
+                            <h1 className='flex gap-x-1 items-baseline col-span-3'>Name of School: <input type="text"  className='border-b border-b-black line-clamp-1 flex-1 w-1/3 px-3 h-3' /></h1>
+                            <h1 className='flex gap-x-1 items-baseline col-span-4'>School Address: <input type="text"  className='border-b line-clamp-1 border-b-black flex-1 w-1/3 px-3  h-3' /></h1>
                         </div>
                         ):(
                         <div className="grid grid-cols-12 gap-x-5 text-[0.6rem] ">
-                            <h1 className='flex gap-x-1 items-baseline col-span-5 pl-5'>Name of Elementary School: <input type="text" value={schoolGraduatedAddress ? schoolGraduatedAddress : ""} className='border-b border-b-black flex-1  h-3 w-1/3 px-3' /></h1>
-                            <h1 className='flex gap-x-1 items-baseline col-span-3'>School ID: <input type="text" value={schoolId ? schoolId : ""} className='border-b border-b-black line-clamp-1 flex-1 w-1/3 px-3 h-3' /></h1>
-                            <h1 className='flex gap-x-1 items-baseline col-span-4'>Address of School: <input type="text" value={schoolGraduatedAddress ? schoolGraduatedAddress : ""} className='border-b line-clamp-1 border-b-black flex-1 w-1/3 px-3  h-3' /></h1>
+                            <h1 className='flex gap-x-1 items-baseline col-span-5 pl-5'>Name of Elementary School: <input type="text"  className='border-b border-b-black flex-1  h-3 w-1/3 px-3' /></h1>
+                            <h1 className='flex gap-x-1 items-baseline col-span-3'>School ID: <input type="text"  className='border-b border-b-black line-clamp-1 flex-1 w-1/3 px-3 h-3' /></h1>
+                            <h1 className='flex gap-x-1 items-baseline col-span-4'>Address of School: <input type="text"  className='border-b line-clamp-1 border-b-black flex-1 w-1/3 px-3  h-3' /></h1>
                         </div>    
                         )}
                     </div>

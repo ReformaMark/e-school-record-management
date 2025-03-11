@@ -148,7 +148,7 @@ function Attendance({studentId, classId, attendance, sf9}: AttendanceProps) {
         }
         if(type === "daysAbsent"){
             const july = attendance?.july.daysAbsent ?? 0
-            const august = attendance?.august.daysPresent ?? 0
+            const august = attendance?.august.daysAbsent ?? 0
             const september = attendance?.september.daysAbsent ?? 0
             const october = attendance?.october.daysAbsent ?? 0
             const november = attendance?.november.daysAbsent ?? 0
