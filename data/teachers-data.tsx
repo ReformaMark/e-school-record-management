@@ -1,17 +1,8 @@
 "use client"
 
-import { ColumnDef } from "@tanstack/react-table";
-import { Calendar, Clock, MapPin, MoreHorizontal, Users } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import {
     Dialog,
     DialogContent,
@@ -20,14 +11,25 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog";
-import { Badge } from "@/components/ui/badge";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { ColumnDef } from "@tanstack/react-table";
+import { Calendar, Clock, MapPin, MoreHorizontal, Users } from "lucide-react";
 
+import { useConfirm } from "@/hooks/use-confirm";
+import { useMutation, useQuery } from "convex/react";
 import Link from "next/link";
-import { useQuery } from "convex/react";
+import { useState } from "react";
+import { toast } from "sonner";
 import { api } from "../convex/_generated/api";
 import { Id } from "../convex/_generated/dataModel";
-import { useState } from "react";
 
 export type Teacher = {
     id: Id<"users">;
@@ -86,7 +88,9 @@ export const teacherColumns: ColumnDef<Teacher>[] = [
                                 : specialization === "physical-education" ? "Physical Education"
                                     : specialization === "science" ? "Science"
                                         : specialization === "history" ? "History"
-                                            : "No specialization assigned"
+                                            : specialization === "Technology and Livelihood Education" ? "Technology and Livelihood Education"
+                                                : specialization === "Edukasyong Pantahanan at Pangkabuhayan" ? "Edukasyong Pantahanan at Pangkabuhayan"
+                                                    : specialization
                     }
                 </div>
             )
@@ -196,28 +200,57 @@ export const teacherColumns: ColumnDef<Teacher>[] = [
     {
         id: "actions",
         cell: ({ row }) => {
+            const removeTeacher = useMutation(api.admin.removeAdmin)
+
+            const [ConfirmDialog, confirm] = useConfirm(
+                "Delete Teacher?",
+                `Are you sure you want to delete ${row.original.firstName} ${row.original.lastName}?`,
+            )
+
+            const handleDeleteTeacher = async () => {
+                const confirmed = await confirm()
+
+                if (confirmed) {
+                    try {
+                        await removeTeacher({
+                            id: row.original.id
+                        })
+
+                        toast.success(`Successfully deleted ${row.original.firstName} ${row.original.lastName}`)
+                    } catch (error) {
+                        toast.error("Failed to delete teacher")
+                    }
+                }
+            }
+
             return (
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0">
-                            <span className="sr-only">Open menu</span>
-                            <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem asChild>
-                            <Link href={`/sysadmin-teachers/sysadmin-edit-teacher/${row.original.id}`}>
-                                Edit teacher
-                            </Link>
-                        </DropdownMenuItem>
-                        {/* <DropdownMenuItem>View schedule</DropdownMenuItem> */}
-                        {/* <DropdownMenuItem className="text-destructive">
-                            Delete teacher
-                        </DropdownMenuItem> */}
-                    </DropdownMenuContent>
-                </DropdownMenu>
+                <>
+                    <ConfirmDialog />
+
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" className="h-8 w-8 p-0">
+                                <span className="sr-only">Open menu</span>
+                                <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem asChild>
+                                <Link href={`/sysadmin-teachers/sysadmin-edit-teacher/${row.original.id}`}>
+                                    Edit teacher
+                                </Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                                className="text-red-500"
+                                onClick={handleDeleteTeacher}
+                            >
+                                Delete
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </>
             );
         },
     },
@@ -308,5 +341,13 @@ export const schoolSubjects = [
     {
         value: "physical-education",
         label: "Physical Education",
+    },
+    {
+        value: "Technology and Livelihood Education",
+        label: "Technology and Livelihood Education",
+    },
+    {
+        value: "Edukasyong Pantahanan at Pangkabuhayan",
+        label: "Edukasyong Pantahanan at Pangkabuhayan",
     },
 ] satisfies SchoolSubjects[];

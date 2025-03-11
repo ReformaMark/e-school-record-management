@@ -23,7 +23,7 @@ const SystemAdminLayout = ({
                 <html className="h-full" lang="en">
                     <body className="bg-background relative">
                         <SystemAdminGuard>
-                            <Toaster theme="light" className="toaster" />
+                            <Toaster richColors />
 
                             <SystemAdminNavbar />
 

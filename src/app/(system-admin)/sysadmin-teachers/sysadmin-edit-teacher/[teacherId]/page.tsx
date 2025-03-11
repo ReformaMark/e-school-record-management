@@ -395,7 +395,7 @@ const SystemAdminEditTeacherPage = ({ params }: { params: { teacherId: string } 
                                                         defaultValue={teacher.specialization}
                                                         required
                                                     >
-                                                        <SelectTrigger>
+                                                        <SelectTrigger className="w-[276px]">
                                                             <SelectValue placeholder="Select specialization" />
                                                         </SelectTrigger>
                                                         <SelectContent>

@@ -365,7 +365,7 @@ const SystemAdminAddTeacherPage = () => {
                                                 <div className="grid gap-3">
                                                     <Label htmlFor="specialization">Specialization <span className="text-red-500">*</span></Label>
                                                     <Select name="specialization" required>
-                                                        <SelectTrigger>
+                                                        <SelectTrigger className="w-[276px]">
                                                             <SelectValue placeholder="Select specialization" />
                                                         </SelectTrigger>
                                                         <SelectContent>

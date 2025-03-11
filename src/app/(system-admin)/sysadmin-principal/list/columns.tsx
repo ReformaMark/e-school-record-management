@@ -15,11 +15,16 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { useConfirm } from "@/hooks/use-confirm"
 import { SchoolHeadType } from "@/lib/types"
 import { cn } from "@/lib/utils"
 import { ColumnDef } from "@tanstack/react-table"
+import { useMutation } from "convex/react"
 import { MoreHorizontal } from "lucide-react"
 import { useRouter } from "next/navigation"
+import { toast } from "sonner"
+import { api } from "../../../../../convex/_generated/api"
+import { Id } from "../../../../../convex/_generated/dataModel"
 
 // Define the Principal type
 export type Principal = {
@@ -49,7 +54,12 @@ const ActionCell = ({ principal }: { principal: Principal }) => {
     //     `${principal.isActive ? "Deactivate" : "Activate"} Principal`,
     //     `Are you sure you want to ${principal.isActive ? "deactivate" : "activate"} ${principal.firstName} ${principal.lastName}?`
     // )
+    const removeSchoolHead = useMutation(api.admin.removeAdmin)
     const router = useRouter()
+    const [ConfirmDialog, confirm] = useConfirm(
+        "Delete Principal",
+        `Are you sure you want to delete ${principal.firstName} ${principal.lastName}?`
+    )
 
     // const handleStatusChange = async () => {
     //     const confirmed = await confirm()
@@ -67,9 +77,26 @@ const ActionCell = ({ principal }: { principal: Principal }) => {
     //     }
     // }
 
+    const handleDeletePrincipal = async () => {
+        const confirmed = await confirm()
+        if (confirmed) {
+            try {
+                removeSchoolHead({
+                    id: principal._id as Id<"users">
+                })
+
+                toast.success("Principal has been deleted")
+            } catch (error) {
+                console.error(error)
+                toast.error("Failed to delete principal")
+            }
+        }
+    }
+
     return (
         <>
-            {/* <ConfirmDialog /> */}
+            <ConfirmDialog />
+
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="h-8 w-8 p-0">
@@ -155,6 +182,15 @@ const ActionCell = ({ principal }: { principal: Principal }) => {
                     >
                         Edit
                     </DropdownMenuItem>
+
+                    {principal.isActive === false && (
+                        <DropdownMenuItem
+                            onClick={handleDeletePrincipal}
+                            className="text-red-500"
+                        >
+                            Delete
+                        </DropdownMenuItem>
+                    )}
                 </DropdownMenuContent>
             </DropdownMenu>
         </>

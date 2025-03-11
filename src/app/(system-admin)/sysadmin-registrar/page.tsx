@@ -1,9 +1,6 @@
 "use client";
 
 import { DataTable } from "@/components/data-table";
-import { useQuery } from "convex/react";
-import { api } from "../../../../convex/_generated/api";
-import { registrarColumns } from "./_components/registrar-columns";
 import {
     Breadcrumb,
     BreadcrumbItem,
@@ -14,23 +11,20 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-    DropdownMenu,
-    DropdownMenuCheckboxItem,
-    DropdownMenuContent,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger
-} from "@/components/ui/dropdown-menu";
 import { exportToExcel } from "@/lib/export-to-excel";
 import { cn } from "@/lib/utils";
-import { File, ListFilterIcon, PlusCircleIcon } from "lucide-react";
+import { useQuery } from "convex/react";
+import { File, PlusCircleIcon } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import { api } from "../../../../convex/_generated/api";
+import { registrarColumns } from "./_components/registrar-columns";
 
 const SystemAdminRegistrarPage = () => {
     const registrars = useQuery(api.users.fetchRegistrars);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [showActive, setShowActive] = useState(true);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [showInactive, setShowInactive] = useState(true);
 
     const filteredRegistrars = registrars?.filter(registrar => {
@@ -58,7 +52,7 @@ const SystemAdminRegistrarPage = () => {
             <main className="space-y-4">
                 <div className="flex items-center">
                     <div className="ml-auto flex items-center gap-2">
-                        <DropdownMenu>
+                        {/* <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Button variant="outline" size="sm" className="h-7 gap-1">
                                     <ListFilterIcon className="h-3.5 w-3.5" />
@@ -83,7 +77,7 @@ const SystemAdminRegistrarPage = () => {
                                     Inactive
                                 </DropdownMenuCheckboxItem>
                             </DropdownMenuContent>
-                        </DropdownMenu>
+                        </DropdownMenu> */}
 
                         <Button size="sm" variant="outline" className="h-7 gap-1"
                             onClick={() => exportToExcel(filteredRegistrars || [], "school_registrars")}

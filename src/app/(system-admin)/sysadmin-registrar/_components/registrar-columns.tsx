@@ -15,10 +15,14 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { cn } from "@/lib/utils"
+import { useConfirm } from "@/hooks/use-confirm"
 import { ColumnDef } from "@tanstack/react-table"
+import { useMutation } from "convex/react"
 import { MoreHorizontal } from "lucide-react"
 import { useRouter } from "next/navigation"
+import { toast } from "sonner"
+import { api } from "../../../../../convex/_generated/api"
+import { Id } from "../../../../../convex/_generated/dataModel"
 
 export type Registrar = {
     _id: string
@@ -40,10 +44,35 @@ export type Registrar = {
 }
 
 const ActionCell = ({ registrar }: { registrar: Registrar }) => {
+    const removeRegistrar = useMutation(api.admin.removeAdmin)
+    const [ConfirmDialog, confirm] = useConfirm(
+        "Delete Registrar",
+        "Are you sure you want to delete this registrar?"
+    )
+
     const router = useRouter()
 
+
+    const handleDelete = async () => {
+        const confirmed = await confirm()
+
+        if (confirmed) {
+            try {
+                await removeRegistrar({
+                    id: registrar._id as Id<"users">
+                })
+
+                toast.success("Registrar deleted successfully!")
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            } catch (error) {
+                toast.error("Failed to delete registrar")
+            }
+        }
+    }
     return (
         <>
+            <ConfirmDialog />
+
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="h-8 w-8 p-0">
@@ -88,14 +117,14 @@ const ActionCell = ({ registrar }: { registrar: Registrar }) => {
                                         <p className="col-span-3 text-base">{registrar.employeeId}</p>
                                     </div>
                                 )}
-                                <div className="grid grid-cols-4 items-center gap-4">
+                                {/* <div className="grid grid-cols-4 items-center gap-4">
                                     <p className="text-sm font-semibold text-muted-foreground">Status</p>
                                     <p className={cn("col-span-3 text-base font-medium",
                                         registrar.isActive ? "text-green-600" : "text-red-600"
                                     )}>
                                         {registrar.isActive ? "Active" : "Inactive"}
                                     </p>
-                                </div>
+                                </div> */}
                                 {registrar.description && (
                                     <div className="grid grid-cols-4 items-center gap-4">
                                         <p className="text-sm font-semibold text-muted-foreground">Description</p>
@@ -109,6 +138,12 @@ const ActionCell = ({ registrar }: { registrar: Registrar }) => {
                         onClick={() => router.push(`/sysadmin-registrar/edit-registrar/${registrar._id}`)}
                     >
                         Edit
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                        className="text-red-500"
+                        onClick={handleDelete}
+                    >
+                        Delete
                     </DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>
@@ -133,15 +168,15 @@ export const registrarColumns: ColumnDef<Registrar>[] = [
         accessorKey: "employeeId",
         header: "Employee ID"
     },
-    {
-        accessorKey: "isActive",
-        header: "Status",
-        cell: ({ row }) => (
-            <span className={row.original.isActive ? "text-green-600" : "text-red-600"}>
-                {row.original.isActive ? "Active" : "Inactive"}
-            </span>
-        )
-    },
+    // {
+    //     accessorKey: "isActive",
+    //     header: "Status",
+    //     cell: ({ row }) => (
+    //         <span className={row.original.isActive ? "text-green-600" : "text-red-600"}>
+    //             {row.original.isActive ? "Active" : "Inactive"}
+    //         </span>
+    //     )
+    // },
     {
         id: "actions",
         cell: ({ row }) => <ActionCell registrar={row.original} />

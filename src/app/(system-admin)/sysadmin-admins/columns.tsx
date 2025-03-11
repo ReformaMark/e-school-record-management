@@ -1,14 +1,6 @@
 "use client"
 
-import { ColumnDef } from "@tanstack/react-table"
-import { MoreHorizontal } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 import {
     Dialog,
     DialogContent,
@@ -17,13 +9,21 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog"
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { useConfirm } from "@/hooks/use-confirm"
+import { cn } from "@/lib/utils"
+import { ColumnDef } from "@tanstack/react-table"
 import { useMutation } from "convex/react"
+import { MoreHorizontal } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { toast } from "sonner"
 import { api } from "../../../../convex/_generated/api"
 import { Id } from "../../../../convex/_generated/dataModel"
-import { useConfirm } from "@/hooks/use-confirm"
-import { toast } from "sonner"
-import { cn } from "@/lib/utils"
-import { useRouter } from "next/navigation"
 
 // Define the Admin type based on what's returned from the API
 type Admin = {
@@ -48,10 +48,18 @@ type Admin = {
 
 const ActionCell = ({ admin }: { admin: Admin }) => {
     const updateStatus = useMutation(api.admin.mutateStatus)
+    const removeAdmin = useMutation(api.admin.removeAdmin)
+
     const [ConfirmDialog, confirm] = useConfirm(
         `${admin.isActive ? "Deactivate" : "Activate"} Administrator`,
         `Are you sure you want to ${admin.isActive ? "deactivate" : "activate"} ${admin.firstName} ${admin.lastName}?`
     )
+
+    const [ConfirmDeleteDialog, confirmDelete] = useConfirm(
+        `Delete Administrator?`,
+        `Are you sure you want to delete ${admin.firstName} ${admin.lastName}?`
+    )
+
     const router = useRouter()
 
     const handleStatusChange = async () => {
@@ -62,7 +70,7 @@ const ActionCell = ({ admin }: { admin: Admin }) => {
                     adminId: admin._id as Id<"users">,
                     isActive: !admin.isActive
                 })
-                
+
                 toast.success(`Successfully ${admin.isActive ? "deactivated" : "activated"} ${admin.firstName} ${admin.lastName}`)
             } catch {
                 toast.error("Failed to update administrator status")
@@ -70,9 +78,29 @@ const ActionCell = ({ admin }: { admin: Admin }) => {
         }
     }
 
+    const handleDeleteAdmin = async () => {
+        const confirmed = await confirmDelete()
+
+        if (confirmed) {
+            try {
+                await removeAdmin({
+                    id: admin._id as Id<"users">
+                })
+
+                toast.success(`Successfully deleted ${admin.firstName} ${admin.lastName}`)
+            } catch (error) {
+                console.error(error)
+                toast.error("Failed to delete administrator")
+            }
+        }
+    }
+
     return (
         <>
             <ConfirmDialog />
+
+            <ConfirmDeleteDialog />
+
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="h-8 w-8 p-0">
@@ -117,7 +145,7 @@ const ActionCell = ({ admin }: { admin: Admin }) => {
                                 </div>
                                 <div className="grid grid-cols-4 items-center gap-4">
                                     <p className="text-sm font-semibold text-muted-foreground">Status</p>
-                                    <p className={cn("col-span-3 text-base font-medium", 
+                                    <p className={cn("col-span-3 text-base font-medium",
                                         admin.isActive ? "text-green-600" : "text-red-600"
                                     )}>
                                         {admin.isActive ? "Active" : "Inactive"}
@@ -152,14 +180,23 @@ const ActionCell = ({ admin }: { admin: Admin }) => {
                             </div>
                         </DialogContent>
                     </Dialog>
-                    <DropdownMenuItem onSelect={handleStatusChange} className={admin.isActive ? "text-red-600" : "text-green-600"}>
-                        {admin.isActive ? "Deactivate" : "Activate"}
-                    </DropdownMenuItem>
                     <DropdownMenuItem
                         onClick={() => router.push(`/sysadmin-admins/sysadmin-edit-admin/${admin._id}`)}
                     >
                         Edit
                     </DropdownMenuItem>
+
+                    <DropdownMenuItem onSelect={handleStatusChange} className={admin.isActive ? "text-red-600" : "text-green-600"}>
+                        {admin.isActive ? "Deactivate" : "Activate"}
+                    </DropdownMenuItem>
+
+                    {admin.isActive === false && (
+                        <DropdownMenuItem onSelect={handleDeleteAdmin} className="text-red-600">
+                            Delete
+                        </DropdownMenuItem>
+                    )}
+
+
                 </DropdownMenuContent>
             </DropdownMenu>
         </>
