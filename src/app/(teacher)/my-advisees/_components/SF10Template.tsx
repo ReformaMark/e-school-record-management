@@ -27,11 +27,6 @@ function SF10Template({ student, isOpen, setIsOpen }: SF10TemplateProps) {
         studentId: student._id
     })
 
-    const shsEnrollments = useQuery(api.enrollments.shsAdmission, {
-        studentId: student._id
-    })
-
-
     const gradeLevel = student.sectionDoc?.gradeLevel?.level
     const isSHS = gradeLevel === "Grade 11" || gradeLevel === "Grade 12"
     const reactToPrintContent = () => {
