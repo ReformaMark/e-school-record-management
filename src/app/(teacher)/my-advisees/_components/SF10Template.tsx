@@ -30,20 +30,7 @@ function SF10Template({ student, isOpen, setIsOpen }: SF10TemplateProps) {
     const shsEnrollments = useQuery(api.enrollments.shsAdmission, {
         studentId: student._id
     })
-    const esCompleter = shsEnrollments?.elegibilityForEnrollment?.esCompleter
-    const hsCompleter = shsEnrollments?.elegibilityForEnrollment?.hsCompleter
-    const jhsCompleter = shsEnrollments?.elegibilityForEnrollment?.jhsCompleter
-    const dateOfGraduation = shsEnrollments?.elegibilityForEnrollment?.date
-    const schoolGraduated = shsEnrollments?.elegibilityForEnrollment?.school
-    const schoolGraduatedAddress = shsEnrollments?.elegibilityForEnrollment?.schoolAddress
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const peptPasser = shsEnrollments?.elegibilityForEnrollment?.peptPasser
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const alsPasser = shsEnrollments?.elegibilityForEnrollment?.alsPasser
-    const others = shsEnrollments?.elegibilityForEnrollment?.others
-    const dateOfExam = shsEnrollments?.elegibilityForEnrollment?.dateOfExam
-    const communityLearningCenter = shsEnrollments?.elegibilityForEnrollment?.communityLearningCenter
-    const schoolId = shsEnrollments?.elegibilityForEnrollment?.schoolId
+
 
     const gradeLevel = student.sectionDoc?.gradeLevel?.level
     const isSHS = gradeLevel === "Grade 11" || gradeLevel === "Grade 12"
@@ -230,12 +217,12 @@ function SF10Template({ student, isOpen, setIsOpen }: SF10TemplateProps) {
                                             <Label htmlFor="others" className='ml-[-15px] text-[0.6rem]'>Others*</Label>
                                         </div>
 
-                                        <h1 className='flex w-full items-baseline'>(Pls. specify): <input type="text" value={others ? others.description : ""} className='border-b border-b-black flex-1 w-1/3 px-3 h-3' /></h1>
+                                        <h1 className='flex w-full items-baseline'>(Pls. specify): <input type="text"  className='border-b border-b-black flex-1 w-1/3 px-3 h-3' /></h1>
                                     </div>
                                 </div>
                                 <div className="grid grid-cols-12 gap-x-5 text-[0.6rem] mt-[-4px]">
-                                    <h1 className='flex col-span-6 items-baseline'>Date of Examination/Assessment (MM/DD/YYYY): <input type="text" value={dateOfExam ? formatDateString(dateOfExam) : ""} className='border-b border-b-black flex-1 px-3 h-3' /></h1>
-                                    <h1 className='flex col-span-6 items-baseline'>Name and Address of Community Learning Center: <input type="text" value={communityLearningCenter ? communityLearningCenter : ""} className='border-b border-b-black flex-1 px-3 h-3' /></h1>
+                                    <h1 className='flex col-span-6 items-baseline'>Date of Examination/Assessment (MM/DD/YYYY): <input type="text"  className='border-b border-b-black flex-1 px-3 h-3' /></h1>
+                                    <h1 className='flex col-span-6 items-baseline'>Name and Address of Community Learning Center: <input type="text"  className='border-b border-b-black flex-1 px-3 h-3' /></h1>
                                 </div>
                                 {isSHS ? (
                                     <>
