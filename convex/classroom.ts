@@ -147,6 +147,11 @@ export const getRoomById = query({
         roomId: v.id("rooms")
     },
     handler: async (ctx, args) => {
-        return await ctx.db.get(args.roomId)
+
+        const room = await ctx.db.get(args.roomId);
+        if (!room) {
+            return null;
+        }
+        return room;
     }
-})
+});

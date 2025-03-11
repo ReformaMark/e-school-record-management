@@ -270,6 +270,10 @@ export const sectionColumns: ColumnDef<SectionWithDetails>[] = [
         accessorKey: "roomNumber",
         header: "Room Name",
         cell: function Cell({ row }) {
+            if (!row.original.roomId) {
+                return <div>No room assigned</div>;
+            }
+
             const roomId = row.original.roomId as Id<"rooms">
 
             const room = useQuery(api.classroom.getRoomById, {
