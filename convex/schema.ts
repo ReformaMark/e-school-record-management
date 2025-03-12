@@ -332,10 +332,12 @@ export default defineSchema({
     capacity: v.number(),
     type: v.string(),
     features: v.optional(v.array(v.string())),
+    isActive: v.optional(v.boolean()),
+    description: v.optional(v.string()),
+    track: v.optional(v.string()),
+    strand: v.optional(v.string()),
     teacherId: v.optional(v.id("users")), // Reference to assigned teacher
     gradeLevelId: v.optional(v.id("gradeLevels")), // Reference to grade level
-    isActive: v.optional(v.boolean()),
-    description: v.optional(v.string())
   }).index("by_teacherId", ["teacherId"]),
 
   schoolYears: defineTable({

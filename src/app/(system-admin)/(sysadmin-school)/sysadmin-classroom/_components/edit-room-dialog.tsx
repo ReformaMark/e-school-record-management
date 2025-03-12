@@ -22,13 +22,13 @@ import { useConvexMutation } from "@convex-dev/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { useQuery } from "convex/react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { api } from "../../../../../../convex/_generated/api";
 import { Id } from "../../../../../../convex/_generated/dataModel";
 import { RoomFormData, roomSchema, roomTypes } from "./add-class-room-card";
 import { RoomWithTeacher } from "./classroom-columns";
-import { useState } from "react";
 
 interface EditRoomDialogProps {
     open: boolean;
@@ -49,7 +49,7 @@ export const EditRoomDialog = ({ open, onClose, room }: EditRoomDialogProps) => 
             type: room.type as "REGULAR" | "LABORATORY" | "COMPUTER_LABORATORY" | undefined,
             teacherId: room.teacherId,
             description: room.description,
-            gradeLevel: room.name.split("-")[0]
+            // gradeLevel: room.name.split("-")[0]
         }
     });
 
@@ -85,12 +85,13 @@ export const EditRoomDialog = ({ open, onClose, room }: EditRoomDialogProps) => 
         }
     };
 
-    const handleTrackSelect = (track: "core" | "academic" | "immersion" | "tvl" | "sports" | "arts") => {
+    const handleTrackSelect = (track: "ACADEMIC" | "IMMERSION" | "TVL" | "SPORTS" | "ARTS") => {
         const teacher = teachers?.find(t => t._id === watch("teacherId"));
         const gradeLevel = watch("gradeLevel");
 
         if (teacher && (gradeLevel?.startsWith("Grade 11") || gradeLevel?.startsWith("Grade 12"))) {
             setValue("name", `${gradeLevel}-${track}-${teacher.lastName}`);
+            setValue("track", track)
         }
     };
 
@@ -151,21 +152,31 @@ export const EditRoomDialog = ({ open, onClose, room }: EditRoomDialogProps) => 
                         </div>
 
                         {(watch("gradeLevel")?.startsWith("Grade 11") || watch("gradeLevel")?.startsWith("Grade 12")) && (
-                            <div className="grid gap-2">
-                                <Label>Track</Label>
-                                <Select onValueChange={handleTrackSelect}>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Select track" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {trackOptions.map((track) => (
-                                            <SelectItem key={track.value} value={track.value}>
-                                                {track.label}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </div>
+                            <>
+                                <div className="grid gap-2">
+                                    <Label>Track</Label>
+                                    <Select onValueChange={handleTrackSelect}>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Select track" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {trackOptions.map((track) => (
+                                                <SelectItem key={track.value} value={track.value}>
+                                                    {track.label}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+
+                                <div className="grid gap-2">
+                                    <Label>Strand</Label>
+                                    <Input
+                                        {...register("strand")}
+                                        placeholder="Enter strand"
+                                    />
+                                </div>
+                            </>
                         )}
 
                         <div className="grid gap-2">

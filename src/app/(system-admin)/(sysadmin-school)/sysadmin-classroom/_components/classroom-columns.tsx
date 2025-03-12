@@ -44,7 +44,26 @@ export const ClassroomColumns: ColumnDef<RoomWithTeacher>[] = [
         }
     },
     {
+        accessorKey: "track",
+        header: "Track",
+        cell: ({ row }) => {
+            const track = row.original.track;
+
+            return track ? track : "N/A";
+        }
+    },
+    {
+        accessorKey: "strand",
+        header: "Strand",
+        cell: ({ row }) => {
+            const strand = row.original.strand;
+
+            return strand ? strand : "N/A";
+        }
+    },
+    {
         id: "actions",
+        header: "Actions",
         cell: function Cell({ row }) {
             const [showEdit, setShowEdit] = useState(false);
             const removeRoom = useMutation(api.classroom.remove);

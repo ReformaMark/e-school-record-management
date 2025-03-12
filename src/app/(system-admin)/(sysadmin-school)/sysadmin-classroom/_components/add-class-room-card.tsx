@@ -24,12 +24,12 @@ import { useConvexMutation } from "@convex-dev/react-query"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "@tanstack/react-query"
 import { useQuery } from "convex/react"
+import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { z } from "zod"
 import { api } from "../../../../../../convex/_generated/api"
 import { Id } from "../../../../../../convex/_generated/dataModel"
-import { useState } from "react"
 
 export const roomTypes = ["REGULAR", "LABORATORY", "COMPUTER_LABORATORY"] as const;
 
@@ -41,7 +41,8 @@ export const roomSchema = z.object({
     description: z.string().optional(),
     features: z.array(z.string()).optional(),
     gradeLevel: z.string().min(1, "Grade level is required").optional(),
-    track: z.enum(["core", "academic", "immersion", "tvl", "sports", "arts"]).optional(),
+    track: z.enum(["ACADEMIC", "IMMERSION", "TVL", "SPORTS", "ARTS"]).optional(),
+    strand: z.string().optional(),
 });
 
 export type RoomFormData = z.infer<typeof roomSchema>;
@@ -51,7 +52,7 @@ export const AddClassRoomCard = () => {
     const teachers = useQuery(api.classroom.getTeachers);
     const gradeLevels = useQuery(api.gradeLevel.get);
 
-    const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm<RoomFormData>({
+    const { register, handleSubmit, watch, setValue, formState: { errors }, reset } = useForm<RoomFormData>({
         resolver: zodResolver(roomSchema)
     });
 
@@ -59,6 +60,7 @@ export const AddClassRoomCard = () => {
         mutationFn: useConvexMutation(api.classroom.create),
         onSuccess: () => {
             toast.success("Classroom created successfully");
+            reset();
         },
         onError: (error) => {
             toast.error(error.message);
@@ -86,12 +88,13 @@ export const AddClassRoomCard = () => {
         }
     };
 
-    const handleTrackSelect = (track: "core" | "academic" | "immersion" | "tvl" | "sports" | "arts") => {
+    const handleTrackSelect = (track: "ACADEMIC" | "IMMERSION" | "TVL" | "SPORTS" | "ARTS") => {
         const teacher = teachers?.find(t => t._id === watch("teacherId"));
         const gradeLevel = watch("gradeLevel");
 
         if (teacher && (gradeLevel?.startsWith("Grade 11") || gradeLevel?.startsWith("Grade 12"))) {
             setValue("name", `${gradeLevel}-${track}-${teacher.lastName}`);
+            setValue("track", track)
         }
     };
 
@@ -108,6 +111,8 @@ export const AddClassRoomCard = () => {
                     // Remove gradeLevel from data since it's just for display
                     /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
                     const { gradeLevel, ...submitData } = data;
+
+                    // console.log(submitData);
                     createRoom({
                         ...submitData,
                         gradeLevelId: selectedGradeLevelId ?? undefined,
@@ -155,21 +160,31 @@ export const AddClassRoomCard = () => {
                     </div>
 
                     {(watch("gradeLevel")?.startsWith("Grade 11") || watch("gradeLevel")?.startsWith("Grade 12")) && (
-                        <div className="grid gap-2">
-                            <Label>Track</Label>
-                            <Select onValueChange={handleTrackSelect}>
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Select track" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {trackOptions.map((track) => (
-                                        <SelectItem key={track.value} value={track.value}>
-                                            {track.label}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                        </div>
+                        <>
+                            <div className="grid gap-2">
+                                <Label>Track</Label>
+                                <Select onValueChange={handleTrackSelect}>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select track" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {trackOptions.map((track) => (
+                                            <SelectItem key={track.value} value={track.value}>
+                                                {track.label}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+
+                            <div className="grid gap-2">
+                                <Label>Strand</Label>
+                                <Input
+                                    {...register("strand")}
+                                    placeholder="Enter strand"
+                                />
+                            </div>
+                        </>
                     )}
 
                     <div className="grid gap-2">
