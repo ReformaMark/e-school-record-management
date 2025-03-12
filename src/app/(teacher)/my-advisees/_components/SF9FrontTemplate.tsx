@@ -70,7 +70,7 @@ function SF9FrontTemplate({student}: SF9FrontTemplateProps) {
                 <div className="grid grid-cols-3 gap-x-3 px-10 items-baseline">
                     <h1 className=''>2nd Quarter</h1>
                     <h1 className='border-b border-b-black col-span-2'></h1>
-                </div>
+                </div> 
                 <div className="grid grid-cols-3 gap-x-3 px-10 items-baseline">
                     <h1 className=''>3rd Quarter</h1>
                     <h1 className='border-b border-b-black col-span-2'></h1>
