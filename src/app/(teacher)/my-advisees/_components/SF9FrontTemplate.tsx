@@ -6,7 +6,7 @@ import { useQuery } from 'convex/react'
 import { api } from '../../../../../convex/_generated/api'
 import { Doc, Id } from '../../../../../convex/_generated/dataModel'
 import Image from 'next/image'
-import DivOfTanjayLogo from '@/../public/images/divisionofTanjay.png'
+import DivOfTanjayLogo from '@/../public/images/DOT.png'
 import TanjayLogo from '@/../public/images/tanjay logo.jpg'
 import { cn } from '@/lib/utils'
 
