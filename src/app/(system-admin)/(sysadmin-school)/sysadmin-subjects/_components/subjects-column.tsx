@@ -1,16 +1,16 @@
 "use client"
 
-import { ColumnDef } from "@tanstack/react-table";
-import { Doc } from "../../../../../../convex/_generated/dataModel";
 import { Button } from "@/components/ui/button";
+import { useConfirm } from "@/hooks/use-confirm";
+import { ColumnDef } from "@tanstack/react-table";
+import { useMutation } from "convex/react";
 import { Eye, PencilIcon, Trash2Icon } from "lucide-react";
 import { useState } from "react";
-import { GradeWeightsDialog } from "./grade-weights-dialog";
-import { useMutation } from "convex/react";
-import { api } from "../../../../../../convex/_generated/api";
-import { useConfirm } from "@/hooks/use-confirm";
 import { toast } from "sonner";
+import { api } from "../../../../../../convex/_generated/api";
+import { Doc } from "../../../../../../convex/_generated/dataModel";
 import { EditSubjectDialog } from "./edit-subject-dialog";
+import { GradeWeightsDialog } from "./grade-weights-dialog";
 
 type SubjectWithGradeLevel = Doc<"subjects"> & {
     gradeLevel?: Doc<"gradeLevels"> | null;
@@ -36,6 +36,11 @@ export const SubjectsColumns: ColumnDef<SubjectWithGradeLevel>[] = [
     {
         accessorKey: "subjectCategory",
         header: "Category",
+        cell: ({ row }) => {
+            const category = row.original.subjectCategory
+
+            return category ? category : "N/A"
+        }
     },
     // {
     //     accessorKey: "isMapeh",

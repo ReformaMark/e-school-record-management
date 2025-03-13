@@ -15,13 +15,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useConvexMutation } from "@convex-dev/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
+import { useQuery } from "convex/react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
 import { api } from "../../../../../../convex/_generated/api";
-import { useQuery } from "convex/react";
 import { Id } from "../../../../../../convex/_generated/dataModel";
-import { useState } from "react";
 
 
 // const componentSchema = z.object({
@@ -46,7 +46,7 @@ export const subjectSchema = z.object({
     name: z.string().min(1, "Subject name is required"),
     gradeLevelId: z.string().min(1, "Grade level is required"),
     subjectCode: z.string().min(2).max(10),
-    subjectCategory: z.enum(["core", "applied", "specialized"]),
+    subjectCategory: z.enum(["core", "applied", "specialized"]).optional(),
     gradeWeights: gradeWeightSchema,
     // isMapeh: z.boolean().default(false),
     // mapehWeights: z.object({
@@ -77,7 +77,7 @@ export type SubjectFormData = z.infer<typeof subjectSchema>;
 
 export const AddSubjectsCard = () => {
     const [gradeLevel, setGradeLevel] = useState<string>("Grade 7")
-    const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm<SubjectFormData>({
+    const { register, handleSubmit, setValue, getValues, formState: { errors }, reset } = useForm<SubjectFormData>({
         resolver: zodResolver(subjectSchema),
         // defaultValues: {
         //     isMapeh: false
@@ -101,6 +101,19 @@ export const AddSubjectsCard = () => {
         mutationFn: useConvexMutation(api.subjects.create),
         onSuccess: () => {
             toast.success("Subject created successfully");
+            reset({
+                name: "",
+                gradeLevelId: "",
+                subjectCode: "",
+                subjectCategory: undefined,
+                gradeWeights: {
+                    written: 0,
+                    performance: 0,
+                    exam: 0
+                }
+            });
+
+            setGradeLevel("Grade 7");
         },
         onError: (error) => {
             toast.error(error.message);
@@ -219,24 +232,26 @@ export const AddSubjectsCard = () => {
                     </div>
 
 
+                    {(gradeLevel.startsWith("Grade 11") || gradeLevel?.startsWith("Grade 12")) &&
+                        <div className="space-y-2">
+                            <Label>Category</Label>
+                            <Select onValueChange={
+                                (value) => setValue("subjectCategory", value as "core" | "applied" | "specialized")}>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Select category" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="core">Core</SelectItem>
+                                    <SelectItem value="applied">Applied</SelectItem>
+                                    <SelectItem value="specialized">Specialized</SelectItem>
+                                </SelectContent>
+                            </Select>
+                            {errors.subjectCategory && (
+                                <p className="text-sm text-red-500">{errors.subjectCategory.message}</p>
+                            )}
+                        </div>
+                    }
 
-                    <div className="space-y-2">
-                        <Label>Category</Label>
-                        <Select onValueChange={
-                            (value) => setValue("subjectCategory", value as "core" | "applied" | "specialized")}>
-                            <SelectTrigger>
-                                <SelectValue placeholder="Select category" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="core">Core</SelectItem>
-                                <SelectItem value="applied">Applied</SelectItem>
-                                <SelectItem value="specialized">Specialized</SelectItem>
-                            </SelectContent>
-                        </Select>
-                        {errors.subjectCategory && (
-                            <p className="text-sm text-red-500">{errors.subjectCategory.message}</p>
-                        )}
-                    </div>
 
                     {/* <div className="flex items-center space-x-2">
                         <Switch

@@ -115,3 +115,22 @@ export const get = query({
             .collect()
     }
 })
+
+export const getGradeLevelById = query({
+    args: {
+        gradeLevelId: v.id("gradeLevels"),
+    },
+    handler: async (ctx, args) => {
+        const userId = await getAuthUserId(ctx)
+
+        if (!userId) throw new ConvexError("Unauthorized")
+
+        const user = await ctx.db.get(userId)
+
+        if (!user) {
+            throw new ConvexError("Unauthorized");
+        }
+
+        return await ctx.db.get(args.gradeLevelId)
+    }
+})
