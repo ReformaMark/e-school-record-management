@@ -18,7 +18,7 @@ export const SchoolClassroomCardTable = () => {
 
     return (
         <Card
-            className="xl:col-span-2"
+            className="xl:col-span-3"
         >
             <CardHeader className="flex flex-row items-center">
                 <div className="grid gap-2">

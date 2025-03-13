@@ -17,6 +17,20 @@ import {
     SelectTrigger,
     SelectValue
 } from "@/components/ui/select";
+import {
+    Command,
+    CommandEmpty,
+    CommandGroup,
+    CommandInput,
+    CommandItem,
+    CommandList,
+} from "@/components/ui/command";
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover";
+import { Check, ChevronsUpDown } from "lucide-react";
 import { SectionWithDetails } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { SectionFormData, sectionSchema } from "@/lib/validation/add-section-zod";
@@ -47,6 +61,9 @@ interface SectionFormProps {
 
 export const SectionForm = ({ isEditing = false, section }: SectionFormProps) => {
     const [isSeniorHigh, setIsSeniorHigh] = useState<boolean | undefined>(false);
+    const [open, setOpen] = useState(false)
+    const [searchValue, setSearchValue] = useState("")
+
     const router = useRouter()
     const { register, control, handleSubmit, setValue, watch, reset, formState: { errors } } = useForm<SectionFormData>({
         resolver: zodResolver(sectionSchema),
@@ -329,21 +346,80 @@ export const SectionForm = ({ isEditing = false, section }: SectionFormProps) =>
                                             <div className="grid gap-3 grid-cols-1 md:grid-cols-2">
                                                 <div className="grid gap-2">
                                                     <Label>Room</Label>
-                                                    <Select
-                                                        onValueChange={handleRoomSelect}
-                                                        value={watch("roomId")}
-                                                    >
-                                                        <SelectTrigger>
-                                                            <SelectValue placeholder="Select Room" />
-                                                        </SelectTrigger>
-                                                        <SelectContent>
-                                                            {rooms?.map((room) => (
-                                                                <SelectItem key={room._id} value={room._id}>
-                                                                    {room.name} ({room.teacher?.lastName})
-                                                                </SelectItem>
-                                                            ))}
-                                                        </SelectContent>
-                                                    </Select>
+                                                    <Popover open={open} onOpenChange={setOpen}>
+                                                        <PopoverTrigger asChild>
+                                                            <Button
+                                                                variant="outline"
+                                                                role="combobox"
+                                                                aria-expanded={open}
+                                                                className="w-full justify-between"
+                                                            >
+                                                                {watch("roomId") ? (
+                                                                    rooms?.find((room) => room._id === watch("roomId"))?.name
+                                                                ) : (
+                                                                    "Select room..."
+                                                                )}
+                                                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                                            </Button>
+                                                        </PopoverTrigger>
+                                                        <PopoverContent className="w-[400px] p-0">
+                                                            <Command className="room-command">
+                                                                <CommandInput
+                                                                    placeholder="Search room by name or teacher..."
+                                                                    value={searchValue}
+                                                                    onValueChange={setSearchValue}
+                                                                    onKeyDown={(e) => {
+                                                                        e.stopPropagation();
+                                                                    }}
+                                                                />
+                                                                <CommandList>
+                                                                    <CommandEmpty>No room found.</CommandEmpty>
+                                                                    <CommandGroup>
+                                                                        {!rooms ? (
+                                                                            <CommandItem disabled>Loading rooms...</CommandItem>
+                                                                        ) : rooms.length === 0 ? (
+                                                                            <CommandItem disabled>No rooms available</CommandItem>
+                                                                        ) : (
+                                                                            rooms
+                                                                                .filter((room) =>
+                                                                                    room.name.toLowerCase().includes(searchValue.toLowerCase()) ||
+                                                                                    room.teacher?.lastName.toLowerCase().includes(searchValue.toLowerCase())
+                                                                                )
+                                                                                .map((room) => (
+                                                                                    <CommandItem
+                                                                                        key={room._id}
+                                                                                        value={room.name}
+                                                                                        onSelect={() => {
+                                                                                            handleRoomSelect(room._id);
+                                                                                            setOpen(false);
+                                                                                            setSearchValue("");
+                                                                                        }}
+                                                                                        onClick={(e) => {
+                                                                                            e.stopPropagation();
+                                                                                        }}
+                                                                                    >
+                                                                                        <div className="flex items-center justify-between w-full">
+                                                                                            <span>{room.name}</span>
+                                                                                            <span className="text-muted-foreground">
+                                                                                                {room.teacher?.lastName || 'No teacher'}
+                                                                                            </span>
+                                                                                        </div>
+                                                                                        <Check
+                                                                                            className={cn(
+                                                                                                "ml-auto h-4 w-4",
+                                                                                                room._id === watch("roomId")
+                                                                                                    ? "opacity-100"
+                                                                                                    : "opacity-0"
+                                                                                            )}
+                                                                                        />
+                                                                                    </CommandItem>
+                                                                                ))
+                                                                        )}
+                                                                    </CommandGroup>
+                                                                </CommandList>
+                                                            </Command>
+                                                        </PopoverContent>
+                                                    </Popover>
                                                     {errors.roomId && (
                                                         <p className="text-sm text-red-500">{errors.roomId.message}</p>
                                                     )}

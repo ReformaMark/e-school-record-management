@@ -99,140 +99,142 @@ export const AddClassRoomCard = () => {
     };
 
     return (
-        <Card className="flex flex-col h-fit">
-            <CardHeader>
-                <CardTitle>Add Class Room</CardTitle>
-                <CardDescription>
-                    Fill out the form to add a room
-                </CardDescription>
-            </CardHeader>
-            <form onSubmit={
-                handleSubmit(data => {
-                    // Remove gradeLevel from data since it's just for display
-                    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-                    const { gradeLevel, ...submitData } = data;
+        <div className="p-5">
+            <Card className="flex flex-col h-fit">
+                <CardHeader>
+                    <CardTitle>Add Class Room</CardTitle>
+                    <CardDescription>
+                        Fill out the form to add a room
+                    </CardDescription>
+                </CardHeader>
+                <form onSubmit={
+                    handleSubmit(data => {
+                        // Remove gradeLevel from data since it's just for display
+                        /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+                        const { gradeLevel, ...submitData } = data;
 
-                    // console.log(submitData);
-                    createRoom({
-                        ...submitData,
-                        gradeLevelId: selectedGradeLevelId ?? undefined,
-                        teacherId: data.teacherId as Id<"users">
-                    });
-                })
-            }>
-                <CardContent className="grid gap-8 mt-7">
-                    <div className="grid gap-2">
-                        <Label>Assign Teacher</Label>
-                        <Select onValueChange={handleTeacherSelect}>
-                            <SelectTrigger>
-                                <SelectValue placeholder="Select teacher" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {teachers?.map(teacher => (
-                                    <SelectItem key={teacher._id} value={teacher._id}>
-                                        {teacher.lastName}, {teacher.firstName}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                        {errors.teacherId && (
-                            <p className="text-sm text-red-500">{errors.teacherId.message}</p>
+                        // console.log(submitData);
+                        createRoom({
+                            ...submitData,
+                            gradeLevelId: selectedGradeLevelId ?? undefined,
+                            teacherId: data.teacherId as Id<"users">
+                        });
+                    })
+                }>
+                    <CardContent className="grid gap-8 mt-7">
+                        <div className="grid gap-2">
+                            <Label>Assign Teacher</Label>
+                            <Select onValueChange={handleTeacherSelect}>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Select teacher" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {teachers?.map(teacher => (
+                                        <SelectItem key={teacher._id} value={teacher._id}>
+                                            {teacher.lastName}, {teacher.firstName}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                            {errors.teacherId && (
+                                <p className="text-sm text-red-500">{errors.teacherId.message}</p>
+                            )}
+                        </div>
+
+                        <div className="grid gap-2">
+                            <Label>Grade Level</Label>
+                            <Select onValueChange={handleGradeLevelSelect}>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Select grade level" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {gradeLevels?.map((grade) => (
+                                        <SelectItem key={grade._id} value={grade.level}>
+                                            {grade.level}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                            {errors.gradeLevel && (
+                                <p className="text-sm text-red-500">{errors.gradeLevel.message}</p>
+                            )}
+                        </div>
+
+                        {(watch("gradeLevel")?.startsWith("Grade 11") || watch("gradeLevel")?.startsWith("Grade 12")) && (
+                            <>
+                                <div className="grid gap-2">
+                                    <Label>Track</Label>
+                                    <Select onValueChange={handleTrackSelect}>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Select track" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {trackOptions.map((track) => (
+                                                <SelectItem key={track.value} value={track.value}>
+                                                    {track.label}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+
+                                <div className="grid gap-2">
+                                    <Label>Strand</Label>
+                                    <Input
+                                        {...register("strand")}
+                                        placeholder="Enter strand"
+                                    />
+                                </div>
+                            </>
                         )}
-                    </div>
 
-                    <div className="grid gap-2">
-                        <Label>Grade Level</Label>
-                        <Select onValueChange={handleGradeLevelSelect}>
-                            <SelectTrigger>
-                                <SelectValue placeholder="Select grade level" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {gradeLevels?.map((grade) => (
-                                    <SelectItem key={grade._id} value={grade.level}>
-                                        {grade.level}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                        {errors.gradeLevel && (
-                            <p className="text-sm text-red-500">{errors.gradeLevel.message}</p>
-                        )}
-                    </div>
+                        <div className="grid gap-2">
+                            <Label>Room Name</Label>
+                            <Input {...register("name")} disabled />
+                            {errors.name && (
+                                <p className="text-sm text-red-500">{errors.name.message}</p>
+                            )}
+                        </div>
 
-                    {(watch("gradeLevel")?.startsWith("Grade 11") || watch("gradeLevel")?.startsWith("Grade 12")) && (
-                        <>
-                            <div className="grid gap-2">
-                                <Label>Track</Label>
-                                <Select onValueChange={handleTrackSelect}>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Select track" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {trackOptions.map((track) => (
-                                            <SelectItem key={track.value} value={track.value}>
-                                                {track.label}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </div>
+                        <div className="grid gap-2">
+                            <Label>Room Type</Label>
+                            <Select onValueChange={(value) => setValue("type", value as typeof roomTypes[number])}>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Select room type" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {roomTypes.map((type) => (
+                                        <SelectItem key={type} value={type}>
+                                            {type.replace("_", " ")}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                            {errors.type && (
+                                <p className="text-sm text-red-500">{errors.type.message}</p>
+                            )}
+                        </div>
 
-                            <div className="grid gap-2">
-                                <Label>Strand</Label>
-                                <Input
-                                    {...register("strand")}
-                                    placeholder="Enter strand"
-                                />
-                            </div>
-                        </>
-                    )}
+                        <div className="grid gap-2">
+                            <Label>Capacity</Label>
+                            <Input type="number" {...register("capacity")} />
+                            {errors.capacity && (
+                                <p className="text-sm text-red-500">{errors.capacity.message}</p>
+                            )}
+                        </div>
 
-                    <div className="grid gap-2">
-                        <Label>Room Name</Label>
-                        <Input {...register("name")} disabled />
-                        {errors.name && (
-                            <p className="text-sm text-red-500">{errors.name.message}</p>
-                        )}
-                    </div>
-
-                    <div className="grid gap-2">
-                        <Label>Room Type</Label>
-                        <Select onValueChange={(value) => setValue("type", value as typeof roomTypes[number])}>
-                            <SelectTrigger>
-                                <SelectValue placeholder="Select room type" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {roomTypes.map((type) => (
-                                    <SelectItem key={type} value={type}>
-                                        {type.replace("_", " ")}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                        {errors.type && (
-                            <p className="text-sm text-red-500">{errors.type.message}</p>
-                        )}
-                    </div>
-
-                    <div className="grid gap-2">
-                        <Label>Capacity</Label>
-                        <Input type="number" {...register("capacity")} />
-                        {errors.capacity && (
-                            <p className="text-sm text-red-500">{errors.capacity.message}</p>
-                        )}
-                    </div>
-
-                    <div className="grid gap-2">
-                        <Label>Description (Optional)</Label>
-                        <Textarea {...register("description")} />
-                    </div>
-                </CardContent>
-                <CardFooter>
-                    <Button type="submit" disabled={isPending} className="text-white">
-                        {isPending ? "Creating..." : "Create Classroom"}
-                    </Button>
-                </CardFooter>
-            </form>
-        </Card>
+                        <div className="grid gap-2">
+                            <Label>Description (Optional)</Label>
+                            <Textarea {...register("description")} />
+                        </div>
+                    </CardContent>
+                    <CardFooter>
+                        <Button type="submit" disabled={isPending} className="text-white">
+                            {isPending ? "Creating..." : "Create Classroom"}
+                        </Button>
+                    </CardFooter>
+                </form>
+            </Card>
+        </div>
     )
 }
