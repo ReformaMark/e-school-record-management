@@ -14,8 +14,33 @@ type Theme = {
 const ThemeContext = createContext<Theme | undefined>(undefined)
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-    const [textColor, setTextColor] = useState("#000000")
-    const [navigationColor, setNavigationColor] = useState("#1e293b") // Default slate-800
+    const [mounted, setMounted] = useState(false)
+    const [textColor, setTextColor] = useState(() => {
+        if (typeof window !== 'undefined') {
+            return localStorage.getItem('textColor') || '#000000'
+        }
+        return '#000000'
+    })
+    const [navigationColor, setNavigationColor] = useState(() => {
+        if (typeof window !== 'undefined') {
+            return localStorage.getItem('navigationColor') || '#1e293b'
+        }
+        return '#1e293b'
+    })
+
+    useEffect(() => {
+        setMounted(true)
+    }, [])
+
+    const updateTextColor = (color: string) => {
+        setTextColor(color)
+        localStorage.setItem('textColor', color)
+    }
+
+    const updateNavigationColor = (color: string) => {
+        setNavigationColor(color)
+        localStorage.setItem('navigationColor', color)
+    }
 
     // Load saved theme from localStorage on initial render
     useEffect(() => {
@@ -30,48 +55,41 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         }
     }, [])
 
-    // Save theme changes to localStorage and apply them
     useEffect(() => {
-        // Save to localStorage
-        localStorage.setItem("textColor", textColor)
-        localStorage.setItem("navigationColor", navigationColor)
+        if (!mounted) return
 
         // Apply styles
-        document.body.style.color = textColor
-
-        // Set CSS variables
-        document.documentElement.style.setProperty("--theme-text", textColor)
-        document.documentElement.style.setProperty("--theme-navigation", navigationColor)
-        document.documentElement.style.setProperty("--foreground", textColor)
+        document.documentElement.style.setProperty('--theme-text', textColor)
+        document.documentElement.style.setProperty('--theme-navigation', navigationColor)
+        document.documentElement.style.setProperty('--nav-background', navigationColor)
+        document.documentElement.style.setProperty('--foreground', textColor)
 
         // Update navigation-specific variables
         const navBrightness = getBrightness(navigationColor)
         const isNavDark = navBrightness < 128
 
-        // Set navigation colors
-        document.documentElement.style.setProperty("--nav-background", navigationColor)
-        document.documentElement.style.setProperty("--nav-foreground", isNavDark ? "#ffffff" : "#000000")
+        document.documentElement.style.setProperty('--nav-foreground', isNavDark ? '#ffffff' : '#000000')
         document.documentElement.style.setProperty(
-            "--nav-border",
-            isNavDark ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.1)",
+            '--nav-border',
+            isNavDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
         )
         document.documentElement.style.setProperty(
-            "--nav-muted",
-            isNavDark ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.05)",
+            '--nav-muted',
+            isNavDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)'
         )
         document.documentElement.style.setProperty(
-            "--nav-muted-foreground",
-            isNavDark ? "rgba(255, 255, 255, 0.6)" : "rgba(0, 0, 0, 0.6)",
+            '--nav-muted-foreground',
+            isNavDark ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.6)'
         )
-    }, [textColor, navigationColor])
+    }, [textColor, navigationColor, mounted])
 
     return (
         <ThemeContext.Provider
             value={{
                 textColor,
-                setTextColor,
+                setTextColor: updateTextColor,
                 navigationColor,
-                setNavigationColor,
+                setNavigationColor: updateNavigationColor,
             }}
         >
             {children}
