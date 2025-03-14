@@ -33,10 +33,20 @@ export const create = mutation({
 export const get = query({
     args: {},
     handler: async (ctx) => {
-        return await ctx.db
+        const settings = await ctx.db
             .query("systemSettings")
             .order("desc")
             .first()
 
+        if (!settings?.schoolImage) {
+            return null
+        }
+
+        const imageUrl = await ctx.storage.getUrl(settings?.schoolImage)
+
+        return {
+            ...settings,
+            schoolImage: imageUrl
+        }
     }
 })

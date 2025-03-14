@@ -92,7 +92,7 @@ export function SchoolSettingsForm() {
                 <CardHeader>
                     <CardTitle>School Information</CardTitle>
                     <CardDescription>
-                        Update your school's name and logo. These will be displayed throughout the application.
+                        Update your school&apos;s name and logo. These will be displayed throughout the application.
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
