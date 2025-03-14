@@ -11,6 +11,7 @@ export const create = mutation({
         description: v.optional(v.string()),
         gradeLevelId: v.optional(v.id("gradeLevels")),
         track: v.optional(v.string()),
+        strand: v.optional(v.string()),
     },
     handler: async (ctx, args) => {
 
@@ -39,6 +40,8 @@ export const create = mutation({
             teacherId: args.teacherId,
             isActive: true,
             gradeLevelId: args.gradeLevelId,
+            track: args.track,
+            strand: args.strand,
         });
     }
 })
@@ -92,6 +95,9 @@ export const update = mutation({
         teacherId: v.id("users"),
         description: v.optional(v.string()),
         gradeLevelId: v.optional(v.id("gradeLevels")),
+        gradeLevel: v.optional(v.string()),
+        track: v.optional(v.string()),
+        strand: v.optional(v.string()),
     },
     handler: async (ctx, args) => {
         const { id, ...updates } = args;
@@ -116,7 +122,13 @@ export const update = mutation({
         }
 
         return await ctx.db.patch(id, {
-            ...updates,
+            capacity: args.capacity,
+            description: args.description,
+            name: args.name,
+            strand: args.strand,
+            track: args.track,
+            teacherId: args.teacherId,
+            type: args.type,
             gradeLevelId: args.gradeLevelId
         });
     }

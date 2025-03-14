@@ -1,6 +1,5 @@
 
 import { SchoolClassroomCardTable } from "@/components/school-classroom-card-table";
-import { AddClassRoomCard } from "./_components/add-class-room-card";
 
 const SystemAdminClassRoomPage = () => {
     return (
@@ -9,7 +8,7 @@ const SystemAdminClassRoomPage = () => {
                 <div className="grid gap-4 md:gap-8 lg:grid-cols-2 xl:grid-cols-3">
                     <SchoolClassroomCardTable />
 
-                    <AddClassRoomCard />
+                    {/* <AddClassRoomCard /> */}
                 </div>
             </main>
         </div>

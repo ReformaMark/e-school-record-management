@@ -1,6 +1,6 @@
 export const trackOptions = [
     // { label: "Core Subject (All Track)", value: "CORE" },
-    { label: "Academic Track", value: "ACADS" },
+    { label: "Academic Track", value: "ACADEMIC" },
     { label: "Work Immersion/Culminating Activity", value: "IMMERSION" },
     { label: "TVL Track", value: "TVL" },
     { label: "Sports Track", value: "SPORTS" },

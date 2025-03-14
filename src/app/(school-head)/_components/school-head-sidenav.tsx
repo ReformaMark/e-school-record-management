@@ -11,7 +11,14 @@ export const SchoolHeadSideNav = () => {
     const pathname = usePathname()
 
     return (
-        <main className='hidden md:block fixed inset-0 w-[20%] bg-[#354649] pt-24 py-5 text-white shadow-lg'>
+        <main
+            className='hidden md:block fixed inset-0 w-[20%] pt-24 py-5 shadow-lg'
+            style={{
+                backgroundColor: "var(--nav-background, #1e293b)",
+                color: "var(--nav-foreground, white)",
+                borderColor: "var(--nav-border, rgba(255, 255, 255, 0.1))",
+            }}
+        >
             {/* <div className="flex items-center text-white gap-x-1 border-b border-b-white px-3 pb-5">
                 <Image src={Logo} alt='' className='w-16 h-10 object-contain invert' />
                 <h1 className='text-white text-center text-sm uppercase font-medium leading-relaxed'>Tanjay National High School</h1>

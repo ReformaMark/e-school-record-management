@@ -64,12 +64,12 @@ export function DataTable<TData, TValue>({
                     onChange={(event) =>
                         table.getColumn(`${filter}`)?.setFilterValue(event.target.value)
                     }
-                    className="max-w-sm text-primary border-primary focus:border-primary-foreground focus:ring-primary"
+                    className="max-w-sm"
                 />
             </div>
 
             {/* Table Code */}
-            <div className="rounded-md border border-primary-foreground/50 overflow-x-auto">
+            <div className="rounded-md border overflow-x-auto">
                 <Table>
                     <TableHeader className="bg-foreground">
                         {table.getHeaderGroups().map((headerGroup) => (
@@ -92,13 +92,13 @@ export function DataTable<TData, TValue>({
                             </TableRow>
                         ))}
                     </TableHeader>
-                    <TableBody className="text-primary">
+                    <TableBody className="">
                         {table.getRowModel().rows?.length ? (
                             table.getRowModel().rows.map((row) => (
                                 <TableRow
                                     key={row.id}
                                     data-state={row.getIsSelected() && "selected"}
-                                    className="hover:bg-foreground/50"
+                                    className=""
                                 >
                                     {row.getVisibleCells().map((cell) => (
                                         <TableCell

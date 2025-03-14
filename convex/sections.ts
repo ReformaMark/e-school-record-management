@@ -581,3 +581,33 @@ export const update = mutation({
         return args.id;
     }
 });
+
+export const deleteSection = mutation({
+    args: {
+        id: v.id("sections"),
+    },
+    handler: async (ctx, args) => {
+        const section = await ctx.db.get(args.id)
+        if (!section) throw new ConvexError("Section not found")
+
+        const classes = await ctx.db
+            .query("classes")
+            .filter(q => q.eq(q.field("sectionId"), args.id))
+            .collect()
+
+        for (const classItem of classes) {
+            const schedules = await ctx.db
+                .query("schedules")
+                .filter(q => q.eq(q.field("classId"), classItem._id))
+                .collect()
+
+            for (const schedule of schedules) {
+                await ctx.db.delete(schedule._id)
+            }
+
+            await ctx.db.delete(classItem._id)
+        }
+
+        return await ctx.db.delete(args.id)
+    }
+})

@@ -6,12 +6,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useConvexMutation } from "@convex-dev/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-import { useForm } from "react-hook-form";
+import { useQuery } from "convex/react";
+import { useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import { api } from "../../../../../../convex/_generated/api";
 import { Doc, Id } from "../../../../../../convex/_generated/dataModel";
 import { SubjectFormData, subjectSchema } from "./add-subjects-card";
-import { useQuery } from "convex/react";
 
 interface EditSubjectDialogProps {
     open: boolean;
@@ -21,8 +21,11 @@ interface EditSubjectDialogProps {
 
 export const EditSubjectDialog = ({ open, onClose, subject }: EditSubjectDialogProps) => {
     const gradeLevels = useQuery(api.gradeLevel.get)
+    const selectedGradeLevel = useQuery(api.gradeLevel.getGradeLevelById, {
+        gradeLevelId: subject.gradeLevelId as Id<"gradeLevels">
+    });
 
-    const { register, handleSubmit, setValue, formState: { errors } } = useForm<SubjectFormData>({
+    const { register, handleSubmit, setValue, formState: { errors }, control } = useForm<SubjectFormData>({
         resolver: zodResolver(subjectSchema),
         defaultValues: {
             name: subject.name,
@@ -39,6 +42,19 @@ export const EditSubjectDialog = ({ open, onClose, subject }: EditSubjectDialogP
     const { mutate: updateSubject, isPending } = useMutation({
         mutationFn: useConvexMutation(api.subjects.update)
     });
+
+    const currentGradeLevelId = useWatch({
+        control,
+        name: "gradeLevelId",
+        defaultValue: subject.gradeLevelId // Set initial value
+    });
+
+    const currentGradeLevel = useQuery(api.gradeLevel.getGradeLevelById, {
+        gradeLevelId: currentGradeLevelId as Id<"gradeLevels">
+    });
+
+    const isSeniorHigh = (currentGradeLevel?.level || selectedGradeLevel?.level)?.startsWith("Grade 11") ||
+        (currentGradeLevel?.level || selectedGradeLevel?.level)?.startsWith("Grade 12");
 
     // const isMapeh = watch("isMapeh");
 
@@ -144,25 +160,27 @@ export const EditSubjectDialog = ({ open, onClose, subject }: EditSubjectDialogP
                         )}
                     </div>
 
-                    <div className="space-y-2">
-                        <Label>Category</Label>
-                        <Select
-                            defaultValue={subject.subjectCategory}
-                            onValueChange={(value) => setValue("subjectCategory", value as "core" | "applied" | "specialized")}
-                        >
-                            <SelectTrigger>
-                                <SelectValue placeholder="Select category" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="core">Core</SelectItem>
-                                <SelectItem value="applied">Applied</SelectItem>
-                                <SelectItem value="specialized">Specialized</SelectItem>
-                            </SelectContent>
-                        </Select>
-                        {errors.subjectCategory && (
-                            <p className="text-sm text-red-500">{errors.subjectCategory.message}</p>
-                        )}
-                    </div>
+                    {isSeniorHigh && (
+                        <div className="space-y-2">
+                            <Label>Category</Label>
+                            <Select
+                                defaultValue={subject.subjectCategory}
+                                onValueChange={(value) => setValue("subjectCategory", value as "core" | "applied" | "specialized")}
+                            >
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Select category" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="core">Core</SelectItem>
+                                    <SelectItem value="applied">Applied</SelectItem>
+                                    <SelectItem value="specialized">Specialized</SelectItem>
+                                </SelectContent>
+                            </Select>
+                            {errors.subjectCategory && (
+                                <p className="text-sm text-red-500">{errors.subjectCategory.message}</p>
+                            )}
+                        </div>
+                    )}
 
                     {/* <div className="flex items-center space-x-2">
                         <Switch

@@ -1,5 +1,4 @@
 'use client'
-import Logo from '@/../public/images/tanjayLogo.png';
 import { SidebarSection } from '@/app/(system-admin)/_components/sidebar-section';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
@@ -19,6 +18,7 @@ import {
 } from "@/components/ui/sheet";
 import { useCurrentUser } from '@/features/current/api/use-current-user';
 import { useAuthActions } from '@convex-dev/auth/react';
+import { useQuery } from 'convex/react';
 import { School2Icon } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -28,21 +28,30 @@ import { FaChalkboardTeacher } from 'react-icons/fa';
 import { GiHamburgerMenu } from 'react-icons/gi';
 import { MdOutlineDashboard, MdOutlineReport, MdOutlineSupportAgent } from 'react-icons/md';
 import { PiStudent } from 'react-icons/pi';
+import { api } from '../../../../convex/_generated/api';
 
 export const SchoolHeadNavbar = () => {
     const pathname = usePathname()
     const { user, isLoading } = useCurrentUser()
     const { signOut } = useAuthActions()
+    const school = useQuery(api.systemSettings.get)
 
     if (isLoading) {
         return null;
     }
 
     return (
-        <nav className='w-full h-fit z-50 shadow-md py-5 fixed flex justify-between items-center pr-3 sm:pr-5 md:pr-10 lg:pr-10 bg-primary text-white'>
+        <nav
+            className='w-full h-fit z-50 shadow-md py-5 fixed flex justify-between items-center pr-3 sm:pr-5 md:pr-10 lg:pr-10'
+            style={{
+                backgroundColor: "var(--nav-background, #1e293b)",
+                color: "var(--nav-foreground, white)",
+                borderColor: "var(--nav-border, rgba(255, 255, 255, 0.1))",
+            }}
+        >
             <div className="flex items-center gap-x-1 px-3 md:w-[20%] ">
-                <Image src={Logo} alt='' className='w-16 h-10 object-contain' />
-                <h1 className='hidden md:block text-textWhite  text-center  md:text-sm uppercase font-medium leading-relaxed'>Tanjay National High School</h1>
+                <Image src={school?.schoolImage as string} alt={school?.schoolName as string} className='w-16 h-10 object-contain' width={120} height={120} />
+                <h1 className='hidden md:block text-textWhite  text-center  md:text-sm uppercase font-medium leading-relaxed'>{school?.schoolName}</h1>
             </div>
 
             <div className="flex items-center gap-x-5">

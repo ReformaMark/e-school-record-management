@@ -1,8 +1,8 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
-import { mutation, query } from "./_generated/server";
+import { asyncMap } from "convex-helpers";
 import { ConvexError, v } from "convex/values";
 import { Doc, Id } from "./_generated/dataModel";
-import { asyncMap } from "convex-helpers";
+import { mutation, query } from "./_generated/server";
 
 export const getSubjects = query({
     handler: async (ctx) => {
@@ -80,7 +80,7 @@ export const create = mutation({
     args: {
         name: v.string(),
         subjectCode: v.string(),
-        subjectCategory: v.union(v.literal("core"), v.literal("applied"), v.literal("specialized")),
+        subjectCategory: v.optional(v.union(v.literal("core"), v.literal("applied"), v.literal("specialized"))),
         gradeLevelId: v.id("gradeLevels"),
         gradeWeights: v.optional(v.object({
             written: v.number(),
@@ -182,11 +182,11 @@ export const update = mutation({
         name: v.string(),
         subjectCode: v.string(),
         gradeLevelId: v.id("gradeLevels"),
-        subjectCategory: v.union(
+        subjectCategory: v.optional(v.union(
             v.literal("core"),
             v.literal("applied"),
             v.literal("specialized")
-        ),
+        )),
         gradeWeights: v.optional(componentWeightValidator),
         // isMapeh: v.boolean(),
         // mapehWeights: v.optional(v.object({
@@ -242,6 +242,7 @@ export const getSubjectWithGradeLevel = query({
     handler: async (ctx) => {
         const subjects = await ctx.db
             .query("subjects")
+            .order("desc")
             .collect();
 
         // Fetch grade level for each subject

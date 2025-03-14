@@ -6,6 +6,8 @@ import { Toaster } from "@/components/ui/sonner";
 import { ConvexAuthNextjsServerProvider } from "@convex-dev/auth/nextjs/server";
 import { ConvexClientProvider } from "../components/convex-client-provider";
 import { TeacherGuard } from "@/components/guards/teacher-guard";
+import { ThemeProvider } from "@/components/theme-provider";
+import { ThemeWidget } from "@/components/theme-widget";
 
 export const metadata: Metadata = {
   title: "ERMS-teacher",
@@ -22,15 +24,18 @@ export default function RootLayout({
       <ConvexClientProvider>
         <html lang="en">
           <body
-            className={`bg-[#E0E7E9] relative`}
-          > 
+            className={`bg-background relative`}
+          >
             <TeacherGuard>
-              <Toaster richColors />
-              <Navbar/>
-              <Sidenav/>
-              <div className="w-full pt-[15%] md:pt-0  md:absolute z-30 md:right-0 md:top-[80px] md:w-[80%]">
+              <ThemeProvider>
+                <Toaster richColors />
+                <Navbar />
+                <Sidenav />
+                <div className="w-full pt-[15%] md:pt-0  md:absolute z-30 md:right-0 md:top-[80px] md:w-[80%]">
                   {children}
-              </div>
+                  <ThemeWidget />
+                </div>
+              </ThemeProvider>
             </TeacherGuard>
           </body>
         </html>

@@ -1,5 +1,6 @@
 "use client"
 
+import { ClassroomColumns, RoomWithTeacher } from "@/app/(system-admin)/(sysadmin-school)/sysadmin-classroom/_components/classroom-columns";
 import { DataTable } from "@/components/data-table";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,14 +12,13 @@ import {
 } from "@/components/ui/card";
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
-import { ClassroomColumns, RoomWithTeacher } from "@/app/(system-admin)/(sysadmin-school)/sysadmin-classroom/_components/classroom-columns";
 
 export const SchoolClassroomCardTable = () => {
     const classroom = useQuery(api.classroom.get)
 
     return (
         <Card
-            className="xl:col-span-2"
+            className="xl:col-span-3"
         >
             <CardHeader className="flex flex-row items-center">
                 <div className="grid gap-2">

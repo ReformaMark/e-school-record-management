@@ -332,14 +332,16 @@ export default defineSchema({
     capacity: v.number(),
     type: v.string(),
     features: v.optional(v.array(v.string())),
+    isActive: v.optional(v.boolean()),
+    description: v.optional(v.string()),
+    track: v.optional(v.string()),
+    strand: v.optional(v.string()),
     teacherId: v.optional(v.id("users")), // Reference to assigned teacher
     gradeLevelId: v.optional(v.id("gradeLevels")), // Reference to grade level
-    isActive: v.optional(v.boolean()),
-    description: v.optional(v.string())
   }).index("by_teacherId", ["teacherId"]),
 
   schoolYears: defineTable({
-    startDate: v.string(), 
+    startDate: v.string(),
     endDate: v.string(),
     batchName: v.string(),
     // example: 2025-2026... need ilagay sa form kapag magaadd ng school year or pwedeng automatic
@@ -542,7 +544,10 @@ export default defineSchema({
       daysPresent: v.optional(v.number()),
     }),
   }),
-
+  systemSettings: defineTable({
+    schoolImage: v.optional(v.string()),
+    schoolName: v.optional(v.string()),
+  })
 
 })
 
