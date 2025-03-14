@@ -24,7 +24,7 @@ export default function RootLayout({
       <ConvexClientProvider>
         <html lang="en">
           <body
-            className={`bg-[#E0E7E9] relative`}
+            className={`bg-background relative`}
           >
             <TeacherGuard>
               <ThemeProvider>
