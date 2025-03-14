@@ -34,6 +34,7 @@ import type * as schoolYear from "../schoolYear.js";
 import type * as sections from "../sections.js";
 import type * as students from "../students.js";
 import type * as subjects from "../subjects.js";
+import type * as systemSettings from "../systemSettings.js";
 import type * as users from "../users.js";
 import type * as values from "../values.js";
 
@@ -67,6 +68,7 @@ declare const fullApi: ApiFromModules<{
   sections: typeof sections;
   students: typeof students;
   subjects: typeof subjects;
+  systemSettings: typeof systemSettings;
   users: typeof users;
   values: typeof values;
 }>;

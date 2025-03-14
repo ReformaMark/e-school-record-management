@@ -341,7 +341,7 @@ export default defineSchema({
   }).index("by_teacherId", ["teacherId"]),
 
   schoolYears: defineTable({
-    startDate: v.string(), 
+    startDate: v.string(),
     endDate: v.string(),
     batchName: v.string(),
     // example: 2025-2026... need ilagay sa form kapag magaadd ng school year or pwedeng automatic
@@ -544,7 +544,10 @@ export default defineSchema({
       daysPresent: v.optional(v.number()),
     }),
   }),
-
+  systemSettings: defineTable({
+    schoolImage: v.optional(v.string()),
+    schoolName: v.optional(v.string()),
+  })
 
 })
 

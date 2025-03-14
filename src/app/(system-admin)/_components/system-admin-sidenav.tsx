@@ -1,6 +1,6 @@
 'use client'
 
-import { School2Icon } from 'lucide-react'
+import { School2Icon, Settings } from 'lucide-react'
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
@@ -129,8 +129,13 @@ export const SystemAdminSidenav = () => {
                     >
                         Interventions
                     </Link>
-
                 </SidebarSection>
+
+                <Link href={'/sysadmin-settings'} className={`${pathname === '/sysadmin-settings' ? "bg-background/50 text-white" : "bg-transparent"} text-white flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}>
+                    <Settings className='size-5 w-10' />
+
+                    <h1 className='tracking-wider'>System Settings</h1>
+                </Link>
             </div>
         </main>
     )
