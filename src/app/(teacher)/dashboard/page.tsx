@@ -14,7 +14,7 @@ import {
   CardTitle
 } from "@/components/ui/card"
 import { useQuery } from "convex/react"
-import { GraduationCapIcon, UserCheckIcon, Users2Icon } from "lucide-react"
+import { GraduationCapIcon, UserCheckIcon } from "lucide-react"
 import { api } from "../../../../convex/_generated/api"
 import EraInterventionCard from "./_components/era-intervention-card"
 import { EraSparCard } from "./_components/era-spar-card"
