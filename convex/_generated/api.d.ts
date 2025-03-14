@@ -28,6 +28,7 @@ import type * as gradeLevel from "../gradeLevel.js";
 import type * as http from "../http.js";
 import type * as interventions from "../interventions.js";
 import type * as quarterlyGrades from "../quarterlyGrades.js";
+import type * as registrar from "../registrar.js";
 import type * as schedules from "../schedules.js";
 import type * as schoolPeriod from "../schoolPeriod.js";
 import type * as schoolYear from "../schoolYear.js";
@@ -62,6 +63,7 @@ declare const fullApi: ApiFromModules<{
   http: typeof http;
   interventions: typeof interventions;
   quarterlyGrades: typeof quarterlyGrades;
+  registrar: typeof registrar;
   schedules: typeof schedules;
   schoolPeriod: typeof schoolPeriod;
   schoolYear: typeof schoolYear;
