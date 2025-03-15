@@ -148,7 +148,7 @@ export const teacherColumns: ColumnDef<Teacher>[] = [
                                             </div>
                                             {classItem?.track && (
                                                 <div className="px-4 py-2 bg-muted/50">
-                                                    <Badge variant="outline" className="h-5 px-1.5 text-xs font-normal bg-foreground text-white capitalize">
+                                                    <Badge variant="outline" className="h-5 px-1.5 text-xs font-semibold bg-primary text-white capitalize">
                                                         {classItem?.track}
                                                     </Badge>
                                                 </div>
