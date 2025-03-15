@@ -103,6 +103,8 @@ function FinalizeGradesDialog({student, averages, generalAverage}:FinalizeGrades
             schoolYearId: student.cLass?.schoolYearId,
             generalAverage: typeof generalAverage === 'string' ? 0 : generalAverage,
             semester: student.cLass?.semester,
+            isPassed: true,
+            dateSubmitted: new Date().toISOString()
         }),{
             loading: "Promoting student...",
             success: "Student promoted successfully.",
