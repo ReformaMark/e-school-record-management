@@ -7,7 +7,6 @@ import { usePathname } from 'next/navigation'
 import { PiStudent } from 'react-icons/pi'
 import { TbListNumbers } from "react-icons/tb";
 import { GiTeacher } from "react-icons/gi";
-import { QuestionMarkCircledIcon } from '@radix-ui/react-icons'
 import { FaQuestion } from 'react-icons/fa'
 
 function Sidenav() {

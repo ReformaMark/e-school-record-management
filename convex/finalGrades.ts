@@ -17,6 +17,8 @@ export const create = mutation({
         })),
         generalAverage: v.number(),
         semester: v.optional(v.string()),
+        isPassed: v.optional(v.boolean()),
+        dateSubmitted: v.optional(v.string())
     },
     handler: async(ctx, args) =>{
      

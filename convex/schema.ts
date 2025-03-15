@@ -415,6 +415,8 @@ export default defineSchema({
     })),
     generalAverage: v.number(),
     semester: v.optional(v.string()),
+    isPassed: v.optional(v.boolean()),
+    dateSubmitted: v.optional(v.string()),
     promotionType: v.optional(v.string())
   }),
   promotion: defineTable({
