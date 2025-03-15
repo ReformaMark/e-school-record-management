@@ -8,8 +8,8 @@ function About() {
   return (
     <div className='space-y-10'>
         {/* <h1 className='text-black font-semibold uppercase tracking-wide text-center text-lg md:text-2xl'>About Us</h1> */}
-        <div className="flex flex-col items-center justify-center h-[50vh]  bg-gradient-to-b from-primary to-primary/70">
-            <h1 className=' text-xl md:text-2xl lg:text-4xl xl:text-6xl font-bold text-center capitalize pt-12'>Simplify your workflow with seamless electronic records management!</h1>
+        <div className="flex flex-col items-center justify-center h-[50vh] bg-nav">
+            <h1 className=' text-xl md:text-2xl lg:text-4xl xl:text-6xl font-bold text-center capitalize pt-12 text-white'>Simplify your workflow with seamless electronic records management!</h1>
             {/* <Card className="shadow-lg">
                 <CardHeader>
                     <CardTitle className='text-lg md:text-2xl text-center tracking-wider uppercase font-mono'>

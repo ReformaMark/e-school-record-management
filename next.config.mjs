@@ -17,6 +17,10 @@ const nextConfig = {
             {
                 protocol: 'https',
                 hostname: 'sleek-oyster-512.convex.cloud',
+            },
+            {
+                protocol: 'https',
+                hostname: 'sincere-hawk-12.convex.cloud',
             }
         ]
     }

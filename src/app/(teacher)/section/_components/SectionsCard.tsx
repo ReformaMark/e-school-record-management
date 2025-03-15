@@ -14,7 +14,7 @@ function SectionsCard({
     const totalStudents = isShs ? cls?.semester === "1st" ? cls?.section?.firstSemStudents.length : cls?.section?.secondSemStudents.length : cls?.section?.students.length
   return (
     <div className='bg-white rounded-md shadow-md flex flex-col justify-between'>
-        <div className={`flex justify-between text-white shadow-md px-5 py-1 bg-primary-foreground text-lg font-semibold`}>
+        <div className={`flex justify-between bg-nav text-white shadow-md px-5 py-1 text-lg font-semibold`}>
             <h1>{cls?.section?.name}</h1>
             <h1 className='capitalize'>{cls?.section?.gradeLevel?.level} {cls?.semester ?  ` - ${cls.semester} Semester` : ""}</h1>
         </div>

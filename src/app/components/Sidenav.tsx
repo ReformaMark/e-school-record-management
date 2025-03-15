@@ -8,6 +8,7 @@ import { PiStudent } from 'react-icons/pi'
 import { TbListNumbers } from "react-icons/tb";
 import { GiTeacher } from "react-icons/gi";
 import { QuestionMarkCircledIcon } from '@radix-ui/react-icons'
+import { FaQuestion } from 'react-icons/fa'
 
 function Sidenav() {
     const pathname = usePathname()
@@ -44,6 +45,10 @@ function Sidenav() {
                 <Link href={'/assessments'} className={`${pathname === '/assessments' ? "bg-background/50 text-white" : "bg-transparent"} text-textWhite  flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}>
                     <TbListNumbers className='size-4 w-10' />
                     <h1 className='tracking-wider'>Assessments</h1>
+                </Link>
+                <Link href={'/about'} className={`${pathname === '/about' ? "bg-background/50 text-white" : "bg-transparent"} text-textWhite  flex items-center py-2 px-3 rounded-xl gap-x-3 text-sm font-medium  text-center`}>
+                    <FaQuestion className='size-4 w-10' />
+                    <h1 className='tracking-wider'>About</h1>
                 </Link>
 
             </div>
