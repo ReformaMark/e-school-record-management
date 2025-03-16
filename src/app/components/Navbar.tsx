@@ -83,7 +83,14 @@ function Navbar() {
                 <div className="md:hidden">
                     <Sheet>
                         <SheetTrigger><GiHamburgerMenu className="text-textWhite" /></SheetTrigger>
-                        <SheetContent className='block md:hidden bg-primary text-textWhite'>
+                        <SheetContent
+                            className='block md:hidden'
+                            style={{
+                                backgroundColor: "var(--nav-background, #1e293b)",
+                                color: "var(--nav-foreground, white)",
+                                borderColor: "var(--nav-border, rgba(255, 255, 255, 0.1))",
+                            }}
+                        >
                             <SheetHeader className='py-5'>
                                 <SheetTitle >
                                     <div className="flex items-center gap-x-3">
