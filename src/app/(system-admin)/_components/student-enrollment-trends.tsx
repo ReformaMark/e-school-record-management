@@ -8,7 +8,7 @@ import {
     ChartTooltipContent
 } from "@/components/ui/chart"
 import { useQuery } from "convex/react"
-import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts"
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts"
 import { api } from "../../../../convex/_generated/api"
 
 export const StudentEnrollmentTrends = () => {
@@ -44,31 +44,37 @@ export const StudentEnrollmentTrends = () => {
                 <CardDescription>Historical enrollment data</CardDescription>
             </CardHeader>
             <CardContent>
-                <ChartContainer config={chartConfig}>
-                    <LineChart accessibilityLayer data={enrollmentData}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis
-                            dataKey="year"
-                            tickLine={false}
-                            axisLine={false}
-                            tickMargin={10}
-                        />
-                        <YAxis
-                            tickLine={false}
-                            axisLine={false}
-                            tickFormatter={(value) => `${value}`}
-                        />
-                        <ChartTooltip content={<ChartTooltipContent />} />
-                        <Line
-                            type="monotone"
-                            dataKey="students"
-                            strokeWidth={2}
-                            stroke="var(--color-students)"
-                            dot={{ fill: "var(--color-students)", strokeWidth: 2, r: 4 }}
-                            activeDot={{ r: 6 }}
-                        />
-                    </LineChart>
-                </ChartContainer>
+                <div className="w-full overflow-x-auto">
+                    <div className="min-w-[300px]">
+                        <ChartContainer config={chartConfig} className="h-[200px] sm:h-[300px]">
+                            <BarChart accessibilityLayer data={enrollmentData}>
+                                <CartesianGrid strokeDasharray="3 3" />
+                                <XAxis
+                                    dataKey="year"
+                                    tickLine={false}
+                                    axisLine={false}
+                                    tickMargin={10}
+                                    stroke="hsl(142, 76%, 36%)"
+                                />
+                                <YAxis
+                                    tickLine={false}
+                                    axisLine={false}
+                                    stroke="hsl(142, 76%, 36%)"
+                                    tickFormatter={(value) => `${value}`}
+                                />
+                                <ChartTooltip
+                                    cursor={false}
+                                    content={<ChartTooltipContent />}
+                                />
+                                <Bar
+                                    dataKey="students"
+                                    fill="var(--color-students)"
+                                    radius={[4, 4, 0, 0]}
+                                />
+                            </BarChart>
+                        </ChartContainer>
+                    </div>
+                </div>
             </CardContent>
         </Card>
     );
