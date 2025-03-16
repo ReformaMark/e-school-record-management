@@ -19,6 +19,21 @@ import {
 import { MultiSelect } from "@/components/ui/multi-select";
 import { Plus } from "lucide-react";
 import { useState } from "react";
+import {
+    Command,
+    CommandEmpty,
+    CommandGroup,
+    CommandInput,
+    CommandItem,
+    CommandList,
+} from "@/components/ui/command"
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover"
+import { Check, ChevronsUpDown } from "lucide-react"
+import { cn } from "@/lib/utils"
 
 interface AddScheduleModalProps {
     onScheduleAdd: (schedule: {
@@ -34,6 +49,8 @@ interface AddScheduleModalProps {
 
 export const AddScheduleModal = ({ onScheduleAdd, schoolPeriods, rooms }: AddScheduleModalProps) => {
     const [open, setOpen] = useState(false);
+    const [openRoom, setOpenRoom] = useState(false)
+    const [searchValue, setSearchValue] = useState("")
     const [days, setDays] = useState<string[]>([]);
     const [schoolPeriodId, setSchoolPeriodId] = useState("");
     const [roomId, setRoomId] = useState("");
@@ -103,18 +120,82 @@ export const AddScheduleModal = ({ onScheduleAdd, schoolPeriods, rooms }: AddSch
 
                     <div className="space-y-2">
                         <Label>Room</Label>
-                        <Select onValueChange={setRoomId} value={roomId}>
-                            <SelectTrigger>
-                                <SelectValue placeholder="Select room" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {rooms?.map((room) => (
-                                    <SelectItem key={room._id} value={room._id}>
-                                        {room.name}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button
+                                    variant="outline"
+                                    role="combobox"
+                                    aria-expanded={openRoom}
+                                    className="w-full justify-between"
+                                >
+                                    {roomId ? (
+                                        rooms?.find((room) => room._id === roomId)?.name
+                                    ) : (
+                                        "Select room..."
+                                    )}
+                                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-[400px] p-0">
+                                <Command className="room-command">
+                                    <CommandInput
+                                        placeholder="Search room by name or teacher..."
+                                        value={searchValue}
+                                        onValueChange={setSearchValue}
+                                    />
+                                    <CommandList>
+                                        <CommandEmpty>No room found.</CommandEmpty>
+                                        <CommandGroup>
+                                            {!rooms ? (
+                                                <CommandItem disabled>Loading rooms...</CommandItem>
+                                            ) : rooms.length === 0 ? (
+                                                <CommandItem disabled>No rooms available</CommandItem>
+                                            ) : (
+                                                rooms
+                                                    .filter((room) => {
+                                                        const teacherFullName = room.teacher
+                                                            ? `${room.teacher.lastName}, ${room.teacher.firstName}`
+                                                            : '';
+                                                        const searchLower = searchValue.toLowerCase();
+
+                                                        return room.name.toLowerCase().includes(searchLower) ||
+                                                            teacherFullName.includes(searchLower);
+                                                    })
+                                                    .map((room) => (
+                                                        <CommandItem
+                                                            key={room._id}
+                                                            value={`${room.name}-${room.teacher?._id || 'no-teacher'}`}
+                                                            onSelect={() => {
+                                                                setRoomId(room._id);
+                                                                setOpenRoom(false);
+                                                                setSearchValue("");
+                                                            }}
+                                                        >
+                                                            <div className="flex items-center justify-between w-full">
+                                                                <span>{room.name}</span>
+                                                                <span className="text-muted-foreground">
+                                                                    {room.teacher
+                                                                        ? `${room.teacher.lastName}, ${room.teacher.firstName}`
+                                                                        : 'No teacher'
+                                                                    }
+                                                                </span>
+                                                            </div>
+                                                            <Check
+                                                                className={cn(
+                                                                    "ml-auto h-4 w-4",
+                                                                    room._id === roomId
+                                                                        ? "opacity-100"
+                                                                        : "opacity-0"
+                                                                )}
+                                                            />
+                                                        </CommandItem>
+                                                    ))
+                                            )}
+                                        </CommandGroup>
+                                    </CommandList>
+                                </Command>
+                            </PopoverContent>
+                        </Popover>
                     </div>
 
                     <Button

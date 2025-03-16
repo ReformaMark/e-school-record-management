@@ -264,6 +264,8 @@ export const SectionForm = ({ isEditing = false, section }: SectionFormProps) =>
         }
     };
 
+
+
     return (
         <div className="container mx-auto p-4">
             <main className="space-y-4 mt-8">
@@ -381,14 +383,20 @@ export const SectionForm = ({ isEditing = false, section }: SectionFormProps) =>
                                                                             <CommandItem disabled>No rooms available</CommandItem>
                                                                         ) : (
                                                                             rooms
-                                                                                .filter((room) =>
-                                                                                    room.name.toLowerCase().includes(searchValue.toLowerCase()) ||
-                                                                                    room.teacher?.lastName.toLowerCase().includes(searchValue.toLowerCase())
-                                                                                )
+                                                                                .filter((room) => {
+                                                                                    const teacherFullName = room.teacher
+                                                                                        ? `${room.teacher.lastName}, ${room.teacher.firstName}`
+                                                                                        : ''
+
+                                                                                    const searchLower = searchValue.toLowerCase()
+
+                                                                                    return room.name.toLowerCase().includes(searchLower) ||
+                                                                                        teacherFullName.includes(searchLower);
+                                                                                })
                                                                                 .map((room) => (
                                                                                     <CommandItem
                                                                                         key={room._id}
-                                                                                        value={room.name}
+                                                                                        value={`${room.name}-${room.teacher?._id || 'no-teacher'}`}
                                                                                         onSelect={() => {
                                                                                             handleRoomSelect(room._id);
                                                                                             setOpen(false);
@@ -401,7 +409,10 @@ export const SectionForm = ({ isEditing = false, section }: SectionFormProps) =>
                                                                                         <div className="flex items-center justify-between w-full">
                                                                                             <span>{room.name}</span>
                                                                                             <span className="text-muted-foreground">
-                                                                                                {room.teacher?.lastName || 'No teacher'}
+                                                                                                {room.teacher
+                                                                                                    ? `${room.teacher.lastName}, ${room.teacher.firstName}`
+                                                                                                    : 'No teacher'
+                                                                                                }
                                                                                             </span>
                                                                                         </div>
                                                                                         <Check

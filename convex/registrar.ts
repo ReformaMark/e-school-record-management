@@ -84,8 +84,14 @@ export const getSection = query({
                 } : null;
             });
 
+            const finalGrades = await ctx.db
+                .query("finalGrades")
+                .filter(q => q.eq(q.field("studentId"), studentId))
+                .collect()
+
             return {
                 ...student,
+                finalGrades,
                 quarterlyGrades: gradesWithSubjects.filter(Boolean),
                 sectionDoc: {
                     ...section,
