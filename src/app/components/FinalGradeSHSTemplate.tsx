@@ -116,7 +116,7 @@ function FinalGradeSHSTemplate({
                                 <TooltipTrigger asChild>
                                   <h1 className='text-red-500'>{student.quarterlyGrades[0].interventionGrade}</h1>
                                 </TooltipTrigger>
-                                <TooltipContent className='max-w-2xl bg-white p-5 space-y-2 shadow-md'>
+                                <TooltipContent className='max-w-2xl text-black bg-white p-5 space-y-2 shadow-md'>
                                     <Label className='font-semibold'>Used intervention(s)</Label>
                                     <div className="flex items-center justify-center flex-wrap gap-2">
                                     {student.quarterlyGrades[0].interventionUsed?.map((intUsed, index)=>(
@@ -140,7 +140,7 @@ function FinalGradeSHSTemplate({
                                 <TooltipTrigger asChild>
                                   <h1 className='text-red-500'>{student.quarterlyGrades[1].interventionGrade}</h1>
                                 </TooltipTrigger>
-                                <TooltipContent className='max-w-2xl bg-white p-5 space-y-2 shadow-md'>
+                                <TooltipContent className='max-w-2xl text-black bg-white p-5 space-y-2 shadow-md'>
                                     <Label className='font-semibold'>Intervention Method(s)</Label>
                                     <div className="flex items-center justify-center flex-wrap gap-2">
                                     {student.quarterlyGrades[1].interventionUsed?.map((intUsed, index)=>(
@@ -148,7 +148,6 @@ function FinalGradeSHSTemplate({
                                     ))}
                                     </div>
                                     <div className="mt-2">
-
                                         <Label className='font-semibold'>Remarks</Label>
                                         <p>{student.quarterlyGrades[1].interventionRemarks}</p>
                                     </div>
@@ -215,7 +214,7 @@ function FinalGradeSHSTemplate({
                                 <TooltipTrigger asChild>
                                   <h1 className='text-red-500'>{student.quarterlyGrades[0].interventionGrade}</h1>
                                 </TooltipTrigger>
-                                <TooltipContent className='max-w-2xl bg-white p-5 space-y-2 shadow-md'>
+                                <TooltipContent className='max-w-2xl text-black bg-white p-5 space-y-2 shadow-md'>
                                     <Label className='font-semibold'>Intervention Method(s)</Label>
                                     <div className="flex items-center justify-center flex-wrap gap-2">
                                     {student.quarterlyGrades[0].interventionUsed?.map((intUsed, index)=>(
@@ -239,7 +238,7 @@ function FinalGradeSHSTemplate({
                                 <TooltipTrigger asChild>
                                   <h1 className='text-red-500'>{student.quarterlyGrades[1].interventionGrade}</h1>
                                 </TooltipTrigger>
-                                <TooltipContent className='max-w-2xl bg-white p-5 space-y-2 shadow-md'>
+                                <TooltipContent className='max-w-2xl text-black bg-white p-5 space-y-2 shadow-md'>
                                     <Label className='font-semibold'>Used intervention(s)</Label>
                                     <div className="flex items-center justify-center flex-wrap gap-2">
                                     {student.quarterlyGrades[1].interventionUsed?.map((intUsed, index)=>(

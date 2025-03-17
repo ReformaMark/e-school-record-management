@@ -125,7 +125,7 @@ export default function MapehQuarterlyGradesTemplate({
                                         <TooltipTrigger asChild>
                                             <h1 className='text-red-500'>{getQuarterlyGrade(student?.quarterlyGrades, quarter, "Music") }</h1>
                                         </TooltipTrigger>
-                                        <TooltipContent className='max-w-2xl bg-white p-5 space-y-2 shadow-md'>
+                                        <TooltipContent className='max-w-2xl text-black bg-white p-5 space-y-2 shadow-md'>
                                             <Label className='font-semibold'>Intervention Method(s)</Label>
                                             <div className="flex items-center justify-center flex-wrap gap-2">
                                                 {student.quarterlyGrades.find(grade => grade.subComponent === "Music")?.interventionUsed?.map((intUsed, index) => (
@@ -148,7 +148,7 @@ export default function MapehQuarterlyGradesTemplate({
                                     <TooltipTrigger asChild>
                                     <h1 className='text-red-500'>{getQuarterlyGrade(student?.quarterlyGrades, quarter, "Arts") }</h1>
                                     </TooltipTrigger>
-                                    <TooltipContent className='max-w-2xl bg-white p-5 space-y-2 shadow-md'>
+                                    <TooltipContent className='max-w-2xl text-black bg-white p-5 space-y-2 shadow-md'>
                                         <Label className='font-semibold'>Intervention Method(s)</Label>
                                         <div className="flex items-center justify-center flex-wrap gap-2">
                                         {student.quarterlyGrades.find(grade => grade.subComponent === "Arts")?.interventionUsed?.map((intUsed, index)=>(
@@ -172,7 +172,7 @@ export default function MapehQuarterlyGradesTemplate({
                                         <TooltipTrigger asChild>
                                             <h1 className='text-red-500'>{getQuarterlyGrade(student?.quarterlyGrades, quarter, "Physical Education") }</h1>
                                         </TooltipTrigger>
-                                        <TooltipContent className='max-w-2xl bg-white p-5 space-y-2 shadow-md'>
+                                        <TooltipContent className='max-w-2xl text-black bg-white p-5 space-y-2 shadow-md'>
                                             <Label className='font-semibold'>Intervention Method(s)</Label>
                                             <div className="flex items-center justify-center flex-wrap gap-2">
                                                 {student.quarterlyGrades.find(grade => grade.subComponent === "Physical Education")?.interventionUsed?.map((intUsed, index) => (
@@ -196,7 +196,7 @@ export default function MapehQuarterlyGradesTemplate({
                                         <TooltipTrigger asChild>
                                             <h1 className='text-red-500'>{getQuarterlyGrade(student?.quarterlyGrades, quarter, "Health") }</h1>
                                         </TooltipTrigger>
-                                        <TooltipContent className='max-w-2xl bg-white p-5 space-y-2 shadow-md'>
+                                        <TooltipContent className='max-w-2xl text-black bg-white p-5 space-y-2 shadow-md'>
                                             <Label className='font-semibold'>Intervention Method(s)</Label>
                                             <div className="flex items-center justify-center flex-wrap gap-2">
                                                 {student.quarterlyGrades.find(grade => grade.subComponent === "Health")?.interventionUsed?.map((intUsed, index) => (
@@ -275,7 +275,7 @@ export default function MapehQuarterlyGradesTemplate({
                                     <TooltipTrigger asChild>
                                     <h1 className='text-red-500'>{getQuarterlyGrade(student?.quarterlyGrades, quarter, "Music") }</h1>
                                     </TooltipTrigger>
-                                    <TooltipContent className='max-w-2xl bg-white p-5 space-y-2 shadow-md'>
+                                    <TooltipContent className='max-w-2xl text-black bg-white p-5 space-y-2 shadow-md'>
                                         <Label className='font-semibold'>Intervention Method(s)</Label>
                                         <div className="flex items-center justify-center flex-wrap gap-2">
                                         {student.quarterlyGrades[0].interventionUsed?.map((intUsed, index)=>(
@@ -299,7 +299,7 @@ export default function MapehQuarterlyGradesTemplate({
                                     <TooltipTrigger asChild>
                                     <h1 className='text-red-500'>{student.quarterlyGrades[0].subComponent === "Arts" && student.quarterlyGrades[0].interventionGrade}</h1>
                                     </TooltipTrigger>
-                                    <TooltipContent className='max-w-2xl bg-white p-5 space-y-2 shadow-md'>
+                                    <TooltipContent className='max-w-2xl text-black bg-white p-5 space-y-2 shadow-md'>
                                         <Label className='font-semibold'>Intervention Method(s)</Label>
                                         <div className="flex items-center justify-center flex-wrap gap-2">
                                         {student.quarterlyGrades[0].interventionUsed?.map((intUsed, index)=>(
@@ -323,7 +323,7 @@ export default function MapehQuarterlyGradesTemplate({
                                     <TooltipTrigger asChild>
                                     <h1 className='text-red-500'>{student.quarterlyGrades[0].subComponent === "Physical Education" && student.quarterlyGrades[0].interventionGrade}</h1>
                                     </TooltipTrigger>
-                                    <TooltipContent className='max-w-2xl bg-white p-5 space-y-2 shadow-md'>
+                                    <TooltipContent className='max-w-2xl text-black bg-white p-5 space-y-2 shadow-md'>
                                         <Label className='font-semibold'>Intervention Method(s)</Label>
                                         <div className="flex items-center justify-center flex-wrap gap-2">
                                         {student.quarterlyGrades[0].interventionUsed?.map((intUsed, index)=>(
@@ -348,7 +348,7 @@ export default function MapehQuarterlyGradesTemplate({
                                     <TooltipTrigger asChild>
                                     <h1 className='text-red-500'>{student.quarterlyGrades[0].subComponent === "Health" && student.quarterlyGrades[0].interventionGrade}</h1>
                                     </TooltipTrigger>
-                                    <TooltipContent className='max-w-2xl bg-white p-5 space-y-2 shadow-md'>
+                                    <TooltipContent className='max-w-2xl text-black bg-white p-5 space-y-2 shadow-md'>
                                         <Label className='font-semibold'>Intervention Method(s)</Label>
                                         <div className="flex items-center justify-center flex-wrap gap-2">
                                         {student.quarterlyGrades[0].interventionUsed?.map((intUsed, index)=>(
