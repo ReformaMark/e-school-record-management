@@ -8,6 +8,7 @@ import { ConvexClientProvider } from "../components/convex-client-provider";
 import { TeacherGuard } from "@/components/guards/teacher-guard";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ThemeWidget } from "@/components/theme-widget";
+import Copyright from "@/components/Copyright";
 
 export const metadata: Metadata = {
   title: "ERMS-teacher",
@@ -33,6 +34,7 @@ export default function RootLayout({
                 <Sidenav />
                 <div className="w-full pt-[15%] md:pt-0  md:absolute z-30 md:right-0 md:top-[80px] md:w-[80%]">
                   {children}
+                  <Copyright/>
                   <ThemeWidget />
                 </div>
               </ThemeProvider>
